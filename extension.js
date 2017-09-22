@@ -122,7 +122,6 @@ function activate(context) {
 	notTracked.hideWhenEmpty = true;
 	
 	const main = () => {
-		console.log('ran main')
 	  return checkAllFiles(client, statusBar)
 		.then((data) => {
 			modified.resourceStates = updateResourceGroup(data, 'modified');
