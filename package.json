@@ -1,0 +1,36 @@
+{
+    "name": "svn-scm",
+    "displayName": "svn-scm",
+    "description": "",
+    "version": "0.0.1",
+    "publisher": "JohnstonCode",
+    "engines": {
+        "vscode": "^1.16.0"
+    },
+    "categories": [
+        "Other"
+    ],
+    "activationEvents": [
+        "*"
+    ],
+    "main": "./extension",
+    "contributes": {
+        "commands": [{
+            "command": "extension.sayHello",
+            "title": "Hello World"
+        }]
+    },
+    "scripts": {
+        "postinstall": "node ./node_modules/vscode/bin/install",
+        "test": "node ./node_modules/vscode/bin/test"
+    },
+    "devDependencies": {
+        "typescript": "^2.5.2",
+        "vscode": "^1.1.5",
+        "mocha": "^3.5.0",
+        "eslint": "^4.6.1",
+        "@types/node": "^7.0.0",
+		"@types/mocha": "^2.2.42",
+		"svn-spawn": "^0.1.5"
+    }
+}
