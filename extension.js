@@ -98,11 +98,14 @@ function activate(context) {
 	const watcher = vscode.workspace.createFileSystemWatcher(`${rootPath}/**/*`);
 
 	const sourceControl = vscode.scm.createSourceControl('svn', 'svn');
-	sourceControl.quickDiffProvider = sourceControl;
 
 	const modified = sourceControl.createResourceGroup('modified', 'Modified');
 	const removed = sourceControl.createResourceGroup('removed', 'Removed');
 	const notTracked = sourceControl.createResourceGroup('unversioned', 'Not Tracked');
+
+	modified.hideWhenEmpty = true;
+	removed.hideWhenEmpty = true;
+	notTracked.hideWhenEmpty = true;
 	
 	const main = () => {
 	  return checkAllFiles(client, statusBar)

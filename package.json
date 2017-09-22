@@ -2,13 +2,14 @@
     "name": "svn-scm",
     "displayName": "svn-scm",
     "description": "",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "publisher": "johnstoncode",
     "engines": {
         "vscode": "^1.16.0"
     },
     "categories": [
-        "Other"
+        "Other",
+        "SCM Providers"
     ],
     "activationEvents": [
         "*"
