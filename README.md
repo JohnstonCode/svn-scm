@@ -4,7 +4,10 @@ This VSCode Extension is base on [vscode-svn](https://github.com/INesterov/vscod
 
 ## Features
 
-Very little at the moment. It will show you modified, removed and unversioned files in the Source Control view
+- [x] Source Control View
+- [ ] Quick Diffs in gutter
+- [ ] Status Bar
+- [ ] SVN Commands
 
 ## Known Issues
 
