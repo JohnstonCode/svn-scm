@@ -103,19 +103,13 @@ function activate(context) {
 	const removed = sourceControl.createResourceGroup('removed', 'Removed');
 	const notTracked = sourceControl.createResourceGroup('unversioned', 'Not Tracked');
 
-	const QuickDiffProvider = {
-		provideOriginalResource(uri) {
-			if (uri.scheme !== 'file') {
-				return;
-			}
-	
-			// As a mitigation for extensions like ESLint showing warnings and errors
-			// for hg URIs, let's change the file extension of these uris to .hg.
-			return new Uri().with({ scheme: 'svn-original', query: uri.path, path: uri.path});
+	sourceControl.provideOriginalResource = (uri) => {
+		if (uri.scheme !== 'file') {
+			return;
 		}
-	}
 
-	sourceControl.quickDiffProvider = QuickDiffProvider;
+		return vscode.Uri.with({ scheme: 'svn', query: uri.path, path: uri.path});
+	};
 	
 	modified.hideWhenEmpty = true;
 	removed.hideWhenEmpty = true;
