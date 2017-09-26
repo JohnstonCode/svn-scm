@@ -1,6 +1,7 @@
 var vscode = require('vscode');
 const SvnSpawn = require('svn-spawn');
 const path = require('path');
+const svnSCM = require('./src/svnSCM.js');
 
 const createStatusBar = () => {
   const statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
@@ -72,6 +73,7 @@ const updateResourceGroup = (data, type) => {
 function activate(context) {
 	console.log('svn-scm is now active!');
 
+	const disposable = [];
 	const rootPath = vscode.workspace.rootPath;
 	const outputChannel = createChannel();
 	vscode.commands.registerCommand('vscode-svn.showOutputChannel', () => outputChannel.show());
@@ -80,19 +82,11 @@ function activate(context) {
 	const client = createClient(rootPath);
 	const watcher = vscode.workspace.createFileSystemWatcher(`${rootPath}/**/*`);
 
-	const sourceControl = vscode.scm.createSourceControl('svn', 'svn');
+	const sourceControl = svnSCM.init();
 
 	const modified = sourceControl.createResourceGroup('modified', 'Modified');
 	const removed = sourceControl.createResourceGroup('removed', 'Removed');
 	const notTracked = sourceControl.createResourceGroup('unversioned', 'Not Tracked');
-
-	sourceControl.provideOriginalResource = (uri) => {
-		if (uri.scheme !== 'file') {
-			return;
-		}
-
-		return vscode.Uri.with({ scheme: 'svn', query: uri.path, path: uri.path});
-	};
 	
 	modified.hideWhenEmpty = true;
 	removed.hideWhenEmpty = true;
