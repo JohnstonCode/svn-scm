@@ -2,6 +2,7 @@ var vscode = require('vscode');
 const SvnSpawn = require('svn-spawn');
 const path = require('path');
 const svnSCM = require('./src/svnSCM.js');
+const svnContentProvider = require('./src/svnContentProvider');
 
 const createStatusBar = () => {
   const statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
@@ -83,6 +84,7 @@ function activate(context) {
 	const watcher = vscode.workspace.createFileSystemWatcher(`${rootPath}/**/*`);
 
 	const sourceControl = svnSCM.init();
+	svnContentProvider.init();
 
 	const modified = sourceControl.createResourceGroup('modified', 'Modified');
 	const removed = sourceControl.createResourceGroup('removed', 'Removed');

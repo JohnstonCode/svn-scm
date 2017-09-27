@@ -1,10 +1,10 @@
-var vscode = require('vscode');
+var {Uri, scm} = require('vscode');
 
 module.exports = {
     sourceControl: null,
 
     init: function() {
-        this.sourceControl = vscode.scm.createSourceControl('svn', 'svn');
+        this.sourceControl = scm.createSourceControl('svn', 'svn');
         this.sourceControl.quickDiffProvider = this;
 
         return this.sourceControl;
@@ -15,6 +15,6 @@ module.exports = {
             return;
         }
 
-        return vscode.Uri.with({ scheme: 'svn', query: uri.path, path: uri.path});
+        return new Uri().with({ scheme: 'svn', query: uri.path, path: uri.path});
     }
 };
