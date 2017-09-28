@@ -5,7 +5,7 @@ This VSCode Extension is base on [vscode-svn](https://github.com/INesterov/vscod
 ## Features
 
 - [x] Source Control View
-- [ ] Quick Diffs in gutter
+- [x] Quick Diffs in gutter
 - [ ] Status Bar
 - [ ] SVN Commands
 
