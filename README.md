@@ -1,6 +1,6 @@
 # svn-scm
 
-This VSCode Extension is base on [vscode-svn](https://github.com/INesterov/vscode-svn)
+This VSCode Extension is based on [vscode-svn](https://github.com/INesterov/vscode-svn)
 
 ## Features
 
