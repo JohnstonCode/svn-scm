@@ -71,6 +71,45 @@ const updateResourceGroup = (data, type) => {
 	return matches;
 }
 
+const updateChangesResourceGroup = (data) => {
+	const changes = ['added', 'modified', 'deletion', 'deleted'];
+	let matches = [];
+	const iconsRootPath = path.join(__dirname, 'icons');
+
+	data.forEach(item => {
+		if (changes.indexOf(item['wc-status'].$.item) != -1) {
+			matches.push({
+				resourceUri: createResourceUri(item.$.path),
+				decorations: {
+					iconPath: vscode.Uri.file(path.join(iconsRootPath, `${item['wc-status'].$.item}.svg`)),
+					tooltip: item['wc-status'].$.item,
+				},
+			});
+		}
+	});
+	
+	return matches;
+}
+
+const updateNotTrackedResourceGroup = (data) => {
+	let matches = [];
+	const iconsRootPath = path.join(__dirname, 'icons');
+
+	data.forEach(item => {
+		if (item['wc-status'].$.item == 'unversioned') {
+			matches.push({
+				resourceUri: createResourceUri(item.$.path),
+				decorations: {
+					iconPath: vscode.Uri.file(path.join(iconsRootPath, `unversioned.svg`)),
+					tooltip: item['wc-status'].$.item,
+				},
+			});
+		}
+	});
+	
+	return matches;
+}
+
 function activate(context) {
 	console.log('svn-scm is now active!');
 
@@ -86,20 +125,17 @@ function activate(context) {
 	const sourceControl = svnSCM.init();
 	svnContentProvider.init();
 
-	const modified = sourceControl.createResourceGroup('modified', 'Modified');
-	const removed = sourceControl.createResourceGroup('removed', 'Removed');
+	const changes = sourceControl.createResourceGroup('changes', 'Changes');
 	const notTracked = sourceControl.createResourceGroup('unversioned', 'Not Tracked');
 	
-	modified.hideWhenEmpty = true;
-	removed.hideWhenEmpty = true;
+	changes.hideWhenEmpty = true;
 	notTracked.hideWhenEmpty = true;
 	
 	const main = () => {
 		return checkAllFiles(client, statusBar)
 		.then((data) => {
-			modified.resourceStates = updateResourceGroup(data, 'modified');
-			removed.resourceStates = updateResourceGroup(data, 'removed');
-			notTracked.resourceStates = updateResourceGroup(data, 'unversioned');
+			changes.resourceStates = updateChangesResourceGroup(data);
+			notTracked.resourceStates = updateNotTrackedResourceGroup(data);
 		})
 		.catch((err) => vscode.window.showErrorMessage(err));
 	};

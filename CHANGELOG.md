@@ -1,3 +1,10 @@
+**v0.3.0**
+=============================================
+
+## What's New
+  - Added Icons to Source control view.
+  - Changed Source control group to 'Changes' from 'Modified'
+
 **v0.2.0**
 =============================================
 
