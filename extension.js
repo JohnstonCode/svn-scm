@@ -72,7 +72,7 @@ const updateResourceGroup = (data, type) => {
 }
 
 const updateChangesResourceGroup = (data) => {
-	const changes = ['added', 'modified', 'deletion', 'deleted'];
+	const changes = ['added', 'modified', 'deleted', 'missing', 'conflicted', 'replaced'];
 	let matches = [];
 	const iconsRootPath = path.join(__dirname, 'icons');
 
