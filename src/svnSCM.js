@@ -1,20 +1,18 @@
 var {Uri, scm} = require('vscode');
 
-module.exports = {
-    sourceControl: null,
+function svnSCM() {
+	this.sourceControl = scm.createSourceControl('svn', 'svn');
+	this.sourceControl.quickDiffProvider = this;
+	
+	return this.sourceControl;
+}
 
-    init: function() {
-        this.sourceControl = scm.createSourceControl('svn', 'svn');
-        this.sourceControl.quickDiffProvider = this;
+svnSCM.prototype.provideOriginalResource = uri => {
+	if (uri.scheme !== 'file') {
+		return;
+	}
 
-        return this.sourceControl;
-    },
+	return new Uri().with({ scheme: 'svn', query: uri.path, path: uri.path});
+}
 
-    provideOriginalResource: function(uri) {
-        if (uri.scheme !== 'file') {
-            return;
-        }
-
-        return new Uri().with({ scheme: 'svn', query: uri.path, path: uri.path});
-    }
-};
+module.exports = svnSCM;

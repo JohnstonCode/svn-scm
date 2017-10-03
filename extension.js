@@ -122,8 +122,8 @@ function activate(context) {
 	const client = createClient(rootPath);
 	const watcher = vscode.workspace.createFileSystemWatcher(`${rootPath}/**/*`);
 
-	const sourceControl = svnSCM.init();
-	svnContentProvider.init();
+	const sourceControl = new svnSCM();
+	const contentProvider = new svnContentProvider();
 
 	const changes = sourceControl.createResourceGroup('changes', 'Changes');
 	const notTracked = sourceControl.createResourceGroup('unversioned', 'Not Tracked');
