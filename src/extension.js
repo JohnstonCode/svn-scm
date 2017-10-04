@@ -1,57 +1,15 @@
-var vscode = require('vscode');
-const SvnSpawn = require('svn-spawn');
+const vscode = require('vscode');
 const path = require('path');
-const svnSCM = require('./src/svnSCM.js');
-const svnContentProvider = require('./src/svnContentProvider');
+const Svn = require('./svn');
+const svnSCM = require('./svnSCM');
+const svnContentProvider = require('./svnContentProvider');
 
-const createStatusBar = () => {
-  const statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
-  statusBarItem.command = 'vscode-svn.showOutputChannel';
-
-  return statusBarItem;
-};
-
-const createClient = (rootPath) => {
-  return new SvnSpawn({
-    cwd: rootPath,
-    noAuthCache: true,
-  });
-};
-
-const createChannel = () => {
-  return vscode.window.createOutputChannel('vscode-svn');
-};
-
-const svnStatus = (client) => {
-  return new Promise((resolve, reject) => {
-    client.getStatus((err, data) => err ? reject(err) : resolve(data));
-  });
-};
-
-const updateStatusBar = (data, statusBar) => {
-  return new Promise((resolve) => {
-    statusBar.text = `${data.length} changes`;
-    statusBar.show();
-
-    resolve(data);
-  });
-};
-
-const checkAllFiles = (client) => {
-  return new Promise((resolve, reject) => {
-    svnStatus(client)
-    .then((data) => resolve(data))
-    .catch((err) => reject(err));
-  });
-};
-
-const updateOutputChannel = (data, outputChannel) => {
-  outputChannel.clear();
-
-  data.forEach((item) => {
-    const document = vscode.Uri.file(path.join(vscode.workspace.rootPath, item.$.path));
-    outputChannel.appendLine(document);
-  });
+const checkAllFiles = (svn) => {
+	return new Promise((resolve, reject) => {
+		svn.getStatus()
+		.then((data) => resolve(data))
+		.catch((err) => reject(err));
+	});
 };
 
 function createResourceUri(relativePath) {
@@ -115,15 +73,12 @@ function activate(context) {
 
 	const disposable = [];
 	const rootPath = vscode.workspace.rootPath;
-	const outputChannel = createChannel();
-	vscode.commands.registerCommand('vscode-svn.showOutputChannel', () => outputChannel.show());
-	
-	const statusBar = createStatusBar();
-	const client = createClient(rootPath);
+
 	const watcher = vscode.workspace.createFileSystemWatcher(`${rootPath}/**/*`);
 
 	const sourceControl = new svnSCM();
 	const contentProvider = new svnContentProvider();
+	const svn = new Svn();
 
 	const changes = sourceControl.createResourceGroup('changes', 'Changes');
 	const notTracked = sourceControl.createResourceGroup('unversioned', 'Not Tracked');
@@ -132,7 +87,7 @@ function activate(context) {
 	notTracked.hideWhenEmpty = true;
 	
 	const main = () => {
-		return checkAllFiles(client, statusBar)
+		return checkAllFiles(svn)
 		.then((data) => {
 			changes.resourceStates = updateChangesResourceGroup(data);
 			notTracked.resourceStates = updateNotTrackedResourceGroup(data);
@@ -145,10 +100,8 @@ function activate(context) {
 	watcher.onDidDelete(main);
 	
 	main();
-	
-	
-	
-  context.subscriptions.push(disposable);
+
+	context.subscriptions.push(disposable);
 }
 exports.activate = activate;
 
