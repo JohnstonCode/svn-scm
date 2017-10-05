@@ -2,6 +2,12 @@
 
 This VSCode Extension is based on [vscode-svn](https://github.com/INesterov/vscode-svn)
 
+# Prerequisites
+
+> **Note**: This extension leverages your 
+> machine's SVN installation,  
+> so you need to [install SVN](https://subversion.apache.org) first. 
+
 ## Features
 
 - [x] Source Control View
@@ -9,6 +15,8 @@ This VSCode Extension is based on [vscode-svn](https://github.com/INesterov/vsco
 - [ ] Status Bar
 - [ ] SVN Commands
 
-## Known Issues
+## Feedback & Contributing
 
-This is in very early development so will most likely have some issues.
+ * This is a work in progress and im sure there will be some issues.
+ * Please report any bugs, suggestions or documentation requests via the [Issues](https://github.com/JohnstonCode/svn-scm/issues)
+ * Feel free to submit [pull requests](https://github.com/JohnstonCode/svn-scm/pulls)
