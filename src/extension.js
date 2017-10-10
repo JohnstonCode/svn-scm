@@ -1,4 +1,4 @@
-const vscode = require('vscode');
+const {vscode, commands} = require('vscode');
 const path = require('path');
 const Svn = require('./svn');
 const svnSCM = require('./svnSCM');
@@ -66,6 +66,12 @@ const updateNotTrackedResourceGroup = (data) => {
 	});
 	
 	return matches;
+}
+
+const registerFileOpenCommand = (resourceUri) => {
+	commands.registerCommand('svn.fileOpen', () => {
+		commands.executeCommand('vscode.open', resourceUri);
+	});
 }
 
 function activate(context) {
