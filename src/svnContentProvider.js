@@ -19,7 +19,7 @@ svnContentProvider.prototype.provideTextDocumentContent = function(uri) {
 			resolve(result);
 		})
 		.catch((err) => {
-			reject(error);
+			reject(err);
 		});
 	});
 }

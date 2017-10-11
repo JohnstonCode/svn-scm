@@ -1,4 +1,4 @@
-const {vscode, commands} = require('vscode');
+const vscode = require('vscode');
 const path = require('path');
 const Svn = require('./svn');
 const svnSCM = require('./svnSCM');
@@ -42,6 +42,11 @@ const updateChangesResourceGroup = (data) => {
 					iconPath: vscode.Uri.file(path.join(iconsRootPath, `${item['wc-status'].$.item}.svg`)),
 					tooltip: item['wc-status'].$.item,
 				},
+				command: {
+					command: 'svn.fileOpen',
+					title: 'Open',
+					arguments: [createResourceUri(item.$.path)]
+				}
 			});
 		}
 	});
@@ -61,6 +66,11 @@ const updateNotTrackedResourceGroup = (data) => {
 					iconPath: vscode.Uri.file(path.join(iconsRootPath, `unversioned.svg`)),
 					tooltip: item['wc-status'].$.item,
 				},
+				command: {
+					command: 'svn.fileOpen',
+					title: 'Open',
+					arguments: [createResourceUri(item.$.path)]
+				}
 			});
 		}
 	});
@@ -68,9 +78,9 @@ const updateNotTrackedResourceGroup = (data) => {
 	return matches;
 }
 
-const registerFileOpenCommand = (resourceUri) => {
-	commands.registerCommand('svn.fileOpen', () => {
-		commands.executeCommand('vscode.open', resourceUri);
+const registerFileOpenCommand = () => {
+	vscode.commands.registerCommand('svn.fileOpen', (resourceUri) => {
+		vscode.commands.executeCommand('vscode.open', resourceUri);
 	});
 }
 
@@ -82,6 +92,8 @@ function activate(context) {
 
 	const watcher = vscode.workspace.createFileSystemWatcher(`${rootPath}/**/*`);
 
+	registerFileOpenCommand();
+	
 	const sourceControl = new svnSCM();
 	const contentProvider = new svnContentProvider();
 	const svn = new Svn();

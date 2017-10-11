@@ -1,3 +1,9 @@
+**v0.4.0**
+=============================================
+
+## What's New
+  - Files/Folders can be clicked open from source control view
+
 **v0.3.1**
 =============================================
 
