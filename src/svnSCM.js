@@ -3,7 +3,7 @@ var { Uri, scm } = require("vscode");
 function svnSCM() {
   this.sourceControl = scm.createSourceControl("svn", "svn");
   this.sourceControl.acceptInputCommand = {
-    command: "svn.commitAll",
+    command: "svn.commitWithMessage",
     title: "commit"
   };
   this.sourceControl.quickDiffProvider = this;

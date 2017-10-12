@@ -22,5 +22,10 @@ function inputCommitMessage(message) {
   });
 }
 
+function changesCommitted() {
+  return window.showInformationMessage("Files Committed");
+}
+
 exports.noChangesToCommit = noChangesToCommit;
 exports.inputCommitMessage = inputCommitMessage;
+exports.changesCommitted = changesCommitted;

@@ -22,10 +22,10 @@ svn.prototype.getStatus = function() {
   });
 };
 
-svn.prototype.commitAll = function(message) {
+svn.prototype.commit = function(params) {
   return new Promise((resolve, reject) => {
     this.client.commit(
-      message,
+      params,
       (err, data) => (err ? reject(err) : resolve(data))
     );
   });

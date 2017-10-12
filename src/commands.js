@@ -1,25 +1,27 @@
 const { commands, scm, window } = require("vscode");
-const Svn = require("./svn");
-const { inputCommitMessage } = require("./messages");
+const { inputCommitMessage, changesCommitted } = require("./messages");
+const svn = require("./svn");
 
 function SvnCommands() {
-  this.svn = new Svn();
-
   commands.registerCommand("svn.fileOpen", this.fileOpen);
-  commands.registerCommand("svn.commitAll", this.commitAll);
+  commands.registerCommand("svn.commitWithMessage", this.commitWithMessage);
 }
 
 SvnCommands.prototype.fileOpen = resourceUri => {
   commands.executeCommand("vscode.open", resourceUri);
 };
 
-SvnCommands.prototype.commitAll = () => {
-  inputCommitMessage(scm.inputBox.value)
-    .then(result => this.svn.commitAll(result))
-    .then(() => {
-      scm.inputBox.value = "";
-    })
-    .catch(err => console.log(err));
+SvnCommands.prototype.commitWithMessage = async function() {
+  this.svn = new svn();
+  let message = await inputCommitMessage(scm.inputBox.value);
+
+  try {
+    await this.svn.commit(message);
+    scm.inputBox.value = "";
+    changesCommitted();
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 module.exports = SvnCommands;

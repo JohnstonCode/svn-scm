@@ -1,41 +1,36 @@
 {
-    "name": "svn-scm",
-    "displayName": "svn-scm",
-    "description": "",
-    "version": "0.4.0",
-    "publisher": "johnstoncode",
-    "engines": {
-        "vscode": "^1.16.0"
-	},
-	"homepage": "https://github.com/JohnstonCode/svn-scm/blob/master/README.md",
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/JohnstonCode/svn-scm.git"
-	  },
-	  "bugs": {
-		"url": "https://github.com/JohnstonCode/svn-scm/issues"
-	},
-    "categories": [
-        "Other",
-        "SCM Providers"
-    ],
-    "activationEvents": [
-        "*"
-    ],
-    "main": "./src/extension",
-    "scripts": {
-        "postinstall": "node ./node_modules/vscode/bin/install",
-        "test": "node ./node_modules/vscode/bin/test"
-	},
-	"dependencies": {
-		"svn-spawn": "^0.1.5"
-	},
-    "devDependencies": {
-        "typescript": "^2.5.2",
-        "vscode": "^1.1.5",
-        "mocha": "^3.5.0",
-        "eslint": "^4.6.1",
-        "@types/node": "^7.0.0",
-		"@types/mocha": "^2.2.42"
-    }
+  "name": "svn-scm",
+  "displayName": "svn-scm",
+  "description": "",
+  "version": "0.5.0",
+  "publisher": "johnstoncode",
+  "engines": {
+    "vscode": "^1.16.0"
+  },
+  "homepage": "https://github.com/JohnstonCode/svn-scm/blob/master/README.md",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/JohnstonCode/svn-scm.git"
+  },
+  "bugs": {
+    "url": "https://github.com/JohnstonCode/svn-scm/issues"
+  },
+  "categories": ["Other", "SCM Providers"],
+  "activationEvents": ["*"],
+  "main": "./src/extension",
+  "scripts": {
+    "postinstall": "node ./node_modules/vscode/bin/install",
+    "test": "node ./node_modules/vscode/bin/test"
+  },
+  "dependencies": {
+    "svn-spawn": "^0.1.5"
+  },
+  "devDependencies": {
+    "typescript": "^2.5.2",
+    "vscode": "^1.1.5",
+    "mocha": "^3.5.0",
+    "eslint": "^4.6.1",
+    "@types/node": "^7.0.0",
+    "@types/mocha": "^2.2.42"
+  }
 }

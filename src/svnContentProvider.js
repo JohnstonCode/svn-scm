@@ -15,9 +15,7 @@ svnContentProvider.prototype.provideTextDocumentContent = function(uri) {
   return new Promise((resolve, reject) => {
     this.svn
       .cmd(["ls", relativePath])
-      .then(() => {
-        return this.svn.cmd(["cat", "-r", "HEAD", relativePath]);
-      })
+      .then(() => this.svn.cmd(["cat", "-r", "HEAD", relativePath]))
       .then(result => {
         resolve(result);
       })
