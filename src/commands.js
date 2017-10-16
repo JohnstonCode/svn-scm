@@ -14,6 +14,8 @@ SvnCommands.prototype.fileOpen = resourceUri => {
 };
 
 SvnCommands.prototype.commitAll = () => {
+    this.svn = new Svn();
+
   inputCommitMessage(scm.inputBox.value)
     .then(result => this.svn.commitAll(result))
     .then(() => {
