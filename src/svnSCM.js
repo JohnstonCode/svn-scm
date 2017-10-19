@@ -21,12 +21,21 @@ function svnSCM() {
   this.changes.hideWhenEmpty = true;
   this.notTracked.hideWhenEmpty = true;
 
-  this.watcher.onDidChange(this.update);
-  this.watcher.onDidCreate(this.update);
-  this.watcher.onDidDelete(this.update);
-
+  this.addEventListeners();
   this.update();
 }
+
+svnSCM.prototype.addEventListeners = function() {
+  this.watcher.onDidChange(() => {
+    this.update();
+  });
+  this.watcher.onDidCreate(() => {
+    this.update();
+  });
+  this.watcher.onDidDelete(() => {
+    this.update();
+  });
+};
 
 svnSCM.prototype.provideOriginalResource = uri => {
   if (uri.scheme !== "file") {
