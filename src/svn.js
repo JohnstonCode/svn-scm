@@ -31,4 +31,13 @@ svn.prototype.commit = function(params) {
   });
 };
 
+svn.prototype.add = function(filePath) {
+  return new Promise((resolve, reject) => {
+    this.client.add(
+      filePath,
+      (err, data) => (err ? reject(err) : resolve(data))
+    );
+  });
+};
+
 module.exports = svn;

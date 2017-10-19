@@ -2,7 +2,7 @@
   "name": "svn-scm",
   "displayName": "svn-scm",
   "description": "",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "publisher": "johnstoncode",
   "engines": {
     "vscode": "^1.16.0"
@@ -32,5 +32,32 @@
     "eslint": "^4.6.1",
     "@types/node": "^7.0.0",
     "@types/mocha": "^2.2.42"
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "svn.add",
+        "title": "add",
+        "category": "svn",
+        "icon": {
+          "light": "icons/add.svg",
+          "dark": "icons/add.svg"
+        }
+      }
+    ],
+    "menus": {
+      "commandPalette": [],
+      "scm/title": [],
+      "scm/resourceGroup/context": [],
+      "scm/resourceState/context": [
+        {
+          "command": "svn.add",
+          "when": "scmProvider == svn && scmResourceGroup == unversioned",
+          "group": "inline"
+        }
+      ],
+      "editor/title": []
+    },
+    "configuration": {}
   }
 }
