@@ -41,7 +41,7 @@ const updateChangesResourceGroup = data => {
     "replaced"
   ];
   let matches = [];
-  const iconsRootPath = path.join(__dirname, "icons");
+  const iconsRootPath = path.join(__dirname, "..", "icons");
 
   data.forEach(item => {
     if (changes.indexOf(item["wc-status"].$.item) != -1) {
