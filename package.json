@@ -40,8 +40,8 @@
         "title": "add",
         "category": "svn",
         "icon": {
-          "light": "icons/add.svg",
-          "dark": "icons/add.svg"
+          "light": "icons/light/add.svg",
+          "dark": "icons/dark/add.svg"
         }
       }
     ],

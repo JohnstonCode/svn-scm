@@ -1,8 +1,9 @@
 const { Uri, workspace } = require("vscode");
 const path = require("path");
 
-function Resource(relativePath, type) {
+function Resource(rootPath, relativePath, type) {
   this.type = type;
+  this.rootPath = rootPath;
 
   return {
     resourceUri: this.getResourceUri(relativePath),
@@ -20,7 +21,7 @@ Resource.prototype.getCommand = function(relativePath) {
 };
 
 Resource.prototype.getResourceUri = function(relativePath) {
-  const absolutePath = path.join(workspace.rootPath, relativePath);
+  const absolutePath = path.join(this.rootPath, relativePath);
   return Uri.file(absolutePath);
 };
 
