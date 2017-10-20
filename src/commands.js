@@ -1,6 +1,6 @@
 const { commands, scm, window } = require("vscode");
 const { inputCommitMessage, changesCommitted } = require("./messages");
-const svn = require("./svn");
+const Svn = require("./svn");
 
 function SvnCommands(model) {
   this.model = model;
@@ -9,6 +9,16 @@ function SvnCommands(model) {
       commandId: "svn.commitWithMessage",
       method: this.commitWithMessage,
       options: { repository: true }
+    },
+    {
+      commandId: "svn.add",
+      method: this.addFile,
+      options: {}
+    },
+    {
+      commandId: "svn.fileOpen",
+      method: this.fileOpen,
+      options: {}
     }
   ];
 
@@ -16,9 +26,6 @@ function SvnCommands(model) {
     const command = this.createCommand(method, options);
     commands.registerCommand(commandId, command);
   });
-  // commands.registerCommand("svn.fileOpen", this.fileOpen);
-  // commands.registerCommand("svn.commitWithMessage", this.commitWithMessage);
-  // commands.registerCommand("svn.add", this.addFile);
 }
 
 SvnCommands.prototype.createCommand = function(method, options) {
@@ -61,25 +68,23 @@ SvnCommands.prototype.fileOpen = resourceUri => {
 };
 
 SvnCommands.prototype.commitWithMessage = async function(repository) {
-  // console.log("fsdsfsf");
-  // this.svn = new svn();
-  // let message = await inputCommitMessage(scm.inputBox.value);
+  const svn = new Svn(repository.root);
+  let message = repository.inputBox.value;
 
-  console.log(repository.inputBox.value);
-  // try {
-  //   await this.svn.commit(message);
-  //   scm.inputBox.value = "";
-  //   changesCommitted();
-  // } catch (error) {
-  //   console.log(error);
-  // }
+  try {
+    await this.svn.commit(message);
+    repository.inputBox.value = "";
+    changesCommitted();
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 SvnCommands.prototype.addFile = async uri => {
   this.svn = new svn();
 
   try {
-    await this.svn.add(uri.resourceUri.path);
+    await this.svn.add(uri.resourceUri.fsPath);
   } catch (error) {
     console.log(error);
   }

@@ -3,11 +3,12 @@ const Resource = require("./Resource");
 
 function Repository(repository) {
   this.repository = repository;
+  this.root = repository.root;
   this.watcher = workspace.createFileSystemWatcher("**");
   this.sourceControl = scm.createSourceControl(
     "svn",
     "svn",
-    Uri.parse(this.repository.root)
+    Uri.parse(this.root)
   );
   this.sourceControl.acceptInputCommand = {
     command: "svn.commitWithMessage",
@@ -71,11 +72,21 @@ Repository.prototype.update = function() {
           case "replaced":
           case "missing":
           case "added":
-            changes.push(new Resource(this.repository.root, item.$.path, item["wc-status"].$.item));
+            changes.push(
+              new Resource(
+                this.repository.root,
+                item.$.path,
+                item["wc-status"].$.item
+              )
+            );
             break;
           case "unversioned":
             notTracked.push(
-              new Resource(this.repository.root, item.$.path, item["wc-status"].$.item)
+              new Resource(
+                this.repository.root,
+                item.$.path,
+                item["wc-status"].$.item
+              )
             );
             break;
         }

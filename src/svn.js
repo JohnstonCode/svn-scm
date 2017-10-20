@@ -1,16 +1,20 @@
 const SvnSpawn = require("svn-spawn");
 const vscode = require("vscode");
 
-function svn() {
+function svn(cwd = null) {
   this.client = new SvnSpawn({
-    noAuthCache: true
+    noAuthCache: true,
+    cwd: cwd
   });
 }
 
 svn.prototype.getRepositoryRoot = async function(path) {
   try {
     let result = await this.cmd(["info", path]);
-    let match = result.match(/(?=Working Copy Root Path:)(.*)/i)[0].replace('Working Copy Root Path:', '').trim();
+    let match = result
+      .match(/(?=Working Copy Root Path:)(.*)/i)[0]
+      .replace("Working Copy Root Path:", "")
+      .trim();
     return match;
   } catch (error) {
     console.log(error);
@@ -19,7 +23,7 @@ svn.prototype.getRepositoryRoot = async function(path) {
 
 svn.prototype.open = function(repositoryRoot) {
   return new Repository(this, repositoryRoot);
-}
+};
 
 svn.prototype.cmd = function(args) {
   return new Promise((resolve, reject) => {
@@ -61,9 +65,8 @@ function Repository(svn, repositoryRoot) {
     cwd: this.root,
     noAuthCache: true
   });
-
 }
 
 Repository.prototype.getStatus = function() {
   return this.svn.getStatus();
-}
+};
