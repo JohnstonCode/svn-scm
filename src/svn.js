@@ -54,15 +54,16 @@ svn.prototype.add = function(filePath) {
 module.exports = svn;
 
 function Repository(svn, repositoryRoot) {
-  this.svn = new SvnSpawn({
-    cwd: repositoryRoot,
+  this.svn = svn;
+  this.root = repositoryRoot;
+
+  this.svn.client.option({
+    cwd: this.root,
     noAuthCache: true
   });
-  this.root = repositoryRoot;
+
 }
 
 Repository.prototype.getStatus = function() {
-  return new Promise((resolve, reject) => {
-    this.svn.getStatus((err, data) => (err ? reject(err) : resolve(data)));
-  });
+  return this.svn.getStatus();
 }

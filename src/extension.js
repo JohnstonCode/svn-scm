@@ -9,10 +9,10 @@ function activate(context) {
   console.log("svn-scm is now active!");
 
   const disposable = [];
-  const commands = new SvnCommands();
   const svn = new Svn();
   const model = new Model(svn);
   const contentProvider = new svnContentProvider();
+  const commands = new SvnCommands(model);
 
   context.subscriptions.push(disposable);
 }
