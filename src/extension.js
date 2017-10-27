@@ -6,13 +6,13 @@ const SvnCommands = require("./commands");
 const Model = require("./model");
 
 function activate(context) {
-  console.log("svn-scm is now active!");
-
   const disposable = [];
   const svn = new Svn();
   const model = new Model(svn);
   const contentProvider = new svnContentProvider();
   const commands = new SvnCommands(model);
+
+  console.log("svn-scm is now active!");
 
   context.subscriptions.push(disposable);
 }

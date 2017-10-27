@@ -1,11 +1,20 @@
 const SvnSpawn = require("svn-spawn");
 const vscode = require("vscode");
+const cp = require("child_process");
 
 function svn(cwd = null) {
   this.client = new SvnSpawn({
     noAuthCache: true,
     cwd: cwd
   });
+
+  this.isSVNAvailable()
+    .then(() => {})
+    .catch(() => {
+      vscode.window.showErrorMessage(
+        "SVN is not avaialbe in your $PATH. svn-scm is unable to run!"
+      );
+    });
 }
 
 svn.prototype.getRepositoryRoot = async function(path) {
@@ -19,6 +28,19 @@ svn.prototype.getRepositoryRoot = async function(path) {
   } catch (error) {
     console.log(error);
   }
+};
+
+svn.prototype.isSVNAvailable = async function() {
+  return new Promise((resolve, reject) => {
+    const result = cp.exec("svn --version");
+
+    result.stdout.on("data", data => {
+      resolve();
+    });
+    result.stderr.on("data", data => {
+      reject();
+    });
+  });
 };
 
 svn.prototype.open = function(repositoryRoot) {
