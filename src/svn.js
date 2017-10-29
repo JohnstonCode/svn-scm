@@ -9,7 +9,6 @@ function svn(cwd = null) {
   });
 
   this.isSVNAvailable()
-    .then(() => {})
     .catch(() => {
       vscode.window.showErrorMessage(
         "SVN is not avaialbe in your $PATH. svn-scm is unable to run!"

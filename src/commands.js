@@ -72,7 +72,7 @@ SvnCommands.prototype.commitWithMessage = async function(repository) {
   let message = repository.inputBox.value;
 
   try {
-    await this.svn.commit(message);
+    await svn.commit(message);
     repository.inputBox.value = "";
     changesCommitted();
   } catch (error) {

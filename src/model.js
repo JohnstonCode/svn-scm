@@ -41,6 +41,10 @@ Model.prototype.getOpenRepository = function(path) {
     return undefined;
   }
 
+  if (path instanceof Repository) {
+    return this.openRepositories.filter(r => r === path)[0];
+  }
+
   path = Uri.file(path);
 
   for (const liveRepository of this.openRepositories) {
