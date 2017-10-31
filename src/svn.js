@@ -8,12 +8,11 @@ function svn(cwd = null) {
     cwd: cwd
   });
 
-  this.isSVNAvailable()
-    .catch(() => {
-      vscode.window.showErrorMessage(
-        "SVN is not avaialbe in your $PATH. svn-scm is unable to run!"
-      );
-    });
+  this.isSVNAvailable().catch(() => {
+    vscode.window.showErrorMessage(
+      "SVN is not avaialbe in your $PATH. svn-scm is unable to run!"
+    );
+  });
 }
 
 svn.prototype.getRepositoryRoot = async function(path) {
@@ -25,11 +24,11 @@ svn.prototype.getRepositoryRoot = async function(path) {
       .trim();
     return match;
   } catch (error) {
-    console.log(error);
+    throw new Error("Not a SVN repo");
   }
 };
 
-svn.prototype.isSVNAvailable = async function() {
+svn.prototype.isSVNAvailable = function() {
   return new Promise((resolve, reject) => {
     const result = cp.exec("svn --version");
 

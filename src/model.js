@@ -23,6 +23,7 @@ Model.prototype.tryOpenRepository = async function(path) {
 
   try {
     const repositoryRoot = await this.svn.getRepositoryRoot(path);
+
     const repository = new Repository(this.svn.open(repositoryRoot));
 
     this.open(repository);

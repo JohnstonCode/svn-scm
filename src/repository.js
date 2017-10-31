@@ -98,7 +98,7 @@ Repository.prototype.update = function() {
       // console.log(this.changes.resourceStates);
     })
     .catch(error => {
-      console.log(error);
+      // console.log(error);
     });
 };
 
