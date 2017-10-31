@@ -94,6 +94,8 @@ Repository.prototype.update = function() {
 
       this.changes.resourceStates = changes;
       this.notTracked.resourceStates = notTracked;
+
+      // console.log(this.changes.resourceStates);
     })
     .catch(error => {
       console.log(error);

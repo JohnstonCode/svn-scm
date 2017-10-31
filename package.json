@@ -2,7 +2,7 @@
   "name": "svn-scm",
   "displayName": "svn-scm",
   "description": "",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "publisher": "johnstoncode",
   "engines": {
     "vscode": "^1.16.0"
@@ -16,6 +16,7 @@
     "url": "https://github.com/JohnstonCode/svn-scm/issues"
   },
   "categories": ["Other", "SCM Providers"],
+  "keywords": ["multi-root ready"],
   "activationEvents": ["*"],
   "main": "./src/extension",
   "scripts": {

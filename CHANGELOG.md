@@ -2,6 +2,12 @@
 =============================================
 
 ## What's New
+  - Now multi-root aware for VS code 18
+
+**v0.6.0**
+=============================================
+
+## What's New
   - Can add un-tracked files in source control view
 
 **v0.5.1**
