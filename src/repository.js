@@ -1,5 +1,6 @@
 const { Uri, scm, workspace } = require("vscode");
 const Resource = require("./Resource");
+const { throttleAsync } = require("./decorators");
 
 function Repository(repository) {
   this.repository = repository;
@@ -32,15 +33,9 @@ function Repository(repository) {
 }
 
 Repository.prototype.addEventListeners = function() {
-  this.watcher.onDidChange(() => {
-    this.update();
-  });
-  this.watcher.onDidCreate(() => {
-    this.update();
-  });
-  this.watcher.onDidDelete(() => {
-    this.update();
-  });
+  this.watcher.onDidChange(throttleAsync(this.update, "update", this));
+  this.watcher.onDidCreate(throttleAsync(this.update, "update", this));
+  this.watcher.onDidDelete(throttleAsync(this.update, "update", this));
 };
 
 Repository.prototype.provideOriginalResource = uri => {
@@ -51,7 +46,7 @@ Repository.prototype.provideOriginalResource = uri => {
   return new Uri().with({ scheme: "svn", query: uri.path, path: uri.path });
 };
 
-Repository.prototype.update = function() {
+Repository.prototype.update = async function() {
   let changes = [];
   let notTracked = [];
 
