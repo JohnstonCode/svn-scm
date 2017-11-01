@@ -1,4 +1,11 @@
-**v0.6.0**
+**v0.8.1**
+=============================================
+
+## Changes
+  - Added throttle decorators to try and limit async requests.
+  - at 8.1 as i messed versioning up.
+
+**v0.7.0**
 =============================================
 
 ## What's New
