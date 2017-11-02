@@ -1,64 +1,72 @@
 {
-  "name": "svn-scm",
-  "displayName": "svn-scm",
-  "description": "",
-  "version": "0.8.2",
-  "publisher": "johnstoncode",
-  "engines": {
-    "vscode": "^1.16.0"
-  },
-  "homepage": "https://github.com/JohnstonCode/svn-scm/blob/master/README.md",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/JohnstonCode/svn-scm.git"
-  },
-  "bugs": {
-    "url": "https://github.com/JohnstonCode/svn-scm/issues"
-  },
-  "categories": ["Other", "SCM Providers"],
-  "keywords": ["multi-root ready"],
-  "activationEvents": ["*"],
-  "main": "./src/extension",
-  "scripts": {
-    "postinstall": "node ./node_modules/vscode/bin/install",
-    "test": "node ./node_modules/vscode/bin/test"
-  },
-  "dependencies": {
-    "svn-spawn": "^0.1.5"
-  },
-  "devDependencies": {
-    "typescript": "^2.5.2",
-    "vscode": "^1.1.5",
-    "mocha": "^3.5.0",
-    "eslint": "^4.6.1",
-    "@types/node": "^7.0.0",
-    "@types/mocha": "^2.2.42"
-  },
-  "contributes": {
-    "commands": [
-      {
-        "command": "svn.add",
-        "title": "add",
-        "category": "svn",
-        "icon": {
-          "light": "icons/light/add.svg",
-          "dark": "icons/dark/add.svg"
-        }
-      }
-    ],
-    "menus": {
-      "commandPalette": [],
-      "scm/title": [],
-      "scm/resourceGroup/context": [],
-      "scm/resourceState/context": [
-        {
-          "command": "svn.add",
-          "when": "scmProvider == svn && scmResourceGroup == unversioned",
-          "group": "inline"
-        }
-      ],
-      "editor/title": []
+    "name": "svn-scm",
+    "displayName": "svn-scm",
+    "description": "",
+    "version": "0.8.3",
+    "publisher": "johnstoncode",
+    "engines": {
+        "vscode": "^1.16.0"
     },
-    "configuration": {}
-  }
+    "homepage": "https://github.com/JohnstonCode/svn-scm/blob/master/README.md",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/JohnstonCode/svn-scm.git"
+    },
+    "bugs": {
+        "url": "https://github.com/JohnstonCode/svn-scm/issues"
+    },
+    "categories": [
+        "Other",
+        "SCM Providers"
+    ],
+    "keywords": [
+        "multi-root ready"
+    ],
+    "activationEvents": [
+        "*"
+    ],
+    "main": "./src/extension",
+    "scripts": {
+        "postinstall": "node ./node_modules/vscode/bin/install",
+        "test": "node ./node_modules/vscode/bin/test"
+    },
+    "dependencies": {
+        "iconv-lite": "^0.4.19",
+        "svn-spawn": "^0.1.5"
+    },
+    "devDependencies": {
+        "typescript": "^2.5.2",
+        "vscode": "^1.1.5",
+        "mocha": "^3.5.0",
+        "eslint": "^4.6.1",
+        "@types/node": "^7.0.0",
+        "@types/mocha": "^2.2.42"
+    },
+    "contributes": {
+        "commands": [
+            {
+                "command": "svn.add",
+                "title": "add",
+                "category": "svn",
+                "icon": {
+                    "light": "icons/light/add.svg",
+                    "dark": "icons/dark/add.svg"
+                }
+            }
+        ],
+        "menus": {
+            "commandPalette": [],
+            "scm/title": [],
+            "scm/resourceGroup/context": [],
+            "scm/resourceState/context": [
+                {
+                    "command": "svn.add",
+                    "when": "scmProvider == svn && scmResourceGroup == unversioned",
+                    "group": "inline"
+                }
+            ],
+            "editor/title": []
+        },
+        "configuration": {}
+    }
 }
