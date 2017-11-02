@@ -109,8 +109,8 @@ svn.prototype.isSVNAvailable = function() {
   });
 };
 
-svn.prototype.open = function(repositoryRoot) {
-  return new Repository(this, repositoryRoot);
+svn.prototype.open = function(repositoryRoot, workspaceRoot) {
+  return new Repository(this, repositoryRoot, workspaceRoot);
 };
 
 svn.prototype.cmd = function(args) {
@@ -145,12 +145,13 @@ svn.prototype.add = function(filePath) {
 
 module.exports = svn;
 
-function Repository(svn, repositoryRoot) {
+function Repository(svn, repositoryRoot, workspaceRoot) {
   this.svn = svn;
   this.root = repositoryRoot;
+  this.workspaceRoot = workspaceRoot;
 
   this.svn.client.option({
-    cwd: this.root,
+    cwd: this.workspaceRoot,
     noAuthCache: true
   });
 }

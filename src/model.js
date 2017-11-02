@@ -28,7 +28,7 @@ Model.prototype.tryOpenRepository = async function(path) {
       return;
     }
 
-    const repository = new Repository(this.svn.open(repositoryRoot));
+    const repository = new Repository(this.svn.open(repositoryRoot, path));
 
     this.open(repository);
   } catch (err) {
