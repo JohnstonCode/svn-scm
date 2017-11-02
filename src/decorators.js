@@ -1,4 +1,4 @@
-module.exports.throttle = function(func, wait, context) {
+module.exports.debounce = function(func, wait, context) {
   var timer = null;
 
   return function() {
@@ -7,7 +7,7 @@ module.exports.throttle = function(func, wait, context) {
     clearTimeout(timer);
 
     timer = setTimeout(function() {
-      fn.apply(context, args);
+      func.apply(context, args);
     }, wait);
   };
 };
