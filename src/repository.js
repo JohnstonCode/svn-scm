@@ -28,8 +28,8 @@ function Repository(repository) {
   this.changes.hideWhenEmpty = true;
   this.notTracked.hideWhenEmpty = true;
 
-  this.addEventListeners();
   this.update();
+  this.addEventListeners();
 }
 
 Repository.prototype.addEventListeners = function() {
@@ -46,55 +46,57 @@ Repository.prototype.provideOriginalResource = uri => {
   return new Uri().with({ scheme: "svn", query: uri.path, path: uri.path });
 };
 
-Repository.prototype.update = async function() {
-  let changes = [];
-  let notTracked = [];
+Repository.prototype.update = function() {
+  return new Promise((resolve, reject) => {
+    let changes = [];
+    let notTracked = [];
 
-  this.changes.resourceStates = [];
-  this.notTracked.resourceStates = [];
+    this.changes.resourceStates = [];
+    this.notTracked.resourceStates = [];
 
-  this.repository
-    .getStatus()
-    .then(result => {
-      let changes = [];
-      let notTracked = [];
+    this.repository
+      .getStatus()
+      .then(result => {
+        let changes = [];
+        let notTracked = [];
 
-      result.forEach(item => {
-        switch (item["wc-status"].$.item) {
-          case "modified":
-          case "deleted":
-          case "conflicted":
-          case "replaced":
-          case "missing":
-          case "added":
-            changes.push(
-              new Resource(
-                this.repository.root,
-                item.$.path,
-                item["wc-status"].$.item
-              )
-            );
-            break;
-          case "unversioned":
-            notTracked.push(
-              new Resource(
-                this.repository.root,
-                item.$.path,
-                item["wc-status"].$.item
-              )
-            );
-            break;
-        }
+        result.forEach(item => {
+          switch (item["wc-status"].$.item) {
+            case "modified":
+            case "deleted":
+            case "conflicted":
+            case "replaced":
+            case "missing":
+            case "added":
+              changes.push(
+                new Resource(
+                  this.repository.root,
+                  item.$.path,
+                  item["wc-status"].$.item
+                )
+              );
+              break;
+            case "unversioned":
+              notTracked.push(
+                new Resource(
+                  this.repository.root,
+                  item.$.path,
+                  item["wc-status"].$.item
+                )
+              );
+              break;
+          }
+        });
+
+        this.changes.resourceStates = changes;
+        this.notTracked.resourceStates = notTracked;
+
+        resolve();
+      })
+      .catch(error => {
+        reject();
       });
-
-      this.changes.resourceStates = changes;
-      this.notTracked.resourceStates = notTracked;
-
-      // console.log(this.changes.resourceStates);
-    })
-    .catch(error => {
-      // console.log(error);
-    });
+  });
 };
 
 module.exports = Repository;

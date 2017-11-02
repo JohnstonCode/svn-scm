@@ -1,31 +1,14 @@
-module.exports.throttle = function(func, wait, context, s) {
-  var args, result;
-  var timeout = null;
-  var previous = 0;
-  if (!options) options = {};
-  var later = function() {
-    previous = options.leading === false ? 0 : Date.now();
-    timeout = null;
-    result = func.apply(context, args);
-    if (!timeout) args = null;
-  };
+module.exports.throttle = function(func, wait, context) {
+  var timer = null;
+
   return function() {
-    var now = Date.now();
-    if (!previous && options.leading === false) previous = now;
-    var remaining = wait - (now - previous);
-    args = arguments;
-    if (remaining <= 0 || remaining > wait) {
-      if (timeout) {
-        clearTimeout(timeout);
-        timeout = null;
-      }
-      previous = now;
-      result = func.apply(context, args);
-      if (!timeout) args = null;
-    } else if (!timeout && options.trailing !== false) {
-      timeout = setTimeout(later, remaining);
-    }
-    return result;
+    var args = arguments;
+
+    clearTimeout(timer);
+
+    timer = setTimeout(function() {
+      fn.apply(context, args);
+    }, wait);
   };
 };
 
@@ -39,8 +22,8 @@ module.exports.throttleAsync = function(fn, key, context = this) {
     }
 
     if (this[currentKey]) {
-      this[nextKey] = done(this[currentKey]).then(() => {
-        this[nextKey] = undefined;
+      done(this[currentKey]).then(() => {
+        this[nextKey] = false;
         return trigger.apply(context, args);
       });
 
@@ -49,8 +32,9 @@ module.exports.throttleAsync = function(fn, key, context = this) {
 
     this[currentKey] = fn.apply(context, args);
 
-    const clear = () => (this[currentKey] = undefined);
-    done(this[currentKey]).then(clear, clear);
+    this[currentKey].then(() => {
+      this[currentKey] = false;
+    });
 
     return this[currentKey];
   };
