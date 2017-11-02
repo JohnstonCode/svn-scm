@@ -5,6 +5,9 @@
   - Added throttle decorators to try and limit async requests.
   - at 8.1 as i messed versioning up.
 
+## Bug Fixes
+  - Fixed issues with only one SCM being created in multi-root
+
 **v0.7.0**
 =============================================
 

@@ -41,21 +41,21 @@ Model.prototype.getRepository = function(path) {
   return liveRepository && liveRepository.repository;
 };
 
-Model.prototype.getOpenRepository = function(path) {
-  if (!path) {
+Model.prototype.getOpenRepository = function(hint) {
+  if (!hint) {
     return undefined;
   }
 
-  if (path instanceof Repository) {
-    return this.openRepositories.filter(r => r === path)[0];
+  if (hint instanceof Repository) {
+    return this.openRepositories.filter(r => r === hint)[0];
   }
 
-  path = Uri.file(path);
+  hint = Uri.file(hint);
 
   for (const liveRepository of this.openRepositories) {
     const relativePath = path.relative(
       liveRepository.repository.root,
-      path.fsPath
+      hint.fsPath
     );
 
     if (!/^\.\./.test(relativePath)) {

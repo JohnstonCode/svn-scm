@@ -5,7 +5,7 @@ const { throttleAsync } = require("./decorators");
 function Repository(repository) {
   this.repository = repository;
   this.root = repository.root;
-  this.watcher = workspace.createFileSystemWatcher("**");
+  this.watcher = workspace.createFileSystemWatcher(this.root + "/**/*");
   this.sourceControl = scm.createSourceControl(
     "svn",
     "svn",

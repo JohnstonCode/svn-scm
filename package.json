@@ -2,7 +2,7 @@
   "name": "svn-scm",
   "displayName": "svn-scm",
   "description": "",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "publisher": "johnstoncode",
   "engines": {
     "vscode": "^1.16.0"
