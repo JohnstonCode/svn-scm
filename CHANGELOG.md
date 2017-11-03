@@ -1,3 +1,55 @@
+**v0.8.3**
+=============================================
+
+## Bug Fixes
+  - Missing iconv-lite dep
+
+**v0.8.2**
+=============================================
+
+## Bug Fixes
+  - Fixed decorator to limit async calls.
+
+**v0.8.1**
+=============================================
+
+## Changes
+  - Added throttle decorators to try and limit async requests.
+  - at 8.1 as i messed versioning up.
+
+## Bug Fixes
+  - Fixed issues with only one SCM being created in multi-root
+
+**v0.7.0**
+=============================================
+
+## What's New
+  - Now multi-root aware for VS code 18
+
+**v0.6.0**
+=============================================
+
+## What's New
+  - Can add un-tracked files in source control view
+
+**v0.5.1**
+=============================================
+
+## Bug Fixes
+  - Status icons now working again
+
+**v0.5.0**
+=============================================
+
+## What's New
+  - Can commit all changes using SCM input box
+
+**v0.4.0**
+=============================================
+
+## What's New
+  - Files/Folders can be clicked open from source control view
+
 **v0.3.1**
 =============================================
 
