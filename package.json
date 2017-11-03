@@ -39,8 +39,8 @@
     "commands": [
       {
         "command": "svn.add",
-        "title": "add",
-        "category": "svn",
+        "title": "Add",
+        "category": "SVN",
         "icon": {
           "light": "icons/light/add.svg",
           "dark": "icons/dark/add.svg"

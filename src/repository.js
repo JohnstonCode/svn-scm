@@ -1,5 +1,5 @@
 const { Uri, scm, workspace } = require("vscode");
-const Resource = require("./Resource");
+const Resource = require("./resource");
 const { throttleAsync } = require("./decorators");
 
 function Repository(repository) {
@@ -8,12 +8,12 @@ function Repository(repository) {
     this.watcher = workspace.createFileSystemWatcher(this.root + "/**/*");
     this.sourceControl = scm.createSourceControl(
         "svn",
-        "svn",
+        "SVN",
         Uri.parse(this.root)
     );
     this.sourceControl.acceptInputCommand = {
         command: "svn.commitWithMessage",
-        title: "commit",
+        title: "Commit",
         arguments: [this]
     };
     this.sourceControl.quickDiffProvider = this;

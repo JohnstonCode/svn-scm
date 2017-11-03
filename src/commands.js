@@ -81,7 +81,7 @@ SvnCommands.prototype.commitWithMessage = async function(repository) {
 };
 
 SvnCommands.prototype.addFile = async uri => {
-  this.svn = new svn();
+  this.svn = new Svn();
 
   try {
     await this.svn.add(uri.resourceUri.fsPath);
