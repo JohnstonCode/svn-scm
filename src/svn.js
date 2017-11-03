@@ -56,7 +56,7 @@ function svn(cwd = null) {
   this.isSVNAvailable().catch(() => {
     this.canRun = false;
     vscode.window.showErrorMessage(
-      "SVN is not availabe in your $PATH. svn-scm is unable to run!"
+      "SVN is not available in your PATH. svn-scm is unable to run!"
     );
   });
 }
@@ -76,7 +76,7 @@ svn.prototype._exec = async function(args, options) {
 svn.prototype.spawn = function(args, options = {}) {
   if (!this.canRun) {
     throw new Error(
-      "SVN is not available in your $PATH. svn-scm is unable to run!"
+      "SVN is not available in your PATH. svn-scm is unable to run!"
     );
   }
 
