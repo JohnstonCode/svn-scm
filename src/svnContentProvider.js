@@ -2,12 +2,12 @@ var vscode = require("vscode");
 var svn = require("./svn");
 var path = require("path");
 
-function svnContentProvider() {
+function SvnContentProvider() {
   this.svn = new svn();
   vscode.workspace.registerTextDocumentContentProvider("svn", this);
 }
 
-svnContentProvider.prototype.provideTextDocumentContent = function(uri) {
+SvnContentProvider.prototype.provideTextDocumentContent = function(uri) {
   return new Promise((resolve, reject) => {
     this.svn
       .cmd(["ls", uri.fsPath])
@@ -21,4 +21,4 @@ svnContentProvider.prototype.provideTextDocumentContent = function(uri) {
   });
 };
 
-module.exports = svnContentProvider;
+module.exports = SvnContentProvider;

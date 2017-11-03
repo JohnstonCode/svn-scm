@@ -1,7 +1,7 @@
 const vscode = require("vscode");
 const path = require("path");
 const Svn = require("./svn");
-const svnContentProvider = require("./svnContentProvider");
+const SvnContentProvider = require("./svnContentProvider");
 const SvnCommands = require("./commands");
 const Model = require("./model");
 
@@ -9,7 +9,7 @@ function activate(context) {
   const disposable = [];
   const svn = new Svn();
   const model = new Model(svn);
-  const contentProvider = new svnContentProvider();
+  const contentProvider = new SvnContentProvider();
   const commands = new SvnCommands(model);
 
   console.log("svn-scm is now active!");
