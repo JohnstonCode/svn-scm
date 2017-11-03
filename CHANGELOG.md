@@ -79,7 +79,7 @@
 =============================================
 
 ## Bug Fixes
-  - Updated incorrect information in pagage.json
+  - Updated incorrect information in package.json
 
 **v0.1.1**
 =============================================
@@ -91,4 +91,4 @@
 =============================================
 
 ## What's New
-  - Added Soruce control view
+  - Added Source control view
