@@ -1,3 +1,9 @@
+**v0.8.4**
+=============================================
+
+## Bug Fixes
+  - Fixes issue #13 - Status of files outside of current folder being shown
+
 **v0.8.3**
 =============================================
 
