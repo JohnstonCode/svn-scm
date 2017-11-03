@@ -1,7 +1,7 @@
 {
   "name": "svn-scm",
-  "displayName": "svn-scm",
-  "description": "",
+  "displayName": "SVN",
+  "description": "Integrated Subversion source control",
   "version": "0.8.3",
   "publisher": "johnstoncode",
   "engines": {
