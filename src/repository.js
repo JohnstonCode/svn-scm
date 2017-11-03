@@ -1,5 +1,5 @@
 const { Uri, scm, workspace } = require("vscode");
-const Resource = require("./Resource");
+const Resource = require("./resource");
 const { throttleAsync } = require("./decorators");
 
 function Repository(repository) {
