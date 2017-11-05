@@ -68,15 +68,14 @@ SvnCommands.prototype.fileOpen = resourceUri => {
 };
 
 SvnCommands.prototype.commitWithMessage = async function(repository) {
-  const svn = new Svn(repository.root);
   let message = repository.inputBox.value;
 
   try {
-    await svn.commit(message);
+    await repository.commit(message);
     repository.inputBox.value = "";
     changesCommitted();
   } catch (error) {
-    console.log(error);
+    window.showErrorMessage("Unable to commit");
   }
 };
 
@@ -86,7 +85,7 @@ SvnCommands.prototype.addFile = async uri => {
   try {
     await this.svn.add(uri.resourceUri.fsPath);
   } catch (error) {
-    console.log(error);
+    window.showErrorMessage("Unable to add file");
   }
 };
 

@@ -1,17 +1,9 @@
-const SvnSpawn = require("svn-spawn");
 const vscode = require("vscode");
 const cp = require("child_process");
 const iconv = require("iconv-lite");
 
-function svn(cwd = null) {
-  this.client = new SvnSpawn({
-    noAuthCache: true,
-    cwd: cwd
-  });
-  this.canRun = true;
-
+function svn() {
   this.isSVNAvailable().catch(() => {
-    this.canRun = false;
     vscode.window.showErrorMessage(
       "SVN is not available in your PATH. svn-scm is unable to run!"
     );
@@ -20,22 +12,33 @@ function svn(cwd = null) {
 
 svn.prototype.exec = function(cwd, args, options = {}) {
   return new Promise((resolve, reject) => {
-    options.cwd = cwd;
+    if (cwd) {
+      options.cwd = cwd;
+    }
     const result = cp.spawn("svn", args, options);
-    let buffers = [];
+    let outBuffers = [];
+    let errBuffers = [];
 
     result.stdout.on("data", b => {
-      buffers.push(b);
+      outBuffers.push(b);
     });
-    result.stderr.on("data", data => {
-      reject();
+    result.stderr.on("data", b => {
+      errBuffers.push(b);
     });
     result.on("error", data => {
       reject();
     });
     result.on("close", () => {
-      resolve(
-        Buffer.concat(buffers)
+      if (outBuffers.length > 0) {
+        resolve(
+          Buffer.concat(outBuffers)
+            .toString()
+            .trim()
+        );
+      }
+
+      reject(
+        Buffer.concat(errBuffers)
           .toString()
           .trim()
       );
@@ -45,10 +48,10 @@ svn.prototype.exec = function(cwd, args, options = {}) {
 
 svn.prototype.getRepositoryRoot = async function(path) {
   try {
-    let result = await this.cmd(["info", path, "--show-item", "wc-root"]);
+    let result = await this.exec(path, ["info", "--show-item", "wc-root"]);
     return result;
   } catch (error) {
-    throw new Error("Not a SVN repo");
+    throw new Error("not a SVN repo");
   }
 };
 
@@ -68,34 +71,17 @@ svn.prototype.open = function(repositoryRoot, workspaceRoot) {
   return new Repository(this, repositoryRoot, workspaceRoot);
 };
 
-svn.prototype.cmd = function(args) {
-  return new Promise((resolve, reject) => {
-    this.client.cmd(args, (err, data) => (err ? reject(err) : resolve(data)));
-  });
-};
-
-svn.prototype.getStatus = function() {
-  return new Promise((resolve, reject) => {
-    this.client.getStatus((err, data) => (err ? reject(err) : resolve(data)));
-  });
-};
-
-svn.prototype.commit = function(params) {
-  return new Promise((resolve, reject) => {
-    this.client.commit(
-      params,
-      (err, data) => (err ? reject(err) : resolve(data))
-    );
-  });
-};
-
 svn.prototype.add = function(filePath) {
-  return new Promise((resolve, reject) => {
-    this.client.add(
-      filePath,
-      (err, data) => (err ? reject(err) : resolve(data))
-    );
-  });
+  filePath = filePath.replace(/\\/g, "/");
+  return this.exec("", ["add", filePath]);
+};
+
+svn.prototype.show = async function(filePath) {
+  return this.exec("", ["cat", "-r", "HEAD", filePath]);
+};
+
+svn.prototype.list = async function(filePath) {
+  return this.exec("", ["ls", filePath]);
 };
 
 module.exports = svn;
@@ -104,11 +90,6 @@ function Repository(svn, repositoryRoot, workspaceRoot) {
   this.svn = svn;
   this.root = repositoryRoot;
   this.workspaceRoot = workspaceRoot;
-
-  this.svn.client.option({
-    cwd: this.workspaceRoot,
-    noAuthCache: true
-  });
 }
 
 Repository.prototype.getStatus = function() {
@@ -134,4 +115,13 @@ Repository.prototype.getStatus = function() {
         reject();
       });
   });
+};
+
+Repository.prototype.commit = async function(message) {
+  try {
+    let result = await this.svn.exec(this.root, ["commit", "-m", message]);
+    return result;
+  } catch (error) {
+    throw new Error("unable to commit files");
+  }
 };

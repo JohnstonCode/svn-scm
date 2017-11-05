@@ -10,14 +10,9 @@ function SvnContentProvider() {
 SvnContentProvider.prototype.provideTextDocumentContent = function(uri) {
   return new Promise((resolve, reject) => {
     this.svn
-      .cmd(["ls", uri.fsPath])
-      .then(() => this.svn.cmd(["cat", "-r", "HEAD", uri.fsPath]))
-      .then(result => {
-        resolve(result);
-      })
-      .catch(err => {
-        // reject(err);
-      });
+      .show(uri.fsPath)
+      .then(result => resolve(result))
+      .catch(error => reject(error));
   });
 };
 
