@@ -24,8 +24,7 @@
     "test": "node ./node_modules/vscode/bin/test"
   },
   "dependencies": {
-    "iconv-lite": "^0.4.19",
-    "svn-spawn": "^0.1.5"
+    "iconv-lite": "^0.4.19"
   },
   "devDependencies": {
     "typescript": "^2.5.2",
