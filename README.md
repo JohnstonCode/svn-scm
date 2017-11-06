@@ -1,7 +1,5 @@
 # svn-scm
 
-This VSCode Extension is based on [vscode-svn](https://github.com/INesterov/vscode-svn)
-
 # Prerequisites
 
 > **Note**: This extension leverages your 
