@@ -1,3 +1,9 @@
+**v0.8.4**
+=============================================
+
+## Bug Fixes
+  - Fixes issue #13 - Status of files outside of current folder being shown
+
 **v0.8.3**
 =============================================
 
@@ -79,7 +85,7 @@
 =============================================
 
 ## Bug Fixes
-  - Updated incorrect information in pagage.json
+  - Updated incorrect information in package.json
 
 **v0.1.1**
 =============================================
@@ -91,4 +97,4 @@
 =============================================
 
 ## What's New
-  - Added Soruce control view
+  - Added Source control view

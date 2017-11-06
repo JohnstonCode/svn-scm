@@ -1,111 +1,69 @@
-const SvnSpawn = require("svn-spawn");
 const vscode = require("vscode");
 const cp = require("child_process");
 const iconv = require("iconv-lite");
 
-function cpErrorHandler(cb) {
-  return err => {
-    if (/ENOENT/.test(err.message)) {
-      err = "Failed to execute svn (ENOENT)";
-    }
-
-    cb(err);
-  };
-}
-
-async function exec(child, options = {}) {
-  if (!child.stdout || !child.stderr) {
-    throw new Error("Failed to get stdout or stderr from svn process");
-  }
-
-  let encoding = options.encoding || "utf8";
-  encoding = iconv.encodingExists(encoding) ? encoding : "utf8";
-
-  const [exitCode, stdout, stderr] = await Promise.all([
-    new Promise((c, e) => {
-      const buffers = [];
-      child.once("error", cpErrorHandler(e));
-      child.once("exit", c);
-    }),
-    new Promise(c => {
-      const buffers = [];
-      child.stdout.on("data", b => buffers.push(b));
-      child.stdout.once("close", () =>
-        c(iconv.decode(Buffer.concat(buffers), encoding))
-      );
-    }),
-    new Promise(c => {
-      const buffers = [];
-      child.stderr.on("data", b => buffers.push(b));
-      child.stderr.once("close", () =>
-        c(Buffer.concat(buffers).toString("utf8"))
-      );
-    })
-  ]);
-
-  return { exitCode, stdout, stderr };
-}
-
-function svn(cwd = null) {
-  this.client = new SvnSpawn({
-    noAuthCache: true,
-    cwd: cwd
-  });
-  this.canRun = true;
-
+function svn() {
   this.isSVNAvailable().catch(() => {
-    this.canRun = false;
     vscode.window.showErrorMessage(
-      "SVN is not avaialbe in your $PATH. svn-scm is unable to run!"
+      "SVN is not available in your PATH. svn-scm is unable to run!"
     );
   });
 }
 
-svn.prototype.exec = async function(cwd, args, options) {
-  options.cwd = cwd;
-  return await this._exec(args, options);
-};
+svn.prototype.exec = function(cwd, args, options = {}) {
+  return new Promise((resolve, reject) => {
+    if (cwd) {
+      options.cwd = cwd;
+    }
+    const result = cp.spawn("svn", args, options);
+    let outBuffers = [];
+    let errBuffers = [];
 
-svn.prototype._exec = async function(args, options) {
-  const child = this.spawn(args, options);
-  const result = await exec(child, options);
+    result.stdout.on("data", b => {
+      outBuffers.push(b);
+    });
+    result.stderr.on("data", b => {
+      errBuffers.push(b);
+    });
+    result.on("error", data => {
+      reject();
+    });
+    result.on("close", () => {
+      if (outBuffers.length > 0) {
+        resolve(
+          Buffer.concat(outBuffers)
+            .toString()
+            .trim()
+        );
+      }
 
-  return result;
-};
-
-svn.prototype.spawn = function(args, options = {}) {
-  if (!this.canRun) {
-    throw new Error(
-      "SVN is not avaialbe in your $PATH. svn-scm is unable to run!"
-    );
-  }
-
-  return cp.spawn("svn", args, options);
+      reject(
+        Buffer.concat(errBuffers)
+          .toString()
+          .trim()
+      );
+    });
+  });
 };
 
 svn.prototype.getRepositoryRoot = async function(path) {
   try {
-    let result = await this.cmd(["info", path]);
-    let match = result
-      .match(/(?=Working Copy Root Path:)(.*)/i)[0]
-      .replace("Working Copy Root Path:", "")
-      .trim();
-    return match;
+    let result = await this.exec(path, ["info", "--show-item", "wc-root"]);
+    return result;
   } catch (error) {
-    throw new Error("Not a SVN repo");
+    throw new Error("not a SVN repo");
   }
 };
 
 svn.prototype.isSVNAvailable = function() {
   return new Promise((resolve, reject) => {
-    const result = cp.exec("svn --version");
-
-    result.stdout.on("data", data => {
-      resolve();
-    });
-    result.stderr.on("data", data => {
-      reject();
-    });
+    this.exec("", ["--version"])
+      .then(result => {
+        resolve();
+      })
+      .catch(result => {
+        reject();
+      });
   });
 };
 
@@ -113,34 +71,17 @@ svn.prototype.open = function(repositoryRoot, workspaceRoot) {
   return new Repository(this, repositoryRoot, workspaceRoot);
 };
 
-svn.prototype.cmd = function(args) {
-  return new Promise((resolve, reject) => {
-    this.client.cmd(args, (err, data) => (err ? reject(err) : resolve(data)));
-  });
-};
-
-svn.prototype.getStatus = function() {
-  return new Promise((resolve, reject) => {
-    this.client.getStatus((err, data) => (err ? reject(err) : resolve(data)));
-  });
-};
-
-svn.prototype.commit = function(params) {
-  return new Promise((resolve, reject) => {
-    this.client.commit(
-      params,
-      (err, data) => (err ? reject(err) : resolve(data))
-    );
-  });
-};
-
 svn.prototype.add = function(filePath) {
-  return new Promise((resolve, reject) => {
-    this.client.add(
-      filePath,
-      (err, data) => (err ? reject(err) : resolve(data))
-    );
-  });
+  filePath = filePath.replace(/\\/g, "/");
+  return this.exec("", ["add", filePath]);
+};
+
+svn.prototype.show = async function(filePath) {
+  return this.exec("", ["cat", "-r", "HEAD", filePath]);
+};
+
+svn.prototype.list = async function(filePath) {
+  return this.exec("", ["ls", filePath]);
 };
 
 module.exports = svn;
@@ -149,13 +90,38 @@ function Repository(svn, repositoryRoot, workspaceRoot) {
   this.svn = svn;
   this.root = repositoryRoot;
   this.workspaceRoot = workspaceRoot;
-
-  this.svn.client.option({
-    cwd: this.workspaceRoot,
-    noAuthCache: true
-  });
 }
 
 Repository.prototype.getStatus = function() {
-  return this.svn.getStatus();
+  return new Promise((resolve, reject) => {
+    this.svn
+      .exec(this.workspaceRoot, ["stat"])
+      .then(result => {
+        let items = result.split("\n");
+        let status = [];
+
+        for (item of items) {
+          let state = item.charAt(0);
+          let path = item.substr(1).trim();
+
+          if (path !== ".") {
+            status.push([state, path]);
+          }
+        }
+
+        resolve(status);
+      })
+      .catch(() => {
+        reject();
+      });
+  });
+};
+
+Repository.prototype.commit = async function(message) {
+  try {
+    let result = await this.svn.exec(this.root, ["commit", "-m", message]);
+    return result;
+  } catch (error) {
+    throw new Error("unable to commit files");
+  }
 };

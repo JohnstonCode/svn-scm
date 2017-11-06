@@ -1,8 +1,8 @@
 {
   "name": "svn-scm",
-  "displayName": "svn-scm",
-  "description": "",
-  "version": "0.8.3",
+  "displayName": "SVN",
+  "description": "Integrated Subversion source control",
+  "version": "0.8.4",
   "publisher": "johnstoncode",
   "engines": {
     "vscode": "^1.16.0"
@@ -16,7 +16,7 @@
     "url": "https://github.com/JohnstonCode/svn-scm/issues"
   },
   "categories": ["Other", "SCM Providers"],
-  "keywords": ["multi-root ready"],
+  "keywords": ["multi-root ready", "scm", "svn"],
   "activationEvents": ["*"],
   "main": "./src/extension",
   "scripts": {
@@ -24,8 +24,7 @@
     "test": "node ./node_modules/vscode/bin/test"
   },
   "dependencies": {
-    "iconv-lite": "^0.4.19",
-    "svn-spawn": "^0.1.5"
+    "iconv-lite": "^0.4.19"
   },
   "devDependencies": {
     "typescript": "^2.5.2",
@@ -39,8 +38,8 @@
     "commands": [
       {
         "command": "svn.add",
-        "title": "add",
-        "category": "svn",
+        "title": "Add",
+        "category": "SVN",
         "icon": {
           "light": "icons/light/add.svg",
           "dark": "icons/dark/add.svg"

@@ -1,19 +1,19 @@
 const { Uri, scm, workspace } = require("vscode");
-const Resource = require("./Resource");
+const Resource = require("./resource");
 const { throttleAsync } = require("./decorators");
 
 function Repository(repository) {
   this.repository = repository;
   this.root = repository.root;
-  this.watcher = workspace.createFileSystemWatcher(this.root + "/**/*");
+  this.watcher = workspace.createFileSystemWatcher("**");
   this.sourceControl = scm.createSourceControl(
     "svn",
-    "svn",
+    "SVN",
     Uri.parse(this.root)
   );
   this.sourceControl.acceptInputCommand = {
     command: "svn.commitWithMessage",
-    title: "commit",
+    title: "Commit",
     arguments: [this]
   };
   this.sourceControl.quickDiffProvider = this;
@@ -51,38 +51,44 @@ Repository.prototype.update = function() {
     let changes = [];
     let notTracked = [];
 
-    this.changes.resourceStates = [];
-    this.notTracked.resourceStates = [];
-
     this.repository
       .getStatus()
       .then(result => {
-        let changes = [];
-        let notTracked = [];
-
         result.forEach(item => {
-          switch (item["wc-status"].$.item) {
-            case "modified":
-            case "deleted":
-            case "conflicted":
-            case "replaced":
-            case "missing":
-            case "added":
+          switch (item[0]) {
+            case "A":
               changes.push(
-                new Resource(
-                  this.repository.root,
-                  item.$.path,
-                  item["wc-status"].$.item
-                )
+                new Resource(this.repository.root, item[1], "added")
               );
               break;
-            case "unversioned":
+            case "D":
+              changes.push(
+                new Resource(this.repository.root, item[1], "deleted")
+              );
+              break;
+            case "M":
+              changes.push(
+                new Resource(this.repository.root, item[1], "modified")
+              );
+              break;
+            case "R":
+              changes.push(
+                new Resource(this.repository.root, item[1], "replaced")
+              );
+              break;
+            case "!":
+              changes.push(
+                new Resource(this.repository.root, item[1], "missing")
+              );
+              break;
+            case "C":
+              changes.push(
+                new Resource(this.repository.root, item[1], "conflict")
+              );
+              break;
+            case "?":
               notTracked.push(
-                new Resource(
-                  this.repository.root,
-                  item.$.path,
-                  item["wc-status"].$.item
-                )
+                new Resource(this.repository.root, item[1], "unversioned")
               );
               break;
           }
@@ -93,7 +99,7 @@ Repository.prototype.update = function() {
 
         resolve();
       })
-      .catch(error => {
+      .catch(() => {
         reject();
       });
   });
