@@ -102,7 +102,7 @@ Repository.prototype.getStatus = function() {
 
         for (item of items) {
           let state = item.charAt(0);
-          let path = item.substr(1).trim();
+          let path = item.substr(8).trim();
 
           if (path !== ".") {
             status.push([state, path]);

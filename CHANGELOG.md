@@ -1,3 +1,9 @@
+**v0.8.6**
+=============================================
+
+## Bug Fixes
+  - Fixed issue with path not showing correctly when with history
+
 **v0.8.5**
 =============================================
 
