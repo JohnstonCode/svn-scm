@@ -32,6 +32,7 @@ Model.prototype.tryOpenRepository = async function(path) {
 
     this.open(repository);
   } catch (err) {
+    console.error(err);
     return;
   }
 };
