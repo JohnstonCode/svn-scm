@@ -1,6 +1,7 @@
 # svn-scm
 
 # Prerequisites
+> SVN 1.9 and above
 
 > **Note**: This extension leverages your 
 > machine's SVN installation,  
