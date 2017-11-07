@@ -48,8 +48,9 @@ svn.prototype.exec = function(cwd, args, options = {}) {
 
 svn.prototype.getRepositoryRoot = async function(path) {
   try {
-    let result = await this.exec(path, ["info", "--show-item", "wc-root"]);
-    return result;
+    let result = await this.exec(path, ["info", "--xml"]);
+    let rootPath = result.match(/<wcroot-abspath>(.*)<\/wcroot-abspath>/i)[1];
+    return rootPath;
   } catch (error) {
     throw new Error("not a SVN repo");
   }
