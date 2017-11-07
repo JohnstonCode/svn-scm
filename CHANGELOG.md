@@ -1,3 +1,21 @@
+**v0.8.7**
+=============================================
+
+## Bug Fixes
+  - Fixed source view file click when in nested folder
+
+**v0.8.6**
+=============================================
+
+## Bug Fixes
+  - Fixed issue with path not showing correctly when with history
+
+**v0.8.5**
+=============================================
+
+## Changes
+  - Removed svn-spawn
+
 **v0.8.4**
 =============================================
 
