@@ -1,3 +1,10 @@
+**v0.8.8**
+=============================================
+
+## Bug Fixes
+  - Fixed issue were no changes should show but last change was still present
+  - Removed SVN 1.9 requirement
+
 **v0.8.7**
 =============================================
 

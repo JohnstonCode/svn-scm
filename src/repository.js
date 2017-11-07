@@ -47,65 +47,59 @@ Repository.prototype.provideOriginalResource = uri => {
 };
 
 Repository.prototype.update = function() {
-  return new Promise((resolve, reject) => {
+  return new Promise(async resolve => {
     let changes = [];
     let notTracked = [];
+    let statuses = (await this.repository.getStatus().catch(() => {})) || [];
 
-    this.repository
-      .getStatus()
-      .then(result => {
-        result.forEach(item => {
-          switch (item[0]) {
-            case "A":
-              changes.push(
-                new Resource(this.repository.workspaceRoot, item[1], "added")
-              );
-              break;
-            case "D":
-              changes.push(
-                new Resource(this.repository.workspaceRoot, item[1], "deleted")
-              );
-              break;
-            case "M":
-              changes.push(
-                new Resource(this.repository.workspaceRoot, item[1], "modified")
-              );
-              break;
-            case "R":
-              changes.push(
-                new Resource(this.repository.workspaceRoot, item[1], "replaced")
-              );
-              break;
-            case "!":
-              changes.push(
-                new Resource(this.repository.workspaceRoot, item[1], "missing")
-              );
-              break;
-            case "C":
-              changes.push(
-                new Resource(this.repository.workspaceRoot, item[1], "conflict")
-              );
-              break;
-            case "?":
-              notTracked.push(
-                new Resource(
-                  this.repository.workspaceRoot,
-                  item[1],
-                  "unversioned"
-                )
-              );
-              break;
-          }
-        });
+    statuses.forEach(status => {
+      switch (item[0]) {
+        case "A":
+          changes.push(
+            new Resource(this.repository.workspaceRoot, status[1], "Added")
+          );
+          break;
+        case "D":
+          changes.push(
+            new Resource(this.repository.workspaceRoot, status[1], "Deleted")
+          );
+          break;
+        case "M":
+          changes.push(
+            new Resource(this.repository.workspaceRoot, status[1], "Modified")
+          );
+          break;
+        case "R":
+          changes.push(
+            new Resource(this.repository.workspaceRoot, status[1], "Replaced")
+          );
+          break;
+        case "!":
+          changes.push(
+            new Resource(this.repository.workspaceRoot, status[1], "Missing")
+          );
+          break;
+        case "C":
+          changes.push(
+            new Resource(this.repository.workspaceRoot, status[1], "Conflict")
+          );
+          break;
+        case "?":
+          notTracked.push(
+            new Resource(
+              this.repository.workspaceRoot,
+              status[1],
+              "Unversioned"
+            )
+          );
+          break;
+      }
+    });
 
-        this.changes.resourceStates = changes;
-        this.notTracked.resourceStates = notTracked;
+    this.changes.resourceStates = changes;
+    this.notTracked.resourceStates = notTracked;
 
-        resolve();
-      })
-      .catch(() => {
-        reject();
-      });
+    resolve();
   });
 };
 

@@ -125,3 +125,7 @@ Repository.prototype.commit = async function(message) {
     throw new Error("unable to commit files");
   }
 };
+
+Repository.prototype.show = function(path) {
+  return this.svn.show(path);
+};
