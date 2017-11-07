@@ -1,6 +1,6 @@
 - VSCode Version:
 - OS Version:
-- Extenstion Version:
+- Extension Version:
 
 Steps to Reproduce:
 
