@@ -52,7 +52,7 @@ svn.prototype.getRepositoryRoot = async function(path) {
     let rootPath = result.match(/<wcroot-abspath>(.*)<\/wcroot-abspath>/i)[1];
     return rootPath;
   } catch (error) {
-    throw new Error("not a SVN repo");
+    throw new Error("Unable to find repository root path");
   }
 };
 
@@ -125,4 +125,8 @@ Repository.prototype.commit = async function(message) {
   } catch (error) {
     throw new Error("unable to commit files");
   }
+};
+
+Repository.prototype.show = function(path) {
+  return this.svn.show(path);
 };

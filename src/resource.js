@@ -58,19 +58,19 @@ Resource.prototype.getIconPath = function(theme) {
   };
 
   switch (this.type) {
-    case "added":
+    case "Added":
       return Icons[theme].Added;
-    case "conflicted":
+    case "Conflicted":
       return Icons[theme].Conflicted;
-    case "deleted":
+    case "Deleted":
       return Icons[theme].Deleted;
-    case "modified":
+    case "Modified":
       return Icons[theme].Modified;
-    case "replaced":
+    case "Replaced":
       return Icons[theme].Replaced;
-    case "missing":
+    case "Missing":
       return Icons[theme].Missing;
-    case "unversioned":
+    case "Unversioned":
       return Icons[theme].Unversioned;
     default:
       return 0;
