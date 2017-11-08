@@ -24,6 +24,11 @@ function SvnCommands(model) {
       commandId: "svn.commit",
       method: this.commit,
       options: { repository: true }
+    },
+    {
+      commandId: "svn.refresh",
+      method: this.refresh,
+      options: { repository: true }
     }
   ];
 
@@ -123,6 +128,10 @@ SvnCommands.prototype.commit = async function(repository, ...args) {
   } catch (error) {
     window.showErrorMessage("Unable to commit");
   }
+};
+
+SvnCommands.prototype.refresh = function(repository) {
+  repository.update();
 };
 
 module.exports = SvnCommands;

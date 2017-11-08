@@ -46,6 +46,7 @@ Repository.prototype.provideOriginalResource = uri => {
 };
 
 Repository.prototype.update = async function() {
+  console.log("here");
   let changes = [];
   let notTracked = [];
   let statuses = (await this.repository.getStatus().catch(() => {})) || [];

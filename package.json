@@ -49,11 +49,26 @@
         "command": "svn.commit",
         "title": "Commit Selected",
         "category": "SVN"
+      },
+      {
+        "command": "svn.refresh",
+        "title": "Refresh",
+        "category": "SVN",
+        "icon": {
+          "light": "icons/light/refresh.svg",
+          "dark": "icons/dark/refresh.svg"
+        }
       }
     ],
     "menus": {
       "commandPalette": [],
-      "scm/title": [],
+      "scm/title": [
+        {
+          "command": "svn.refresh",
+          "group": "navigation",
+          "when": "scmProvider == svn"
+        }
+      ],
       "scm/resourceGroup/context": [],
       "scm/resourceState/context": [
         {
