@@ -14,10 +14,9 @@ function Repository(repository) {
   this.sourceControl.acceptInputCommand = {
     command: "svn.commitWithMessage",
     title: "Commit",
-    arguments: [this]
+    arguments: [this.sourceControl]
   };
   this.sourceControl.quickDiffProvider = this;
-  this.repository.inputBox = this.sourceControl.inputBox;
 
   this.changes = this.sourceControl.createResourceGroup("changes", "Changes");
   this.notTracked = this.sourceControl.createResourceGroup(

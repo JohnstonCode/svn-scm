@@ -68,11 +68,26 @@ SvnCommands.prototype.fileOpen = resourceUri => {
 };
 
 SvnCommands.prototype.commitWithMessage = async function(repository) {
-  let message = repository.inputBox.value;
+  const message = repository.sourceControl.inputBox.value;
+  const resourceStates = repository.changes.resourceStates;
+  let filePaths;
+
+  if (!message) {
+    return;
+  }
+
+  if (resourceStates.length === 0) {
+    window.showInformationMessage("There are no changes to commit.");
+    return;
+  }
+
+  filePaths = resourceStates.map(state => {
+    return state.resourceUri.fsPath;
+  });
 
   try {
-    await repository.commit(message);
-    repository.inputBox.value = "";
+    await repository.repository.commitFiles(message, filePaths);
+    repository.sourceControl.inputBox.value = "";
     changesCommitted();
   } catch (error) {
     window.showErrorMessage("Unable to commit");
