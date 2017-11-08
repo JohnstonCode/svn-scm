@@ -2,6 +2,13 @@
 =============================================
 
 ## Bug Fixes
+  - Using the source control commit box should only commit changes listed
+  - Re-fixed no changes showing.
+
+**v0.8.9**
+=============================================
+
+## Bug Fixes
   - Fixed Missing icons
   - Fixed all changes showing as untracked
 

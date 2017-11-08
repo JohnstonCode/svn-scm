@@ -86,10 +86,10 @@ svn.prototype.list = async function(filePath) {
 };
 
 svn.prototype.commitFiles = function(message, files) {
-    files = files.join(' ');
-    
-    return this.exec("", ["commit", "-m", message, files]);
-}
+  files = files.join(" ");
+
+  return this.exec("", ["commit", "-m", message, files]);
+};
 
 module.exports = svn;
 
@@ -137,10 +137,10 @@ Repository.prototype.show = function(path) {
   return this.svn.show(path);
 };
 
-Repository.prototype.commitFiles = function(message, files) {
-    try {
-        return await this.svn.commitFiles(message, files);
-    } catch (error) {
-        throw new Error("Unable to commit files");
-    }
+Repository.prototype.commitFiles = async function(message, files) {
+  try {
+    return await this.svn.commitFiles(message, files);
+  } catch (error) {
+    throw new Error("Unable to commit files");
+  }
 };
