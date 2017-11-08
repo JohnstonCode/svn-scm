@@ -58,19 +58,19 @@ Resource.prototype.getIconPath = function(theme) {
   };
 
   switch (this.type) {
-    case "Added":
+    case "added":
       return Icons[theme].Added;
-    case "Conflicted":
+    case "conflicted":
       return Icons[theme].Conflicted;
-    case "Deleted":
+    case "deleted":
       return Icons[theme].Deleted;
-    case "Modified":
+    case "modified":
       return Icons[theme].Modified;
-    case "Replaced":
+    case "replaced":
       return Icons[theme].Replaced;
-    case "Missing":
+    case "missing":
       return Icons[theme].Missing;
-    case "Unversioned":
+    case "unversioned":
       return Icons[theme].Unversioned;
     default:
       return 0;
@@ -78,7 +78,7 @@ Resource.prototype.getIconPath = function(theme) {
 };
 
 Resource.prototype.getToolTip = function() {
-  return this.type;
+  return this.type.charAt(0).toUpperCase() + this.type.slice(1);
 };
 
 Resource.prototype.getStrikeThrough = function() {

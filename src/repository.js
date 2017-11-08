@@ -55,37 +55,37 @@ Repository.prototype.update = async function() {
     switch (status[0]) {
       case "A":
         changes.push(
-          new Resource(this.repository.workspaceRoot, status[1], "Added")
+          new Resource(this.repository.workspaceRoot, status[1], "added")
         );
         break;
       case "D":
         changes.push(
-          new Resource(this.repository.workspaceRoot, status[1], "Deleted")
+          new Resource(this.repository.workspaceRoot, status[1], "deleted")
         );
         break;
       case "M":
         changes.push(
-          new Resource(this.repository.workspaceRoot, status[1], "Modified")
+          new Resource(this.repository.workspaceRoot, status[1], "modified")
         );
         break;
       case "R":
         changes.push(
-          new Resource(this.repository.workspaceRoot, status[1], "Replaced")
+          new Resource(this.repository.workspaceRoot, status[1], "replaced")
         );
         break;
       case "!":
         changes.push(
-          new Resource(this.repository.workspaceRoot, status[1], "Missing")
+          new Resource(this.repository.workspaceRoot, status[1], "missing")
         );
         break;
       case "C":
         changes.push(
-          new Resource(this.repository.workspaceRoot, status[1], "Conflict")
+          new Resource(this.repository.workspaceRoot, status[1], "conflict")
         );
         break;
       case "?":
         notTracked.push(
-          new Resource(this.repository.workspaceRoot, status[1], "Unversioned")
+          new Resource(this.repository.workspaceRoot, status[1], "unversioned")
         );
         break;
     }
