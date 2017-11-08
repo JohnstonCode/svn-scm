@@ -44,6 +44,11 @@
           "light": "icons/light/add.svg",
           "dark": "icons/dark/add.svg"
         }
+      },
+      {
+        "command": "svn.commit",
+        "title": "Commit Selected",
+        "category": "SVN"
       }
     ],
     "menus": {
@@ -55,6 +60,11 @@
           "command": "svn.add",
           "when": "scmProvider == svn && scmResourceGroup == unversioned",
           "group": "inline"
+        },
+        {
+          "command": "svn.commit",
+          "when": "scmProvider == svn && scmResourceGroup == changes",
+          "group": "1_modification"
         }
       ],
       "editor/title": []

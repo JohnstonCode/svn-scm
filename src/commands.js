@@ -19,6 +19,11 @@ function SvnCommands(model) {
       commandId: "svn.fileOpen",
       method: this.fileOpen,
       options: {}
+    },
+    {
+      commandId: "svn.commit",
+      method: this.commit,
+      options: { repository: true }
     }
   ];
 
@@ -89,6 +94,7 @@ SvnCommands.prototype.commitWithMessage = async function(repository) {
     await repository.repository.commitFiles(message, filePaths);
     repository.sourceControl.inputBox.value = "";
     changesCommitted();
+    repository.update();
   } catch (error) {
     window.showErrorMessage("Unable to commit");
   }
@@ -101,6 +107,21 @@ SvnCommands.prototype.addFile = async uri => {
     await this.svn.add(uri.resourceUri.fsPath);
   } catch (error) {
     window.showErrorMessage("Unable to add file");
+  }
+};
+
+SvnCommands.prototype.commit = async function(repository, ...args) {
+  const paths = args.map(resourceState => {
+    return resourceState.resourceUri.fsPath;
+  });
+
+  try {
+    const message = await inputCommitMessage();
+    await repository.repository.commitFiles(message, paths);
+    changesCommitted();
+    repository.update();
+  } catch (error) {
+    window.showErrorMessage("Unable to commit");
   }
 };
 

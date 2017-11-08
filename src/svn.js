@@ -86,9 +86,13 @@ svn.prototype.list = async function(filePath) {
 };
 
 svn.prototype.commitFiles = function(message, files) {
-  files = files.join(" ");
+  args = ["commit", "-m", message];
 
-  return this.exec("", ["commit", "-m", message, files]);
+  for (file of files) {
+    args.push(file);
+  }
+
+  return this.exec("", args);
 };
 
 module.exports = svn;
