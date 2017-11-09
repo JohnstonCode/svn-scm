@@ -1,22 +1,22 @@
-var vscode = require("vscode");
+import { workspace, Uri } from "vscode";
+import { Model } from "./model";
 
-function SvnContentProvider(model) {
-  this.model = model;
-  vscode.workspace.registerTextDocumentContentProvider("svn", this);
+export class SvnContentProvider {
+  constructor(private model: Model) {
+    workspace.registerTextDocumentContentProvider("svn", this);
+  }
+
+  async provideTextDocumentContent(uri: Uri): Promise<string> {
+    const repository = this.model.getRepository(uri.fsPath);
+
+    if (!repository) {
+      return "";
+    }
+
+    try {
+      return await repository.show(uri.fsPath);
+    } catch (error) {
+      return "";
+    }
+  }
 }
-
-SvnContentProvider.prototype.provideTextDocumentContent = async function(uri) {
-  const repository = this.model.getRepository(uri.fsPath);
-
-  if (!repository) {
-    return "";
-  }
-
-  try {
-    return await repository.show(uri.fsPath);
-  } catch (error) {
-    return "";
-  }
-};
-
-module.exports = SvnContentProvider;

@@ -1,6 +1,64 @@
-const vscode = require("vscode");
-const cp = require("child_process");
-const iconv = require("iconv-lite");
+import { window } from "vscode";
+import * as cp from "child_process";
+import * as iconv from "iconv-lite";
+
+interface commandOptions {}
+
+interface execResult {
+  result: string;
+}
+
+export class Svn {
+  constructor() {
+    this.isSvnAvailable();
+  }
+
+  private exec(cwd: string, args: any[], options: any = {}) {
+    return new Promise((resolve, reject) => {
+      if (cwd) {
+        options.cwd = cwd;
+      }
+      const result = cp.spawn("svn", args, options);
+      let outBuffers: any[] = [];
+      let errBuffers: any[] = [];
+
+      result.stdout.on("data", b => {
+        outBuffers.push(b);
+      });
+      result.stderr.on("data", b => {
+        errBuffers.push(b);
+      });
+      result.on("error", data => {
+        reject();
+      });
+      result.on("close", () => {
+        if (outBuffers.length > 0) {
+          resolve(
+            Buffer.concat(outBuffers)
+              .toString()
+              .trim()
+          );
+        }
+
+        reject(
+          Buffer.concat(errBuffers)
+            .toString()
+            .trim()
+        );
+      });
+    });
+  }
+
+  async getRepositoryRoot(path: string) {
+    try {
+      let result = await this.exec(path, ["info", "--xml"]);
+      let rootPath = result.match(/<wcroot-abspath>(.*)<\/wcroot-abspath>/i)[1];
+      return rootPath;
+    } catch (error) {
+      throw new Error("Unable to find repository root path");
+    }
+  }
+}
 
 function svn() {
   this.isSVNAvailable().catch(() => {

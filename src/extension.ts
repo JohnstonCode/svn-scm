@@ -1,20 +1,22 @@
-const vscode = require("vscode");
-const path = require("path");
-const Svn = require("./svn");
-const SvnContentProvider = require("./svnContentProvider");
-const SvnCommands = require("./commands");
-const Model = require("./model");
+import { ExtensionContext, Disposable } from "vscode";
+import { Svn } from "./svn";
+import { SvnContentProvider } from "./svnContentProvider";
+import { SvnCommands } from "./commands";
+import { Model } from "./model";
 
-function activate(context) {
-  const disposable = [];
+function activate(context: ExtensionContext) {
+  const disposables: Disposable[] = [];
   const svn = new Svn();
   const model = new Model(svn);
   const contentProvider = new SvnContentProvider(model);
   const commands = new SvnCommands(model);
+  disposables.push(model);
 
   console.log("svn-scm is now active!");
 
-  context.subscriptions.push(disposable);
+  context.subscriptions.push(
+    new Disposable(() => Disposable.from(...disposables).dispose())
+  );
 }
 exports.activate = activate;
 

@@ -2,90 +2,97 @@ import { workspace, Uri, window } from "vscode";
 import * as fs from "fs";
 import * as path from "path";
 import Repository from "./repository";
+import svn from "./svn";
 
-function Model(svn) {
-  this.svn = svn;
-  this.openRepositories = [];
-  this.scanWorkspaceFolders();
+interface OpenRepository {
+  repository: Repository;
 }
 
-Model.prototype.scanWorkspaceFolders = async function() {
-  for (const folder of workspace.workspaceFolders || []) {
-    const root = folder.uri.fsPath;
-    this.tryOpenRepository(root);
-  }
-};
+export class Model {
+  public openRepositories: OpenRepository[] = [];
 
-Model.prototype.tryOpenRepository = async function(path: any) {
-  if (this.getRepository(path)) {
-    return;
+  constructor(private svn: svn) {
+    this.scanWorkspaceFolders();
   }
 
-  try {
-    const repositoryRoot = await this.svn.getRepositoryRoot(path);
+  private async scanWorkspaceFolders() {
+    for (const folder of workspace.workspaceFolders || []) {
+      const root = folder.uri.fsPath;
+      this.tryOpenRepository(root);
+    }
+  }
 
-    if (this.getRepository(repositoryRoot)) {
+  async tryOpenRepository(path: string): Promise<void> {
+    if (this.getRepository(path)) {
       return;
     }
 
-    const repository = new Repository(this.svn.open(repositoryRoot, path));
+    try {
+      const repositoryRoot = await this.svn.getRepositoryRoot(path);
 
-    this.open(repository);
-  } catch (err) {
-    console.error(err);
-    return;
-  }
-};
+      if (this.getRepository(repositoryRoot)) {
+        return;
+      }
 
-Model.prototype.getRepository = function(path: any) {
-  const liveRepository = this.getOpenRepository(path);
-  return liveRepository && liveRepository.repository;
-};
+      const repository = new Repository(this.svn.open(repositoryRoot, path));
 
-Model.prototype.getOpenRepository = function(hint: any) {
-  if (!hint) {
-    return undefined;
+      this.open(repository);
+    } catch (err) {
+      console.error(err);
+      return;
+    }
   }
 
-  if (hint instanceof Repository) {
-    return this.openRepositories.filter(r => r === hint)[0];
+  getRepository(hint: any): Repository | undefined {
+    const liveRepository = this.getOpenRepository(path);
+    return liveRepository && liveRepository.repository;
   }
 
-  hint = Uri.file(hint);
-
-  for (const liveRepository of this.openRepositories) {
-    const relativePath = path.relative(
-      liveRepository.repository.root,
-      hint.fsPath
-    );
-
-    if (!/^\.\./.test(relativePath)) {
-      return liveRepository;
+  private getOpenRepository(hint: any): Repository | undefined {
+    if (!hint) {
+      return undefined;
     }
 
-    return undefined;
+    if (hint instanceof Repository) {
+      return this.openRepositories.filter(r => r === hint)[0];
+    }
+
+    hint = Uri.file(hint);
+
+    for (const liveRepository of this.openRepositories) {
+      const relativePath = path.relative(
+        liveRepository.repository.root,
+        hint.fsPath
+      );
+
+      if (!/^\.\./.test(relativePath)) {
+        return liveRepository;
+      }
+
+      return undefined;
+    }
   }
-};
 
-Model.prototype.open = function(repository) {
-  this.openRepositories.push(repository);
-};
-
-Model.prototype.pickRepository = async function() {
-  if (this.openRepositories.length === 0) {
-    throw new Error("There are no available repositories");
+  private open(repository: Repository): void {
+    this.openRepositories.push(repository);
   }
 
-  const picks = this.openRepositories.map(repo => {
-    return {
-      label: path.basename(repo.repository.root),
-      repository: repo
-    };
-  });
-  const placeholder = "Choose a repository";
-  const pick = await window.showQuickPick(picks, { placeholder });
+  async pickRepository() {
+    if (this.openRepositories.length === 0) {
+      throw new Error("There are no available repositories");
+    }
 
-  return pick && pick.repository;
-};
+    const picks = this.openRepositories.map(repository => {
+      return {
+        label: path.basename(repository.repository.root),
+        repository: repository
+      };
+    });
+    const placeHolder = "Choose a repository";
+    const pick = await window.showQuickPick(picks, { placeHolder });
 
-module.exports = Model;
+    return pick && pick.repository;
+  }
+
+  dispose(): void {}
+}
