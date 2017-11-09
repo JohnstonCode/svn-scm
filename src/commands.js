@@ -119,9 +119,13 @@ SvnCommands.prototype.commit = async function(repository, ...args) {
   const paths = args.map(resourceState => {
     return resourceState.resourceUri.fsPath;
   });
+  const message = await inputCommitMessage();
+
+  if (message === undefined) {
+    return;
+  }
 
   try {
-    const message = await inputCommitMessage();
     await repository.repository.commitFiles(message, paths);
     changesCommitted();
     repository.update();

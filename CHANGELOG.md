@@ -1,8 +1,11 @@
-**FILL ME**
+**v0.10.0**
 =============================================
 
 ## What's New
   - Added refresh button to source control view
+
+## Bug Fixes
+  - Esc now cancels commit rather than committing with undefined message
 
 **v0.9.0**
 =============================================
