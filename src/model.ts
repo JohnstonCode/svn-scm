@@ -1,7 +1,7 @@
-const { workspace, Uri, window } = require("vscode");
-const fs = require("fs");
-const path = require("path");
-const Repository = require("./repository");
+import { workspace, Uri, window } from "vscode";
+import * as fs from "fs";
+import * as path from "path";
+import Repository from "./repository";
 
 function Model(svn) {
   this.svn = svn;
@@ -16,7 +16,7 @@ Model.prototype.scanWorkspaceFolders = async function() {
   }
 };
 
-Model.prototype.tryOpenRepository = async function(path) {
+Model.prototype.tryOpenRepository = async function(path: any) {
   if (this.getRepository(path)) {
     return;
   }
@@ -37,12 +37,12 @@ Model.prototype.tryOpenRepository = async function(path) {
   }
 };
 
-Model.prototype.getRepository = function(path) {
+Model.prototype.getRepository = function(path: any) {
   const liveRepository = this.getOpenRepository(path);
   return liveRepository && liveRepository.repository;
 };
 
-Model.prototype.getOpenRepository = function(hint) {
+Model.prototype.getOpenRepository = function(hint: any) {
   if (!hint) {
     return undefined;
   }
