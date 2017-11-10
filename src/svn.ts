@@ -79,8 +79,8 @@ export class Svn {
     return this.exec("", ["add", path]);
   }
 
-  show(path: string) {
-    return this.exec("", ["cat", "-r", "HEAD", path]);
+  show(path: string, options: CpOptions = {}) {
+    return this.exec("", ["cat", "-r", "HEAD", path], options);
   }
 
   list(path: string) {
@@ -95,6 +95,10 @@ export class Svn {
     }
 
     return this.exec("", args);
+  }
+
+  ls(filePath: string) {
+    return this.exec("", ["ls", "--xml", filePath]);
   }
 }
 
@@ -121,8 +125,8 @@ export class Repository {
     return status;
   }
 
-  async show(path: string) {
-    const result = await this.svn.show(path);
+  async show(path: string, options: CpOptions = {}) {
+    const result = await this.svn.show(path, options);
     return result.stdout;
   }
 

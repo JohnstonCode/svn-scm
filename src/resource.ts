@@ -4,8 +4,8 @@ import * as path from "path";
 export class Resource {
   constructor(
     private rootPath: string,
-    private relativePath: string,
-    private type: string
+    public relativePath: string,
+    public type: string
   ) {}
 
   get resourceUri() {

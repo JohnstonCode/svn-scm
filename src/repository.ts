@@ -117,4 +117,11 @@ export class Repository {
 
     return new Uri().with({ scheme: "svn", query: uri.path, path: uri.path });
   }
+
+  show(filePath: string) {
+    const config = workspace.getConfiguration("files", Uri.file(filePath));
+    const encoding = config.get("encoding");
+
+    return this.repository.show(filePath, { encoding });
+  }
 }

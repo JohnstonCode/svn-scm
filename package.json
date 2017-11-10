@@ -53,6 +53,11 @@
         "category": "SVN"
       },
       {
+        "command": "svn.openChanges",
+        "title": "Diff Changes",
+        "category": "SVN"
+      },
+      {
         "command": "svn.refresh",
         "title": "Refresh",
         "category": "SVN",
@@ -82,10 +87,24 @@
           "command": "svn.commit",
           "when": "scmProvider == svn && scmResourceGroup == changes",
           "group": "1_modification"
+        },
+        {
+          "command": "svn.openChanges",
+          "when": "scmProvider == svn && scmResourceGroup == changes",
+          "group": "1_modification"
         }
       ],
       "editor/title": []
     },
-    "configuration": {}
+    "configuration": {
+      "title": "Svn",
+      "properties": {
+        "svn.enabled": {
+          "type": "boolean",
+          "description": "Whether svn is enabled",
+          "default": true
+        }
+      }
+    }
   }
 }
