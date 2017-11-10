@@ -14,7 +14,7 @@ export class SvnContentProvider {
     }
 
     try {
-      return await repository.show(uri.fsPath);
+      return await repository.repository.show(uri.fsPath);
     } catch (error) {
       return "";
     }

@@ -1,99 +1,120 @@
-const { Uri, scm, workspace } = require("vscode");
-const Resource = require("./resource");
-const { throttleAsync } = require("./decorators");
+import {
+  Uri,
+  scm,
+  workspace,
+  FileSystemWatcher,
+  SourceControl,
+  SourceControlResourceGroup,
+  SourceControlInputBox
+} from "vscode";
+import { Resource } from "./resource";
+import { throttleAsync } from "./decorators";
+import { Repository as BaseRepository } from "./svn";
 
-function Repository(repository) {
-  this.repository = repository;
-  this.root = repository.root;
-  this.watcher = workspace.createFileSystemWatcher("**");
-  this.sourceControl = scm.createSourceControl(
-    "svn",
-    "SVN",
-    Uri.parse(this.root)
-  );
-  this.sourceControl.acceptInputCommand = {
-    command: "svn.commitWithMessage",
-    title: "Commit",
-    arguments: [this.sourceControl]
-  };
-  this.sourceControl.quickDiffProvider = this;
+export class Repository {
+  public watcher: FileSystemWatcher;
+  private sourceControl: SourceControl;
+  public changes: SourceControlResourceGroup;
+  public notTracked: SourceControlResourceGroup;
 
-  this.changes = this.sourceControl.createResourceGroup("changes", "Changes");
-  this.notTracked = this.sourceControl.createResourceGroup(
-    "unversioned",
-    "Not Tracked"
-  );
-
-  this.changes.hideWhenEmpty = true;
-  this.notTracked.hideWhenEmpty = true;
-
-  this.update();
-  this.addEventListeners();
-}
-
-Repository.prototype.addEventListeners = function() {
-  this.watcher.onDidChange(throttleAsync(this.update, "update", this));
-  this.watcher.onDidCreate(throttleAsync(this.update, "update", this));
-  this.watcher.onDidDelete(throttleAsync(this.update, "update", this));
-};
-
-Repository.prototype.provideOriginalResource = uri => {
-  if (uri.scheme !== "file") {
-    return;
+  get root(): string {
+    return this.repository.root;
   }
 
-  return new Uri().with({ scheme: "svn", query: uri.path, path: uri.path });
-};
+  get workspaceRoot(): string {
+    return this.repository.workspaceRoot;
+  }
 
-Repository.prototype.update = async function() {
-  let changes = [];
-  let notTracked = [];
-  let statuses = (await this.repository.getStatus().catch(() => {})) || [];
+  get inputBox(): SourceControlInputBox {
+    return this.sourceControl.inputBox;
+  }
 
-  statuses.forEach(status => {
-    switch (status[0]) {
-      case "A":
-        changes.push(
-          new Resource(this.repository.workspaceRoot, status[1], "added")
-        );
-        break;
-      case "D":
-        changes.push(
-          new Resource(this.repository.workspaceRoot, status[1], "deleted")
-        );
-        break;
-      case "M":
-        changes.push(
-          new Resource(this.repository.workspaceRoot, status[1], "modified")
-        );
-        break;
-      case "R":
-        changes.push(
-          new Resource(this.repository.workspaceRoot, status[1], "replaced")
-        );
-        break;
-      case "!":
-        changes.push(
-          new Resource(this.repository.workspaceRoot, status[1], "missing")
-        );
-        break;
-      case "C":
-        changes.push(
-          new Resource(this.repository.workspaceRoot, status[1], "conflict")
-        );
-        break;
-      case "?":
-        notTracked.push(
-          new Resource(this.repository.workspaceRoot, status[1], "unversioned")
-        );
-        break;
+  constructor(public repository: BaseRepository) {
+    this.watcher = workspace.createFileSystemWatcher("**");
+    this.sourceControl = scm.createSourceControl(
+      "svn",
+      "SVN",
+      Uri.file(repository.root)
+    );
+    this.sourceControl.acceptInputCommand = {
+      command: "svn.commit",
+      title: "commit",
+      arguments: [this.sourceControl]
+    };
+    this.sourceControl.quickDiffProvider = this;
+
+    this.changes = this.sourceControl.createResourceGroup("changes", "Changes");
+    this.notTracked = this.sourceControl.createResourceGroup(
+      "unversioned",
+      "Not Tracked"
+    );
+
+    this.changes.hideWhenEmpty = true;
+    this.notTracked.hideWhenEmpty = true;
+
+    this.update();
+    this.addEventListeners();
+  }
+
+  private addEventListeners() {
+    // this.watcher.onDidChange(throttleAsync(this.update, "update", this));
+    // this.watcher.onDidCreate(throttleAsync(this.update, "update", this));
+    // this.watcher.onDidDelete(throttleAsync(this.update, "update", this));
+    this.watcher.onDidChange(() => {
+      this.update();
+    });
+    this.watcher.onDidCreate(() => {
+      this.update();
+    });
+    this.watcher.onDidDelete(() => {
+      this.update();
+    });
+  }
+
+  async update() {
+    let changes: any[] = [];
+    let notTracked: any[] = [];
+    let statuses = (await this.repository.getStatus()) || [];
+
+    statuses.forEach(status => {
+      switch (status[0]) {
+        case "A":
+          changes.push(new Resource(this.workspaceRoot, status[1], "added"));
+          break;
+        case "D":
+          changes.push(new Resource(this.workspaceRoot, status[1], "deleted"));
+          break;
+        case "M":
+          changes.push(new Resource(this.workspaceRoot, status[1], "modified"));
+          break;
+        case "R":
+          changes.push(new Resource(this.workspaceRoot, status[1], "replaced"));
+          break;
+        case "!":
+          changes.push(new Resource(this.workspaceRoot, status[1], "missing"));
+          break;
+        case "C":
+          changes.push(new Resource(this.workspaceRoot, status[1], "conflict"));
+          break;
+        case "?":
+          notTracked.push(
+            new Resource(this.workspaceRoot, status[1], "unversioned")
+          );
+          break;
+      }
+    });
+
+    this.changes.resourceStates = changes;
+    this.notTracked.resourceStates = notTracked;
+
+    return Promise.resolve();
+  }
+
+  provideOriginalResource(uri: Uri) {
+    if (uri.scheme !== "file") {
+      return;
     }
-  });
 
-  this.changes.resourceStates = changes;
-  this.notTracked.resourceStates = notTracked;
-
-  return Promise.resolve();
-};
-
-module.exports = Repository;
+    return new Uri().with({ scheme: "svn", query: uri.path, path: uri.path });
+  }
+}

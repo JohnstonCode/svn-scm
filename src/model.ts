@@ -1,8 +1,8 @@
 import { workspace, Uri, window } from "vscode";
 import * as fs from "fs";
 import * as path from "path";
-import Repository from "./repository";
-import svn from "./svn";
+import { Repository } from "./repository";
+import { Svn } from "./svn";
 
 interface OpenRepository {
   repository: Repository;
@@ -11,7 +11,11 @@ interface OpenRepository {
 export class Model {
   public openRepositories: OpenRepository[] = [];
 
-  constructor(private svn: svn) {
+  get repositories(): Repository[] {
+    return this.openRepositories.map(r => r.repository);
+  }
+
+  constructor(private svn: Svn) {
     this.scanWorkspaceFolders();
   }
 
@@ -43,18 +47,18 @@ export class Model {
     }
   }
 
-  getRepository(hint: any): Repository | undefined {
-    const liveRepository = this.getOpenRepository(path);
+  getRepository(hint: any) {
+    const liveRepository = this.getOpenRepository(hint);
     return liveRepository && liveRepository.repository;
   }
 
-  private getOpenRepository(hint: any): Repository | undefined {
+  getOpenRepository(hint: any) {
     if (!hint) {
       return undefined;
     }
 
     if (hint instanceof Repository) {
-      return this.openRepositories.filter(r => r === hint)[0];
+      return this.openRepositories.filter(r => r.repository === hint)[0];
     }
 
     hint = Uri.file(hint);
@@ -74,7 +78,7 @@ export class Model {
   }
 
   private open(repository: Repository): void {
-    this.openRepositories.push(repository);
+    this.openRepositories.push({ repository });
   }
 
   async pickRepository() {
@@ -82,7 +86,7 @@ export class Model {
       throw new Error("There are no available repositories");
     }
 
-    const picks = this.openRepositories.map(repository => {
+    const picks: any[] = this.openRepositories.map(repository => {
       return {
         label: path.basename(repository.repository.root),
         repository: repository

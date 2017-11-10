@@ -2,10 +2,9 @@ import { window } from "vscode";
 import * as cp from "child_process";
 import * as iconv from "iconv-lite";
 
-interface commandOptions {}
-
-interface execResult {
-  result: string;
+interface CpOptions {
+  cwd?: string;
+  encoding?: string;
 }
 
 export class Svn {
@@ -13,196 +12,125 @@ export class Svn {
     this.isSvnAvailable();
   }
 
-  private exec(cwd: string, args: any[], options: any = {}) {
-    return new Promise((resolve, reject) => {
-      if (cwd) {
-        options.cwd = cwd;
-      }
-      const result = cp.spawn("svn", args, options);
-      let outBuffers: any[] = [];
-      let errBuffers: any[] = [];
+  async exec(cwd: string, args: any[], options: CpOptions = {}) {
+    if (cwd) {
+      options.cwd = cwd;
+    }
 
-      result.stdout.on("data", b => {
-        outBuffers.push(b);
-      });
-      result.stderr.on("data", b => {
-        errBuffers.push(b);
-      });
-      result.on("error", data => {
-        reject();
-      });
-      result.on("close", () => {
-        if (outBuffers.length > 0) {
-          resolve(
-            Buffer.concat(outBuffers)
-              .toString()
-              .trim()
-          );
-        }
+    let process = cp.spawn("svn", args, options);
 
-        reject(
-          Buffer.concat(errBuffers)
-            .toString()
-            .trim()
+    let [exitCode, stdout, stderr] = await Promise.all<any>([
+      new Promise<number>((resolve, reject) => {
+        process.once("error", reject);
+        process.once("exit", resolve);
+      }),
+      new Promise<Buffer>(resolve => {
+        const buffers: Buffer[] = [];
+        process.stdout.on("data", (b: Buffer) => buffers.push(b));
+        process.stdout.once("close", () => resolve(Buffer.concat(buffers)));
+      }),
+      new Promise<string>(resolve => {
+        const buffers: Buffer[] = [];
+        process.stderr.on("data", (b: Buffer) => buffers.push(b));
+        process.stderr.once("close", () =>
+          resolve(Buffer.concat(buffers).toString())
         );
-      });
-    });
+      })
+    ]);
+
+    let encoding = options.encoding || "utf8";
+    encoding = iconv.encodingExists(encoding) ? encoding : "utf8";
+
+    stdout = iconv.decode(stdout, encoding);
+
+    return { exitCode, stdout, stderr };
   }
 
   async getRepositoryRoot(path: string) {
     try {
       let result = await this.exec(path, ["info", "--xml"]);
-      let rootPath = result.match(/<wcroot-abspath>(.*)<\/wcroot-abspath>/i)[1];
+      let rootPath = result.stdout.match(
+        /<wcroot-abspath>(.*)<\/wcroot-abspath>/i
+      )[1];
       return rootPath;
     } catch (error) {
       throw new Error("Unable to find repository root path");
     }
   }
-}
 
-function svn() {
-  this.isSVNAvailable().catch(() => {
-    vscode.window.showErrorMessage(
-      "SVN is not available in your PATH. svn-scm is unable to run!"
-    );
-  });
-}
+  private isSvnAvailable() {
+    return new Promise((resolve, reject) => {
+      this.exec("", ["--version"])
+        .then(result => {
+          resolve();
+        })
+        .catch(result => {
+          reject();
+        });
+    });
+  }
 
-svn.prototype.exec = function(cwd, args, options = {}) {
-  return new Promise((resolve, reject) => {
-    if (cwd) {
-      options.cwd = cwd;
+  open(repositoryRoot: string, workspaceRoot: string): Repository {
+    return new Repository(this, repositoryRoot, workspaceRoot);
+  }
+
+  add(path: string) {
+    path = path.replace(/\\/g, "/");
+    return this.exec("", ["add", path]);
+  }
+
+  show(path: string) {
+    return this.exec("", ["cat", "-r", "HEAD", path]);
+  }
+
+  list(path: string) {
+    return this.exec("", ["ls", path]);
+  }
+
+  commit(message: string, files: any[]) {
+    let args = ["commit", "-m", message];
+
+    for (let file of files) {
+      args.push(file);
     }
-    const result = cp.spawn("svn", args, options);
-    let outBuffers = [];
-    let errBuffers = [];
 
-    result.stdout.on("data", b => {
-      outBuffers.push(b);
-    });
-    result.stderr.on("data", b => {
-      errBuffers.push(b);
-    });
-    result.on("error", data => {
-      reject();
-    });
-    result.on("close", () => {
-      if (outBuffers.length > 0) {
-        resolve(
-          Buffer.concat(outBuffers)
-            .toString()
-            .trim()
-        );
-      }
-
-      reject(
-        Buffer.concat(errBuffers)
-          .toString()
-          .trim()
-      );
-    });
-  });
-};
-
-svn.prototype.getRepositoryRoot = async function(path) {
-  try {
-    let result = await this.exec(path, ["info", "--xml"]);
-    let rootPath = result.match(/<wcroot-abspath>(.*)<\/wcroot-abspath>/i)[1];
-    return rootPath;
-  } catch (error) {
-    throw new Error("Unable to find repository root path");
+    return this.exec("", args);
   }
-};
-
-svn.prototype.isSVNAvailable = function() {
-  return new Promise((resolve, reject) => {
-    this.exec("", ["--version"])
-      .then(result => {
-        resolve();
-      })
-      .catch(result => {
-        reject();
-      });
-  });
-};
-
-svn.prototype.open = function(repositoryRoot, workspaceRoot) {
-  return new Repository(this, repositoryRoot, workspaceRoot);
-};
-
-svn.prototype.add = function(filePath) {
-  filePath = filePath.replace(/\\/g, "/");
-  return this.exec("", ["add", filePath]);
-};
-
-svn.prototype.show = async function(filePath) {
-  return this.exec("", ["cat", "-r", "HEAD", filePath]);
-};
-
-svn.prototype.list = async function(filePath) {
-  return this.exec("", ["ls", filePath]);
-};
-
-svn.prototype.commitFiles = function(message, files) {
-  args = ["commit", "-m", message];
-
-  for (file of files) {
-    args.push(file);
-  }
-
-  return this.exec("", args);
-};
-
-module.exports = svn;
-
-function Repository(svn, repositoryRoot, workspaceRoot) {
-  this.svn = svn;
-  this.root = repositoryRoot;
-  this.workspaceRoot = workspaceRoot;
 }
 
-Repository.prototype.getStatus = function() {
-  return new Promise((resolve, reject) => {
-    this.svn
-      .exec(this.workspaceRoot, ["stat"])
-      .then(result => {
-        let items = result.split("\n");
-        let status = [];
+export class Repository {
+  constructor(
+    private svn: Svn,
+    public root: string,
+    public workspaceRoot: string
+  ) {}
 
-        for (item of items) {
-          let state = item.charAt(0);
-          let path = item.substr(8).trim();
+  async getStatus(): Promise<any[]> {
+    const result = await this.svn.exec(this.workspaceRoot, ["stat"]);
 
-          if (path !== ".") {
-            status.push([state, path]);
-          }
-        }
+    let items = result.stdout.split("\n");
+    let status = [];
 
-        resolve(status);
-      })
-      .catch(() => {
-        reject();
-      });
-  });
-};
+    for (let item of items) {
+      let state = item.charAt(0);
+      let path = item.substr(8).trim();
 
-Repository.prototype.commit = async function(message) {
-  try {
-    let result = await this.svn.exec(this.root, ["commit", "-m", message]);
-    return result;
-  } catch (error) {
-    throw new Error("unable to commit files");
+      status.push([state, path]);
+    }
+
+    return status;
   }
-};
 
-Repository.prototype.show = function(path) {
-  return this.svn.show(path);
-};
-
-Repository.prototype.commitFiles = async function(message, files) {
-  try {
-    return await this.svn.commitFiles(message, files);
-  } catch (error) {
-    throw new Error("Unable to commit files");
+  async show(path: string) {
+    const result = await this.svn.show(path);
+    return result.stdout;
   }
-};
+
+  async commitFiles(message: string, files: any[]) {
+    try {
+      return await this.svn.commit(message, files);
+    } catch (error) {
+      throw new Error("Unable to commit files");
+    }
+  }
+}
