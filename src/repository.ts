@@ -110,17 +110,17 @@ export class Repository {
     return Promise.resolve();
   }
 
-  provideOriginalResource(uri: Uri) {
+  provideOriginalResource(uri: Uri): Uri | undefined {
     if (uri.scheme !== "file") {
       return;
     }
 
-    return new Uri().with({ scheme: "svn", query: uri.path, path: uri.path });
+    return uri.with({ scheme: "svn", query: uri.path, path: uri.path });
   }
 
-  show(filePath: string) {
+  show(filePath: string): Promise<string> {
     const config = workspace.getConfiguration("files", Uri.file(filePath));
-    const encoding = config.get("encoding");
+    const encoding = config.get<string>("encoding");
 
     return this.repository.show(filePath, { encoding });
   }

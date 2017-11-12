@@ -193,8 +193,6 @@ export class SvnCommands {
       options.selection = activeTextEditor.selection;
     }
 
-    console.log(left);
-
     if (!preview) {
       await commands.executeCommand("vscode.open", right);
     } else {
@@ -203,13 +201,6 @@ export class SvnCommands {
   }
 
   private async getURI(uri: Uri, ref: string) {
-    const repository = this.model.getRepository(uri);
-
-    // if (!repository) {
-    //   console.log("sfsfss");
-    //   return;
-    // }
-
     return toSvnUri(uri, ref);
   }
 
@@ -220,20 +211,6 @@ export class SvnCommands {
       return;
     }
 
-    const contents = await repository.show(resource.resourceUri.fsPath);
-    const base64 = new Buffer(contents).toString("base64");
-    console.log(contents);
-    console.log(base64);
-
-    let test = Uri.parse(
-      `data:text/plain;label:${path.basename(
-        resource.relativePath
-      )};description:test;size:42;base64,${base64}scheme:svn;`
-    );
-
-    return toSvnUri(test, "ggds");
-
-    console.log(resource.resourceUri);
     switch (resource.type) {
       case "modified":
         return this.getURI(resource.resourceUri, "~");
