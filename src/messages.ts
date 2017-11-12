@@ -1,11 +1,11 @@
-const { window } = require("vscode");
+import { window } from "vscode";
 
-function noChangesToCommit() {
+export function noChangesToCommit() {
   return window.showInformationMessage("There are no changes to commit.");
 }
 
-function inputCommitMessage(message) {
-  return new Promise((resolve, reject) => {
+export function inputCommitMessage(message?: string) {
+  return new Promise<string>((resolve, reject) => {
     if (message) {
       resolve(message);
       return;
@@ -22,10 +22,6 @@ function inputCommitMessage(message) {
   });
 }
 
-function changesCommitted() {
+export function changesCommitted() {
   return window.showInformationMessage("Files Committed");
 }
-
-exports.noChangesToCommit = noChangesToCommit;
-exports.inputCommitMessage = inputCommitMessage;
-exports.changesCommitted = changesCommitted;

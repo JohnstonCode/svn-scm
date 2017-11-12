@@ -1,3 +1,32 @@
+**v0.10.0**
+=============================================
+
+## What's New
+  - Added refresh button to source control view
+
+## Bug Fixes
+  - Esc now cancels commit rather than committing with undefined message
+
+**v0.9.0**
+=============================================
+
+## What's New
+  - Right click option to commit files in "changes"
+
+**v0.8.10**
+=============================================
+
+## Bug Fixes
+  - Using the source control commit box should only commit changes listed
+  - Re-fixed no changes showing.
+
+**v0.8.9**
+=============================================
+
+## Bug Fixes
+  - Fixed Missing icons
+  - Fixed all changes showing as untracked
+
 **v0.8.8**
 =============================================
 

@@ -2,7 +2,7 @@
   "name": "svn-scm",
   "displayName": "SVN",
   "description": "Integrated Subversion source control",
-  "version": "0.8.8",
+  "version": "0.10.0",
   "publisher": "johnstoncode",
   "engines": {
     "vscode": "^1.16.0"
@@ -18,8 +18,10 @@
   "categories": ["Other", "SCM Providers"],
   "keywords": ["multi-root ready", "scm", "svn"],
   "activationEvents": ["*"],
-  "main": "./src/extension",
+  "main": "./out/extension",
   "scripts": {
+    "vscode:prepublish": "tsc -p ./",
+    "compile": "tsc -watch -p ./",
     "postinstall": "node ./node_modules/vscode/bin/install",
     "test": "node ./node_modules/vscode/bin/test"
   },
@@ -44,21 +46,65 @@
           "light": "icons/light/add.svg",
           "dark": "icons/dark/add.svg"
         }
+      },
+      {
+        "command": "svn.commit",
+        "title": "Commit Selected",
+        "category": "SVN"
+      },
+      {
+        "command": "svn.openChanges",
+        "title": "Diff Changes",
+        "category": "SVN"
+      },
+      {
+        "command": "svn.refresh",
+        "title": "Refresh",
+        "category": "SVN",
+        "icon": {
+          "light": "icons/light/refresh.svg",
+          "dark": "icons/dark/refresh.svg"
+        }
       }
     ],
     "menus": {
       "commandPalette": [],
-      "scm/title": [],
+      "scm/title": [
+        {
+          "command": "svn.refresh",
+          "group": "navigation",
+          "when": "scmProvider == svn"
+        }
+      ],
       "scm/resourceGroup/context": [],
       "scm/resourceState/context": [
         {
           "command": "svn.add",
           "when": "scmProvider == svn && scmResourceGroup == unversioned",
           "group": "inline"
+        },
+        {
+          "command": "svn.commit",
+          "when": "scmProvider == svn && scmResourceGroup == changes",
+          "group": "1_modification"
+        },
+        {
+          "command": "svn.openChanges",
+          "when": "scmProvider == svn && scmResourceGroup == changes",
+          "group": "1_modification"
         }
       ],
       "editor/title": []
     },
-    "configuration": {}
+    "configuration": {
+      "title": "Svn",
+      "properties": {
+        "svn.enabled": {
+          "type": "boolean",
+          "description": "Whether svn is enabled",
+          "default": true
+        }
+      }
+    }
   }
 }
