@@ -10,6 +10,7 @@ import {
 import { Resource } from "./resource";
 import { throttleAsync } from "./decorators";
 import { Repository as BaseRepository } from "./svn";
+import { SvnStatusBar } from "./statusBar";
 
 export class Repository {
   public watcher: FileSystemWatcher;
@@ -42,6 +43,9 @@ export class Repository {
       arguments: [this.sourceControl]
     };
     this.sourceControl.quickDiffProvider = this;
+
+    const test = new SvnStatusBar(this);
+    this.sourceControl.statusBarCommands = test.commands;
 
     this.changes = this.sourceControl.createResourceGroup("changes", "Changes");
     this.notTracked = this.sourceControl.createResourceGroup(
@@ -123,5 +127,9 @@ export class Repository {
     const encoding = config.get<string>("encoding");
 
     return this.repository.show(filePath, { encoding });
+  }
+
+  addFile(filePath: string) {
+    return this.repository.addFile(filePath);
   }
 }

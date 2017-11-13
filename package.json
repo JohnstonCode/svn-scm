@@ -54,7 +54,7 @@
       },
       {
         "command": "svn.openChanges",
-        "title": "Diff Changes",
+        "title": "Diff Changes HEAD",
         "category": "SVN"
       },
       {

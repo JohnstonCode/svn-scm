@@ -100,6 +100,10 @@ export class Svn {
   ls(filePath: string) {
     return this.exec("", ["ls", "--xml", filePath]);
   }
+
+  info(path: string) {
+    return this.exec(path, ["info", "--xml"]);
+  }
 }
 
 export class Repository {
@@ -135,6 +139,23 @@ export class Repository {
       return await this.svn.commit(message, files);
     } catch (error) {
       throw new Error("Unable to commit files");
+    }
+  }
+
+  addFile(filePath: string) {
+    return this.svn.add(filePath);
+  }
+
+  async getCurrentBranch(): Promise<string> {
+    try {
+      const result = await this.svn.info(this.root);
+      const currentBranch = result.stdout
+        .match(/<url>(.*?)<\/url>/)[1]
+        .split("/")
+        .pop();
+      return currentBranch;
+    } catch (error) {
+      return;
     }
   }
 }

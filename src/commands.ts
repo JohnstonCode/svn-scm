@@ -124,12 +124,17 @@ export class SvnCommands {
     }
   }
 
-  async addFile(uri: Uri) {
-    const svn = new Svn();
+  async addFile(resource: Resource) {
+    const repository = this.model.getRepository(resource.resourceUri.fsPath);
+
+    if (!repository) {
+      return;
+    }
 
     try {
-      await svn.add(uri.fsPath);
+      await repository.addFile(resource.resourceUri.fsPath);
     } catch (error) {
+      console.log(error);
       window.showErrorMessage("Unable to add file");
     }
   }
@@ -169,12 +174,17 @@ export class SvnCommands {
     preserveFocus?: boolean,
     preserveSelection?: boolean
   ) {
-    const left = await this.getLeftResource(resource);
+    const left = this.getLeftResource(resource);
     const right = this.getRightResource(resource);
     // const title = this.getTitle(resource);
     const title = "test";
 
     if (!right) {
+      return;
+    }
+
+    if (!left) {
+      window.showErrorMessage("File not found on HEAD");
       return;
     }
 
@@ -204,7 +214,7 @@ export class SvnCommands {
     return toSvnUri(uri, ref);
   }
 
-  private async getLeftResource(resource: Resource) {
+  private getLeftResource(resource: Resource) {
     const repository = this.model.getRepository(resource.resourceUri.fsPath);
 
     if (!repository) {
@@ -214,6 +224,8 @@ export class SvnCommands {
     switch (resource.type) {
       case "modified":
         return this.getURI(resource.resourceUri, "~");
+      default:
+        return false;
     }
   }
 
