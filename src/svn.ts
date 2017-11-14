@@ -155,7 +155,7 @@ export class Repository {
         .pop();
       return currentBranch;
     } catch (error) {
-      return;
+      return "";
     }
   }
 }

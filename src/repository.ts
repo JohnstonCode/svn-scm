@@ -18,7 +18,7 @@ import { dispose } from "./util";
 
 export class Repository {
   public watcher: FileSystemWatcher;
-  private sourceControl: SourceControl;
+  public sourceControl: SourceControl;
   public changes: SourceControlResourceGroup;
   public notTracked: SourceControlResourceGroup;
   private disposables: Disposable[] = [];

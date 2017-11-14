@@ -9,7 +9,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { Repository } from "./repository";
 import { Svn } from "./svn";
-import { dispose } from "./util";
+import { dispose, anyEvent, filterEvent } from "./util";
 
 interface OpenRepository {
   repository: Repository;
@@ -19,6 +19,7 @@ export class Model {
   public openRepositories: OpenRepository[] = [];
   private disposables: Disposable[] = [];
   private enabled = false;
+  private possibleSvnRepositoryPaths = new Set<string>();
 
   get repositories(): Repository[] {
     return this.openRepositories.map(r => r.repository);
@@ -46,7 +47,39 @@ export class Model {
       removed: []
     });
 
+    const fsWatcher = workspace.createFileSystemWatcher("**");
+    this.disposables.push(fsWatcher);
+
+    const onWorkspaceChange = anyEvent(
+      fsWatcher.onDidChange,
+      fsWatcher.onDidCreate,
+      fsWatcher.onDidDelete
+    );
+    const onPossibleSvnRepositoryChange = filterEvent(
+      onWorkspaceChange,
+      uri => !this.getRepository(uri)
+    );
+    onPossibleSvnRepositoryChange(
+      this.onPossibleSvnRepositoryChange,
+      this,
+      this.disposables
+    );
+
     this.scanWorkspaceFolders();
+  }
+
+  private onPossibleSvnRepositoryChange(uri: Uri): void {
+    const possibleSvnRepositoryPath = uri.fsPath.replace(/\.svn.*$/, "");
+    this.possibleSvnRepositoryPaths.add(possibleSvnRepositoryPath);
+    this.eventuallyScanPossibleSvnRepositories();
+  }
+
+  private eventuallyScanPossibleSvnRepositories(): void {
+    for (const path of this.possibleSvnRepositoryPaths) {
+      this.tryOpenRepository(path);
+    }
+
+    this.possibleSvnRepositoryPaths.clear();
   }
 
   private disable(): void {
@@ -112,7 +145,7 @@ export class Model {
     return liveRepository && liveRepository.repository;
   }
 
-  getOpenRepository(hint: any) {
+  getOpenRepository(hint: any): OpenRepository | undefined {
     if (!hint) {
       return undefined;
     }
@@ -121,20 +154,38 @@ export class Model {
       return this.openRepositories.filter(r => r.repository === hint)[0];
     }
 
-    hint = Uri.file(hint);
+    if (typeof hint === "string") {
+      hint = Uri.file(hint);
+    }
 
-    for (const liveRepository of this.openRepositories) {
-      const relativePath = path.relative(
-        liveRepository.repository.root,
-        hint.fsPath
-      );
+    if (hint instanceof Uri) {
+      for (const liveRepository of this.openRepositories) {
+        const relativePath = path.relative(
+          liveRepository.repository.root,
+          hint.fsPath
+        );
 
-      if (!/^\.\./.test(relativePath)) {
-        return liveRepository;
+        if (!/^\.\./.test(relativePath)) {
+          return liveRepository;
+        }
       }
 
       return undefined;
     }
+
+    for (const liveRepository of this.openRepositories) {
+      const repository = liveRepository.repository;
+
+      if (hint === repository.sourceControl) {
+        return liveRepository;
+      }
+
+      if (hint === repository.changes || hint === repository.notTracked) {
+        return liveRepository;
+      }
+    }
+
+    return undefined;
   }
 
   private open(repository: Repository): void {
