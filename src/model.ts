@@ -9,6 +9,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { Repository } from "./repository";
 import { Svn } from "./svn";
+import { dispose } from "./util";
 
 interface OpenRepository {
   repository: Repository;
@@ -29,6 +30,8 @@ export class Model {
 
     if (this.enabled) {
       this.init();
+    } else {
+      this.disable();
     }
   }
 
@@ -44,6 +47,15 @@ export class Model {
     });
 
     this.scanWorkspaceFolders();
+  }
+
+  private disable(): void {
+    const openRepositories = [...this.openRepositories];
+
+    openRepositories.forEach(repository => r.dispose());
+
+    this.openRepositories = [];
+    this.disposables = dispose(this.disposables);
   }
 
   private onDidChangeWorkspaceFolders({
