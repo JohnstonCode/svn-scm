@@ -18,14 +18,14 @@ export class SvnStatusBar {
   }
 
   get commands() {
-    // const title = `$(git-branch) ${this.repository.headLabel}`;
+    const title = `$(git-branch) ${this.repository.branch}`;
 
     return [
       {
-        command: "svn.refresh",
-        tooltip: "TEST",
-        title: "TEST",
-        arguments: [this]
+        command: "svn.checkout",
+        tooltip: "Checkout...",
+        title,
+        arguments: [this.repository]
       }
     ];
   }

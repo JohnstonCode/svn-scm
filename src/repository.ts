@@ -22,6 +22,7 @@ export class Repository {
   public changes: SourceControlResourceGroup;
   public notTracked: SourceControlResourceGroup;
   private disposables: Disposable[] = [];
+  public branch = "";
 
   private _onDidChangeStatus = new EventEmitter<void>();
   readonly onDidChangeStatus: Event<void> = this._onDidChangeStatus.event;
@@ -128,6 +129,8 @@ export class Repository {
     this.changes.resourceStates = changes;
     this.notTracked.resourceStates = notTracked;
 
+    this.branch = await this.getCurrentBranch();
+
     this._onDidChangeStatus.fire();
 
     return Promise.resolve();
@@ -154,5 +157,9 @@ export class Repository {
 
   dispose(): void {
     this.disposables = dispose(this.disposables);
+  }
+
+  getCurrentBranch() {
+    return this.repository.getCurrentBranch();
   }
 }
