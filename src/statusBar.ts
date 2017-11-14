@@ -1,11 +1,21 @@
-import { window, StatusBarItem } from "vscode";
+import { window, StatusBarItem, Disposable, EventEmitter, Event } from "vscode";
 import { Repository } from "./repository";
 
 export class SvnStatusBar {
-  private statusBar: StatusBarItem;
-  private currentBranch: string;
+  private disposables: Disposable[] = [];
+  private _onDidChange = new EventEmitter<void>();
 
-  constructor(private repository: Repository) {}
+  get onDidChange(): Event<void> {
+    return this._onDidChange.event;
+  }
+
+  constructor(private repository: Repository) {
+    repository.onDidChangeStatus(
+      this._onDidChange.fire,
+      this._onDidChange,
+      this.disposables
+    );
+  }
 
   get commands() {
     // const title = `$(git-branch) ${this.repository.headLabel}`;
@@ -18,5 +28,9 @@ export class SvnStatusBar {
         arguments: [this]
       }
     ];
+  }
+
+  dispose(): void {
+    this.disposables.forEach(disposable => disposable.dispose());
   }
 }

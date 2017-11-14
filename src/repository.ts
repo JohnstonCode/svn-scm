@@ -5,18 +5,26 @@ import {
   FileSystemWatcher,
   SourceControl,
   SourceControlResourceGroup,
-  SourceControlInputBox
+  SourceControlInputBox,
+  Disposable,
+  EventEmitter,
+  Event
 } from "vscode";
 import { Resource } from "./resource";
 import { throttleAsync } from "./decorators";
 import { Repository as BaseRepository } from "./svn";
 import { SvnStatusBar } from "./statusBar";
+import { dispose } from "./util";
 
 export class Repository {
   public watcher: FileSystemWatcher;
   private sourceControl: SourceControl;
   public changes: SourceControlResourceGroup;
   public notTracked: SourceControlResourceGroup;
+  private disposables: Disposable[] = [];
+
+  private _onDidChangeStatus = new EventEmitter<void>();
+  readonly onDidChangeStatus: Event<void> = this._onDidChangeStatus.event;
 
   get root(): string {
     return this.repository.root;
@@ -32,6 +40,8 @@ export class Repository {
 
   constructor(public repository: BaseRepository) {
     this.watcher = workspace.createFileSystemWatcher("**");
+    this.disposables.push(this.watcher);
+
     this.sourceControl = scm.createSourceControl(
       "svn",
       "SVN",
@@ -43,9 +53,16 @@ export class Repository {
       arguments: [this.sourceControl]
     };
     this.sourceControl.quickDiffProvider = this;
+    this.disposables.push(this.sourceControl);
 
-    const test = new SvnStatusBar(this);
-    this.sourceControl.statusBarCommands = test.commands;
+    const statusBar = new SvnStatusBar(this);
+    this.disposables.push(statusBar);
+    statusBar.onDidChange(
+      () => (this.sourceControl.statusBarCommands = statusBar.commands),
+      null,
+      this.disposables
+    );
+    this.sourceControl.statusBarCommands = statusBar.commands;
 
     this.changes = this.sourceControl.createResourceGroup("changes", "Changes");
     this.notTracked = this.sourceControl.createResourceGroup(
@@ -111,6 +128,8 @@ export class Repository {
     this.changes.resourceStates = changes;
     this.notTracked.resourceStates = notTracked;
 
+    this._onDidChangeStatus.fire();
+
     return Promise.resolve();
   }
 
@@ -131,5 +150,9 @@ export class Repository {
 
   addFile(filePath: string) {
     return this.repository.addFile(filePath);
+  }
+
+  dispose(): void {
+    this.disposables = dispose(this.disposables);
   }
 }

@@ -50,10 +50,7 @@ export class Model {
   }
 
   private disable(): void {
-    const openRepositories = [...this.openRepositories];
-
-    openRepositories.forEach(repository => r.dispose());
-
+    this.repositories.forEach(repository => repository.dispose());
     this.openRepositories = [];
     this.disposables = dispose(this.disposables);
   }
@@ -66,8 +63,6 @@ export class Model {
       folder => !this.getOpenRepository(folder.uri)
     );
 
-    // console.log(workspace.workspaceFolders);
-
     const openRepositoriesToDispose = removed
       .map(folder => this.getOpenRepository(folder.uri.fsPath))
       .filter(repository => !!repository)
@@ -76,10 +71,12 @@ export class Model {
           !(workspace.workspaceFolders || []).some(f =>
             repository!.repository.root.startsWith(f.uri.fsPath)
           )
-      );
+      ) as OpenRepository[];
 
-    // console.log(removed);
-    console.log(openRepositoriesToDispose);
+    possibleRepositoryFolders.forEach(p =>
+      this.tryOpenRepository(p.uri.fsPath)
+    );
+    openRepositoriesToDispose.forEach(r => r.repository.dispose());
   }
 
   private async scanWorkspaceFolders() {
