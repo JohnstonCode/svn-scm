@@ -2,7 +2,7 @@
 [![Visual Studio Marketplace](https://img.shields.io/vscode-marketplace/d/johnstoncode.svn-scm.svg)](https://marketplace.visualstudio.com/items?itemName=johnstoncode.svn-scm)
 [![rating](https://img.shields.io/vscode-marketplace/r/johnstoncode.svn-scm.svg)](https://marketplace.visualstudio.com/items?itemName=johnstoncode.svn-scm)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat)](https://github.com/JohnstonCode/svn-scm/pulls)
-[![gitcheese.com](https://s3.amazonaws.com/gitcheese-ui-master/images/badge.svg)](https://www.gitcheese.com/donate/users/10222719/repos/104460398)
+[![Beerpay](https://beerpay.io/JohnstonCode/svn-scm/badge.svg?style=flat)](https://beerpay.io/JohnstonCode/svn-scm)
 
 # svn-scm
 
