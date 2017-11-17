@@ -139,21 +139,22 @@ export class SvnCommands {
     }
   }
 
-  async commit(repository: Repository, ...args: any[]) {
-    const paths = args.map(state => {
-      return state.resourceUri.fsPath;
-    });
-    const message = await inputCommitMessage();
-
-    if (message === undefined) {
-      return;
-    }
-
+  async commit(repository: Repository, ...args: any[][]) {
     try {
+      const paths = args[0].map(state => {
+        return state.resourceUri.fsPath;
+      });
+      const message = await inputCommitMessage();
+
+      if (message === undefined) {
+        return;
+      }
+
       await repository.repository.commitFiles(message, paths);
       changesCommitted();
       repository.update();
     } catch (error) {
+      console.log(error);
       window.showErrorMessage("Unable to commit");
     }
   }
