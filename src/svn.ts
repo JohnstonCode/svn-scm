@@ -158,4 +158,20 @@ export class Repository {
       return "";
     }
   }
+
+  async getBranches() {
+    const info = await this.svn.info(this.root);
+    const repoUrl = info.stdout
+      .match(/<url>(.*?)<\/url>/)[1]
+      .replace(/\/[^\/]+$/, "");
+    const branchUrl = repoUrl + "/branches";
+    const result = await this.svn.list(branchUrl);
+
+    const branches = result.stdout
+      .trim()
+      .replace(/\/|\\/g, "")
+      .split("\n");
+
+    return branches;
+  }
 }

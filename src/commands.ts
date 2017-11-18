@@ -45,6 +45,11 @@ export class SvnCommands {
         commandId: "svn.openChanges",
         method: this.openChanges,
         options: {}
+      },
+      {
+        commandId: "svn.checkout",
+        method: this.checkout,
+        options: { repository: true }
       }
     ];
 
@@ -139,7 +144,7 @@ export class SvnCommands {
     }
   }
 
-  async commit(repository: Repository, ...args: any[][]) {
+  async commit(repository: Repository, ...args: any[][]): Promise<void> {
     try {
       const paths = args[0].map(state => {
         return state.resourceUri.fsPath;
@@ -154,7 +159,7 @@ export class SvnCommands {
       changesCommitted();
       repository.update();
     } catch (error) {
-      console.log(error);
+      console.error(error);
       window.showErrorMessage("Unable to commit");
     }
   }
@@ -232,5 +237,17 @@ export class SvnCommands {
 
   private getRightResource(resource: Resource) {
     return resource.resourceUri;
+  }
+
+  async checkout(repository: Repository) {
+    const branches = repository.branches;
+    const placeHolder = "Pick a branch to switch to.";
+    const choice = await window.showQuickPick(branches, { placeHolder });
+
+    if (!choice) {
+      return;
+    }
+
+    console.log(choice);
   }
 }
