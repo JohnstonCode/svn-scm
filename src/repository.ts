@@ -132,7 +132,11 @@ export class Repository {
 
     this.branch = await this.getCurrentBranch();
 
-    this.branches = await this.repository.getBranches();
+    try {
+      this.branches = await this.repository.getBranches();
+    } catch (error) {
+      console.error(error);
+    }
 
     this._onDidChangeStatus.fire();
 

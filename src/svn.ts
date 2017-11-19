@@ -155,17 +155,28 @@ export class Repository {
         .pop();
       return currentBranch;
     } catch (error) {
+      console.error(error);
       return "";
     }
   }
 
   async getBranches() {
     const info = await this.svn.info(this.root);
+
+    if (info.exitCode === 0) {
+      throw new Error(info.stderr);
+    }
+
     const repoUrl = info.stdout
       .match(/<url>(.*?)<\/url>/)[1]
       .replace(/\/[^\/]+$/, "");
     const branchUrl = repoUrl + "/branches";
+
     const result = await this.svn.list(branchUrl);
+
+    if (result.exitCode === 0) {
+      throw new Error(result.stderr);
+    }
 
     const branches = result.stdout
       .trim()
