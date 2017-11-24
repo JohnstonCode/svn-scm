@@ -29,11 +29,16 @@ export class Model {
     const config = workspace.getConfiguration("svn");
     this.enabled = config.get("enabled") === true;
 
-    if (this.enabled) {
-      this.init();
-    } else {
-      this.disable();
-    }
+    svn
+      .isSvnAvailable()
+      .then(() => {
+        if (this.enabled && svn.isSvnAvailable()) {
+          this.init();
+        } else {
+          this.disable();
+        }
+      })
+      .catch(() => {});
   }
 
   private init(): void {

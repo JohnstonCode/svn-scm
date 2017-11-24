@@ -9,10 +9,6 @@ interface CpOptions {
 }
 
 export class Svn {
-  constructor() {
-    this.isSvnAvailable();
-  }
-
   async exec(cwd: string, args: any[], options: CpOptions = {}) {
     if (cwd) {
       options.cwd = cwd;
@@ -61,15 +57,17 @@ export class Svn {
     }
   }
 
-  private isSvnAvailable() {
+  public async isSvnAvailable() {
     return new Promise((resolve, reject) => {
-      this.exec("", ["--version"])
-        .then(result => {
-          resolve();
-        })
-        .catch(result => {
+      cp.exec("svn --version", (error, stdout, stderr) => {
+        if (error) {
+          console.log(stderr);
+          window.showErrorMessage(stderr);
           reject();
-        });
+        }
+
+        resolve();
+      });
     });
   }
 
