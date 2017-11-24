@@ -1,6 +1,7 @@
 import { window } from "vscode";
 import * as cp from "child_process";
 import * as iconv from "iconv-lite";
+import * as jschardet from "jschardet";
 
 interface CpOptions {
   cwd?: string;
@@ -38,8 +39,10 @@ export class Svn {
       })
     ]);
 
-    let encoding = options.encoding || "utf8";
-    encoding = iconv.encodingExists(encoding) ? encoding : "utf8";
+    const encodingGuess = jschardet.detect(stdout);
+    const encoding = iconv.encodingExists(encodingGuess.encoding)
+      ? encodingGuess.encoding
+      : "utf8";
 
     stdout = iconv.decode(stdout, encoding);
 
@@ -104,6 +107,24 @@ export class Svn {
   info(path: string) {
     return this.exec(path, ["info", "--xml"]);
   }
+
+  copy(rootPath: string, branchPath: string, name: string) {
+    return this.exec("", [
+      "copy",
+      rootPath,
+      branchPath,
+      "-m",
+      `Created new branch ${name}`
+    ]);
+  }
+
+  checkout(root: string, branchPath: string) {
+    return this.exec(root, ["checkout", branchPath]);
+  }
+
+  switchBranch(root: string, path: string) {
+    return this.exec(root, ["switch", path]);
+  }
 }
 
 export class Repository {
@@ -131,15 +152,22 @@ export class Repository {
 
   async show(path: string, options: CpOptions = {}): Promise<string> {
     const result = await this.svn.show(path, options);
+
+    if (result.exitCode !== 0) {
+      throw new Error(result.stderr);
+    }
+
     return result.stdout;
   }
 
   async commitFiles(message: string, files: any[]) {
-    try {
-      return await this.svn.commit(message, files);
-    } catch (error) {
-      throw new Error("Unable to commit files");
+    const result = await this.svn.commit(message, files);
+
+    if (result.exitCode !== 0) {
+      throw new Error(result.stderr);
     }
+
+    return result.stdout;
   }
 
   addFile(filePath: string) {
@@ -163,18 +191,16 @@ export class Repository {
   async getBranches() {
     const info = await this.svn.info(this.root);
 
-    if (info.exitCode === 0) {
+    if (info.exitCode !== 0) {
       throw new Error(info.stderr);
     }
 
-    const repoUrl = info.stdout
-      .match(/<url>(.*?)<\/url>/)[1]
-      .replace(/\/[^\/]+$/, "");
+    const repoUrl = info.stdout.match(/<root>(.*?)<\/root>/)[1];
     const branchUrl = repoUrl + "/branches";
 
     const result = await this.svn.list(branchUrl);
 
-    if (result.exitCode === 0) {
+    if (result.exitCode !== 0) {
       throw new Error(result.stderr);
     }
 
@@ -183,6 +209,56 @@ export class Repository {
       .replace(/\/|\\/g, "")
       .split("\n");
 
-    return branches;
+    return ["trunk", ...branches];
+  }
+
+  async branch(name: string) {
+    const info = await this.svn.info(this.root);
+
+    if (info.exitCode !== 0) {
+      throw new Error(info.stderr);
+    }
+
+    const repoUrl = info.stdout.match(/<root>(.*?)<\/root>/)[1];
+    const newBranch = repoUrl + "/branches/" + name;
+    const rootUrl = repoUrl + "/trunk";
+
+    const result = await this.svn.copy(rootUrl, newBranch, name);
+
+    if (result.exitCode !== 0) {
+      throw new Error(result.stderr);
+    }
+
+    const switchBranch = await this.svn.switchBranch(this.root, newBranch);
+
+    if (switchBranch.exitCode !== 0) {
+      throw new Error(switchBranch.stderr);
+    }
+
+    return true;
+  }
+
+  async switchBranch(ref: string) {
+    const info = await this.svn.info(this.root);
+
+    if (info.exitCode !== 0) {
+      throw new Error(info.stderr);
+    }
+
+    const repoUrl = info.stdout.match(/<root>(.*?)<\/root>/)[1];
+
+    if (ref === "trunk") {
+      var branchUrl = repoUrl + "/trunk";
+    } else {
+      var branchUrl = repoUrl + "/branches/" + ref;
+    }
+
+    const switchBranch = await this.svn.switchBranch(this.root, branchUrl);
+
+    if (switchBranch.exitCode !== 0) {
+      throw new Error(switchBranch.stderr);
+    }
+
+    return true;
   }
 }

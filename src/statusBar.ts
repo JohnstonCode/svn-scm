@@ -18,12 +18,12 @@ export class SvnStatusBar {
   }
 
   get commands() {
-    const title = `$(git-branch) ${this.repository.branch}`;
+    const title = `$(git-branch) ${this.repository.currentBranch}`;
 
     return [
       {
-        command: "svn.checkout",
-        tooltip: "Checkout...",
+        command: "svn.switchBranch",
+        tooltip: "switch branch",
         title,
         arguments: [this.repository]
       }

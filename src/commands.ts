@@ -1,4 +1,11 @@
-import { commands, scm, window, Uri, TextDocumentShowOptions } from "vscode";
+import {
+  commands,
+  scm,
+  window,
+  Uri,
+  TextDocumentShowOptions,
+  QuickPickItem
+} from "vscode";
 import { inputCommitMessage, changesCommitted } from "./messages";
 import { Svn } from "./svn";
 import { Model } from "./model";
@@ -9,6 +16,38 @@ import * as path from "path";
 
 interface CommandOptions {
   repository?: boolean;
+}
+
+class CreateBranchItem implements QuickPickItem {
+  constructor(private commands: SvnCommands) {}
+
+  get label(): string {
+    return "$(plus) Create new branch";
+  }
+
+  get description(): string {
+    return "";
+  }
+
+  async run(repository: Repository): Promise<void> {
+    await this.commands.branch(repository);
+  }
+}
+
+class SwitchBranchItem implements QuickPickItem {
+  constructor(protected ref: string) {}
+
+  get label(): string {
+    return this.ref;
+  }
+
+  get description(): string {
+    return "";
+  }
+
+  async run(repository: Repository): Promise<void> {
+    await repository.switchBranch(this.ref);
+  }
 }
 
 export class SvnCommands {
@@ -47,8 +86,13 @@ export class SvnCommands {
         options: {}
       },
       {
-        commandId: "svn.checkout",
-        method: this.checkout,
+        commandId: "svn.switchBranch",
+        method: this.switchBranch,
+        options: { repository: true }
+      },
+      {
+        commandId: "svn.branch",
+        method: this.branch,
         options: { repository: true }
       }
     ];
@@ -239,15 +283,38 @@ export class SvnCommands {
     return resource.resourceUri;
   }
 
-  async checkout(repository: Repository) {
-    const branches = repository.branches;
+  async switchBranch(repository: Repository) {
+    const branches = repository.branches.map(
+      branch => new SwitchBranchItem(branch)
+    );
     const placeHolder = "Pick a branch to switch to.";
-    const choice = await window.showQuickPick(branches, { placeHolder });
+    const createBranch = new CreateBranchItem(this);
+    const picks = [createBranch, ...branches];
+
+    const choice = await window.showQuickPick(picks, { placeHolder });
 
     if (!choice) {
       return;
     }
 
-    console.log(choice);
+    await choice.run(repository);
+  }
+
+  async branch(repository: Repository): Promise<void> {
+    const result = await window.showInputBox({
+      placeholder: "Branch name",
+      prompt: "Please provide a branch name",
+      ignoreFocusOut: true
+    });
+
+    if (!result) {
+      return;
+    }
+
+    const name = result.replace(
+      /^\.|\/\.|\.\.|~|\^|:|\/$|\.lock$|\.lock\/|\\|\*|\s|^\s*$|\.$/g,
+      "-"
+    );
+    await repository.branch(name);
   }
 }

@@ -15,9 +15,18 @@
   "bugs": {
     "url": "https://github.com/JohnstonCode/svn-scm/issues"
   },
-  "categories": ["Other", "SCM Providers"],
-  "keywords": ["multi-root ready", "scm", "svn"],
-  "activationEvents": ["*"],
+  "categories": [
+    "Other",
+    "SCM Providers"
+  ],
+  "keywords": [
+    "multi-root ready",
+    "scm",
+    "svn"
+  ],
+  "activationEvents": [
+    "*"
+  ],
   "main": "./out/extension",
   "scripts": {
     "vscode:prepublish": "tsc -p ./",
@@ -26,7 +35,8 @@
     "test": "node ./node_modules/vscode/bin/test"
   },
   "dependencies": {
-    "iconv-lite": "^0.4.19"
+    "iconv-lite": "^0.4.19",
+    "jschardet": "^1.6.0"
   },
   "devDependencies": {
     "typescript": "^2.5.2",

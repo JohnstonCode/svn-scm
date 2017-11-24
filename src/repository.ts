@@ -22,8 +22,8 @@ export class Repository {
   public changes: SourceControlResourceGroup;
   public notTracked: SourceControlResourceGroup;
   private disposables: Disposable[] = [];
-  public branch = "";
-  public branches: any[];
+  public currentBranch = "";
+  public branches: any[] = [];
 
   private _onDidChangeStatus = new EventEmitter<void>();
   readonly onDidChangeStatus: Event<void> = this._onDidChangeStatus.event;
@@ -130,7 +130,7 @@ export class Repository {
     this.changes.resourceStates = changes;
     this.notTracked.resourceStates = notTracked;
 
-    this.branch = await this.getCurrentBranch();
+    this.currentBranch = await this.getCurrentBranch();
 
     try {
       this.branches = await this.repository.getBranches();
@@ -152,10 +152,7 @@ export class Repository {
   }
 
   show(filePath: string): Promise<string> {
-    const config = workspace.getConfiguration("files", Uri.file(filePath));
-    const encoding = config.get<string>("encoding");
-
-    return this.repository.show(filePath, { encoding });
+    return this.repository.show(filePath);
   }
 
   addFile(filePath: string) {
@@ -168,5 +165,13 @@ export class Repository {
 
   getCurrentBranch() {
     return this.repository.getCurrentBranch();
+  }
+
+  branch(name: string) {
+    return this.repository.branch(name);
+  }
+
+  switchBranch(name: string) {
+    return this.repository.switchBranch(name);
   }
 }
