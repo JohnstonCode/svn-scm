@@ -1,3 +1,10 @@
+# **v1.0.2**
+
+## Bug Fixes
+
+* Diff against head should now work.
+* Update debounce was re-added by @edgardmessias
+
 # **v1.0.1**
 
 ## What's New

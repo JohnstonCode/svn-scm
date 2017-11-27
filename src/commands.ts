@@ -81,8 +81,8 @@ export class SvnCommands {
         options: { repository: true }
       },
       {
-        commandId: "svn.openChanges",
-        method: this.openChanges,
+        commandId: "svn.openDiffHead",
+        method: this.openDiffHead,
         options: {}
       },
       {
@@ -212,55 +212,40 @@ export class SvnCommands {
     repository.update();
   }
 
-  async openChanges(resource: Resource) {
-    if (resource instanceof Resource) {
-      this.openResource(resource, true);
-    }
-  }
-
-  private async openResource(
-    resource: Resource,
-    preview?: boolean,
-    preserveFocus?: boolean,
-    preserveSelection?: boolean
-  ) {
+  async openDiff(resource: Resource, against: string) {
     const left = this.getLeftResource(resource);
     const right = this.getRightResource(resource);
-    // const title = this.getTitle(resource);
-    const title = "test";
+    const title = this.getDiffTitle(resource, against);
 
     if (!right) {
       return;
     }
 
     if (!left) {
-      window.showErrorMessage("File not found on HEAD");
+      window.showErrorMessage(`No diff available at ${against}`);
       return;
     }
 
-    const options: TextDocumentShowOptions = {
-      preserveFocus,
-      preview
-    };
-
-    const activeTextEditor = window.activeTextEditor;
-
-    if (
-      preserveSelection &&
-      activeTextEditor &&
-      activeTextEditor.document.uri.path === right.path
-    ) {
-      options.selection = activeTextEditor.selection;
-    }
-
-    if (!preview) {
-      await commands.executeCommand("vscode.open", right);
-    } else {
+    try {
       await commands.executeCommand("vscode.diff", left, right, title);
+    } catch (error) {
+      console.log(error);
     }
   }
 
-  private async getURI(uri: Uri, ref: string) {
+  private getDiffTitle(resource: Resource, ref: string): string {
+    let file = path.basename(resource.relativePath);
+
+    return `${file} (${ref})`;
+  }
+
+  async openDiffHead(resource: Resource) {
+    if (resource instanceof Resource) {
+      this.openDiff(resource, "HEAD");
+    }
+  }
+
+  private getURI(uri: Uri, ref: string): Uri {
     return toSvnUri(uri, ref);
   }
 
@@ -273,7 +258,7 @@ export class SvnCommands {
 
     switch (resource.type) {
       case "modified":
-        return this.getURI(resource.resourceUri, "~");
+        return this.getURI(resource.resourceUri, "HEAD");
       default:
         return false;
     }
