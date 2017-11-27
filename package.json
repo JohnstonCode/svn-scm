@@ -66,6 +66,11 @@
           "light": "icons/light/refresh.svg",
           "dark": "icons/dark/refresh.svg"
         }
+      },
+      {
+        "command": "svn.switchBranch",
+        "title": "Switch Branch",
+        "category": "SVN"
       }
     ],
     "menus": {
@@ -75,6 +80,10 @@
           "command": "svn.refresh",
           "group": "navigation",
           "when": "scmProvider == svn"
+        },
+        {
+          "command": "svn.switchBranch",
+          "when": "config.svn.enabled"
         }
       ],
       "scm/resourceGroup/context": [],
