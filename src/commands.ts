@@ -35,14 +35,26 @@ class CreateBranchItem implements QuickPickItem {
 }
 
 class SwitchBranchItem implements QuickPickItem {
-  constructor(protected ref: string) {}
+  protected tree: string = "";
+  protected name: string = "";
+  
+  constructor(protected ref: string) {
+    let parts = ref.split("/");
+    if (parts[1]) {
+      this.tree = parts[0];
+      this.name = parts[1];
+    } else {
+      this.tree = "trunk";
+      this.name = parts[0];
+    }
+  }
 
   get label(): string {
-    return this.ref;
+    return this.name;
   }
 
   get description(): string {
-    return "";
+    return this.tree;
   }
 
   async run(repository: Repository): Promise<void> {
