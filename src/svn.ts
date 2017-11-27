@@ -2,16 +2,30 @@ import { window } from "vscode";
 import * as cp from "child_process";
 import * as iconv from "iconv-lite";
 import * as jschardet from "jschardet";
+import { EventEmitter } from 'events';
 
 interface CpOptions {
   cwd?: string;
   encoding?: string;
+  log?: boolean;
 }
 
 export class Svn {
+  private _onOutput = new EventEmitter();
+  get onOutput(): EventEmitter { return this._onOutput; }
+
+  private log(output: string): void {
+    this._onOutput.emit('log', output);
+  }
+  
   async exec(cwd: string, args: any[], options: CpOptions = {}) {
     if (cwd) {
       options.cwd = cwd;
+    }
+
+
+    if (options.log !== false) {
+      this.log(`svn ${args.join(' ')}\n`);
     }
 
     let process = cp.spawn("svn", args, options);
@@ -41,6 +55,10 @@ export class Svn {
       : "utf8";
 
     stdout = iconv.decode(stdout, encoding);
+
+    if (options.log !== false && stderr.length > 0) {
+      this.log(`${stderr}\n`);
+    }
 
     return { exitCode, stdout, stderr };
   }
