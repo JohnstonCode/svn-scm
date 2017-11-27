@@ -11,7 +11,7 @@ import {
   Event
 } from "vscode";
 import { Resource } from "./resource";
-import { throttleAsync } from "./decorators";
+import { throttleAsync, debounce } from "./decorators";
 import { Repository as BaseRepository } from "./svn";
 import { SvnStatusBar } from "./statusBar";
 import { dispose } from "./util";
@@ -80,17 +80,16 @@ export class Repository {
   }
 
   private addEventListeners() {
-    // this.watcher.onDidChange(throttleAsync(this.update, "update", this));
-    // this.watcher.onDidCreate(throttleAsync(this.update, "update", this));
-    // this.watcher.onDidDelete(throttleAsync(this.update, "update", this));
+    const debounceUpdate = debounce(this.update, 1000, this);
+    
     this.watcher.onDidChange(() => {
-      this.update();
+      debounceUpdate();
     });
     this.watcher.onDidCreate(() => {
-      this.update();
+      debounceUpdate();
     });
     this.watcher.onDidDelete(() => {
-      this.update();
+      debounceUpdate();
     });
   }
 
