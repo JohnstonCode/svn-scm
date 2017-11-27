@@ -66,10 +66,8 @@ export class Svn {
 
   async getRepositoryRoot(path: string) {
     try {
-      let result = await this.exec(path, ["info", "--xml"]);
-      let rootPath = result.stdout.match(
-        /<wcroot-abspath>(.*)<\/wcroot-abspath>/i
-      )[1];
+      let result = await this.infoShowItem(path, "wc-root");
+      let rootPath = result.stdout.trim();
       return rootPath;
     } catch (error) {
       throw new Error("Unable to find repository root path");
@@ -123,6 +121,10 @@ export class Svn {
 
   info(path: string) {
     return this.exec(path, ["info", "--xml"]);
+  }
+
+  infoShowItem(path: string, item: string) {
+    return this.exec(path, ["info", "--show-item", item]);
   }
 
   copy(rootPath: string, branchPath: string, name: string) {
@@ -203,9 +205,9 @@ export class Repository {
 
   async getCurrentBranch(): Promise<string> {
     try {
-      const result = await this.svn.info(this.root);
+      const result = await this.svn.infoShowItem(this.root, "url");
       const currentBranch = result.stdout
-        .match(/<url>(.*?)<\/url>/)[1]
+        .trim()
         .split("/")
         .pop();
       return currentBranch;
@@ -216,19 +218,27 @@ export class Repository {
   }
 
   async getRepoUrl() {
-    const info = await this.svn.info(this.root);
+    const info = await this.svn.infoShowItem(this.root, "url");
 
     if (info.exitCode !== 0) {
       throw new Error(info.stderr);
     }
 
-    let repoUrl = info.stdout.match(/<root>(.*?)<\/root>/)[1];
-    const match = info.stdout.match(
-      /<url>(.*?)\/(trunk|branches|tags).*?<\/url>/
+    let repoUrl = "";
+    const match = info.stdout.trim().match(
+      /(.*?)\/(trunk|branches|tags).*?/
     );
 
     if (match[1]) {
       repoUrl = match[1];
+    } else {
+      const infoRoot = await this.svn.infoShowItem(this.root, "repos-root-url");
+
+      if (infoRoot.exitCode !== 0) {
+        throw new Error(infoRoot.stderr);
+      }
+
+      repoUrl = infoRoot.stdout.trim();
     }
 
     return repoUrl;
