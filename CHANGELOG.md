@@ -1,3 +1,10 @@
+# **v1.0.3**
+
+## Changes
+
+* Merged @edgardmessias PR Added support to subpath for project, in switching
+  branches
+
 # **v1.0.2**
 
 ## Bug Fixes
