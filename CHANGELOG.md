@@ -1,3 +1,9 @@
+# **v1.2.0**
+
+## What's New
+
+* @edgardmessias added output channel
+
 # **v1.1.0**
 
 ## What's New

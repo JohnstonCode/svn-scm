@@ -8,10 +8,9 @@ import { toDisposable } from "./util";
 function activate(context: ExtensionContext) {
   const disposables: Disposable[] = [];
 
-
-  const outputChannel = window.createOutputChannel('SVN');
+  const outputChannel = window.createOutputChannel("Svn");
   disposables.push(outputChannel);
-  
+
   const svn = new Svn();
   const model = new Model(svn);
   const contentProvider = new SvnContentProvider(model);
@@ -25,9 +24,10 @@ function activate(context: ExtensionContext) {
   );
 
   const onOutput = (str: string) => outputChannel.append(str);
-  svn.onOutput.addListener('log', onOutput);
-  disposables.push(toDisposable(() => svn.onOutput.removeListener('log', onOutput)));
-  
+  svn.onOutput.addListener("log", onOutput);
+  disposables.push(
+    toDisposable(() => svn.onOutput.removeListener("log", onOutput))
+  );
 }
 exports.activate = activate;
 
