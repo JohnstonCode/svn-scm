@@ -302,7 +302,6 @@ export class SvnCommands {
 
   async branch(repository: Repository): Promise<void> {
     const result = await window.showInputBox({
-      placeholder: "Branch name",
       prompt: "Please provide a branch name",
       ignoreFocusOut: true
     });
