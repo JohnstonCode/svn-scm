@@ -123,6 +123,16 @@ export class Svn {
   switchBranch(root: string, path: string) {
     return this.exec(root, ["switch", path]);
   }
+
+  revert(files: any[]) {
+    let args = ["revert"];
+
+    for (let file of files) {
+      args.push(file);
+    }
+
+    return this.exec("", args);
+  }
 }
 
 export class Repository {
@@ -188,13 +198,15 @@ export class Repository {
 
   async getRepoUrl() {
     const info = await this.svn.info(this.root);
-    
+
     if (info.exitCode !== 0) {
       throw new Error(info.stderr);
     }
 
     let repoUrl = info.stdout.match(/<root>(.*?)<\/root>/)[1];
-    const match = info.stdout.match(/<url>(.*?)\/(trunk|branches|tags).*?<\/url>/);
+    const match = info.stdout.match(
+      /<url>(.*?)\/(trunk|branches|tags).*?<\/url>/
+    );
 
     if (match[1]) {
       repoUrl = match[1];
@@ -208,7 +220,12 @@ export class Repository {
 
     const branches = [];
 
-    let trunkExists = await this.svn.exec("", ["ls", repoUrl + "/trunk", "--depth", "empty"]);
+    let trunkExists = await this.svn.exec("", [
+      "ls",
+      repoUrl + "/trunk",
+      "--depth",
+      "empty"
+    ]);
 
     if (trunkExists.exitCode === 0) {
       branches.push("trunk");
@@ -219,23 +236,21 @@ export class Repository {
     for (let index in trees) {
       const tree = trees[index];
       const branchUrl = repoUrl + "/" + tree;
-      
-        const result = await this.svn.list(branchUrl);
-    
-        if (result.exitCode !== 0) {
-          continue;
-        }
-    
-        const list = result.stdout
-          .trim()
-          .replace(/\/|\\/g, "")
-          .split(/[\r\n]+/)
-          .map((i: string) => tree + "/" + i);
 
-        branches.push(...list);
-      
+      const result = await this.svn.list(branchUrl);
+
+      if (result.exitCode !== 0) {
+        continue;
+      }
+
+      const list = result.stdout
+        .trim()
+        .replace(/\/|\\/g, "")
+        .split(/[\r\n]+/)
+        .map((i: string) => tree + "/" + i);
+
+      branches.push(...list);
     }
-
 
     return branches;
   }
@@ -262,7 +277,7 @@ export class Repository {
 
   async switchBranch(ref: string) {
     const repoUrl = await this.getRepoUrl();
-    
+
     var branchUrl = repoUrl + "/" + ref;
 
     const switchBranch = await this.svn.switchBranch(this.root, branchUrl);
@@ -272,5 +287,15 @@ export class Repository {
     }
 
     return true;
+  }
+
+  async revert(files: any[]) {
+    const result = await this.svn.revert(files);
+
+    if (result.exitCode !== 0) {
+      throw new Error(result.stderr);
+    }
+
+    return result.stdout;
   }
 }

@@ -37,7 +37,7 @@ class CreateBranchItem implements QuickPickItem {
 class SwitchBranchItem implements QuickPickItem {
   protected tree: string = "";
   protected name: string = "";
-  
+
   constructor(protected ref: string) {
     let parts = ref.split("/");
     if (parts[1]) {
@@ -105,6 +105,11 @@ export class SvnCommands {
       {
         commandId: "svn.branch",
         method: this.branch,
+        options: { repository: true }
+      },
+      {
+        commandId: "svn.revert",
+        method: this.revert,
         options: { repository: true }
       }
     ];
@@ -312,5 +317,19 @@ export class SvnCommands {
       "-"
     );
     await repository.branch(name);
+  }
+
+  async revert(repository: Repository, ...args: any[][]) {
+    try {
+      const paths = args[0].map(state => {
+        return state.resourceUri.fsPath;
+      });
+
+      await repository.repository.revert(paths);
+      repository.update();
+    } catch (error) {
+      console.error(error);
+      window.showErrorMessage("Unable to revert");
+    }
   }
 }

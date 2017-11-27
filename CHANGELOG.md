@@ -1,3 +1,9 @@
+# **v1.1.0**
+
+## What's New
+
+* Added file revert command
+
 # **v1.0.3**
 
 ## Changes

@@ -2,7 +2,7 @@
   "name": "svn-scm",
   "displayName": "SVN",
   "description": "Integrated Subversion source control",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "publisher": "johnstoncode",
   "engines": {
     "vscode": "^1.17.0"
@@ -71,6 +71,11 @@
         "command": "svn.switchBranch",
         "title": "Switch Branch",
         "category": "SVN"
+      },
+      {
+        "command": "svn.revert",
+        "title": "Revert Selected",
+        "category": "SVN"
       }
     ],
     "menus": {
@@ -100,6 +105,11 @@
         },
         {
           "command": "svn.openDiffHead",
+          "when": "scmProvider == svn && scmResourceGroup == changes",
+          "group": "1_modification"
+        },
+        {
+          "command": "svn.revert",
           "when": "scmProvider == svn && scmResourceGroup == changes",
           "group": "1_modification"
         }
