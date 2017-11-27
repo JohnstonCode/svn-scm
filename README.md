@@ -20,7 +20,7 @@ Files\TortoiseSVN\bin` is available in PATH.
 
 * [x] Source Control View
 * [x] Quick Diffs in gutter
-* [ ] Status Bar
+* [x] Status Bar
 * [ ] SVN Commands
 
 ## Feedback & Contributing
