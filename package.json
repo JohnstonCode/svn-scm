@@ -125,6 +125,15 @@
           "description": "Whether svn is enabled",
           "default": true
         }
+      },
+      "svn.path": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "description": "Path to the svn executable",
+        "default": null,
+        "isExecutable": true
       }
     }
   }
