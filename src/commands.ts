@@ -207,6 +207,7 @@ export class SvnCommands {
   }
 
   async commit(repository: Repository, ...args: any[][]): Promise<void> {
+    console.log(args);
     try {
       const paths = args[0].map(state => {
         return state.resourceUri.fsPath;

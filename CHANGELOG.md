@@ -1,3 +1,9 @@
+# **v1.3.2**
+
+## Bug Fixes
+
+* Fixed #44 wrong command attached to input box
+
 # **v1.3.1**
 
 ## Bug Fixes

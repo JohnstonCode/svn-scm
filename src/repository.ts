@@ -50,7 +50,7 @@ export class Repository {
       Uri.file(repository.root)
     );
     this.sourceControl.acceptInputCommand = {
-      command: "svn.commit",
+      command: "svn.commitWithMessage",
       title: "commit",
       arguments: [this.sourceControl]
     };
@@ -81,7 +81,7 @@ export class Repository {
 
   private addEventListeners() {
     const debounceUpdate = debounce(this.update, 1000, this);
-    
+
     this.watcher.onDidChange(() => {
       debounceUpdate();
     });
