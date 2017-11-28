@@ -83,47 +83,51 @@ export class Repository {
   async getBranches() {
     const repoUrl = await this.getRepoUrl();
 
-    let branches:string[] = [];
+    let branches: string[] = [];
 
     let promises = [];
 
-    promises.push(new Promise<string[]>(async resolve => {
-      let trunkExists = await this.svn.exec("", [
-        "ls",
-        repoUrl + "/trunk",
-        "--depth",
-        "empty"
-      ]);
+    promises.push(
+      new Promise<string[]>(async resolve => {
+        let trunkExists = await this.svn.exec("", [
+          "ls",
+          repoUrl + "/trunk",
+          "--depth",
+          "empty"
+        ]);
 
-      if (trunkExists.exitCode === 0) {
-        resolve(["trunk"]);
-        return;
-      }
-      resolve([]);
-    }));
+        if (trunkExists.exitCode === 0) {
+          resolve(["trunk"]);
+          return;
+        }
+        resolve([]);
+      })
+    );
 
     const trees = ["branches", "tags"];
 
     for (let index in trees) {
-      promises.push(new Promise<string[]>(async resolve => {
-        const tree = trees[index];
-        const branchUrl = repoUrl + "/" + tree;
+      promises.push(
+        new Promise<string[]>(async resolve => {
+          const tree = trees[index];
+          const branchUrl = repoUrl + "/" + tree;
 
-        const result = await this.svn.list(branchUrl);
+          const result = await this.svn.list(branchUrl);
 
-        if (result.exitCode !== 0) {
-          resolve([]);
-          return;
-        }
+          if (result.exitCode !== 0) {
+            resolve([]);
+            return;
+          }
 
-        const list = result.stdout
-          .trim()
-          .replace(/\/|\\/g, "")
-          .split(/[\r\n]+/)
-          .map((i: string) => tree + "/" + i);
+          const list = result.stdout
+            .trim()
+            .replace(/\/|\\/g, "")
+            .split(/[\r\n]+/)
+            .map((i: string) => tree + "/" + i);
 
-        resolve(list);
-      }));
+          resolve(list);
+        })
+      );
     }
 
     const all = await Promise.all<any>(promises);

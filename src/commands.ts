@@ -18,6 +18,25 @@ interface CommandOptions {
   repository?: boolean;
 }
 
+interface Command {
+  commandId: string;
+  key: string;
+  method: Function;
+  options: CommandOptions;
+}
+
+const Commands: Command[] = [];
+
+function command(commandId: string, options: CommandOptions = {}): Function {
+  return (target: any, key: string, descriptor: any) => {
+    if (!(typeof descriptor.value === "function")) {
+      throw new Error("not supported");
+    }
+
+    Commands.push({ commandId, key, method: descriptor.value, options });
+  };
+}
+
 class CreateBranchItem implements QuickPickItem {
   constructor(private commands: SvnCommands) {}
 
@@ -66,55 +85,7 @@ export class SvnCommands {
   private commands: any[] = [];
 
   constructor(private model: Model) {
-    this.commands = [
-      {
-        commandId: "svn.commitWithMessage",
-        method: this.commitWithMessage,
-        options: { repository: true }
-      },
-      {
-        commandId: "svn.add",
-        method: this.addFile,
-        options: {}
-      },
-      {
-        commandId: "svn.fileOpen",
-        method: this.fileOpen,
-        options: {}
-      },
-      {
-        commandId: "svn.commit",
-        method: this.commit,
-        options: { repository: true }
-      },
-      {
-        commandId: "svn.refresh",
-        method: this.refresh,
-        options: { repository: true }
-      },
-      {
-        commandId: "svn.openDiffHead",
-        method: this.openDiffHead,
-        options: {}
-      },
-      {
-        commandId: "svn.switchBranch",
-        method: this.switchBranch,
-        options: { repository: true }
-      },
-      {
-        commandId: "svn.branch",
-        method: this.branch,
-        options: { repository: true }
-      },
-      {
-        commandId: "svn.revert",
-        method: this.revert,
-        options: { repository: true }
-      }
-    ];
-
-    this.commands.map(({ commandId, method, options }) => {
+    Commands.map(({ commandId, method, options }) => {
       const command = this.createCommand(method, options);
       commands.registerCommand(commandId, command);
     });
@@ -158,10 +129,12 @@ export class SvnCommands {
     return result;
   }
 
+  @command("svn.fileOpen")
   fileOpen(resourceUri: Uri) {
     commands.executeCommand("vscode.open", resourceUri);
   }
 
+  @command("svn.commitWithMessage", { repository: true })
   async commitWithMessage(repository: Repository) {
     const message = repository.inputBox.value;
     const changes = repository.changes.resourceStates;
@@ -191,6 +164,7 @@ export class SvnCommands {
     }
   }
 
+  @command("svn.add")
   async addFile(resource: Resource) {
     const repository = this.model.getRepository(resource.resourceUri.fsPath);
 
@@ -206,6 +180,7 @@ export class SvnCommands {
     }
   }
 
+  @command("svn.commit", { repository: true })
   async commit(repository: Repository, ...args: any[][]): Promise<void> {
     console.log(args);
     try {
@@ -227,6 +202,7 @@ export class SvnCommands {
     }
   }
 
+  @command("svn.refresh", { repository: true })
   refresh(repository: Repository) {
     repository.update();
   }
@@ -258,6 +234,7 @@ export class SvnCommands {
     return `${file} (${ref})`;
   }
 
+  @command("svn.openDiffHead")
   async openDiffHead(resource: Resource) {
     if (resource instanceof Resource) {
       this.openDiff(resource, "HEAD");
@@ -287,6 +264,7 @@ export class SvnCommands {
     return resource.resourceUri;
   }
 
+  @command("svn.switchBranch", { repository: true })
   async switchBranch(repository: Repository) {
     const branches = repository.branches.map(
       branch => new SwitchBranchItem(branch)
@@ -304,6 +282,7 @@ export class SvnCommands {
     await choice.run(repository);
   }
 
+  @command("svn.branch", { repository: true })
   async branch(repository: Repository): Promise<void> {
     const result = await window.showInputBox({
       prompt: "Please provide a branch name",
@@ -321,6 +300,7 @@ export class SvnCommands {
     await repository.branch(name);
   }
 
+  @command("svn.revert", { repository: true })
   async revert(repository: Repository, ...args: any[][]) {
     try {
       const paths = args[0].map(state => {
