@@ -119,8 +119,9 @@ export class Model {
     }
   }
 
-  async tryOpenRepository(path: string): Promise<void> {
-    if (this.getRepository(path)) {
+  async tryOpenRepository(path: string, level = 1): Promise<void> {
+    // @todo add a config value and run a recursive function to scan folders for the defined depth
+    if (this.getRepository(path) || level > 4) {
       return;
     }
 
@@ -135,7 +136,14 @@ export class Model {
 
       this.open(repository);
     } catch (err) {
-      console.error(err);
+      const newLevel = level + 1;
+      fs.readdirSync(path).forEach(file => {
+        const dir = path + "/" + file;
+        if (fs.statSync(dir).isDirectory()) {
+          this.tryOpenRepository(dir, newLevel);
+        }
+      });
+
       return;
     }
   }
