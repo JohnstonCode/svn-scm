@@ -1,9 +1,8 @@
-import { EventEmitter } from "events";
 import { window } from "vscode";
 import * as cp from "child_process";
 import * as iconv from "iconv-lite";
 import * as jschardet from "jschardet";
-import * as path from 'path';
+import { EventEmitter } from "events";
 
 interface CpOptions {
   cwd?: string;
@@ -176,17 +175,9 @@ export interface ISvnOptions {
 }
 
 export class Svn {
-  private svnPath: string;
-  private version: string;
-
   private _onOutput = new EventEmitter();
   get onOutput(): EventEmitter {
     return this._onOutput;
-  }
-
-  constructor(options: ISvnOptions) {
-    this.svnPath = options.svnPath;
-    this.version = options.version;
   }
 
   private log(output: string): void {
@@ -202,7 +193,7 @@ export class Svn {
       this.log(`svn ${args.join(" ")}\n`);
     }
 
-    let process = cp.spawn(this.svnPath, args, options);
+    let process = cp.spawn("svn", args, options);
 
     let [exitCode, stdout, stderr] = await Promise.all<any>([
       new Promise<number>((resolve, reject) => {

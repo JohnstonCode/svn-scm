@@ -1,3 +1,9 @@
+# **v1.2.1**
+
+## Bug Fixes
+
+* Added better error logging for failed commits
+
 # **v1.2.0**
 
 ## What's New
