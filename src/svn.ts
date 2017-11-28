@@ -4,122 +4,32 @@ import * as cp from "child_process";
 import * as iconv from "iconv-lite";
 import * as jschardet from "jschardet";
 import * as path from "path";
+import { Repository } from "./svnRepository";
 
-interface CpOptions {
+export interface CpOptions {
   cwd?: string;
   encoding?: string;
   log?: boolean;
 }
 
-export interface ISvn {
-  path: string;
+export interface ISvnErrorData {
+  error?: Error;
+  message?: string;
+  stdout?: string;
+  stderr?: string;
+  exitCode?: number;
+  svnErrorCode?: string;
+  svnCommand?: string;
+}
+
+export interface ISvnOptions {
+  svnPath: string;
   version: string;
 }
 
-function parseVersion(raw: string): string {
-  const match = raw.match(/(\d+\.\d+\.\d+ \(r\d+\))/);
-
-  if (match && match[0]) {
-    return match[0];
-  }
-  return raw.split(/[\r\n]+/)[0];
-}
-
-function findSpecificSvn(path: string): Promise<ISvn> {
-  return new Promise<ISvn>((c, e) => {
-    const buffers: Buffer[] = [];
-    const child = cp.spawn(path, ["--version"]);
-    child.stdout.on("data", (b: Buffer) => buffers.push(b));
-    child.on("error", cpErrorHandler(e));
-    child.on(
-      "exit",
-      code =>
-        code
-          ? e(new Error("Not found"))
-          : c({
-              path,
-              version: parseVersion(
-                Buffer.concat(buffers)
-                  .toString("utf8")
-                  .trim()
-              )
-            })
-    );
-  });
-}
-
-function findSvnDarwin(): Promise<ISvn> {
-  return new Promise<ISvn>((c, e) => {
-    cp.exec("which svn", (err, svnPathBuffer) => {
-      if (err) {
-        return e("svn not found");
-      }
-
-      const path = svnPathBuffer.toString().replace(/^\s+|\s+$/g, "");
-
-      function getVersion(path: string) {
-        // make sure svn executes
-        cp.exec("svn --version", (err, stdout) => {
-          if (err) {
-            return e("svn not found");
-          }
-
-          return c({ path, version: parseVersion(stdout.trim()) });
-        });
-      }
-
-      if (path !== "/usr/bin/svn") {
-        return getVersion(path);
-      }
-
-      // must check if XCode is installed
-      cp.exec("xcode-select -p", (err: any) => {
-        if (err && err.code === 2) {
-          // svn is not installed, and launching /usr/bin/svn
-          // will prompt the user to install it
-
-          return e("svn not found");
-        }
-
-        getVersion(path);
-      });
-    });
-  });
-}
-
-function findSystemSvnWin32(base: string): Promise<ISvn> {
-  if (!base) {
-    return Promise.reject<ISvn>("Not found");
-  }
-
-  return findSpecificSvn(path.join(base, "TortoiseSVN", "bin", "svn.exe"));
-}
-
-function findSvnWin32(): Promise<ISvn> {
-  return findSystemSvnWin32(process.env["ProgramW6432"])
-    .then(void 0, () => findSystemSvnWin32(process.env["ProgramFiles(x86)"]))
-    .then(void 0, () => findSystemSvnWin32(process.env["ProgramFiles"]))
-    .then(void 0, () => findSpecificSvn("svn"));
-}
-
-export function findSvn(hint: string | undefined): Promise<ISvn> {
-  var first = hint ? findSpecificSvn(hint) : Promise.reject<ISvn>(null);
-
-  return first
-    .then(void 0, () => {
-      switch (process.platform) {
-        case "darwin":
-          return findSvnDarwin();
-        case "win32":
-          return findSvnWin32();
-        default:
-          return findSpecificSvn("svn");
-      }
-    })
-    .then(null, () => Promise.reject(new Error("Svn installation not found.")));
-}
-
-function cpErrorHandler(cb: (reason?: any) => void): (reason?: any) => void {
+export function cpErrorHandler(
+  cb: (reason?: any) => void
+): (reason?: any) => void {
   return err => {
     if (/ENOENT/.test(err.message)) {
       err = new SvnError({
@@ -131,16 +41,6 @@ function cpErrorHandler(cb: (reason?: any) => void): (reason?: any) => void {
 
     cb(err);
   };
-}
-
-export interface ISvnErrorData {
-  error?: Error;
-  message?: string;
-  stdout?: string;
-  stderr?: string;
-  exitCode?: number;
-  svnErrorCode?: string;
-  svnCommand?: string;
 }
 
 export class SvnError {
@@ -190,11 +90,6 @@ export class SvnError {
 
     return result;
   }
-}
-
-export interface ISvnOptions {
-  svnPath: string;
-  version: string;
 }
 
 export class Svn {
@@ -332,170 +227,5 @@ export class Svn {
     }
 
     return this.exec("", args);
-  }
-}
-
-export class Repository {
-  constructor(
-    private svn: Svn,
-    public root: string,
-    public workspaceRoot: string
-  ) {}
-
-  async getStatus(): Promise<any[]> {
-    const result = await this.svn.exec(this.workspaceRoot, ["stat"]);
-
-    let items = result.stdout.split("\n");
-    let status = [];
-
-    for (let item of items) {
-      let state = item.charAt(0);
-      let path = item.substr(8).trim();
-
-      status.push([state, path]);
-    }
-
-    return status;
-  }
-
-  async show(path: string, options: CpOptions = {}): Promise<string> {
-    const result = await this.svn.show(path, options);
-
-    if (result.exitCode !== 0) {
-      throw new Error(result.stderr);
-    }
-
-    return result.stdout;
-  }
-
-  async commitFiles(message: string, files: any[]) {
-    const result = await this.svn.commit(message, files);
-
-    if (result.exitCode !== 0) {
-      throw new Error(result.stderr);
-    }
-
-    return result.stdout;
-  }
-
-  addFile(filePath: string) {
-    return this.svn.add(filePath);
-  }
-
-  async getCurrentBranch(): Promise<string> {
-    try {
-      const result = await this.svn.info(this.root);
-      const currentBranch = result.stdout
-        .match(/<url>(.*?)<\/url>/)[1]
-        .split("/")
-        .pop();
-      return currentBranch;
-    } catch (error) {
-      console.error(error);
-      return "";
-    }
-  }
-
-  async getRepoUrl() {
-    const info = await this.svn.info(this.root);
-
-    if (info.exitCode !== 0) {
-      throw new Error(info.stderr);
-    }
-
-    let repoUrl = info.stdout.match(/<root>(.*?)<\/root>/)[1];
-    const match = info.stdout.match(
-      /<url>(.*?)\/(trunk|branches|tags).*?<\/url>/
-    );
-
-    if (match && match[1]) {
-      repoUrl = match[1];
-    }
-
-    return repoUrl;
-  }
-
-  async getBranches() {
-    const repoUrl = await this.getRepoUrl();
-
-    const branches = [];
-
-    let trunkExists = await this.svn.exec("", [
-      "ls",
-      repoUrl + "/trunk",
-      "--depth",
-      "empty"
-    ]);
-
-    if (trunkExists.exitCode === 0) {
-      branches.push("trunk");
-    }
-
-    const trees = ["branches", "tags"];
-
-    for (let index in trees) {
-      const tree = trees[index];
-      const branchUrl = repoUrl + "/" + tree;
-
-      const result = await this.svn.list(branchUrl);
-
-      if (result.exitCode !== 0) {
-        continue;
-      }
-
-      const list = result.stdout
-        .trim()
-        .replace(/\/|\\/g, "")
-        .split(/[\r\n]+/)
-        .map((i: string) => tree + "/" + i);
-
-      branches.push(...list);
-    }
-
-    return branches;
-  }
-
-  async branch(name: string) {
-    const repoUrl = await this.getRepoUrl();
-    const newBranch = repoUrl + "/branches/" + name;
-    const rootUrl = repoUrl + "/trunk";
-
-    const result = await this.svn.copy(rootUrl, newBranch, name);
-
-    if (result.exitCode !== 0) {
-      throw new Error(result.stderr);
-    }
-
-    const switchBranch = await this.svn.switchBranch(this.root, newBranch);
-
-    if (switchBranch.exitCode !== 0) {
-      throw new Error(switchBranch.stderr);
-    }
-
-    return true;
-  }
-
-  async switchBranch(ref: string) {
-    const repoUrl = await this.getRepoUrl();
-
-    var branchUrl = repoUrl + "/" + ref;
-
-    const switchBranch = await this.svn.switchBranch(this.root, branchUrl);
-
-    if (switchBranch.exitCode !== 0) {
-      throw new Error(switchBranch.stderr);
-    }
-
-    return true;
-  }
-
-  async revert(files: any[]) {
-    const result = await this.svn.revert(files);
-
-    if (result.exitCode !== 0) {
-      throw new Error(result.stderr);
-    }
-
-    return result.stdout;
   }
 }
