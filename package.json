@@ -55,6 +55,11 @@
         "category": "SVN"
       },
       {
+        "command": "svn.commitWithMessage",
+        "title": "Commit All Changed Files",
+        "category": "SVN"
+      },
+      {
         "command": "svn.openDiffHead",
         "title": "Diff Changes HEAD",
         "category": "SVN"
