@@ -12,7 +12,7 @@ import {
 } from "vscode";
 import { Resource } from "./resource";
 import { throttleAsync, debounce } from "./decorators";
-import { Repository as BaseRepository } from "./svn";
+import { Repository as BaseRepository } from "./svnRepository";
 import { SvnStatusBar } from "./statusBar";
 import { dispose } from "./util";
 

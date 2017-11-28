@@ -1,5 +1,6 @@
 import { ExtensionContext, Disposable, workspace, window } from "vscode";
-import { Svn, findSvn } from "./svn";
+import { Svn } from "./svn";
+import { SvnFinder } from "./svnFinder";
 import { SvnContentProvider } from "./svnContentProvider";
 import { SvnCommands } from "./commands";
 import { Model } from "./model";
@@ -9,19 +10,20 @@ async function init(context: ExtensionContext, disposables: Disposable[]) {
   const outputChannel = window.createOutputChannel("Svn");
   disposables.push(outputChannel);
 
-  const config = workspace.getConfiguration('svn');
-  const enabled = config.get<boolean>('enabled') === true;
-  const pathHint = config.get<string>('path');
+  const config = workspace.getConfiguration("svn");
+  const enabled = config.get<boolean>("enabled") === true;
+  const pathHint = config.get<string>("path");
+  const svnFinder = new SvnFinder();
 
   let info = null;
   try {
-    info = await findSvn(pathHint);
+    info = await svnFinder.findSvn(pathHint);
   } catch (error) {
     outputChannel.appendLine(error);
     return;
   }
 
-  const svn = new Svn({svnPath: info.path, version: info.version});
+  const svn = new Svn({ svnPath: info.path, version: info.version });
   const model = new Model(svn);
   const contentProvider = new SvnContentProvider(model);
   const commands = new SvnCommands(model);
@@ -42,10 +44,11 @@ async function init(context: ExtensionContext, disposables: Disposable[]) {
 
 function activate(context: ExtensionContext): any {
   const disposables: Disposable[] = [];
-  context.subscriptions.push(new Disposable(() => Disposable.from(...disposables).dispose()));
+  context.subscriptions.push(
+    new Disposable(() => Disposable.from(...disposables).dispose())
+  );
 
-  init(context, disposables)
-    .catch(err => console.error(err));
+  init(context, disposables).catch(err => console.error(err));
 }
 
 exports.activate = activate;
