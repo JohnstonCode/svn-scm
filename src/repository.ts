@@ -50,8 +50,8 @@ export class Repository {
       Uri.file(repository.root)
     );
     this.sourceControl.acceptInputCommand = {
-      command: "svn.commit",
-      title: "commit",
+      command: "svn.commitWithMessage",
+      title: "Commit All Changed Files",
       arguments: [this.sourceControl]
     };
     this.sourceControl.quickDiffProvider = this;
