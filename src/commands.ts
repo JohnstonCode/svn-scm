@@ -186,7 +186,8 @@ export class SvnCommands {
       changesCommitted();
       repository.update();
     } catch (error) {
-      window.showErrorMessage("Unable to commit");
+      console.error(error);
+      window.showErrorMessage(error);
     }
   }
 
