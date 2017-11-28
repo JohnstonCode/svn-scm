@@ -11,10 +11,11 @@ import {
   Event
 } from "vscode";
 import { Resource } from "./resource";
-import { throttleAsync, debounce } from "./decorators";
+import { throttle, debounce } from "./decorators";
 import { Repository as BaseRepository } from "./svn";
 import { SvnStatusBar } from "./statusBar";
-import { dispose } from "./util";
+import { dispose, anyEvent, filterEvent } from "./util";
+import * as path from 'path';
 
 export class Repository {
   public watcher: FileSystemWatcher;
@@ -23,7 +24,11 @@ export class Repository {
   public notTracked: SourceControlResourceGroup;
   private disposables: Disposable[] = [];
   public currentBranch = "";
+  public isSwitchingBranch: boolean = false;
   public branches: any[] = [];
+
+  private _onDidChangeRepository = new EventEmitter<Uri>();
+  readonly onDidChangeRepository: Event<Uri> = this._onDidChangeRepository.event;
 
   private _onDidChangeStatus = new EventEmitter<void>();
   readonly onDidChangeStatus: Event<void> = this._onDidChangeStatus.event;
@@ -41,8 +46,16 @@ export class Repository {
   }
 
   constructor(public repository: BaseRepository) {
-    this.watcher = workspace.createFileSystemWatcher("**");
-    this.disposables.push(this.watcher);
+    const fsWatcher = workspace.createFileSystemWatcher("**");
+    this.disposables.push(fsWatcher);
+
+    const onWorkspaceChange = anyEvent(fsWatcher.onDidChange, fsWatcher.onDidCreate, fsWatcher.onDidDelete);
+    const onRepositoryChange = filterEvent(onWorkspaceChange, uri => !/^\.\./.test(path.relative(repository.root, uri.fsPath)));
+    const onRelevantRepositoryChange = filterEvent(onRepositoryChange, uri => !/\/\.svn\/tmp/.test(uri.path));
+    onRelevantRepositoryChange(this.update, this, this.disposables);
+
+    const onRelevantSvnChange = filterEvent(onRelevantRepositoryChange, uri => /\/\.svn\//.test(uri.path));
+    onRelevantSvnChange(this._onDidChangeRepository.fire, this._onDidChangeRepository, this.disposables);
 
     this.sourceControl = scm.createSourceControl(
       "svn",
@@ -76,23 +89,9 @@ export class Repository {
     this.notTracked.hideWhenEmpty = true;
 
     this.update();
-    this.addEventListeners();
   }
 
-  private addEventListeners() {
-    const debounceUpdate = debounce(this.update, 1000, this);
-
-    this.watcher.onDidChange(() => {
-      debounceUpdate();
-    });
-    this.watcher.onDidCreate(() => {
-      debounceUpdate();
-    });
-    this.watcher.onDidDelete(() => {
-      debounceUpdate();
-    });
-  }
-
+  @debounce(1000)
   async update() {
     let changes: any[] = [];
     let notTracked: any[] = [];
@@ -170,7 +169,12 @@ export class Repository {
     return this.repository.branch(name);
   }
 
-  switchBranch(name: string) {
-    return this.repository.switchBranch(name);
+  async switchBranch(name: string) {
+    this.isSwitchingBranch = true;
+    this._onDidChangeStatus.fire();
+    const response = await this.repository.switchBranch(name);
+    this.isSwitchingBranch = false;
+    this._onDidChangeStatus.fire();
+    return response;
   }
 }

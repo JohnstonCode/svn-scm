@@ -4,6 +4,9 @@ export interface BaseDisposable {
   dispose(): void;
 }
 
+export function done<T>(promise: Promise<T>): Promise<void> {
+  return promise.then<void>(() => void 0);
+}
 export function anyEvent<T>(...events: Event<T>[]): Event<T> {
   return (listener, thisArgs = null, disposables?) => {
     const result = combinedDisposable(
