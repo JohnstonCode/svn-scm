@@ -1,26 +1,23 @@
-import { ExtensionContext, Disposable, workspace, window } from "vscode";
-import { Svn, findSvn } from "./svn";
+import { ExtensionContext, Disposable, window } from "vscode";
+import { Svn } from "./svn";
 import { SvnContentProvider } from "./svnContentProvider";
 import { SvnCommands } from "./commands";
 import { Model } from "./model";
 import { toDisposable } from "./util";
 
-async function init(context: ExtensionContext, disposables: Disposable[]): Promise<void> {
+function activate(context: ExtensionContext) {
+  const disposables: Disposable[] = [];
+
   const outputChannel = window.createOutputChannel("Svn");
   disposables.push(outputChannel);
 
-  const config = workspace.getConfiguration('svn');
-  const enabled = config.get<boolean>('enabled') === true;
-  const pathHint = workspace.getConfiguration('svn').get<string>('path');
-  const info = await findSvn(pathHint);
-
-  const svn = new Svn({svnPath: info.path, version: info.version});
+  const svn = new Svn();
   const model = new Model(svn);
   const contentProvider = new SvnContentProvider(model);
   const commands = new SvnCommands(model);
   disposables.push(model);
 
-  outputChannel.appendLine("Using svn " + info.version + " from " + info.path);
+  outputChannel.appendLine("svn-scm is now active!");
 
   context.subscriptions.push(
     new Disposable(() => Disposable.from(...disposables).dispose())
@@ -32,16 +29,6 @@ async function init(context: ExtensionContext, disposables: Disposable[]): Promi
     toDisposable(() => svn.onOutput.removeListener("log", onOutput))
   );
 }
-
-function activate(context: ExtensionContext): any {
-  const disposables: Disposable[] = [];
-  context.subscriptions.push(new Disposable(() => Disposable.from(...disposables).dispose()));
-
-  init(context, disposables)
-    .catch(err => console.error(err));
-}
-
-
 exports.activate = activate;
 
 // this method is called when your extension is deactivated
