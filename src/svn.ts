@@ -400,7 +400,7 @@ export class Repository {
       /<url>(.*?)\/(trunk|branches|tags).*?<\/url>/
     );
 
-    if (match[1]) {
+    if (match && match[1]) {
       repoUrl = match[1];
     }
 
