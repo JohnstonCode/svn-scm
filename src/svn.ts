@@ -1,8 +1,9 @@
+import { EventEmitter } from "events";
 import { window } from "vscode";
 import * as cp from "child_process";
 import * as iconv from "iconv-lite";
 import * as jschardet from "jschardet";
-import { EventEmitter } from "events";
+import * as path from 'path';
 
 interface CpOptions {
   cwd?: string;
@@ -10,10 +11,182 @@ interface CpOptions {
   log?: boolean;
 }
 
+export interface ISvn {
+  path: string;
+  version: string;
+}
+
+function parseVersion(raw: string): string {
+  const match = raw.match(/(\d+\.\d+\.\d+ \(r\d+\))/);
+
+  if(match && match[0]) {
+    return match[0];
+  }
+  return raw.split(/[\r\n]+/)[0];
+}
+
+function findSpecificSvn(path: string): Promise<ISvn> {
+  return new Promise<ISvn>((c, e) => {
+    const buffers: Buffer[] = [];
+    const child = cp.spawn(path, ['--version']);
+    child.stdout.on('data', (b: Buffer) => buffers.push(b));
+    child.on('error', cpErrorHandler(e));
+    child.on('exit', code => code ? e(new Error('Not found')) : c({ path, version: parseVersion(Buffer.concat(buffers).toString('utf8').trim()) }));
+  });
+}
+
+function findSvnDarwin(): Promise<ISvn> {
+  return new Promise<ISvn>((c, e) => {
+    cp.exec('which svn', (err, svnPathBuffer) => {
+      if (err) {
+        return e('svn not found');
+      }
+
+      const path = svnPathBuffer.toString().replace(/^\s+|\s+$/g, '');
+
+      function getVersion(path: string) {
+        // make sure svn executes
+        cp.exec('svn --version', (err, stdout) => {
+          if (err) {
+            return e('svn not found');
+          }
+
+          return c({ path, version: parseVersion(stdout.trim()) });
+        });
+      }
+
+      if (path !== '/usr/bin/svn') {
+        return getVersion(path);
+      }
+
+      // must check if XCode is installed
+      cp.exec('xcode-select -p', (err: any) => {
+        if (err && err.code === 2) {
+          // svn is not installed, and launching /usr/bin/svn
+          // will prompt the user to install it
+
+          return e('svn not found');
+        }
+
+        getVersion(path);
+      });
+    });
+  });
+}
+
+function findSystemSvnWin32(base: string): Promise<ISvn> {
+  if (!base) {
+    return Promise.reject<ISvn>('Not found');
+  }
+
+  return findSpecificSvn(path.join(base, 'TortoiseSVN', 'bin', 'svn.exe'));
+}
+
+function findSvnWin32(): Promise<ISvn> {
+  return findSystemSvnWin32(process.env['ProgramW6432'])
+    .then(void 0, () => findSystemSvnWin32(process.env['ProgramFiles(x86)']))
+    .then(void 0, () => findSystemSvnWin32(process.env['ProgramFiles']))
+    .then(void 0, () => findSpecificSvn('svn'));
+}
+
+export function findSvn(hint: string | undefined): Promise<ISvn> {
+  var first = hint ? findSpecificSvn(hint) : Promise.reject<ISvn>(null);
+
+  return first
+    .then(void 0, () => {
+      switch (process.platform) {
+        case 'darwin': return findSvnDarwin();
+        case 'win32': return findSvnWin32();
+        default: return findSpecificSvn('svn');
+      }
+    })
+    .then(null, () => Promise.reject(new Error('Svn installation not found.')));
+}
+
+function cpErrorHandler(cb: (reason?: any) => void): (reason?: any) => void {
+  return err => {
+    if (/ENOENT/.test(err.message)) {
+      err = new SvnError({
+        error: err,
+        message: 'Failed to execute svn (ENOENT)',
+        svnErrorCode: 'NotASvnRepository'
+      });
+    }
+
+    cb(err);
+  };
+}
+
+export interface ISvnErrorData {
+  error?: Error;
+  message?: string;
+  stdout?: string;
+  stderr?: string;
+  exitCode?: number;
+  svnErrorCode?: string;
+  svnCommand?: string;
+}
+
+export class SvnError {
+
+  error?: Error;
+  message: string;
+  stdout?: string;
+  stderr?: string;
+  exitCode?: number;
+  svnErrorCode?: string;
+  svnCommand?: string;
+
+  constructor(data: ISvnErrorData) {
+    if (data.error) {
+      this.error = data.error;
+      this.message = data.error.message;
+    } else {
+      this.error = void 0;
+    }
+
+    this.message = this.message || data.message || 'SVN error';
+    this.stdout = data.stdout;
+    this.stderr = data.stderr;
+    this.exitCode = data.exitCode;
+    this.svnErrorCode = data.svnErrorCode;
+    this.svnCommand = data.svnCommand;
+  }
+
+  toString(): string {
+    let result = this.message + ' ' + JSON.stringify({
+      exitCode: this.exitCode,
+      svnErrorCode: this.svnErrorCode,
+      svnCommand: this.svnCommand,
+      stdout: this.stdout,
+      stderr: this.stderr
+    }, null, 2);
+
+    if (this.error) {
+      result += (<any>this.error).stack;
+    }
+
+    return result;
+  }
+}
+
+export interface ISvnOptions {
+  svnPath: string;
+  version: string;
+}
+
 export class Svn {
+  private svnPath: string;
+  private version: string;
+
   private _onOutput = new EventEmitter();
   get onOutput(): EventEmitter {
     return this._onOutput;
+  }
+
+  constructor(options: ISvnOptions) {
+    this.svnPath = options.svnPath;
+    this.version = options.version;
   }
 
   private log(output: string): void {
@@ -29,7 +202,7 @@ export class Svn {
       this.log(`svn ${args.join(" ")}\n`);
     }
 
-    let process = cp.spawn("svn", args, options);
+    let process = cp.spawn(this.svnPath, args, options);
 
     let [exitCode, stdout, stderr] = await Promise.all<any>([
       new Promise<number>((resolve, reject) => {
