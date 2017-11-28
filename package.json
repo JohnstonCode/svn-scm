@@ -124,13 +124,28 @@
           "type": "boolean",
           "description": "Whether svn is enabled",
           "default": true
+        },
+        "svn.path": {
+          "type": ["string", "null"],
+          "description": "Path to the svn executable",
+          "default": null,
+          "isExecutable": true
+        },
+        "svn.layout.trunk": {
+          "type": ["string", "null"],
+          "description": "Relative path for 'trunk' in SVN URL, 'null' to disable. (Ex.: 'trunk', 'main')",
+          "default": "trunk"
+        },
+        "svn.layout.branches": {
+          "type": ["string", "null"],
+          "description": "Relative path for 'branches' in SVN URL, 'null' to disable. (Ex.: 'branches', 'versions')",
+          "default": "branches"
+        },
+        "svn.layout.tags": {
+          "type": ["string", "null"],
+          "description": "Relative path for 'tags' in SVN URL, 'null' to disable. (Ex.: 'tags', 'stamps')",
+          "default": "tags"
         }
-      },
-      "svn.path": {
-        "type": ["string", "null"],
-        "description": "Path to the svn executable",
-        "default": null,
-        "isExecutable": true
       }
     }
   }

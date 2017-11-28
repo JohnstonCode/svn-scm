@@ -1,3 +1,4 @@
+import { workspace } from "vscode";
 import { Svn, CpOptions } from "./svn";
 
 export class Repository {
@@ -62,6 +63,14 @@ export class Repository {
   }
 
   async getRepoUrl() {
+    const config = workspace.getConfiguration("svn");
+    const trunkLayout = config.get<string>("layout.trunk");
+    const branchesLayout = config.get<string>("layout.branches");
+    const tagsLayout = config.get<string>("layout.tags");
+
+    const trees = [trunkLayout, branchesLayout, tagsLayout].filter(x => x != null);
+    const regex = new RegExp("<url>(.*?)\/(" + trees.join("|") + ").*?<\/url>");
+
     const info = await this.svn.info(this.root);
 
     if (info.exitCode !== 0) {
@@ -69,9 +78,7 @@ export class Repository {
     }
 
     let repoUrl = info.stdout.match(/<root>(.*?)<\/root>/)[1];
-    const match = info.stdout.match(
-      /<url>(.*?)\/(trunk|branches|tags).*?<\/url>/
-    );
+    const match = info.stdout.match(regex);
 
     if (match && match[1]) {
       repoUrl = match[1];
@@ -81,30 +88,45 @@ export class Repository {
   }
 
   async getBranches() {
+    const config = workspace.getConfiguration("svn");
+    const trunkLayout = config.get<string>("layout.trunk");
+    const branchesLayout = config.get<string>("layout.branches");
+    const tagsLayout = config.get<string>("layout.tags");
+
     const repoUrl = await this.getRepoUrl();
 
     let branches: string[] = [];
 
     let promises = [];
 
-    promises.push(
-      new Promise<string[]>(async resolve => {
-        let trunkExists = await this.svn.exec("", [
-          "ls",
-          repoUrl + "/trunk",
-          "--depth",
-          "empty"
-        ]);
+    if (trunkLayout) {
+      promises.push(
+        new Promise<string[]>(async resolve => {
+          let trunkExists = await this.svn.exec("", [
+            "ls",
+            repoUrl + "/" + trunkLayout,
+            "--depth",
+            "empty"
+          ]);
 
-        if (trunkExists.exitCode === 0) {
-          resolve(["trunk"]);
-          return;
-        }
-        resolve([]);
-      })
-    );
+          if (trunkExists.exitCode === 0) {
+            resolve([trunkLayout]);
+            return;
+          }
+          resolve([]);
+        })
+      );
+    }
 
-    const trees = ["branches", "tags"];
+    let trees: string[] = [];
+
+    if (branchesLayout) {
+      trees.push(branchesLayout);
+    }
+
+    if (tagsLayout) {
+      trees.push(tagsLayout);
+    }
 
     for (let index in trees) {
       promises.push(
@@ -139,11 +161,20 @@ export class Repository {
   }
 
   async branch(name: string) {
-    const repoUrl = await this.getRepoUrl();
-    const newBranch = repoUrl + "/branches/" + name;
-    const rootUrl = repoUrl + "/trunk";
+    const config = workspace.getConfiguration("svn");
+    const branchesLayout = config.get<string>("layout.branches");
 
-    const result = await this.svn.copy(rootUrl, newBranch, name);
+    if (!branchesLayout) {
+      return false;
+    }
+
+    const repoUrl = await this.getRepoUrl();
+    const newBranch = repoUrl + "/" + branchesLayout + "/" + name;
+    const resultBranch = await this.svn.info(this.root);
+    const currentBranch = resultBranch.stdout
+      .match(/<url>(.*?)<\/url>/)[1];
+
+    const result = await this.svn.copy(currentBranch, newBranch, name);
 
     if (result.exitCode !== 0) {
       throw new Error(result.stderr);
