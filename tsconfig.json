@@ -5,7 +5,7 @@
     "module": "commonjs",
     "outDir": "./out",
     "typeRoots": ["./node_modules/@types"],
-    "strict": false,
+    "strict": true,
     "experimentalDecorators": true,
     "sourceMap": true
   },
