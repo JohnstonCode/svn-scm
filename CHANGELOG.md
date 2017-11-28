@@ -1,3 +1,13 @@
+# **v1.3.0**
+
+## What's New
+
+* @edgardmessias improved the way SVN is detected and added svn path to config
+
+## Bug Fixes
+
+* @edgardmessias fixed #45 failed match
+
 # **v1.2.1**
 
 ## Bug Fixes
