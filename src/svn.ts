@@ -30,7 +30,7 @@ function findSpecificSvn(path: string): Promise<ISvn> {
     const buffers: Buffer[] = [];
     const child = cp.spawn(path, ['--version']);
     child.stdout.on('data', (b: Buffer) => buffers.push(b));
-    // child.on('error', cpErrorHandler(e));
+    child.on('error', cpErrorHandler(e));
     child.on('exit', code => code ? e(new Error('Not found')) : c({ path, version: parseVersion(Buffer.concat(buffers).toString('utf8').trim()) }));
   });
 }
@@ -101,6 +101,73 @@ export function findSvn(hint: string | undefined): Promise<ISvn> {
       }
     })
     .then(null, () => Promise.reject(new Error('Svn installation not found.')));
+}
+
+function cpErrorHandler(cb: (reason?: any) => void): (reason?: any) => void {
+  return err => {
+    if (/ENOENT/.test(err.message)) {
+      err = new SvnError({
+        error: err,
+        message: 'Failed to execute svn (ENOENT)',
+        svnErrorCode: 'NotASvnRepository'
+      });
+    }
+
+    cb(err);
+  };
+}
+
+export interface ISvnErrorData {
+  error?: Error;
+  message?: string;
+  stdout?: string;
+  stderr?: string;
+  exitCode?: number;
+  svnErrorCode?: string;
+  svnCommand?: string;
+}
+
+export class SvnError {
+
+  error?: Error;
+  message: string;
+  stdout?: string;
+  stderr?: string;
+  exitCode?: number;
+  svnErrorCode?: string;
+  svnCommand?: string;
+
+  constructor(data: ISvnErrorData) {
+    if (data.error) {
+      this.error = data.error;
+      this.message = data.error.message;
+    } else {
+      this.error = void 0;
+    }
+
+    this.message = this.message || data.message || 'SVN error';
+    this.stdout = data.stdout;
+    this.stderr = data.stderr;
+    this.exitCode = data.exitCode;
+    this.svnErrorCode = data.svnErrorCode;
+    this.svnCommand = data.svnCommand;
+  }
+
+  toString(): string {
+    let result = this.message + ' ' + JSON.stringify({
+      exitCode: this.exitCode,
+      svnErrorCode: this.svnErrorCode,
+      svnCommand: this.svnCommand,
+      stdout: this.stdout,
+      stderr: this.stderr
+    }, null, 2);
+
+    if (this.error) {
+      result += (<any>this.error).stack;
+    }
+
+    return result;
+  }
 }
 
 export interface ISvnOptions {
