@@ -7,7 +7,8 @@
     "typeRoots": ["./node_modules/@types"],
     "strict": true,
     "experimentalDecorators": true,
-    "sourceMap": true
+    "sourceMap": true,
+    "noImplicitThis": false
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules"]

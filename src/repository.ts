@@ -12,10 +12,10 @@ import {
 } from "vscode";
 import { Resource } from "./resource";
 import { throttle, debounce } from "./decorators";
-import { Repository as BaseRepository } from "./svn";
+import { Repository as BaseRepository } from "./svnRepository";
 import { SvnStatusBar } from "./statusBar";
 import { dispose, anyEvent, filterEvent } from "./util";
-import * as path from 'path';
+import * as path from "path";
 
 export class Repository {
   public watcher: FileSystemWatcher;
@@ -28,7 +28,8 @@ export class Repository {
   public branches: any[] = [];
 
   private _onDidChangeRepository = new EventEmitter<Uri>();
-  readonly onDidChangeRepository: Event<Uri> = this._onDidChangeRepository.event;
+  readonly onDidChangeRepository: Event<Uri> = this._onDidChangeRepository
+    .event;
 
   private _onDidChangeStatus = new EventEmitter<void>();
   readonly onDidChangeStatus: Event<void> = this._onDidChangeStatus.event;
@@ -49,13 +50,29 @@ export class Repository {
     const fsWatcher = workspace.createFileSystemWatcher("**");
     this.disposables.push(fsWatcher);
 
-    const onWorkspaceChange = anyEvent(fsWatcher.onDidChange, fsWatcher.onDidCreate, fsWatcher.onDidDelete);
-    const onRepositoryChange = filterEvent(onWorkspaceChange, uri => !/^\.\./.test(path.relative(repository.root, uri.fsPath)));
-    const onRelevantRepositoryChange = filterEvent(onRepositoryChange, uri => !/\/\.svn\/tmp/.test(uri.path));
+    const onWorkspaceChange = anyEvent(
+      fsWatcher.onDidChange,
+      fsWatcher.onDidCreate,
+      fsWatcher.onDidDelete
+    );
+    const onRepositoryChange = filterEvent(
+      onWorkspaceChange,
+      uri => !/^\.\./.test(path.relative(repository.root, uri.fsPath))
+    );
+    const onRelevantRepositoryChange = filterEvent(
+      onRepositoryChange,
+      uri => !/\/\.svn\/tmp/.test(uri.path)
+    );
     onRelevantRepositoryChange(this.update, this, this.disposables);
 
-    const onRelevantSvnChange = filterEvent(onRelevantRepositoryChange, uri => /\/\.svn\//.test(uri.path));
-    onRelevantSvnChange(this._onDidChangeRepository.fire, this._onDidChangeRepository, this.disposables);
+    const onRelevantSvnChange = filterEvent(onRelevantRepositoryChange, uri =>
+      /\/\.svn\//.test(uri.path)
+    );
+    onRelevantSvnChange(
+      this._onDidChangeRepository.fire,
+      this._onDidChangeRepository,
+      this.disposables
+    );
 
     this.sourceControl = scm.createSourceControl(
       "svn",
