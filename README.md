@@ -3,7 +3,7 @@
 [![rating](https://img.shields.io/vscode-marketplace/r/johnstoncode.svn-scm.svg)](https://marketplace.visualstudio.com/items?itemName=johnstoncode.svn-scm)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat)](https://github.com/JohnstonCode/svn-scm/pulls)
 
-# svn-scm
+# Subversion source control for VS Code
 
 # Prerequisites
 
