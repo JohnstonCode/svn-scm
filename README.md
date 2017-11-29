@@ -30,3 +30,8 @@ Files\TortoiseSVN\bin` is available in PATH.
   [Issues](https://github.com/JohnstonCode/svn-scm/issues)
 * Feel free to submit
   [pull requests](https://github.com/JohnstonCode/svn-scm/pulls)
+
+## Contributors
+
+* @JohnstonCode
+* @edgardmessias

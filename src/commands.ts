@@ -63,7 +63,7 @@ class SwitchBranchItem implements QuickPickItem {
       this.tree = parts[0];
       this.name = parts[1];
     } else {
-      this.tree = "trunk";
+      this.tree = parts[0];
       this.name = parts[0];
     }
   }
