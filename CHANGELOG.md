@@ -17,6 +17,12 @@
 * @JohnstonCode Commit info message now shows what revision it was
 * @JohnstonCode Added svn update to scm title commands
 * @JohnstonCode Added confirmation message to revert command
+* @edgardmessias Added support for multiple svn folders. To configure,
+  edit the options:
+  * "svn.multipleFolders.enabled" : Allow to find subfolders using SVN
+  * "svn.layout.depth" : Maximum depth to find subfolders using SVN
+  * "svn.multipleFolders.ignore" : Folders to ignore using SVN
+    (Ex.: '\*\*/vendor', '\*\*/node_modules')
 
 ## Bug Fixes
 
