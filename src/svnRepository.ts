@@ -24,8 +24,8 @@ export class Repository {
     return status;
   }
 
-  async show(path: string, options: CpOptions = {}): Promise<string> {
-    const result = await this.svn.show(path, options);
+  async show(path: string, revision?: string, options: CpOptions = {}): Promise<string> {
+    const result = await this.svn.show(path, revision, options);
 
     if (result.exitCode !== 0) {
       throw new Error(result.stderr);

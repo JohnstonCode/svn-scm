@@ -166,8 +166,8 @@ export class Repository {
     return uri.with({ scheme: "svn", query: uri.path, path: uri.path });
   }
 
-  show(filePath: string): Promise<string> {
-    return this.repository.show(filePath);
+  show(filePath: string, revision?: string): Promise<string> {
+    return this.repository.show(filePath, revision);
   }
 
   addFile(filePath: string) {
