@@ -1,5 +1,5 @@
 import { EventEmitter } from "events";
-import { window } from "vscode";
+import { window, workspace } from "vscode";
 import * as cp from "child_process";
 import * as iconv from "iconv-lite";
 import * as jschardet from "jschardet";
@@ -177,8 +177,14 @@ export class Svn {
     return this.exec("", ["add", path]);
   }
 
-  show(path: string, options: CpOptions = {}) {
-    return this.exec("", ["cat", "-r", "HEAD", path], options);
+  show(path: string, revision?: string, options: CpOptions = {}) {
+    var args = ["cat", path];
+
+    if (revision) {
+      args.push("-r", revision);
+    }
+
+    return this.exec("", args, options);
   }
 
   list(path: string) {

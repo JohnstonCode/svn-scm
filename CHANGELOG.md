@@ -1,3 +1,18 @@
+# **v1.4.0 under development**
+
+## What's New
+
+* @edgardmessias Added support to configure non-standard layout. To configure, edit the options:
+  * "svn.layout.trunk" : Relative path for 'trunk' in SVN URL, 'null' to disable. (Ex.: 'trunk', 'main')
+  * "svn.layout.branches" : Relative path for 'branches' in SVN URL, 'null' to disable. (Ex.: 'branches', 'versions')
+  * "svn.layout.tags" : Relative path for 'tags' in SVN URL, 'null' to disable. (Ex.: 'tags', 'stamps')
+* @edgardmessias Added support to configure diff changes. To configure, edit the options:
+  * "svn.diff.withHead" : Show diff changes using latest revision in the repository. Set false to use latest revision in local folder
+
+## Bug Fixes
+
+* @edgardmessias Fixed config option form svn path
+
 # **v1.3.2**
 
 ## Bug Fixes
