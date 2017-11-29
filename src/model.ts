@@ -20,6 +20,8 @@ export class Model {
   private disposables: Disposable[] = [];
   private enabled = false;
   private possibleSvnRepositoryPaths = new Set<string>();
+  private ignorePattern: RegExp = /^$/;
+  private maxDepth: number = 0;
 
   get repositories(): Repository[] {
     return this.openRepositories.map(r => r.repository);
@@ -31,6 +33,31 @@ export class Model {
 
     if (this.enabled) {
       this.init();
+
+      const multipleFolders = config.get<boolean>(
+        "multipleFolders.enabled",
+        false
+      );
+
+      if (multipleFolders) {
+        this.maxDepth = config.get<number>("multipleFolders.depth", 0);
+
+        const ignoreList = config.get("multipleFolders.ignore", []);
+
+        // Base on https://github.com/aleclarson/glob-regex/blob/master/index.js
+        const pattern = ignoreList
+          .join("|")
+          .replace(/\./g, "\\.")
+          .replace(/\*\*\//g, "(.+[\\\\\/])?")
+          .replace(/\*\*/g, "(.+[\\\\\/])?*")
+          .replace(/\*/g, "[^\\\\\/]+");
+
+        try {
+          this.ignorePattern = new RegExp("^(" + pattern + ")$");
+        } catch (error) {
+          window.showErrorMessage("Invalid pattern for: " + pattern);
+        }
+      }
     } else {
       this.disable();
     }
@@ -119,7 +146,7 @@ export class Model {
     }
   }
 
-  async tryOpenRepository(path: string): Promise<void> {
+  async tryOpenRepository(path: string, level = 0): Promise<void> {
     if (this.getRepository(path)) {
       return;
     }
@@ -135,7 +162,17 @@ export class Model {
 
       this.open(repository);
     } catch (err) {
-      console.error(err);
+      const newLevel = level + 1;
+
+      if (newLevel <= this.maxDepth) {
+        fs.readdirSync(path).forEach(file => {
+          const dir = path + "/" + file;
+          if (fs.statSync(dir).isDirectory() && !this.ignorePattern.test(dir)) {
+            this.tryOpenRepository(dir, newLevel);
+          }
+        });
+      }
+
       return;
     }
   }

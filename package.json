@@ -163,6 +163,23 @@
           "description":
             "Relative path for 'tags' in SVN URL, 'null' to disable. (Ex.: 'tags', 'stamps')",
           "default": "tags"
+        },
+        "svn.multipleFolders.enabled": {
+          "type": "boolean",
+          "description": "Allow to find subfolders using SVN",
+          "default": false
+        },
+        "svn.multipleFolders.depth": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Maximum depth to find subfolders using SVN",
+          "default": 4
+        },
+        "svn.multipleFolders.ignore": {
+          "type": "array",
+          "minimum": 4,
+          "description": "Folders to ignore using SVN",
+          "default": ["**/vendor", "**/node_modules"]
         }
       }
     }
