@@ -14,12 +14,14 @@
   options:
   * "svn.diff.withHead" : Show diff changes using latest revision in the
     repository. Set false to use latest revision in local folder
-* @JohnstonCode Commit info message now show what revision it was
+* @JohnstonCode Commit info message now shows what revision it was
 * @JohnstonCode Added svn update to scm title commands
+* @JohnstonCode Added confirmation message to revert command
 
 ## Bug Fixes
 
 * @edgardmessias Fixed config option form svn path
+* @JohnstonCode Fixed conflicted files not having an icon
 
 # **v1.3.2**
 
