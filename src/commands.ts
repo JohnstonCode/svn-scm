@@ -304,6 +304,16 @@ export class SvnCommands {
 
   @command("svn.revert", { repository: true })
   async revert(repository: Repository, ...args: any[][]) {
+    const yes = "Yes I'm sure";
+    const answer = await window.showWarningMessage(
+      "Are you sure? This will wipe all local changes.",
+      yes
+    );
+
+    if (answer !== yes) {
+      return;
+    }
+
     try {
       const paths = args[0].map(state => {
         return state.resourceUri.fsPath;
