@@ -6,7 +6,7 @@ import {
   TextDocumentShowOptions,
   QuickPickItem
 } from "vscode";
-import { inputCommitMessage, changesCommitted } from "./messages";
+import { inputCommitMessage } from "./messages";
 import { Svn } from "./svn";
 import { Model } from "./model";
 import { Repository } from "./repository";
@@ -158,9 +158,7 @@ export class SvnCommands {
         message,
         filePaths
       );
-      window.showInformationMessage(
-        result.match(/Committed revision (.*)\./i)[0]
-      );
+      window.showInformationMessage(result);
       repository.inputBox.value = "";
       repository.update();
     } catch (error) {
@@ -198,9 +196,7 @@ export class SvnCommands {
       }
 
       const result = await repository.repository.commitFiles(message, paths);
-      window.showInformationMessage(
-        result.match(/Committed revision (.*)\./i)[0]
-      );
+      window.showInformationMessage(result);
       repository.update();
     } catch (error) {
       console.error(error);
@@ -318,6 +314,17 @@ export class SvnCommands {
     } catch (error) {
       console.error(error);
       window.showErrorMessage("Unable to revert");
+    }
+  }
+
+  @command("svn.update", { repository: true })
+  async update(repository: Repository) {
+    try {
+      const result = await repository.repository.update();
+      window.showInformationMessage(result);
+    } catch (error) {
+      console.error(error);
+      window.showErrorMessage("Unable to update");
     }
   }
 }

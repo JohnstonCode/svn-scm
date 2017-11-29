@@ -45,7 +45,9 @@ export class Repository {
       throw new Error(result.stderr);
     }
 
-    return result.stdout;
+    const outputMessage = result.stdout.match(/Committed revision (.*)\./i)[0];
+
+    return outputMessage;
   }
 
   addFile(filePath: string) {
@@ -215,5 +217,17 @@ export class Repository {
     }
 
     return result.stdout;
+  }
+
+  async update() {
+    const result = await this.svn.update(this.root);
+
+    if (result.exitCode !== 0) {
+      throw new Error(result.stderr);
+    }
+
+    const message = result.stdout.match(/At revision (.*)\./i)[0];
+
+    return message;
   }
 }
