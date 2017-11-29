@@ -154,9 +154,14 @@ export class SvnCommands {
     });
 
     try {
-      await repository.repository.commitFiles(message, filePaths);
+      const result = await repository.repository.commitFiles(
+        message,
+        filePaths
+      );
+      window.showInformationMessage(
+        result.match(/Committed revision (.*)\./i)[0]
+      );
       repository.inputBox.value = "";
-      changesCommitted();
       repository.update();
     } catch (error) {
       console.error(error);
@@ -182,7 +187,6 @@ export class SvnCommands {
 
   @command("svn.commit", { repository: true })
   async commit(repository: Repository, ...args: any[][]): Promise<void> {
-    console.log(args);
     try {
       const paths = args[0].map(state => {
         return state.resourceUri.fsPath;
@@ -193,8 +197,10 @@ export class SvnCommands {
         return;
       }
 
-      await repository.repository.commitFiles(message, paths);
-      changesCommitted();
+      const result = await repository.repository.commitFiles(message, paths);
+      window.showInformationMessage(
+        result.match(/Committed revision (.*)\./i)[0]
+      );
       repository.update();
     } catch (error) {
       console.error(error);
