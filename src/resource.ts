@@ -45,7 +45,7 @@ export class Resource {
         Modified: this.getIconUri("modified", "light"),
         Added: this.getIconUri("added", "light"),
         Deleted: this.getIconUri("deleted", "light"),
-        Conflicted: this.getIconUri("conflicted", "light"),
+        conflict: this.getIconUri("conflict", "light"),
         Replaced: this.getIconUri("replaced", "light"),
         Unversioned: this.getIconUri("unversioned", "light"),
         Missing: this.getIconUri("missing", "light")
@@ -54,7 +54,7 @@ export class Resource {
         Modified: this.getIconUri("modified", "dark"),
         Added: this.getIconUri("added", "dark"),
         Deleted: this.getIconUri("deleted", "dark"),
-        Conflicted: this.getIconUri("conflicted", "dark"),
+        conflict: this.getIconUri("conflict", "dark"),
         Replaced: this.getIconUri("replaced", "dark"),
         Unversioned: this.getIconUri("unversioned", "dark"),
         Missing: this.getIconUri("missing", "dark")
@@ -64,8 +64,8 @@ export class Resource {
     switch (this.type) {
       case "added":
         return Icons[theme].Added;
-      case "conflicted":
-        return Icons[theme].Conflicted;
+      case "conflict":
+        return Icons[theme].conflict;
       case "deleted":
         return Icons[theme].Deleted;
       case "modified":

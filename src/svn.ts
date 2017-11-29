@@ -236,4 +236,8 @@ export class Svn {
 
     return this.exec("", args);
   }
+
+  update(root: string) {
+    return this.exec(root, ["update"]);
+  }
 }

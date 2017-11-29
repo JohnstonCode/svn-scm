@@ -21,7 +21,3 @@ export function inputCommitMessage(message?: string) {
       .then(string => resolve(string));
   });
 }
-
-export function changesCommitted() {
-  return window.showInformationMessage("Files Committed");
-}

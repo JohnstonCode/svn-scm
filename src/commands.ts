@@ -6,7 +6,7 @@ import {
   TextDocumentShowOptions,
   QuickPickItem
 } from "vscode";
-import { inputCommitMessage, changesCommitted } from "./messages";
+import { inputCommitMessage } from "./messages";
 import { Svn } from "./svn";
 import { Model } from "./model";
 import { Repository } from "./repository";
@@ -154,9 +154,12 @@ export class SvnCommands {
     });
 
     try {
-      await repository.repository.commitFiles(message, filePaths);
+      const result = await repository.repository.commitFiles(
+        message,
+        filePaths
+      );
+      window.showInformationMessage(result);
       repository.inputBox.value = "";
-      changesCommitted();
       repository.update();
     } catch (error) {
       console.error(error);
@@ -182,7 +185,6 @@ export class SvnCommands {
 
   @command("svn.commit", { repository: true })
   async commit(repository: Repository, ...args: any[][]): Promise<void> {
-    console.log(args);
     try {
       const paths = args[0].map(state => {
         return state.resourceUri.fsPath;
@@ -193,8 +195,8 @@ export class SvnCommands {
         return;
       }
 
-      await repository.repository.commitFiles(message, paths);
-      changesCommitted();
+      const result = await repository.repository.commitFiles(message, paths);
+      window.showInformationMessage(result);
       repository.update();
     } catch (error) {
       console.error(error);
@@ -302,6 +304,16 @@ export class SvnCommands {
 
   @command("svn.revert", { repository: true })
   async revert(repository: Repository, ...args: any[][]) {
+    const yes = "Yes I'm sure";
+    const answer = await window.showWarningMessage(
+      "Are you sure? This will wipe all local changes.",
+      yes
+    );
+
+    if (answer !== yes) {
+      return;
+    }
+
     try {
       const paths = args[0].map(state => {
         return state.resourceUri.fsPath;
@@ -312,6 +324,17 @@ export class SvnCommands {
     } catch (error) {
       console.error(error);
       window.showErrorMessage("Unable to revert");
+    }
+  }
+
+  @command("svn.update", { repository: true })
+  async update(repository: Repository) {
+    try {
+      const result = await repository.repository.update();
+      window.showInformationMessage(result);
+    } catch (error) {
+      console.error(error);
+      window.showErrorMessage("Unable to update");
     }
   }
 }

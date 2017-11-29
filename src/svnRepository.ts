@@ -24,7 +24,11 @@ export class Repository {
     return status;
   }
 
-  async show(path: string, revision?: string, options: CpOptions = {}): Promise<string> {
+  async show(
+    path: string,
+    revision?: string,
+    options: CpOptions = {}
+  ): Promise<string> {
     const result = await this.svn.show(path, revision, options);
 
     if (result.exitCode !== 0) {
@@ -41,7 +45,9 @@ export class Repository {
       throw new Error(result.stderr);
     }
 
-    return result.stdout;
+    const outputMessage = result.stdout.match(/Committed revision (.*)\./i)[0];
+
+    return outputMessage;
   }
 
   addFile(filePath: string) {
@@ -68,8 +74,10 @@ export class Repository {
     const branchesLayout = config.get<string>("layout.branches");
     const tagsLayout = config.get<string>("layout.tags");
 
-    const trees = [trunkLayout, branchesLayout, tagsLayout].filter(x => x != null);
-    const regex = new RegExp("<url>(.*?)\/(" + trees.join("|") + ").*?<\/url>");
+    const trees = [trunkLayout, branchesLayout, tagsLayout].filter(
+      x => x != null
+    );
+    const regex = new RegExp("<url>(.*?)/(" + trees.join("|") + ").*?</url>");
 
     const info = await this.svn.info(this.root);
 
@@ -171,9 +179,7 @@ export class Repository {
     const repoUrl = await this.getRepoUrl();
     const newBranch = repoUrl + "/" + branchesLayout + "/" + name;
     const resultBranch = await this.svn.info(this.root);
-    const currentBranch = resultBranch.stdout
-      .match(/<url>(.*?)<\/url>/)[1];
-
+    const currentBranch = resultBranch.stdout.match(/<url>(.*?)<\/url>/)[1];
     const result = await this.svn.copy(currentBranch, newBranch, name);
 
     if (result.exitCode !== 0) {
@@ -211,5 +217,17 @@ export class Repository {
     }
 
     return result.stdout;
+  }
+
+  async update() {
+    const result = await this.svn.update(this.root);
+
+    if (result.exitCode !== 0) {
+      throw new Error(result.stderr);
+    }
+
+    const message = result.stdout.match(/At revision (.*)\./i)[0];
+
+    return message;
   }
 }
