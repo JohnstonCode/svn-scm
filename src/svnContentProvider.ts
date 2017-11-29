@@ -13,8 +13,17 @@ export class SvnContentProvider {
       return "";
     }
 
+    let revision = undefined;
+
+    const config = workspace.getConfiguration("svn");
+    const diffWithHead = config.get<boolean>("diff.withHead");
+
+    if (diffWithHead) {
+      revision = "HEAD";
+    }
+
     try {
-      return repository.show(uri.fsPath);
+      return repository.show(uri.fsPath, revision);
     } catch (error) {
       return "";
     }

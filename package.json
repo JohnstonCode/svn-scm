@@ -131,6 +131,11 @@
           "default": null,
           "isExecutable": true
         },
+        "svn.diff.withHead": {
+          "type": "boolean",
+          "description": "Show diff changes using latest revision in the repository. Set false to use latest revision in local folder",
+          "default": true
+        },
         "svn.layout.trunk": {
           "type": ["string", "null"],
           "description": "Relative path for 'trunk' in SVN URL, 'null' to disable. (Ex.: 'trunk', 'main')",
