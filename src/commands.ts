@@ -106,7 +106,7 @@ export class SvnCommands {
 
         if (repository) {
           repositoryPromise = Promise.resolve(repository);
-        } else if (this.model.openRepositories.length === 1) {
+        } else if (this.model.repositories.length === 1) {
           repositoryPromise = Promise.resolve(this.model.repositories[0]);
         } else {
           repositoryPromise = this.model.pickRepository();
@@ -117,7 +117,7 @@ export class SvnCommands {
             return Promise.resolve();
           }
 
-          return Promise.resolve(method.apply(this, [repository, args]));
+          return Promise.resolve(method.apply(this, [repository, ...args]));
         });
       }
 
@@ -184,9 +184,12 @@ export class SvnCommands {
   }
 
   @command("svn.commit", { repository: true })
-  async commit(repository: Repository, ...args: any[][]): Promise<void> {
+  async commit(
+    repository: Repository,
+    ...resourceStates: Resource[]
+  ): Promise<void> {
     try {
-      const paths = args[0].map(state => {
+      const paths = resourceStates.map(state => {
         return state.resourceUri.fsPath;
       });
       const message = await inputCommitMessage();
@@ -205,8 +208,9 @@ export class SvnCommands {
   }
 
   @command("svn.refresh", { repository: true })
-  refresh(repository: Repository) {
+  async refresh(repository: Repository) {
     repository.update();
+    repository.updateBranches();
   }
 
   async openDiff(resource: Resource, against: string) {
@@ -302,8 +306,12 @@ export class SvnCommands {
     await repository.branch(name);
   }
 
-  @command("svn.revert", { repository: true })
-  async revert(repository: Repository, ...args: any[][]) {
+  @command("svn.revert")
+  async revert(...resourceStates: Resource[]) {
+    if (resourceStates.length === 0) {
+      return;
+    }
+
     const yes = "Yes I'm sure";
     const answer = await window.showWarningMessage(
       "Are you sure? This will wipe all local changes.",
@@ -315,12 +323,13 @@ export class SvnCommands {
     }
 
     try {
-      const paths = args[0].map(state => {
-        return state.resourceUri.fsPath;
+      const paths = resourceStates.map(state => {
+        return state.resourceUri;
       });
 
-      await repository.repository.revert(paths);
-      repository.update();
+      await this.runByRepository(paths, async (repository, paths) =>
+        repository.repository.revert(paths)
+      );
     } catch (error) {
       console.error(error);
       window.showErrorMessage("Unable to revert");
@@ -336,5 +345,49 @@ export class SvnCommands {
       console.error(error);
       window.showErrorMessage("Unable to update");
     }
+  }
+
+  private runByRepository<T>(
+    resource: Uri,
+    fn: (repository: Repository, resource: Uri) => Promise<T>
+  ): Promise<T[]>;
+  private runByRepository<T>(
+    resources: Uri[],
+    fn: (repository: Repository, resources: Uri[]) => Promise<T>
+  ): Promise<T[]>;
+  private async runByRepository<T>(
+    arg: Uri | Uri[],
+    fn: (repository: Repository, resources: any) => Promise<T>
+  ): Promise<T[]> {
+    const resources = arg instanceof Uri ? [arg] : arg;
+    const isSingleResource = arg instanceof Uri;
+
+    const groups = resources.reduce(
+      (result, resource) => {
+        const repository = this.model.getRepository(resource);
+
+        if (!repository) {
+          console.warn("Could not find git repository for ", resource);
+          return result;
+        }
+
+        const tuple = result.filter(p => p.repository === repository)[0];
+
+        if (tuple) {
+          tuple.resources.push(resource);
+        } else {
+          result.push({ repository, resources: [resource] });
+        }
+
+        return result;
+      },
+      [] as { repository: Repository; resources: Uri[] }[]
+    );
+
+    const promises = groups.map(({ repository, resources }) =>
+      fn(repository as Repository, isSingleResource ? resources[0] : resources)
+    );
+
+    return Promise.all(promises);
   }
 }

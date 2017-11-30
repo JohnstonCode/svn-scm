@@ -263,7 +263,7 @@ export class Model {
     const picks: any[] = this.openRepositories.map(repository => {
       return {
         label: path.basename(repository.repository.root),
-        repository: repository
+        repository: repository.repository
       };
     });
     const placeHolder = "Choose a repository";

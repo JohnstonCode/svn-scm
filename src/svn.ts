@@ -1,5 +1,5 @@
 import { EventEmitter } from "events";
-import { window, workspace } from "vscode";
+import { window, workspace, Uri } from "vscode";
 import * as cp from "child_process";
 import * as iconv from "iconv-lite";
 import * as jschardet from "jschardet";
@@ -231,7 +231,11 @@ export class Svn {
     let args = ["revert"];
 
     for (let file of files) {
-      args.push(file);
+      if (file instanceof Uri){
+        args.push(file.fsPath);
+      } else {
+        args.push(file);
+      }
     }
 
     return this.exec("", args);

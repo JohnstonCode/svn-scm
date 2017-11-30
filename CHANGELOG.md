@@ -30,6 +30,7 @@
 * @edgardmessias Fixed config option form svn path
 * @JohnstonCode Fixed conflicted files not having an icon
 * @edgardmessias Reduced calls to branch listings
+* @edgardmessias Fixed SVN revert for multiple svn folders
 
 # **v1.3.2**
 
