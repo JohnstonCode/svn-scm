@@ -14,8 +14,9 @@ import { Resource } from "./resource";
 import { throttle, debounce } from "./decorators";
 import { Repository as BaseRepository } from "./svnRepository";
 import { SvnStatusBar } from "./statusBar";
-import { dispose, anyEvent, filterEvent } from "./util";
+import { dispose, anyEvent, filterEvent, toDisposable } from "./util";
 import * as path from "path";
+import { setInterval, clearInterval } from "timers";
 
 export class Repository {
   public watcher: FileSystemWatcher;
@@ -26,6 +27,7 @@ export class Repository {
   public currentBranch = "";
   public isSwitchingBranch: boolean = false;
   public branches: any[] = [];
+  public branchesTimer: NodeJS.Timer;
 
   private _onDidChangeRepository = new EventEmitter<Uri>();
   readonly onDidChangeRepository: Event<Uri> = this._onDidChangeRepository
@@ -94,6 +96,11 @@ export class Repository {
       null,
       this.disposables
     );
+    this.onDidChangeRepository(
+      () => (this.sourceControl.statusBarCommands = statusBar.commands),
+      null,
+      this.disposables
+    );
     this.sourceControl.statusBarCommands = statusBar.commands;
 
     this.changes = this.sourceControl.createResourceGroup("changes", "Changes");
@@ -105,7 +112,20 @@ export class Repository {
     this.changes.hideWhenEmpty = true;
     this.notTracked.hideWhenEmpty = true;
 
+    this.disposables.push(toDisposable(() => clearInterval(this.branchesTimer)));
+    setInterval(() => {this.updateBranches()}, 1000 * 60 * 5); // 5 minutes
+
+    this.updateBranches();
     this.update();
+  }
+
+  @debounce(1000)
+  async updateBranches() {
+    try {
+      this.branches = await this.repository.getBranches();
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   @debounce(1000)
@@ -147,12 +167,6 @@ export class Repository {
 
     this.currentBranch = await this.getCurrentBranch();
 
-    try {
-      this.branches = await this.repository.getBranches();
-    } catch (error) {
-      console.error(error);
-    }
-
     this._onDidChangeStatus.fire();
 
     return Promise.resolve();
@@ -182,16 +196,23 @@ export class Repository {
     return this.repository.getCurrentBranch();
   }
 
-  branch(name: string) {
-    return this.repository.branch(name);
+  async branch(name: string) {
+    this.isSwitchingBranch = true;
+    this._onDidChangeRepository.fire();
+    const response = await this.repository.branch(name);
+    this.isSwitchingBranch = false;
+    this.updateBranches();
+    this._onDidChangeRepository.fire();
+    return response;
   }
 
   async switchBranch(name: string) {
     this.isSwitchingBranch = true;
-    this._onDidChangeStatus.fire();
+    this._onDidChangeRepository.fire();
     const response = await this.repository.switchBranch(name);
     this.isSwitchingBranch = false;
-    this._onDidChangeStatus.fire();
+    this.updateBranches();
+    this._onDidChangeRepository.fire();
     return response;
   }
 }

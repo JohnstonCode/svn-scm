@@ -28,6 +28,7 @@
 
 * @edgardmessias Fixed config option form svn path
 * @JohnstonCode Fixed conflicted files not having an icon
+* @edgardmessias Reduced calls to branch listings
 
 # **v1.3.2**
 
