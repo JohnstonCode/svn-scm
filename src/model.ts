@@ -23,6 +23,8 @@ export class Model {
   private ignorePattern: RegExp = /^$/;
   private maxDepth: number = 0;
 
+  private configurationChangeDisposable: Disposable;
+
   get repositories(): Repository[] {
     return this.openRepositories.map(r => r.repository);
   }
@@ -31,39 +33,61 @@ export class Model {
     const config = workspace.getConfiguration("svn");
     this.enabled = config.get("enabled") === true;
 
+    this.configurationChangeDisposable = workspace.onDidChangeConfiguration(
+      this.onDidChangeConfiguration,
+      this
+    );
+
     if (this.enabled) {
-      this.init();
+      this.enable();
+    }
+  }
 
-      const multipleFolders = config.get<boolean>(
-        "multipleFolders.enabled",
-        false
-      );
+  private onDidChangeConfiguration(): void {
+    const config = workspace.getConfiguration("svn");
+    const enabled = config.get("enabled") === true;
 
-      if (multipleFolders) {
-        this.maxDepth = config.get<number>("multipleFolders.depth", 0);
+    if (enabled === this.enabled) {
+      return;
+    }
 
-        const ignoreList = config.get("multipleFolders.ignore", []);
+    this.enabled = enabled;
 
-        // Base on https://github.com/aleclarson/glob-regex/blob/master/index.js
-        const pattern = ignoreList
-          .join("|")
-          .replace(/\./g, "\\.")
-          .replace(/\*\*\//g, "(.+[\\\\\/])?")
-          .replace(/\*\*/g, "(.+[\\\\\/])?*")
-          .replace(/\*/g, "[^\\\\\/]+");
-
-        try {
-          this.ignorePattern = new RegExp("^(" + pattern + ")$");
-        } catch (error) {
-          window.showErrorMessage("Invalid pattern for: " + pattern);
-        }
-      }
+    if (enabled) {
+      this.enable();
     } else {
       this.disable();
     }
   }
 
-  private init(): void {
+  private enable(): void {
+    const config = workspace.getConfiguration("svn");
+
+    const multipleFolders = config.get<boolean>(
+      "multipleFolders.enabled",
+      false
+    );
+
+    if (multipleFolders) {
+      this.maxDepth = config.get<number>("multipleFolders.depth", 0);
+
+      const ignoreList = config.get("multipleFolders.ignore", []);
+
+      // Base on https://github.com/aleclarson/glob-regex/blob/master/index.js
+      const pattern = ignoreList
+        .join("|")
+        .replace(/\./g, "\\.")
+        .replace(/\*\*\//g, "(.+[\\\\/])?")
+        .replace(/\*\*/g, "(.+[\\\\/])?*")
+        .replace(/\*/g, "[^\\\\/]+");
+
+      try {
+        this.ignorePattern = new RegExp("^(" + pattern + ")$");
+      } catch (error) {
+        window.showErrorMessage("Invalid pattern for: " + pattern);
+      }
+    }
+
     workspace.onDidChangeWorkspaceFolders(
       this.onDidChangeWorkspaceFolders,
       this,
@@ -112,6 +136,8 @@ export class Model {
   private disable(): void {
     this.repositories.forEach(repository => repository.dispose());
     this.openRepositories = [];
+
+    this.possibleSvnRepositoryPaths.clear();
     this.disposables = dispose(this.disposables);
   }
 
@@ -246,5 +272,8 @@ export class Model {
     return pick && pick.repository;
   }
 
-  dispose(): void {}
+  dispose(): void {
+    this.disable();
+    this.configurationChangeDisposable.dispose();
+  }
 }

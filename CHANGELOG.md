@@ -23,6 +23,7 @@
   * "svn.layout.depth" : Maximum depth to find subfolders using SVN
   * "svn.multipleFolders.ignore" : Folders to ignore using SVN
     (Ex.: '\*\*/vendor', '\*\*/node_modules')
+* @edgardmessias Added support for enable/disable without reload window,
 
 ## Bug Fixes
 
