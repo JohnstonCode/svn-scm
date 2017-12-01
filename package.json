@@ -179,7 +179,12 @@
           "type": "array",
           "minimum": 4,
           "description": "Folders to ignore using SVN",
-          "default": ["**/.git", "**/.hg", "**/vendor", "**/node_modules"]
+          "default": [
+            "**/.git/**",
+            "**/.hg/**",
+            "**/vendor/**",
+            "**/node_modules/**"
+          ]
         }
       }
     }

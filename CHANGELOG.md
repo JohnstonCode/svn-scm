@@ -1,5 +1,12 @@
 # **v1.5.0 UNDER DEVELOPMENT**
 
+# **v1.4.1**
+
+## Bug Fixes
+
+* @edgardmessias Not check SVN version if folder not contains ".svn" folder
+* @edgardmessias Fixed ignored folder for multifolder svn to work with Windows
+
 # **v1.4.0**
 
 ## What's New
