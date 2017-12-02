@@ -75,11 +75,18 @@ export class Model {
 
       // Base on https://github.com/aleclarson/glob-regex/blob/master/index.js
       const pattern = ignoreList
-        .join("|")
-        .replace(/\./g, "\\.")
-        .replace(/\*\*\//g, "(.+[\\\\/])?")
-        .replace(/\*\*/g, "(.+[\\\\/])?*")
-        .replace(/\*/g, "[^\\\\/]+");
+        .map((ignored: string) => {
+          return ignored
+            .replace(/\\/g, "/")
+            .replace(/\./g, "\\.")
+            .replace(/\*\*\//g, "(.+[\\\\/])?")
+            .replace(/\*\*/g, "(.+[\\\\/])?*")
+            .replace(/\*/g, "[^\\\\/]+")
+            .replace(/(\w)\//g, "$1[\\\\/]")
+            .replace(/\/(\w)/g, "[\\\\/]$1")
+            .replace(/(\w)$/g, "$1([\\\\/].*)*");
+        })
+        .join("|");
 
       try {
         this.ignorePattern = new RegExp("^(" + pattern + ")$");
@@ -177,30 +184,32 @@ export class Model {
       return;
     }
 
-    try {
-      const repositoryRoot = await this.svn.getRepositoryRoot(path);
+    if (fs.existsSync(path + "/.svn")) {
+      try {
+        const repositoryRoot = await this.svn.getRepositoryRoot(path);
 
-      if (this.getRepository(repositoryRoot)) {
-        return;
-      }
+        if (this.getRepository(repositoryRoot)) {
+          return;
+        }
 
-      const repository = new Repository(this.svn.open(repositoryRoot, path));
+        const repository = new Repository(this.svn.open(repositoryRoot, path));
 
-      this.open(repository);
-    } catch (err) {
-      const newLevel = level + 1;
-
-      if (newLevel <= this.maxDepth) {
-        fs.readdirSync(path).forEach(file => {
-          const dir = path + "/" + file;
-          if (fs.statSync(dir).isDirectory() && !this.ignorePattern.test(dir)) {
-            this.tryOpenRepository(dir, newLevel);
-          }
-        });
-      }
-
+        this.open(repository);
+      } catch (err) {}
       return;
     }
+
+    const newLevel = level + 1;
+    if (newLevel <= this.maxDepth) {
+      fs.readdirSync(path).forEach(file => {
+        const dir = path + "/" + file;
+        if (fs.statSync(dir).isDirectory() && !this.ignorePattern.test(dir)) {
+          this.tryOpenRepository(dir, newLevel);
+        }
+      });
+    }
+
+    return;
   }
 
   getRepository(hint: any) {
