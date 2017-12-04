@@ -160,6 +160,14 @@ export class Repository {
           changes.push(new Resource(this.workspaceRoot, status[1], "conflict"));
           break;
         case "?":
+          let matches = status[1].match(/(.*)\.(mine|r\w+)$/);
+          if (
+            matches &&
+            matches[1] &&
+            statuses.some(s => s[1] === matches[1])
+          ) {
+            break;
+          }
           notTracked.push(
             new Resource(this.workspaceRoot, status[1], "unversioned")
           );
