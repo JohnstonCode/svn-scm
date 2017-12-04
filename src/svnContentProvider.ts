@@ -23,7 +23,7 @@ export class SvnContentProvider {
     }
 
     try {
-      return repository.show(uri.fsPath, revision);
+      return await repository.show(uri.fsPath, revision);
     } catch (error) {
       return "";
     }
