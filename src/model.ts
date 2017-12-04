@@ -184,7 +184,22 @@ export class Model {
       return;
     }
 
-    if (fs.existsSync(path + "/.svn")) {
+    let isSvnFolder = fs.existsSync(path + "/.svn");
+
+    // If open only a subpath.
+    if (!isSvnFolder && level === 0) {
+      let pathParts = path.split(/[\\/]/);
+      while (pathParts.length > 0) {
+        pathParts.pop();
+        let topPath = pathParts.join("/") + "/.svn";
+        isSvnFolder = fs.existsSync(topPath);
+        if (isSvnFolder) {
+          break;
+        }
+      }
+    }
+
+    if (isSvnFolder) {
       try {
         const repositoryRoot = await this.svn.getRepositoryRoot(path);
 
