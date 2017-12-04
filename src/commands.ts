@@ -77,18 +77,7 @@ class SwitchBranchItem implements QuickPickItem {
   }
 
   async run(repository: Repository): Promise<void> {
-    try {
-      await repository.switchBranch(this.ref);
-    } catch (error) {
-      if (/E195012/.test(error)) {
-        window.showErrorMessage(
-          "Path '.' does not share common version control ancestry with the requested switch location."
-        );
-        return;
-      }
-
-      window.showErrorMessage("Unable to switch branch");
-    }
+    await repository.switchBranch(this.ref);
   }
 }
 

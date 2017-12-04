@@ -8,7 +8,8 @@ import {
   SourceControlInputBox,
   Disposable,
   EventEmitter,
-  Event
+  Event,
+  window
 } from "vscode";
 import { Resource } from "./resource";
 import { throttle, debounce } from "./decorators";
@@ -112,8 +113,12 @@ export class Repository {
     this.changes.hideWhenEmpty = true;
     this.notTracked.hideWhenEmpty = true;
 
-    this.disposables.push(toDisposable(() => clearInterval(this.branchesTimer)));
-    setInterval(() => {this.updateBranches()}, 1000 * 60 * 5); // 5 minutes
+    this.disposables.push(
+      toDisposable(() => clearInterval(this.branchesTimer))
+    );
+    setInterval(() => {
+      this.updateBranches();
+    }, 1000 * 60 * 5); // 5 minutes
 
     this.updateBranches();
     this.update();
@@ -209,10 +214,22 @@ export class Repository {
   async switchBranch(name: string) {
     this.isSwitchingBranch = true;
     this._onDidChangeRepository.fire();
-    const response = await this.repository.switchBranch(name);
-    this.isSwitchingBranch = false;
-    this.updateBranches();
-    this._onDidChangeRepository.fire();
-    return response;
+
+    try {
+      const response = await this.repository.switchBranch(name);
+    } catch (error) {
+      if (/E195012/.test(error)) {
+        window.showErrorMessage(
+          "Path '.' does not share common version control ancestry with the requested switch location."
+        );
+        return;
+      }
+
+      window.showErrorMessage("Unable to switch branch");
+    } finally {
+      this.isSwitchingBranch = false;
+      this.updateBranches();
+      this._onDidChangeRepository.fire();
+    }
   }
 }
