@@ -96,7 +96,7 @@ export class Svn {
   private svnPath: string;
   private version: string;
   private lastCwd: string = "";
-  
+
   private _onOutput = new EventEmitter();
   get onOutput(): EventEmitter {
     return this._onOutput;
@@ -118,7 +118,9 @@ export class Svn {
     }
 
     if (options.log !== false) {
-      this.log(`[${this.lastCwd.split(/[\\\/]+/).pop()}]$ svn ${args.join(" ")}\n`);
+      this.log(
+        `[${this.lastCwd.split(/[\\\/]+/).pop()}]$ svn ${args.join(" ")}\n`
+      );
     }
 
     let process = cp.spawn(this.svnPath, args, options);
@@ -224,14 +226,14 @@ export class Svn {
   }
 
   switchBranch(root: string, path: string) {
-    return this.exec(root, ["switch", path, "--ignore-ancestry"]);
+    return this.exec(root, ["switch", path]);
   }
 
   revert(files: any[]) {
     let args = ["revert"];
 
     for (let file of files) {
-      if (file instanceof Uri){
+      if (file instanceof Uri) {
         args.push(file.fsPath);
       } else {
         args.push(file);

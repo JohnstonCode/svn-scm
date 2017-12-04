@@ -200,7 +200,10 @@ export class Repository {
 
     var branchUrl = repoUrl + "/" + ref;
 
-    const switchBranch = await this.svn.switchBranch(this.root, branchUrl);
+    const switchBranch = await this.svn.switchBranch(
+      this.workspaceRoot,
+      branchUrl
+    );
 
     if (switchBranch.exitCode !== 0) {
       throw new Error(switchBranch.stderr);

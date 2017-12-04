@@ -77,7 +77,18 @@ class SwitchBranchItem implements QuickPickItem {
   }
 
   async run(repository: Repository): Promise<void> {
-    await repository.switchBranch(this.ref);
+    try {
+      await repository.switchBranch(this.ref);
+    } catch (error) {
+      if (/E195012/.test(error)) {
+        window.showErrorMessage(
+          "Path '.' does not share common version control ancestry with the requested switch location."
+        );
+        return;
+      }
+
+      window.showErrorMessage("Unable to switch branch");
+    }
   }
 }
 
@@ -367,7 +378,7 @@ export class SvnCommands {
         const repository = this.model.getRepository(resource);
 
         if (!repository) {
-          console.warn("Could not find git repository for ", resource);
+          console.warn("Could not find Svn repository for ", resource);
           return result;
         }
 
