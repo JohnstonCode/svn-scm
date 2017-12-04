@@ -226,7 +226,10 @@ export class Repository {
       throw new Error(result.stderr);
     }
 
-    const message = result.stdout.match(/At revision (.*)\./i)[0];
+    const message = result.stdout
+      .trim()
+      .split(/\r?\n/)
+      .pop();
 
     return message;
   }

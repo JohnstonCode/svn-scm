@@ -6,6 +6,7 @@
 
 * @edgardmessias Not check SVN version if folder not contains ".svn" folder
 * @edgardmessias Fixed ignored folder for multifolder svn to work with Windows
+* @JohnstonCode Possilbe fix for #67
 
 # **v1.4.0**
 
