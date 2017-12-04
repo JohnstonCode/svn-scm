@@ -1,5 +1,11 @@
 # **v1.5.0 UNDER DEVELOPMENT**
 
+# **v1.4.2**
+
+## Bug Fixes
+
+* @edgardmessias fixed #69 source control not working in subfolder of project
+
 # **v1.4.1**
 
 ## Bug Fixes
