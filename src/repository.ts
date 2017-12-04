@@ -220,7 +220,9 @@ export class Repository {
     } catch (error) {
       if (/E195012/.test(error)) {
         window.showErrorMessage(
-          "Path '.' does not share common version control ancestry with the requested switch location."
+          `Path '${
+            this.workspaceRoot
+          }' does not share common version control ancestry with the requested switch location.`
         );
         return;
       }
