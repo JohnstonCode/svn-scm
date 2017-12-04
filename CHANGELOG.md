@@ -1,5 +1,11 @@
 # **v1.5.0 UNDER DEVELOPMENT**
 
+# **v1.4.3**
+
+## Bug Fixes
+
+* @JohnstonCode fixed #70 branch change not working in none root folders
+
 # **v1.4.2**
 
 ## Bug Fixes
