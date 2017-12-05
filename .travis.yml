@@ -21,6 +21,7 @@ before_install:
 
 install:
   - npm install
+  - npm run prettier
   - npm run vscode:prepublish
 
 script:
