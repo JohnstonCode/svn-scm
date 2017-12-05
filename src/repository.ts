@@ -160,7 +160,10 @@ export class Repository {
           changes.push(new Resource(this.workspaceRoot, status[1], "conflict"));
           break;
         case "?":
-          let matches = status[1].match(/(.*)\.(mine|working|merge-.*r\w+)$/);
+          let matches = status[1].match(
+            /(.+?)\.(mine|working|merge-\w+\.r\d+|r\d+)$/
+          );
+
           if (
             matches &&
             matches[1] &&
