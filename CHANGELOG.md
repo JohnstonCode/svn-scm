@@ -1,5 +1,12 @@
 # **v1.5.0 UNDER DEVELOPMENT**
 
+# **v1.4.5**
+
+## Bug Fixes
+
+* @edgardmessias fixed regex to catch all conflict files
+* @JohnstonCode fixed right click menu on changes to split the options.
+
 # **v1.4.4**
 
 ## Bug Fixes
