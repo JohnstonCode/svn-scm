@@ -1,43 +1,30 @@
 {
+  "extends": ["tslint:latest"],
   "rules": {
-    // "class-name": true,
-    "curly": false,
-    "eofline": true,
-    "indent": "spaces",
-    "max-line-length": [true, 100],
-    "member-ordering": [
-      true,
-      "public-before-private",
-      "static-before-instance",
-      "variables-before-functions"
-    ],
-    "no-arg": true,
-    "no-construct": true,
-    "no-duplicate-variable": true,
-    "no-empty": false,
-    "no-eval": true,
-    "no-trailing-whitespace": true,
-    "no-unused-expression": true,
-    // "no-unused-variable": true,
-    "no-use-before-declare": false,
-    "one-line": [
-      true,
-      "check-open-brace",
-      "check-catch",
-      "check-else",
-      "check-whitespace"
-    ],
     "quotemark": [true, "double"],
-    "semicolon": true,
-    "triple-equals": [true, "allow-null-check"],
-    "variable-name": false,
-    "whitespace": [
+    "variable-name": [
       true,
-      "check-branch",
-      "check-decl",
-      "check-operator",
-      "check-separator",
-      "check-type"
-    ]
+      "ban-keywords",
+      "check-format",
+      "allow-pascal-case",
+      "allow-leading-underscore"
+    ],
+    "no-submodule-imports": [true, "vscode"],
+    "space-before-function-paren": [
+      true,
+      {
+        "anonymous": "always",
+        "named": "never",
+        "asyncArrow": "always",
+        "method": "never",
+        "constructor": "never"
+      }
+    ],
+    "object-literal-sort-keys": false,
+    "no-string-literal": false,
+    "ordered-imports": [false],
+    "arrow-parens": [true, "ban-single-arg-parens"],
+    "no-console": [true, "log", "debug", "info", "warn"],
+    "no-implicit-dependencies": [true, "dev"]
   }
 }
