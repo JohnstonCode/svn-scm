@@ -17,7 +17,7 @@ export function parseVersion(raw: string): string {
 }
 
 export class SvnFinder {
-  findSvn(hint: string | undefined): Promise<ISvn> {
+  findSvn(hint?: string): Promise<ISvn> {
     var first = hint ? this.findSpecificSvn(hint) : Promise.reject<ISvn>(null);
 
     return first
@@ -45,7 +45,7 @@ export class SvnFinder {
       .then(void 0, () => this.findSpecificSvn("svn"));
   }
 
-  findSystemSvnWin32(base: string): Promise<ISvn> {
+  findSystemSvnWin32(base?: string): Promise<ISvn> {
     if (!base) {
       return Promise.reject<ISvn>("Not found");
     }
