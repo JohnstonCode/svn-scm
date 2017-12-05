@@ -116,7 +116,7 @@
         {
           "command": "svn.openDiffHead",
           "when": "scmProvider == svn && scmResourceGroup == changes",
-          "group": "1_modification"
+          "group": "navigation"
         },
         {
           "command": "svn.revert",
