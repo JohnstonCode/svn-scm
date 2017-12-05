@@ -1,5 +1,12 @@
 # **v1.5.0 UNDER DEVELOPMENT**
 
+# **v1.4.4**
+
+## Bug Fixes
+
+* @edgardmessias fixed error showing in developer tools
+* @edgardmessias Removed conflict files from not tracked files
+
 # **v1.4.3**
 
 ## Bug Fixes
