@@ -18,7 +18,7 @@ export class SvnStatusBar {
   }
 
   get commands() {
-    const icon = (this.repository.isSwitchingBranch)? 'sync~spin' : 'git-branch';
+    const icon = this.repository.isSwitchingBranch ? "sync~spin" : "git-branch";
     const title = `$(${icon}) ${this.repository.currentBranch}`;
 
     return [
