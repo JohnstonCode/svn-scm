@@ -21,11 +21,12 @@
   "activationEvents": ["*"],
   "main": "./out/extension",
   "scripts": {
-    "vscode:prepublish": "tsc -p ./",
+    "vscode:prepublish": "tsc -p ./ && tslint src/**/*.ts",
     "compile": "tsc -watch -p ./",
     "postinstall": "node ./node_modules/vscode/bin/install",
     "test": "node ./node_modules/vscode/bin/test",
-    "prettier": "prettier --no-config --list-different 'src/**/*.ts'"
+    "prettier": "prettier --no-config --list-different 'src/**/*.ts'",
+    "tslint": "tslint src/**/*.ts"
   },
   "dependencies": {
     "iconv-lite": "^0.4.19",
@@ -38,7 +39,8 @@
     "mocha": "^4.0.1",
     "prettier": "^1.9.0",
     "typescript": "^2.6.2",
-    "vscode": "^1.1.10"
+    "vscode": "^1.1.10",
+    "tslint": "^5.8.0"
   },
   "contributes": {
     "commands": [
