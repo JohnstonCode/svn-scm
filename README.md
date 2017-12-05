@@ -7,6 +7,8 @@
 
 # Subversion source control for VS Code
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/JohnstonCode/svn-scm.svg)](https://greenkeeper.io/)
+
 # Prerequisites
 
 > **Note**: This extension leverages your machine's SVN installation,\
