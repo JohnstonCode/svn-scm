@@ -13,5 +13,4 @@ build_script:
   - npm run vscode:prepublish
 
 test_script:
-  - npm run prettier
   - npm run test --silent

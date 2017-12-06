@@ -3,6 +3,7 @@
 [![rating](https://img.shields.io/vscode-marketplace/r/johnstoncode.svn-scm.svg)](https://marketplace.visualstudio.com/items?itemName=johnstoncode.svn-scm)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat)](https://github.com/JohnstonCode/svn-scm/pulls)
 [![Build Status](https://travis-ci.org/JohnstonCode/svn-scm.svg?branch=master)](https://travis-ci.org/JohnstonCode/svn-scm)
+[![Build status](https://ci.appveyor.com/api/projects/status/uq1oi7l8tnntrr6e?svg=true)](https://ci.appveyor.com/project/JohnstonCode/svn-scm)
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat)](https://github.com/prettier/prettier)
 [![Greenkeeper badge](https://badges.greenkeeper.io/JohnstonCode/svn-scm.svg)](https://greenkeeper.io/)
 
