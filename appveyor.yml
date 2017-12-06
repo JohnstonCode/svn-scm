@@ -9,12 +9,11 @@ install:
   - ps: Install-Product node 8.9.1 x64
 
 build_script:
-  - yarn
+  - npm install
   - .\node_modules\.bin\gulp electron
   - npm run compile
+  - npm run vscode:prepublish
 
 test_script:
-  - npm install
   - npm run prettier
-  - npm run vscode:prepublish
   - npm run test --silent
