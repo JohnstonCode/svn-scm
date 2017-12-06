@@ -6,6 +6,7 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/uq1oi7l8tnntrr6e?svg=true)](https://ci.appveyor.com/project/JohnstonCode/svn-scm)
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat)](https://github.com/prettier/prettier)
 [![Greenkeeper badge](https://badges.greenkeeper.io/JohnstonCode/svn-scm.svg)](https://greenkeeper.io/)
+[![codecov](https://codecov.io/gh/JohnstonCode/svn-scm/branch/master/graph/badge.svg)](https://codecov.io/gh/JohnstonCode/svn-scm)
 
 # Subversion source control for VS Code
 
