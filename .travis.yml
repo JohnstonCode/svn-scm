@@ -22,8 +22,11 @@ before_install:
 
 install:
   - npm install
-  - npm run prettier
+#- npm run prettier
   - npm run vscode:prepublish
 
 script:
   - npm test --silent
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
