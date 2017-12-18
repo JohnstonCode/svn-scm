@@ -1,5 +1,11 @@
 # **v1.5.0 UNDER DEVELOPMENT**
 
+# **v1.4.6**
+
+## Bug Fixes
+
+* @JohnstonCode fixed #82. Checks encoding guess is above 0.8 confidance
+
 # **v1.4.5**
 
 ## Bug Fixes
@@ -58,7 +64,7 @@
   * "svn.multipleFolders.enabled" : Allow to find subfolders using SVN
   * "svn.layout.depth" : Maximum depth to find subfolders using SVN
   * "svn.multipleFolders.ignore" : Folders to ignore using SVN (Ex.:
-    '\**/vendor', '\**/node_modules')
+    '\*\*/vendor', '\*\*/node_modules')
 * @edgardmessias Added support for enable/disable without reload window,
 
 ## Bug Fixes

@@ -145,9 +145,9 @@ export class Svn {
     ]);
 
     const encodingGuess = jschardet.detect(stdout);
-    const encoding = iconv.encodingExists(encodingGuess.encoding)
-      ? encodingGuess.encoding
-      : "utf8";
+
+    const encoding =
+      encodingGuess.confidence > 0.8 ? encodingGuess.encoding : "utf8";
 
     stdout = iconv.decode(stdout, encoding);
 
