@@ -120,6 +120,10 @@
         {
           "command": "svn.update",
           "when": "config.svn.enabled"
+        },
+        {
+          "command": "svn.patch",
+          "when": "config.svn.enabled"
         }
       ],
       "scm/resourceGroup/context": [],
