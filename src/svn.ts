@@ -246,4 +246,8 @@ export class Svn {
   update(root: string) {
     return this.exec(root, ["update"]);
   }
+  
+  patch(root: string) {
+    return this.exec(root, ["diff"]);
+  }
 }

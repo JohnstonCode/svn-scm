@@ -4,7 +4,8 @@ import {
   window,
   Uri,
   TextDocumentShowOptions,
-  QuickPickItem
+  QuickPickItem,
+  workspace
 } from "vscode";
 import { inputCommitMessage } from "./messages";
 import { Svn } from "./svn";
@@ -344,6 +345,21 @@ export class SvnCommands {
     } catch (error) {
       console.error(error);
       window.showErrorMessage("Unable to update");
+    }
+  }
+  
+  @command('svn.patch', { repository: true })
+  async patch(repository: Repository) {
+    try {
+      const result = await repository.repository.patch();
+      // send the patch results to a new tab
+      workspace.openTextDocument({language: 'diff', content: result }).then(doc => {
+        window.showTextDocument(doc);
+      });
+      window.showInformationMessage("Files Patched");
+    } catch (error) {
+      console.error(error);
+      window.showErrorMessage("Unable to patch");
     }
   }
 
