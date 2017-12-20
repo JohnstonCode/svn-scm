@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "lib": ["es2016"],
+    "module": "commonjs",
+    "outDir": "./out",
+    "typeRoots": ["./node_modules/@types"],
+    "strict": true,
+    "experimentalDecorators": true,
+    "sourceMap": true,
+    "noImplicitThis": false
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules"]
+}

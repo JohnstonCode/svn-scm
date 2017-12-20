@@ -1,41 +1,199 @@
 {
-    "name": "svn-scm",
-    "displayName": "svn-scm",
-    "description": "",
-    "version": "0.2.0",
-    "publisher": "johnstoncode",
-    "engines": {
-        "vscode": "^1.16.0"
-	},
-	"homepage": "https://github.com/JohnstonCode/svn-scm/blob/master/README.md",
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/JohnstonCode/svn-scm.git"
-	  },
-	  "bugs": {
-		"url": "https://github.com/JohnstonCode/svn-scm/issues"
-	},
-    "categories": [
-        "Other",
-        "SCM Providers"
+  "name": "svn-scm",
+  "displayName": "SVN",
+  "description": "Integrated Subversion source control",
+  "version": "1.4.6",
+  "publisher": "johnstoncode",
+  "engines": {
+    "vscode": "^1.17.0"
+  },
+  "icon": "images/subversion.png",
+  "homepage": "https://github.com/JohnstonCode/svn-scm/blob/master/README.md",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/JohnstonCode/svn-scm.git"
+  },
+  "bugs": {
+    "url": "https://github.com/JohnstonCode/svn-scm/issues"
+  },
+  "categories": ["Other", "SCM Providers"],
+  "keywords": ["multi-root ready", "scm", "svn"],
+  "activationEvents": ["*"],
+  "main": "./out/extension",
+  "scripts": {
+    "vscode:prepublish": "tsc -p ./",
+    "compile": "tsc -watch -p ./",
+    "postinstall": "node ./node_modules/vscode/bin/install",
+    "test": "node ./node_modules/vscode/bin/test",
+    "prettier": "prettier --no-config --list-different 'src/**/*.ts'"
+  },
+  "dependencies": {
+    "iconv-lite": "^0.4.19",
+    "jschardet": "^1.6.0"
+  },
+  "devDependencies": {
+    "@types/glob": "^5.0.33",
+    "@types/mocha": "^2.2.42",
+    "@types/node": "^8.0.54",
+    "decache": "^4.3.0",
+    "eslint": "^4.12.1",
+    "glob": "^7.1.2",
+    "istanbul": "^0.4.5",
+    "mocha": "^4.0.1",
+    "prettier": "^1.9.0",
+    "remap-istanbul": "^0.9.5",
+    "typescript": "^2.6.2",
+    "vscode": "^1.1.10"
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "svn.add",
+        "title": "Add",
+        "category": "SVN",
+        "icon": {
+          "light": "icons/light/add.svg",
+          "dark": "icons/dark/add.svg"
+        }
+      },
+      {
+        "command": "svn.commit",
+        "title": "Commit Selected",
+        "category": "SVN"
+      },
+      {
+        "command": "svn.openDiffHead",
+        "title": "Diff Changes HEAD",
+        "category": "SVN"
+      },
+      {
+        "command": "svn.refresh",
+        "title": "Refresh",
+        "category": "SVN",
+        "icon": {
+          "light": "icons/light/refresh.svg",
+          "dark": "icons/dark/refresh.svg"
+        }
+      },
+      {
+        "command": "svn.switchBranch",
+        "title": "Switch Branch",
+        "category": "SVN"
+      },
+      {
+        "command": "svn.revert",
+        "title": "Revert Selected",
+        "category": "SVN"
+      },
+      {
+        "command": "svn.update",
+        "title": "Svn update",
+        "category": "SVN"
+      }
     ],
-    "activationEvents": [
-        "*"
-    ],
-    "main": "./extension",
-    "scripts": {
-        "postinstall": "node ./node_modules/vscode/bin/install",
-        "test": "node ./node_modules/vscode/bin/test"
-	},
-	"dependencies": {
-		"svn-spawn": "^0.1.5"
-	},
-    "devDependencies": {
-        "typescript": "^2.5.2",
-        "vscode": "^1.1.5",
-        "mocha": "^3.5.0",
-        "eslint": "^4.6.1",
-        "@types/node": "^7.0.0",
-		"@types/mocha": "^2.2.42"
+    "menus": {
+      "commandPalette": [],
+      "scm/title": [
+        {
+          "command": "svn.refresh",
+          "group": "navigation",
+          "when": "scmProvider == svn"
+        },
+        {
+          "command": "svn.switchBranch",
+          "when": "config.svn.enabled"
+        },
+        {
+          "command": "svn.update",
+          "when": "config.svn.enabled"
+        }
+      ],
+      "scm/resourceGroup/context": [],
+      "scm/resourceState/context": [
+        {
+          "command": "svn.add",
+          "when": "scmProvider == svn && scmResourceGroup == unversioned",
+          "group": "inline"
+        },
+        {
+          "command": "svn.commit",
+          "when": "scmProvider == svn && scmResourceGroup == changes",
+          "group": "1_modification"
+        },
+        {
+          "command": "svn.openDiffHead",
+          "when": "scmProvider == svn && scmResourceGroup == changes",
+          "group": "navigation"
+        },
+        {
+          "command": "svn.revert",
+          "when": "scmProvider == svn && scmResourceGroup == changes",
+          "group": "1_modification"
+        }
+      ],
+      "editor/title": []
+    },
+    "configuration": {
+      "title": "Svn",
+      "properties": {
+        "svn.enabled": {
+          "type": "boolean",
+          "description": "Whether svn is enabled",
+          "default": true
+        },
+        "svn.path": {
+          "type": ["string", "null"],
+          "description": "Path to the svn executable",
+          "default": null,
+          "isExecutable": true
+        },
+        "svn.diff.withHead": {
+          "type": "boolean",
+          "description":
+            "Show diff changes using latest revision in the repository. Set false to use latest revision in local folder",
+          "default": true
+        },
+        "svn.layout.trunk": {
+          "type": ["string", "null"],
+          "description":
+            "Relative path for 'trunk' in SVN URL, 'null' to disable. (Ex.: 'trunk', 'main')",
+          "default": "trunk"
+        },
+        "svn.layout.branches": {
+          "type": ["string", "null"],
+          "description":
+            "Relative path for 'branches' in SVN URL, 'null' to disable. (Ex.: 'branches', 'versions')",
+          "default": "branches"
+        },
+        "svn.layout.tags": {
+          "type": ["string", "null"],
+          "description":
+            "Relative path for 'tags' in SVN URL, 'null' to disable. (Ex.: 'tags', 'stamps')",
+          "default": "tags"
+        },
+        "svn.multipleFolders.enabled": {
+          "type": "boolean",
+          "description": "Allow to find subfolders using SVN",
+          "default": false
+        },
+        "svn.multipleFolders.depth": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Maximum depth to find subfolders using SVN",
+          "default": 4
+        },
+        "svn.multipleFolders.ignore": {
+          "type": "array",
+          "minimum": 4,
+          "description": "Folders to ignore using SVN",
+          "default": [
+            "**/.git/**",
+            "**/.hg/**",
+            "**/vendor/**",
+            "**/node_modules/**"
+          ]
+        }
+      }
     }
+  }
 }

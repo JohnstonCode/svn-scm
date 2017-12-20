@@ -1,0 +1,16 @@
+environment:
+  ELECTRON_RUN_AS_NODE: 1
+  VSCODE_BUILD_VERBOSE: true
+
+cache:
+  - '%LOCALAPPDATA%\Yarn\cache'
+
+install:
+  - ps: Install-Product node 8.9.1 x64
+
+build_script:
+  - npm install
+  - npm run vscode:prepublish
+
+test_script:
+  - npm run test --silent
