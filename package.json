@@ -2,7 +2,7 @@
   "name": "svn-scm",
   "displayName": "SVN",
   "description": "Integrated Subversion source control",
-  "version": "1.4.6",
+  "version": "1.5.0",
   "publisher": "johnstoncode",
   "engines": {
     "vscode": "^1.17.0"
@@ -16,18 +16,9 @@
   "bugs": {
     "url": "https://github.com/JohnstonCode/svn-scm/issues"
   },
-  "categories": [
-    "Other",
-    "SCM Providers"
-  ],
-  "keywords": [
-    "multi-root ready",
-    "scm",
-    "svn"
-  ],
-  "activationEvents": [
-    "*"
-  ],
+  "categories": ["Other", "SCM Providers"],
+  "keywords": ["multi-root ready", "scm", "svn"],
+  "activationEvents": ["*"],
   "main": "./out/extension",
   "scripts": {
     "vscode:prepublish": "tsc -p ./",
@@ -160,41 +151,33 @@
           "default": true
         },
         "svn.path": {
-          "type": [
-            "string",
-            "null"
-          ],
+          "type": ["string", "null"],
           "description": "Path to the svn executable",
           "default": null,
           "isExecutable": true
         },
         "svn.diff.withHead": {
           "type": "boolean",
-          "description": "Show diff changes using latest revision in the repository. Set false to use latest revision in local folder",
+          "description":
+            "Show diff changes using latest revision in the repository. Set false to use latest revision in local folder",
           "default": true
         },
         "svn.layout.trunk": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "description": "Relative path for 'trunk' in SVN URL, 'null' to disable. (Ex.: 'trunk', 'main')",
+          "type": ["string", "null"],
+          "description":
+            "Relative path for 'trunk' in SVN URL, 'null' to disable. (Ex.: 'trunk', 'main')",
           "default": "trunk"
         },
         "svn.layout.branches": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "description": "Relative path for 'branches' in SVN URL, 'null' to disable. (Ex.: 'branches', 'versions')",
+          "type": ["string", "null"],
+          "description":
+            "Relative path for 'branches' in SVN URL, 'null' to disable. (Ex.: 'branches', 'versions')",
           "default": "branches"
         },
         "svn.layout.tags": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "description": "Relative path for 'tags' in SVN URL, 'null' to disable. (Ex.: 'tags', 'stamps')",
+          "type": ["string", "null"],
+          "description":
+            "Relative path for 'tags' in SVN URL, 'null' to disable. (Ex.: 'tags', 'stamps')",
           "default": "tags"
         },
         "svn.multipleFolders.enabled": {

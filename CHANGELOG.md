@@ -1,4 +1,8 @@
-# **v1.5.0 UNDER DEVELOPMENT**
+# **v1.5.0**
+
+## What's New
+
+* @rwatts3 Added Svn patch command
 
 # **v1.4.6**
 

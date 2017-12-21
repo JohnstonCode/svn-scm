@@ -347,15 +347,17 @@ export class SvnCommands {
       window.showErrorMessage("Unable to update");
     }
   }
-  
-  @command('svn.patch', { repository: true })
+
+  @command("svn.patch", { repository: true })
   async patch(repository: Repository) {
     try {
       const result = await repository.repository.patch();
       // send the patch results to a new tab
-      workspace.openTextDocument({language: 'diff', content: result }).then(doc => {
-        window.showTextDocument(doc);
-      });
+      workspace
+        .openTextDocument({ language: "diff", content: result })
+        .then(doc => {
+          window.showTextDocument(doc);
+        });
       window.showInformationMessage("Files Patched");
     } catch (error) {
       console.error(error);
