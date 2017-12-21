@@ -236,4 +236,14 @@ export class Repository {
 
     return message;
   }
+  
+  async patch() {
+    const result = await this.svn.patch(this.root);
+    if (result.exitCode !== 0) {
+      throw new Error(result.stderr);
+    }
+    
+    const message = result.stdout;
+      return message;
+  }
 }
