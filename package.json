@@ -34,7 +34,7 @@
   "devDependencies": {
     "@types/glob": "^5.0.33",
     "@types/mocha": "^2.2.42",
-    "@types/node": "^8.0.54",
+    "@types/node": "^9.3.0",
     "decache": "^4.3.0",
     "eslint": "^4.12.1",
     "glob": "^7.1.2",
