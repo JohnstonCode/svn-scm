@@ -250,4 +250,10 @@ export class Svn {
   patch(root: string) {
     return this.exec(root, ["diff"]);
   }
+  
+  propset(root:string, name:string, flag:string, files: any[]) {
+    let args = ['propset', `svn:${name}`, flag, ...files];
+    
+    return this.exec(root, args);
+  }
 }

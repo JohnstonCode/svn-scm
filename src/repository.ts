@@ -245,4 +245,8 @@ export class Repository {
       this._onDidChangeRepository.fire();
     }
   }
+  
+  async propset(name:string, flag:string, files:string) {
+    return this.repository.propset(name, flag, files);
+  }
 }

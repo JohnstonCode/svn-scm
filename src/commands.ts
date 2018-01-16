@@ -28,6 +28,19 @@ interface Command {
 
 const Commands: Command[] = [];
 
+const IgnoreOptions: any[] = [
+  {
+    name: 'ignore',
+    type: 'recursive',
+    flag: '-R'
+  },
+  {
+    name: 'ignore',
+    type: 'non-recursive',
+    flag: ''
+  }
+]
+
 function command(commandId: string, options: CommandOptions = {}): Function {
   return (target: any, key: string, descriptor: any) => {
     if (!(typeof descriptor.value === "function")) {
@@ -36,6 +49,16 @@ function command(commandId: string, options: CommandOptions = {}): Function {
 
     Commands.push({ commandId, key, method: descriptor.value, options });
   };
+}
+
+async function askForFilesAndDirectories() {
+  return await window
+  .showInputBox({
+    value: "",
+    placeHolder: "Files",
+    prompt: "Enter a space separated list of the files/directories",
+    ignoreFocusOut: true
+  });
 }
 
 class CreateBranchItem implements QuickPickItem {
@@ -79,6 +102,55 @@ class SwitchBranchItem implements QuickPickItem {
 
   async run(repository: Repository): Promise<void> {
     await repository.switchBranch(this.ref);
+  }
+}
+
+// class PropSetItem implements QuickPickItem {
+//   constructor(private name: string, private flag: string){}
+  
+//   get label(): string {
+//     return this.name;
+//   }
+  
+//   get description(): string {
+//     return '';
+//   }
+  
+//   async run(repository: Repository): Promise<void> {
+//     const files = await window
+//     .showInputBox({
+//       value: "",
+//       placeHolder: "Files",
+//       prompt: "Enter a space separated list of the files/directories",
+//       ignoreFocusOut: true
+//     });
+    
+//     if (!files) {
+//       return;
+//     }
+    
+//     await repository.propset(this.name, files);
+//   }
+// }
+class IgnorePropItem implements QuickPickItem {
+  constructor(private name: string, private type:string, private flag: string){}
+  
+  get label(): string {
+    return this.type;
+  }
+  
+  get description(): string {
+    return '';
+  }
+  
+  async run(repository: Repository): Promise<void> {
+    const files = await askForFilesAndDirectories();
+    
+    if (!files) {
+      return;
+    }
+    
+    repository.propset(this.name, this.flag, files);
   }
 }
 
@@ -363,6 +435,19 @@ export class SvnCommands {
       console.error(error);
       window.showErrorMessage("Unable to patch");
     }
+  }
+  
+  @command("svn.propset:ignore", { repository: true })
+  async propsetIgnore(repository: Repository) {
+    const placeHolder = "recursive or non-recursive?";
+    const picks = IgnoreOptions.map(item => new IgnorePropItem(item.name, item.type, item.flag));
+    const choice = await window.showQuickPick(picks, { placeHolder });
+    
+    if (!choice) {
+      return;
+    }
+    
+    await choice.run(repository);
   }
 
   private runByRepository<T>(

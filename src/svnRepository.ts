@@ -246,4 +246,19 @@ export class Repository {
     const message = result.stdout;
       return message;
   }
+  
+  async propset(name:string, flag:string, files:string) {
+    const filesArray = files.split(" ");
+    const result = await this.svn.propset(this.root, name, flag, filesArray);
+    
+    console.log(result);
+    
+    if (result.exitCode !== 0) {
+      throw new Error(result.stderr);
+    }
+    
+    console.log(result.stdout);
+    
+    return result.stdout;
+  }
 }
