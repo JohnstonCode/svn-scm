@@ -144,6 +144,8 @@ export class Svn {
       })
     ]);
 
+    jschardet.MacCyrillicModel.mTypicalPositiveRatio += 0.001;
+
     const encodingGuess = jschardet.detect(stdout);
 
     const encoding =
