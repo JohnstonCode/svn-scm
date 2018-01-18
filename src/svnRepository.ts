@@ -55,18 +55,37 @@ export class Repository {
   }
 
   async getCurrentBranch(): Promise<string> {
-    try {
-      const result = await this.svn.info(this.root);
-      const currentBranch = result.stdout
-        .match(/<url>(.*?)<\/url>/)[1]
-        .split("/")
-        .pop();
-      return currentBranch;
-    } catch (error) {
-      console.error(error);
+    const info = await this.svn.info(this.workspaceRoot);
+
+    if (info.exitCode !== 0) {
+      throw new Error(info.stderr);
+    }
+
+    const config = workspace.getConfiguration("svn");
+    const trunkLayout = config.get<string>("layout.trunk");
+    const branchesLayout = config.get<string>("layout.branches");
+    const tagsLayout = config.get<string>("layout.tags");
+
+    const trees = [trunkLayout, branchesLayout, tagsLayout].filter(
+      x => x != null
+    );
+    const regex = new RegExp(
+      "<url>(.*?)/(" + trees.join("|") + ")(/([^/]+))?.*?</url>"
+    );
+
+    const match = info.stdout.match(regex);
+
+    if (match) {
+      if (match[4] && match[2] !== trunkLayout) {
+        return match[4];
+      }
+      if (match[2]) {
+        return match[2];
+      }
+    }
+
       return "";
     }
-  }
 
   async getRepoUrl() {
     const config = workspace.getConfiguration("svn");
@@ -79,7 +98,7 @@ export class Repository {
     );
     const regex = new RegExp("<url>(.*?)/(" + trees.join("|") + ").*?</url>");
 
-    const info = await this.svn.info(this.root);
+    const info = await this.svn.info(this.workspaceRoot);
 
     if (info.exitCode !== 0) {
       throw new Error(info.stderr);
@@ -136,10 +155,9 @@ export class Repository {
       trees.push(tagsLayout);
     }
 
-    for (let index in trees) {
+    for (const tree of trees) {
       promises.push(
         new Promise<string[]>(async resolve => {
-          const tree = trees[index];
           const branchUrl = repoUrl + "/" + tree;
 
           const result = await this.svn.list(branchUrl);
@@ -153,6 +171,7 @@ export class Repository {
             .trim()
             .replace(/\/|\\/g, "")
             .split(/[\r\n]+/)
+            .filter((x: string) => !!x)
             .map((i: string) => tree + "/" + i);
 
           resolve(list);
@@ -178,7 +197,7 @@ export class Repository {
 
     const repoUrl = await this.getRepoUrl();
     const newBranch = repoUrl + "/" + branchesLayout + "/" + name;
-    const resultBranch = await this.svn.info(this.root);
+    const resultBranch = await this.svn.info(this.workspaceRoot);
     const currentBranch = resultBranch.stdout.match(/<url>(.*?)<\/url>/)[1];
     const result = await this.svn.copy(currentBranch, newBranch, name);
 
@@ -186,7 +205,7 @@ export class Repository {
       throw new Error(result.stderr);
     }
 
-    const switchBranch = await this.svn.switchBranch(this.root, newBranch);
+    const switchBranch = await this.svn.switchBranch(this.workspaceRoot, newBranch);
 
     if (switchBranch.exitCode !== 0) {
       throw new Error(switchBranch.stderr);
@@ -223,7 +242,7 @@ export class Repository {
   }
 
   async update() {
-    const result = await this.svn.update(this.root);
+    const result = await this.svn.update(this.workspaceRoot);
 
     if (result.exitCode !== 0) {
       throw new Error(result.stderr);
@@ -238,7 +257,7 @@ export class Repository {
   }
   
   async patch() {
-    const result = await this.svn.patch(this.root);
+    const result = await this.svn.patch(this.workspaceRoot);
     if (result.exitCode !== 0) {
       throw new Error(result.stderr);
     }
@@ -249,7 +268,7 @@ export class Repository {
   
   async propset(name:string, flag:string, files:string) {
     const filesArray = files.split(" ");
-    const result = await this.svn.propset(this.root, name, flag, filesArray);
+    const result = await this.svn.propset(this.workspaceRoot, name, flag, filesArray);
     
     console.log(result);
     

@@ -10,6 +10,7 @@ import * as path from "path";
 import { Repository } from "./repository";
 import { Svn } from "./svn";
 import { dispose, anyEvent, filterEvent } from "./util";
+import { sequentialize } from "./decorators";
 
 interface OpenRepository {
   repository: Repository;
@@ -46,6 +47,8 @@ export class Model {
   private onDidChangeConfiguration(): void {
     const config = workspace.getConfiguration("svn");
     const enabled = config.get("enabled") === true;
+
+    this.maxDepth = config.get<number>("multipleFolders.depth", 0);
 
     if (enabled === this.enabled) {
       return;
@@ -148,7 +151,7 @@ export class Model {
     this.disposables = dispose(this.disposables);
   }
 
-  private onDidChangeWorkspaceFolders({
+  private async onDidChangeWorkspaceFolders({
     added,
     removed
   }: WorkspaceFoldersChangeEvent) {
@@ -162,7 +165,7 @@ export class Model {
       .filter(
         repository =>
           !(workspace.workspaceFolders || []).some(f =>
-            repository!.repository.root.startsWith(f.uri.fsPath)
+            repository!.repository.workspaceRoot.startsWith(f.uri.fsPath)
           )
       ) as OpenRepository[];
 
@@ -179,6 +182,7 @@ export class Model {
     }
   }
 
+  @sequentialize
   async tryOpenRepository(path: string, level = 0): Promise<void> {
     if (this.getRepository(path)) {
       return;
@@ -202,10 +206,6 @@ export class Model {
     if (isSvnFolder) {
       try {
         const repositoryRoot = await this.svn.getRepositoryRoot(path);
-
-        if (this.getRepository(repositoryRoot)) {
-          return;
-        }
 
         const repository = new Repository(this.svn.open(repositoryRoot, path));
 
@@ -248,7 +248,7 @@ export class Model {
     if (hint instanceof Uri) {
       for (const liveRepository of this.openRepositories) {
         const relativePath = path.relative(
-          liveRepository.repository.root,
+          liveRepository.repository.workspaceRoot,
           hint.fsPath
         );
 
