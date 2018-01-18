@@ -29,10 +29,12 @@
   },
   "dependencies": {
     "iconv-lite": "^0.4.19",
-    "jschardet": "^1.6.0"
+    "jschardet": "^1.6.0",
+    "micromatch": "^3.1.5"
   },
   "devDependencies": {
     "@types/glob": "^5.0.33",
+    "@types/micromatch": "^3.1.0",
     "@types/mocha": "^2.2.42",
     "@types/node": "^9.3.0",
     "decache": "^4.3.0",
@@ -195,12 +197,7 @@
           "type": "array",
           "minimum": 4,
           "description": "Folders to ignore using SVN",
-          "default": [
-            "**/.git/**",
-            "**/.hg/**",
-            "**/vendor/**",
-            "**/node_modules/**"
-          ]
+          "default": ["**/.git", "**/.hg", "**/vendor", "**/node_modules"]
         }
       }
     }
