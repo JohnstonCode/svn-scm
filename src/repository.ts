@@ -80,7 +80,7 @@ export class Repository {
     this.sourceControl = scm.createSourceControl(
       "svn",
       "SVN",
-      Uri.file(repository.root)
+      Uri.file(repository.workspaceRoot)
     );
     this.sourceControl.acceptInputCommand = {
       command: "svn.commitWithMessage",

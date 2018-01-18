@@ -56,7 +56,7 @@ export class Repository {
 
   async getCurrentBranch(): Promise<string> {
     try {
-      const result = await this.svn.info(this.root);
+      const result = await this.svn.info(this.workspaceRoot);
       const currentBranch = result.stdout
         .match(/<url>(.*?)<\/url>/)[1]
         .split("/")
@@ -79,7 +79,7 @@ export class Repository {
     );
     const regex = new RegExp("<url>(.*?)/(" + trees.join("|") + ").*?</url>");
 
-    const info = await this.svn.info(this.root);
+    const info = await this.svn.info(this.workspaceRoot);
 
     if (info.exitCode !== 0) {
       throw new Error(info.stderr);
@@ -178,7 +178,7 @@ export class Repository {
 
     const repoUrl = await this.getRepoUrl();
     const newBranch = repoUrl + "/" + branchesLayout + "/" + name;
-    const resultBranch = await this.svn.info(this.root);
+    const resultBranch = await this.svn.info(this.workspaceRoot);
     const currentBranch = resultBranch.stdout.match(/<url>(.*?)<\/url>/)[1];
     const result = await this.svn.copy(currentBranch, newBranch, name);
 
@@ -186,7 +186,7 @@ export class Repository {
       throw new Error(result.stderr);
     }
 
-    const switchBranch = await this.svn.switchBranch(this.root, newBranch);
+    const switchBranch = await this.svn.switchBranch(this.workspaceRoot, newBranch);
 
     if (switchBranch.exitCode !== 0) {
       throw new Error(switchBranch.stderr);
@@ -223,7 +223,7 @@ export class Repository {
   }
 
   async update() {
-    const result = await this.svn.update(this.root);
+    const result = await this.svn.update(this.workspaceRoot);
 
     if (result.exitCode !== 0) {
       throw new Error(result.stderr);
@@ -238,7 +238,7 @@ export class Repository {
   }
   
   async patch() {
-    const result = await this.svn.patch(this.root);
+    const result = await this.svn.patch(this.workspaceRoot);
     if (result.exitCode !== 0) {
       throw new Error(result.stderr);
     }
@@ -249,7 +249,7 @@ export class Repository {
   
   async propset(name:string, flag:string, files:string) {
     const filesArray = files.split(" ");
-    const result = await this.svn.propset(this.root, name, flag, filesArray);
+    const result = await this.svn.propset(this.workspaceRoot, name, flag, filesArray);
     
     console.log(result);
     
