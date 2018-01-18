@@ -1,8 +1,15 @@
-interface jschardetReturn {
-  encoding: string;
-  confidence: number;
-}
-
 declare module "jschardet" {
-  function detect(detect: string): jschardetReturn;
+  export interface IDetectedMap {
+    encoding: string;
+    confidence: number;
+  }
+  export function detect(buffer: NodeBuffer): IDetectedMap;
+
+  export const Constants: {
+    MINIMUM_THRESHOLD: number;
+  };
+
+  export const MacCyrillicModel: {
+    mTypicalPositiveRatio: number;
+  };
 }
