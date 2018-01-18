@@ -94,11 +94,6 @@
         "command": "svn.patch",
         "title": "Svn patch",
         "category": "SVN"
-      },
-      {
-        "command": "svn.propset:ignore",
-        "title": "Svn propset:ignore",
-        "category": "SVN"
       }
     ],
     "menus": {

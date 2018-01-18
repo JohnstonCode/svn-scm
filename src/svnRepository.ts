@@ -84,8 +84,8 @@ export class Repository {
       }
     }
 
-      return "";
-    }
+    return "";
+  }
 
   async getRepoUrl() {
     const config = workspace.getConfiguration("svn");
@@ -205,7 +205,10 @@ export class Repository {
       throw new Error(result.stderr);
     }
 
-    const switchBranch = await this.svn.switchBranch(this.workspaceRoot, newBranch);
+    const switchBranch = await this.svn.switchBranch(
+      this.workspaceRoot,
+      newBranch
+    );
 
     if (switchBranch.exitCode !== 0) {
       throw new Error(switchBranch.stderr);
@@ -255,29 +258,14 @@ export class Repository {
 
     return message;
   }
-  
+
   async patch() {
     const result = await this.svn.patch(this.workspaceRoot);
     if (result.exitCode !== 0) {
       throw new Error(result.stderr);
     }
-    
+
     const message = result.stdout;
-      return message;
-  }
-  
-  async propset(name:string, flag:string, files:string) {
-    const filesArray = files.split(" ");
-    const result = await this.svn.propset(this.workspaceRoot, name, flag, filesArray);
-    
-    console.log(result);
-    
-    if (result.exitCode !== 0) {
-      throw new Error(result.stderr);
-    }
-    
-    console.log(result.stdout);
-    
-    return result.stdout;
+    return message;
   }
 }
