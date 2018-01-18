@@ -1,3 +1,10 @@
+# **v1.5.1**
+
+## Bug Fixes
+
+* @edgardmessias fixed #83. Fixed multi-project workspace
+* @edgardmessias fixed #82, #9. Character encoding issues
+
 # **v1.5.0**
 
 ## What's New
