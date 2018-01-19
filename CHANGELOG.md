@@ -1,3 +1,9 @@
+# **v1.6.0**
+
+## What's New
+
+* @edgardmessias Ignore files defined in "files.exclude"
+
 # **v1.5.1**
 
 ## Bug Fixes
