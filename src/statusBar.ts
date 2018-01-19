@@ -10,9 +10,18 @@ export class SvnStatusBar {
   }
 
   constructor(private repository: Repository) {
-    repository.onDidChangeStatus(
+    repository.onDidChangeBranch(
       this._onDidChange.fire,
       this._onDidChange,
+      this.disposables
+    );
+    repository.onDidChangeRepository(
+      () => {
+        if (!this.repository.isSwitchingBranch) {
+          this._onDidChange.fire();
+        }
+      },
+      null,
       this.disposables
     );
   }

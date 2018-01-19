@@ -1,4 +1,5 @@
 import { Event } from "vscode";
+import { sep } from "path";
 
 export interface BaseDisposable {
   dispose(): void;
@@ -43,4 +44,44 @@ export function combinedDisposable(
 
 export function toDisposable(dispose: () => void): BaseDisposable {
   return { dispose };
+}
+
+export function onceEvent<T>(event: Event<T>): Event<T> {
+  return (listener, thisArgs = null, disposables?) => {
+    const result = event(
+      e => {
+        result.dispose();
+        return listener.call(thisArgs, e);
+      },
+      null,
+      disposables
+    );
+
+    return result;
+  };
+}
+
+export function eventToPromise<T>(event: Event<T>): Promise<T> {
+  return new Promise<T>(c => onceEvent(event)(c));
+}
+
+export function isDescendant(parent: string, descendant: string): boolean {
+  parent = parent.replace(/[\\\/]/g, sep);
+  descendant = descendant.replace(/[\\\/]/g, sep);
+
+  // IF Windows
+  if (sep === "\\") {
+    parent = parent.toLowerCase();
+    descendant = descendant.toLowerCase();
+  }
+
+  if (parent === descendant) {
+    return true;
+  }
+
+  if (parent.charAt(parent.length - 1) !== sep) {
+    parent += sep;
+  }
+
+  return descendant.startsWith(parent);
 }

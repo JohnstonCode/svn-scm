@@ -3,7 +3,9 @@ import {
   Uri,
   window,
   Disposable,
-  WorkspaceFoldersChangeEvent
+  WorkspaceFoldersChangeEvent,
+  EventEmitter,
+  Event
 } from "vscode";
 import * as fs from "fs";
 import * as path from "path";
@@ -13,11 +15,25 @@ import { Svn } from "./svn";
 import { dispose, anyEvent, filterEvent } from "./util";
 import { sequentialize } from "./decorators";
 
+export interface ModelChangeEvent {
+  repository: Repository;
+  uri: Uri;
+}
+
+export interface OriginalResourceChangeEvent {
+  repository: Repository;
+  uri: Uri;
+}
+
 interface OpenRepository {
   repository: Repository;
 }
 
 export class Model {
+  private _onDidChangeRepository = new EventEmitter<ModelChangeEvent>();
+  readonly onDidChangeRepository: Event<ModelChangeEvent> = this
+    ._onDidChangeRepository.event;
+
   public openRepositories: OpenRepository[] = [];
   private disposables: Disposable[] = [];
   private enabled = false;
@@ -199,7 +215,10 @@ export class Model {
       fs.readdirSync(path).forEach(file => {
         const dir = path + "/" + file;
 
-        if (fs.statSync(dir).isDirectory() && !micromatch.some([dir], this.ignoreList)) {
+        if (
+          fs.statSync(dir).isDirectory() &&
+          !micromatch.some([dir], this.ignoreList)
+        ) {
           this.tryOpenRepository(dir, newLevel);
         }
       });
@@ -257,6 +276,12 @@ export class Model {
   }
 
   private open(repository: Repository): void {
+    const changeListener = repository.onDidChangeRepository(uri =>
+      this._onDidChangeRepository.fire({ repository, uri })
+    );
+
+    this.disposables.push(changeListener);
+
     this.openRepositories.push({ repository });
   }
 

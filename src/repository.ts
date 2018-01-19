@@ -19,6 +19,7 @@ import { dispose, anyEvent, filterEvent, toDisposable } from "./util";
 import * as path from "path";
 import * as micromatch from "micromatch";
 import { setInterval, clearInterval } from "timers";
+import { toSvnUri } from "./uri";
 
 export class Repository {
   public watcher: FileSystemWatcher;
@@ -37,6 +38,9 @@ export class Repository {
 
   private _onDidChangeStatus = new EventEmitter<void>();
   readonly onDidChangeStatus: Event<void> = this._onDidChangeStatus.event;
+
+  private _onDidChangeBranch = new EventEmitter<void>();
+  readonly onDidChangeBranch: Event<void> = this._onDidChangeBranch.event;
 
   get root(): string {
     return this.repository.root;
@@ -59,22 +63,34 @@ export class Repository {
       fsWatcher.onDidCreate,
       fsWatcher.onDidDelete
     );
+
     const onRepositoryChange = filterEvent(
       onWorkspaceChange,
       uri => !/^\.\./.test(path.relative(repository.root, uri.fsPath))
     );
     const onRelevantRepositoryChange = filterEvent(
       onRepositoryChange,
-      uri => !/\/\.svn\/tmp/.test(uri.path)
+      uri => !/[\\\/]\.svn[\\\/]tmp/.test(uri.path)
     );
     onRelevantRepositoryChange(this.update, this, this.disposables);
 
     const onRelevantSvnChange = filterEvent(onRelevantRepositoryChange, uri =>
-      /\/\.svn\//.test(uri.path)
+      /[\\\/]\.svn[\\\/]/.test(uri.path)
     );
+
     onRelevantSvnChange(
       this._onDidChangeRepository.fire,
       this._onDidChangeRepository,
+      this.disposables
+    );
+
+    this.onDidChangeRepository(
+      async () => {
+        if (!this.isSwitchingBranch) {
+          this.currentBranch = await this.getCurrentBranch();
+        }
+      },
+      null,
       this.disposables
     );
 
@@ -98,12 +114,12 @@ export class Repository {
       null,
       this.disposables
     );
-    this.onDidChangeRepository(
-      () => (this.sourceControl.statusBarCommands = statusBar.commands),
-      null,
-      this.disposables
-    );
-    this.sourceControl.statusBarCommands = statusBar.commands;
+
+    const updateBranchName = async () => {
+      this.currentBranch = await this.getCurrentBranch();
+      this.sourceControl.statusBarCommands = statusBar.commands;
+    };
+    updateBranchName();
 
     this.changes = this.sourceControl.createResourceGroup("changes", "Changes");
     this.notTracked = this.sourceControl.createResourceGroup(
@@ -196,8 +212,6 @@ export class Repository {
     this.changes.resourceStates = changes;
     this.notTracked.resourceStates = notTracked;
 
-    this.currentBranch = await this.getCurrentBranch();
-
     this._onDidChangeStatus.fire();
 
     return Promise.resolve();
@@ -208,7 +222,7 @@ export class Repository {
       return;
     }
 
-    return uri.with({ scheme: "svn", query: uri.path, path: uri.path });
+    return toSvnUri(uri, "");
   }
 
   show(filePath: string, revision?: string): Promise<string> {
@@ -229,17 +243,17 @@ export class Repository {
 
   async branch(name: string) {
     this.isSwitchingBranch = true;
-    this._onDidChangeRepository.fire();
+    this._onDidChangeBranch.fire();
     const response = await this.repository.branch(name);
     this.isSwitchingBranch = false;
     this.updateBranches();
-    this._onDidChangeRepository.fire();
+    this._onDidChangeBranch.fire();
     return response;
   }
 
   async switchBranch(name: string) {
     this.isSwitchingBranch = true;
-    this._onDidChangeRepository.fire();
+    this._onDidChangeBranch.fire();
 
     try {
       const response = await this.repository.switchBranch(name);
@@ -257,7 +271,7 @@ export class Repository {
     } finally {
       this.isSwitchingBranch = false;
       this.updateBranches();
-      this._onDidChangeRepository.fire();
+      this._onDidChangeBranch.fire();
     }
   }
 }

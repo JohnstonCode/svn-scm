@@ -27,7 +27,7 @@ async function init(context: ExtensionContext, disposables: Disposable[]) {
   const model = new Model(svn);
   const contentProvider = new SvnContentProvider(model);
   const commands = new SvnCommands(model);
-  disposables.push(model);
+  disposables.push(model, contentProvider);
 
   outputChannel.appendLine("Using svn " + info.version + " from " + info.path);
 
