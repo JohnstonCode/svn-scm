@@ -7,6 +7,7 @@ import {
 } from "vscode";
 import * as fs from "fs";
 import * as path from "path";
+import * as micromatch from "micromatch";
 import { Repository } from "./repository";
 import { Svn } from "./svn";
 import { dispose, anyEvent, filterEvent } from "./util";
@@ -21,7 +22,7 @@ export class Model {
   private disposables: Disposable[] = [];
   private enabled = false;
   private possibleSvnRepositoryPaths = new Set<string>();
-  private ignorePattern: RegExp = /^$/;
+  private ignoreList: string[];
   private maxDepth: number = 0;
 
   private configurationChangeDisposable: Disposable;
@@ -74,28 +75,7 @@ export class Model {
     if (multipleFolders) {
       this.maxDepth = config.get<number>("multipleFolders.depth", 0);
 
-      const ignoreList = config.get("multipleFolders.ignore", []);
-
-      // Base on https://github.com/aleclarson/glob-regex/blob/master/index.js
-      const pattern = ignoreList
-        .map((ignored: string) => {
-          return ignored
-            .replace(/\\/g, "/")
-            .replace(/\./g, "\\.")
-            .replace(/\*\*\//g, "(.+[\\\\/])?")
-            .replace(/\*\*/g, "(.+[\\\\/])?*")
-            .replace(/\*/g, "[^\\\\/]+")
-            .replace(/(\w)\//g, "$1[\\\\/]")
-            .replace(/\/(\w)/g, "[\\\\/]$1")
-            .replace(/(\w)$/g, "$1([\\\\/].*)*");
-        })
-        .join("|");
-
-      try {
-        this.ignorePattern = new RegExp("^(" + pattern + ")$");
-      } catch (error) {
-        window.showErrorMessage("Invalid pattern for: " + pattern);
-      }
+      this.ignoreList = config.get("multipleFolders.ignore", []);
     }
 
     workspace.onDidChangeWorkspaceFolders(
@@ -218,7 +198,8 @@ export class Model {
     if (newLevel <= this.maxDepth) {
       fs.readdirSync(path).forEach(file => {
         const dir = path + "/" + file;
-        if (fs.statSync(dir).isDirectory() && !this.ignorePattern.test(dir)) {
+
+        if (fs.statSync(dir).isDirectory() && !micromatch.some([dir], this.ignoreList)) {
           this.tryOpenRepository(dir, newLevel);
         }
       });

@@ -17,6 +17,7 @@ import { Repository as BaseRepository } from "./svnRepository";
 import { SvnStatusBar } from "./statusBar";
 import { dispose, anyEvent, filterEvent, toDisposable } from "./util";
 import * as path from "path";
+import * as micromatch from "micromatch";
 import { setInterval, clearInterval } from "timers";
 
 export class Repository {
@@ -139,7 +140,21 @@ export class Repository {
     let notTracked: any[] = [];
     let statuses = (await this.repository.getStatus()) || [];
 
+    const fileConfig = workspace.getConfiguration("files");
+
+    const filesToExclude = fileConfig.get<any>("exclude", {});
+
+    let excludeList: string[] = [];
+    for (const pattern in filesToExclude) {
+      const negate = !filesToExclude[pattern];
+      excludeList.push((negate ? "!" : "") + pattern);
+    }
+
     statuses.forEach(status => {
+      if (micromatch.some([status[1]], excludeList)) {
+        return;
+      }
+
       switch (status[0]) {
         case "A":
           changes.push(new Resource(this.workspaceRoot, status[1], "added"));
