@@ -1,8 +1,11 @@
 import { workspace } from "vscode";
 import { Svn, CpOptions } from "./svn";
 import { IFileStatus, parseStatusXml } from "./statusParser";
+import { parseInfoXml, ISvnInfo } from "./infoParser";
 
 export class Repository {
+  private _info?: ISvnInfo;
+
   constructor(
     private svn: Svn,
     public root: string,
@@ -13,6 +16,22 @@ export class Repository {
     const result = await this.svn.exec(this.workspaceRoot, ["stat", "--xml"]);
 
     return await parseStatusXml(result.stdout);
+  }
+
+  async getInfo(): Promise<ISvnInfo> {
+    if (this._info) {
+      return this._info;
+    }
+    const result = await this.svn.info(this.workspaceRoot);
+
+    this._info = await parseInfoXml(result.stdout);
+
+    //Cache for 30 seconds
+    setTimeout(() => {
+      this._info = undefined;
+    }, 30000);
+
+    return this._info;
   }
 
   async show(
@@ -46,11 +65,7 @@ export class Repository {
   }
 
   async getCurrentBranch(): Promise<string> {
-    const info = await this.svn.info(this.workspaceRoot);
-
-    if (info.exitCode !== 0) {
-      throw new Error(info.stderr);
-    }
+    const info = await this.getInfo();
 
     const config = workspace.getConfiguration("svn");
     const trunkLayout = config.get<string>("layout.trunk");
@@ -60,11 +75,9 @@ export class Repository {
     const trees = [trunkLayout, branchesLayout, tagsLayout].filter(
       x => x != null
     );
-    const regex = new RegExp(
-      "<url>(.*?)/(" + trees.join("|") + ")(/([^/]+))?.*?</url>"
-    );
+    const regex = new RegExp("(.*?)/(" + trees.join("|") + ")(/([^/]+))?.*?");
 
-    const match = info.stdout.match(regex);
+    const match = info.url.match(regex);
 
     if (match) {
       if (match[4] && match[2] !== trunkLayout) {
@@ -87,16 +100,12 @@ export class Repository {
     const trees = [trunkLayout, branchesLayout, tagsLayout].filter(
       x => x != null
     );
-    const regex = new RegExp("<url>(.*?)/(" + trees.join("|") + ").*?</url>");
+    const regex = new RegExp("(.*?)/(" + trees.join("|") + ").*?");
 
-    const info = await this.svn.info(this.workspaceRoot);
+    const info = await this.getInfo();
 
-    if (info.exitCode !== 0) {
-      throw new Error(info.stderr);
-    }
-
-    let repoUrl = info.stdout.match(/<root>(.*?)<\/root>/)[1];
-    const match = info.stdout.match(regex);
+    let repoUrl = info.repository.root;
+    const match = info.url.match(regex);
 
     if (match && match[1]) {
       repoUrl = match[1];
@@ -188,13 +197,9 @@ export class Repository {
 
     const repoUrl = await this.getRepoUrl();
     const newBranch = repoUrl + "/" + branchesLayout + "/" + name;
-    const resultBranch = await this.svn.info(this.workspaceRoot);
-    const currentBranch = resultBranch.stdout.match(/<url>(.*?)<\/url>/)[1];
+    const info = await this.getInfo();
+    const currentBranch = info.url;
     const result = await this.svn.copy(currentBranch, newBranch, name);
-
-    if (result.exitCode !== 0) {
-      throw new Error(result.stderr);
-    }
 
     const switchBranch = await this.svn.switchBranch(
       this.workspaceRoot,
