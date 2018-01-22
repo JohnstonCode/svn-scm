@@ -191,13 +191,9 @@ export class Repository {
           return;
         }
 
-        notTracked.push(
-          new Resource(uri, status.status, renameUri)
-        );
+        notTracked.push(new Resource(uri, status.status, renameUri));
       } else {
-        changes.push(
-          new Resource(uri, status.status, renameUri)
-        );
+        changes.push(new Resource(uri, status.status, renameUri));
       }
     });
 
@@ -220,7 +216,9 @@ export class Repository {
   }
 
   show(filePath: string, revision?: string): Promise<string> {
-    return this.repository.show(filePath, revision);
+    return this.repository.show(filePath, revision, {
+      cwd: this.workspaceRoot
+    });
   }
 
   addFile(filePath: string) {
