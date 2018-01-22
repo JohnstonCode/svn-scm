@@ -6,6 +6,24 @@ import * as jschardet from "jschardet";
 import * as path from "path";
 import { Repository } from "./svnRepository";
 
+// List: https://github.com/apache/subversion/blob/1.6.x/subversion/svn/schema/status.rnc#L33
+export enum Status {
+  ADDED = "added",
+  CONFLICTED = "conflicted",
+  DELETED = "deleted",
+  EXTERNAL = "external",
+  IGNORED = "ignored",
+  INCOMPLETE = "incomplete",
+  MERGED = "merged",
+  MISSING = "missing",
+  MODIFIED = "modified",
+  NONE = "none",
+  NORMAL = "normal",
+  OBSTRUCTED = "obstructed",
+  REPLACED = "replaced",
+  UNVERSIONED = "unversioned",
+}
+
 export interface CpOptions {
   cwd?: string;
   encoding?: string;

@@ -28,9 +28,11 @@
     "prettier": "prettier --no-config --list-different 'src/**/*.ts'"
   },
   "dependencies": {
+    "@types/xml2js": "^0.4.2",
     "iconv-lite": "^0.4.19",
     "jschardet": "^1.6.0",
-    "micromatch": "^3.1.5"
+    "micromatch": "^3.1.5",
+    "xml2js": "^0.4.19"
   },
   "devDependencies": {
     "@types/glob": "^5.0.33",

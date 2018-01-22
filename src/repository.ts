@@ -20,6 +20,7 @@ import * as path from "path";
 import * as micromatch from "micromatch";
 import { setInterval, clearInterval } from "timers";
 import { toSvnUri } from "./uri";
+import { Status } from "./svn";
 
 export class Repository {
   public watcher: FileSystemWatcher;
@@ -154,7 +155,7 @@ export class Repository {
   async update() {
     let changes: any[] = [];
     let notTracked: any[] = [];
-    let statuses = (await this.repository.getStatus()) || [];
+    const statuses = (await this.repository.getStatus()) || [];
 
     const fileConfig = workspace.getConfiguration("files");
 
@@ -167,50 +168,43 @@ export class Repository {
     }
 
     statuses.forEach(status => {
-      if (micromatch.some([status[1]], excludeList)) {
+      if (micromatch.some(status.path, excludeList)) {
         return;
       }
 
-      switch (status[0]) {
-        case "A":
-          changes.push(new Resource(this.workspaceRoot, status[1], "added"));
-          break;
-        case "D":
-          changes.push(new Resource(this.workspaceRoot, status[1], "deleted"));
-          break;
-        case "M":
-          changes.push(new Resource(this.workspaceRoot, status[1], "modified"));
-          break;
-        case "R":
-          changes.push(new Resource(this.workspaceRoot, status[1], "replaced"));
-          break;
-        case "!":
-          changes.push(new Resource(this.workspaceRoot, status[1], "missing"));
-          break;
-        case "C":
-          changes.push(new Resource(this.workspaceRoot, status[1], "conflict"));
-          break;
-        case "?":
-          let matches = status[1].match(
-            /(.+?)\.(mine|working|merge-\w+\.r\d+|r\d+)$/
-          );
+      const uri = Uri.file(path.join(this.workspaceRoot, status.path));
+      const renameUri = status.rename
+        ? Uri.file(path.join(this.workspaceRoot, status.rename))
+        : undefined;
 
-          if (
-            matches &&
-            matches[1] &&
-            statuses.some(s => s[1] === matches[1])
-          ) {
-            break;
-          }
-          notTracked.push(
-            new Resource(this.workspaceRoot, status[1], "unversioned")
-          );
-          break;
+      if (status.status === Status.UNVERSIONED) {
+        const matches = status.path.match(
+          /(.+?)\.(mine|working|merge-\w+\.r\d+|r\d+)$/
+        );
+
+        //If file end with (mine, working, merge, etc..) and has file without extension
+        if (
+          matches &&
+          matches[1] &&
+          statuses.some(s => s.path === matches[1])
+        ) {
+          return;
+        }
+
+        notTracked.push(
+          new Resource(uri, status.status, renameUri)
+        );
+      } else {
+        changes.push(
+          new Resource(uri, status.status, renameUri)
+        );
       }
     });
 
     this.changes.resourceStates = changes;
     this.notTracked.resourceStates = notTracked;
+
+    this.currentBranch = await this.getCurrentBranch();
 
     this._onDidChangeStatus.fire();
 
