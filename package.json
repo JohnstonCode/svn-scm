@@ -200,6 +200,11 @@
           "minimum": 4,
           "description": "Folders to ignore using SVN",
           "default": ["**/.git", "**/.hg", "**/vendor", "**/node_modules"]
+        },
+        "svn.sourceControl.showExternal": {
+          "type": "boolean",
+          "description": "Allow to show in source control the list the external folders",
+          "default": false
         }
       }
     }
