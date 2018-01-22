@@ -107,7 +107,8 @@ export class SvnContentProvider implements TextDocumentContentProvider {
     }
 
     try {
-      return await repository.show(uri.fsPath, revision);
+      const { path } = fromSvnUri(uri);
+      return await repository.show(path, revision);
     } catch (error) {
       return "";
     }
