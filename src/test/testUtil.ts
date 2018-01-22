@@ -135,7 +135,13 @@ export function destroyPath(fullPath: string) {
   for (let file of files) {
     destroyPath(path.join(fullPath, file));
   }
-  fs.rmdirSync(fullPath);
+
+  //Error in windows with anti-malware
+  try {
+    fs.rmdirSync(fullPath);
+  } catch (error) {
+    console.error(error);
+  }
   return true;
 }
 
