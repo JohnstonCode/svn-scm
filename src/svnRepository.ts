@@ -1,5 +1,6 @@
 import { workspace } from "vscode";
 import { Svn, CpOptions } from "./svn";
+import { IFileStatus, parseStatusXml } from "./statusParser";
 
 export class Repository {
   constructor(
@@ -8,20 +9,10 @@ export class Repository {
     public workspaceRoot: string
   ) {}
 
-  async getStatus(): Promise<any[]> {
-    const result = await this.svn.exec(this.workspaceRoot, ["stat"]);
+  async getStatus(): Promise<IFileStatus[]> {
+    const result = await this.svn.exec(this.workspaceRoot, ["stat", "--xml"]);
 
-    let items = result.stdout.split("\n");
-    let status = [];
-
-    for (let item of items) {
-      let state = item.charAt(0);
-      let path = item.substr(8).trim();
-
-      status.push([state, path]);
-    }
-
-    return status;
+    return await parseStatusXml(result.stdout);
   }
 
   async show(

@@ -236,7 +236,7 @@ export class SvnCommands {
   }
 
   private getDiffTitle(resource: Resource, ref: string): string {
-    let file = path.basename(resource.relativePath);
+    let file = path.basename(resource.resourceUri.fsPath);
 
     return `${file} (${ref})`;
   }
