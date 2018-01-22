@@ -5,6 +5,7 @@ import * as iconv from "iconv-lite";
 import * as jschardet from "jschardet";
 import * as path from "path";
 import { Repository } from "./svnRepository";
+import { parseInfoXml } from "./infoParser";
 
 // List: https://github.com/apache/subversion/blob/1.6.x/subversion/svn/schema/status.rnc#L33
 export enum Status {
@@ -21,7 +22,7 @@ export enum Status {
   NORMAL = "normal",
   OBSTRUCTED = "obstructed",
   REPLACED = "replaced",
-  UNVERSIONED = "unversioned",
+  UNVERSIONED = "unversioned"
 }
 
 export interface CpOptions {
@@ -180,12 +181,12 @@ export class Svn {
 
   async getRepositoryRoot(path: string) {
     try {
-      let result = await this.exec(path, ["info", "--xml"]);
-      let rootPath = result.stdout.match(
-        /<wcroot-abspath>(.*)<\/wcroot-abspath>/i
-      )[1];
-      return rootPath;
+      const result = await this.exec(path, ["info", "--xml"]);
+
+      const info = await parseInfoXml(result.stdout);
+      return info.wcInfo.wcrootAbspath;
     } catch (error) {
+      console.error(error);
       throw new Error("Unable to find repository root path");
     }
   }
