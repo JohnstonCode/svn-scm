@@ -27,6 +27,7 @@ export class Repository {
   public sourceControl: SourceControl;
   public changes: SourceControlResourceGroup;
   public notTracked: SourceControlResourceGroup;
+  public external: SourceControlResourceGroup;
   private disposables: Disposable[] = [];
   public currentBranch = "";
   public isSwitchingBranch: boolean = false;
@@ -127,9 +128,14 @@ export class Repository {
       "unversioned",
       "Not Tracked"
     );
+    this.external = this.sourceControl.createResourceGroup(
+      "external",
+      "External"
+    );
 
     this.changes.hideWhenEmpty = true;
     this.notTracked.hideWhenEmpty = true;
+    this.external.hideWhenEmpty = true;
 
     this.disposables.push(
       toDisposable(() => clearInterval(this.branchesTimer))
@@ -155,9 +161,11 @@ export class Repository {
   async update() {
     let changes: any[] = [];
     let notTracked: any[] = [];
+    let external: any[] = [];
     const statuses = (await this.repository.getStatus()) || [];
 
     const fileConfig = workspace.getConfiguration("files");
+    const svnConfig = workspace.getConfiguration("svn");
 
     const filesToExclude = fileConfig.get<any>("exclude", {});
 
@@ -177,7 +185,9 @@ export class Repository {
         ? Uri.file(path.join(this.workspaceRoot, status.rename))
         : undefined;
 
-      if (status.status === Status.UNVERSIONED) {
+      if (status.status === Status.EXTERNAL) {
+        external.push(new Resource(uri, status.status, renameUri));
+      } else if (status.status === Status.UNVERSIONED) {
         const matches = status.path.match(
           /(.+?)\.(mine|working|merge-\w+\.r\d+|r\d+)$/
         );
@@ -199,6 +209,12 @@ export class Repository {
 
     this.changes.resourceStates = changes;
     this.notTracked.resourceStates = notTracked;
+
+    if (svnConfig.get<boolean>("sourceControl.showExternal")) {
+      this.external.resourceStates = external;
+    } else {
+      this.external.resourceStates = [];
+    }
 
     this.currentBranch = await this.getCurrentBranch();
 
