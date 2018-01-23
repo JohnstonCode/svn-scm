@@ -98,6 +98,11 @@
         "command": "svn.patch",
         "title": "Svn patch",
         "category": "SVN"
+      },
+      {
+        "command": "svn.remove",
+        "title": "Remove Selected",
+        "category": "SVN"
       }
     ],
     "menus": {
@@ -142,6 +147,11 @@
           "command": "svn.revert",
           "when": "scmProvider == svn && scmResourceGroup == changes",
           "group": "1_modification"
+        },
+        {
+          "command": "svn.remove",
+          "when": "scmProvider == svn && scmResourceGroup == changes",
+          "group": "2_modification"
         }
       ],
       "editor/title": []

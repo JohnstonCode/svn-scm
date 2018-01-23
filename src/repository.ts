@@ -167,7 +167,7 @@ export class Repository {
     const fileConfig = workspace.getConfiguration("files");
     const svnConfig = workspace.getConfiguration("svn");
 
-    const filesToExclude = fileConfig.get<any>("exclude", {});
+    const filesToExclude = fileConfig.get<any>("exclude", null);
 
     let excludeList: string[] = [];
     for (const pattern in filesToExclude) {

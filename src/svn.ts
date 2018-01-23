@@ -271,4 +271,22 @@ export class Svn {
   patch(root: string) {
     return this.exec(root, ["diff"]);
   }
+
+  remove(files: any[], keepLocal: boolean) {
+    let args = ["remove"];
+
+    if (keepLocal) {
+      args.push("--keep-local");
+    }
+
+    for (let file of files) {
+      if (file instanceof Uri) {
+        args.push(file.fsPath);
+      } else {
+        args.push(file);
+      }
+    }
+
+    return this.exec("", args);
+  }
 }

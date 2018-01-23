@@ -264,4 +264,14 @@ export class Repository {
     const message = result.stdout;
     return message;
   }
+
+  async removeFiles(files: any[], keepLocal: boolean) {
+    const result = await this.svn.remove(files, keepLocal);
+
+    if (result.exitCode !== 0) {
+      throw new Error(result.stderr);
+    }
+
+    return result.stdout;
+  }
 }

@@ -365,6 +365,41 @@ export class SvnCommands {
     }
   }
 
+  @command("svn.remove", { repository: true })
+  async remove(
+    repository: Repository,
+    ...resourceStates: Resource[]
+  ): Promise<void> {
+    let keepLocal;
+    const answer = await window.showWarningMessage(
+      "Would you like to keep a local copy of the files?.",
+      "Yes",
+      "No"
+    );
+
+    if (!answer) {
+      return;
+    }
+
+    if (answer === "Yes") {
+      keepLocal = true;
+    } else {
+      keepLocal = false;
+    }
+
+    try {
+      const paths = resourceStates.map(state => {
+        return state.resourceUri.fsPath;
+      });
+
+      const result = await repository.repository.removeFiles(paths, keepLocal);
+      repository.update();
+    } catch (error) {
+      console.error(error);
+      window.showErrorMessage("Unable to remove files");
+    }
+  }
+
   private runByRepository<T>(
     resource: Uri,
     fn: (repository: Repository, resource: Uri) => Promise<T>
