@@ -1,3 +1,13 @@
+# **v1.7.0**
+
+## What's New
+
+* @edgardmessias Added external folder list in source control
+
+## Bug Fixes
+
+* @edgardmessias Fixed diff changes on UNC path
+
 # **v1.6.0**
 
 ## What's New
