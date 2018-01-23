@@ -1,3 +1,9 @@
+# **v1.8.0**
+
+## What's New
+
+* @JohnstonCode Added svn remove command with keep local flag
+
 # **v1.7.0**
 
 ## What's New
