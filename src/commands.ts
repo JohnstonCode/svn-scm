@@ -5,7 +5,8 @@ import {
   Uri,
   TextDocumentShowOptions,
   QuickPickItem,
-  workspace
+  workspace,
+  SourceControlResourceGroup
 } from "vscode";
 import { inputCommitMessage } from "./messages";
 import { Svn } from "./svn";
@@ -82,6 +83,21 @@ class SwitchBranchItem implements QuickPickItem {
   }
 }
 
+class ChangeListItem implements QuickPickItem {
+  constructor(protected group: SourceControlResourceGroup) {}
+
+  get label(): string {
+    return this.group.label;
+  }
+
+  get description(): string {
+    return this.group.label;
+  }
+  get resourceGroup(): SourceControlResourceGroup {
+    return this.group;
+  }
+}
+
 export class SvnCommands {
   private commands: any[] = [];
 
@@ -138,19 +154,37 @@ export class SvnCommands {
   @command("svn.commitWithMessage", { repository: true })
   async commitWithMessage(repository: Repository) {
     const message = repository.inputBox.value;
-    const changes = repository.changes.resourceStates;
-    let filePaths;
-
     if (!message) {
       return;
     }
 
-    if (changes.length === 0) {
+    const picks: ChangeListItem[] = [];
+
+    if (repository.changes.resourceStates.length) {
+      picks.push(new ChangeListItem(repository.changes));
+    }
+
+    repository.changelists.forEach((group, changelist) => {
+      if (group.resourceStates.length) {
+        picks.push(new ChangeListItem(group));
+      }
+    });
+
+    if (picks.length === 0) {
       window.showInformationMessage("There are no changes to commit.");
       return;
     }
 
-    filePaths = changes.map(state => {
+    let choice = picks[0];
+    if (picks.length > 1) {
+      const selectedChoice = await window.showQuickPick(picks, {});
+      if (!selectedChoice) {
+        return;
+      }
+      choice = selectedChoice;
+    }
+
+    const filePaths = choice.resourceGroup.resourceStates.map(state => {
       return state.resourceUri.fsPath;
     });
 

@@ -267,7 +267,7 @@ export class Model {
         return liveRepository;
       }
 
-      if (hint === repository.changes || hint === repository.notTracked) {
+      if (hint === repository.changes) {
         return liveRepository;
       }
     }
