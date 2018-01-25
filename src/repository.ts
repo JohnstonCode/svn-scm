@@ -26,6 +26,7 @@ export class Repository {
   public watcher: FileSystemWatcher;
   public sourceControl: SourceControl;
   public changes: SourceControlResourceGroup;
+  public changelist : { [key: string]: SourceControlResourceGroup } = {};
   public notTracked: SourceControlResourceGroup;
   public external: SourceControlResourceGroup;
   private disposables: Disposable[] = [];
@@ -160,6 +161,7 @@ export class Repository {
   @debounce(1000)
   async update() {
     let changes: any[] = [];
+    let changelist: {[key:string]:Resource[]} = {};
     let notTracked: any[] = [];
     let external: any[] = [];
     const statuses = (await this.repository.getStatus()) || [];
@@ -185,7 +187,10 @@ export class Repository {
         ? Uri.file(path.join(this.workspaceRoot, status.rename))
         : undefined;
 
-      if (status.status === Status.EXTERNAL) {
+      if (status.changelist){
+        changelist[status.changelist] = changelist[status.changelist] || [];
+        changelist[status.changelist].push(new Resource(uri, status.status, renameUri));
+      } else if (status.status === Status.EXTERNAL) {
         external.push(new Resource(uri, status.status, renameUri));
       } else if (status.status === Status.UNVERSIONED) {
         const matches = status.path.match(
@@ -210,6 +215,17 @@ export class Repository {
     this.changes.resourceStates = changes;
     this.notTracked.resourceStates = notTracked;
 
+    for (const id in this.changelist) {
+      this.changelist[id].resourceStates = [];
+    }
+    for (const id in changelist) {
+      if(!this.changelist[id]){
+        this.changelist[id] = this.sourceControl.createResourceGroup(id,id); 
+        this.changelist[id].hideWhenEmpty = true;
+      }
+      this.changelist[id].resourceStates = changelist[id];
+    }
+    
     if (svnConfig.get<boolean>("sourceControl.showExternal")) {
       this.external.resourceStates = external;
     } else {
