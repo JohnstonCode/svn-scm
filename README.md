@@ -1,14 +1,26 @@
-[![vs marketplace](https://img.shields.io/vscode-marketplace/v/johnstoncode.svn-scm.svg?label=vs%20marketplace)](https://marketplace.visualstudio.com/items?itemName=johnstoncode.svn-scm)
-[![Visual Studio Marketplace](https://img.shields.io/vscode-marketplace/d/johnstoncode.svn-scm.svg)](https://marketplace.visualstudio.com/items?itemName=johnstoncode.svn-scm)
-[![rating](https://img.shields.io/vscode-marketplace/r/johnstoncode.svn-scm.svg)](https://marketplace.visualstudio.com/items?itemName=johnstoncode.svn-scm)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat)](https://github.com/JohnstonCode/svn-scm/pulls)
-[![Build Status](https://travis-ci.org/JohnstonCode/svn-scm.svg?branch=master)](https://travis-ci.org/JohnstonCode/svn-scm)
-[![Build status](https://ci.appveyor.com/api/projects/status/uq1oi7l8tnntrr6e?svg=true)](https://ci.appveyor.com/project/JohnstonCode/svn-scm)
-[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat)](https://github.com/prettier/prettier)
-[![Greenkeeper badge](https://badges.greenkeeper.io/JohnstonCode/svn-scm.svg)](https://greenkeeper.io/)
-[![codecov](https://codecov.io/gh/JohnstonCode/svn-scm/branch/master/graph/badge.svg)](https://codecov.io/gh/JohnstonCode/svn-scm)
-
 # Subversion source control for VS Code
+
+[![Version](https://vsmarketplacebadge.apphb.com/version-short/johnstoncode.svn-scm.svg)](https://marketplace.visualstudio.com/items?itemName=johnstoncode.svn-scm)
+[![Installs](https://vsmarketplacebadge.apphb.com/installs-short/johnstoncode.svn-scm.svg)](https://marketplace.visualstudio.com/items?itemName=johnstoncode.svn-scm)
+[![Ratings](https://vsmarketplacebadge.apphb.com/rating-short/johnstoncode.svn-scm.svg)](https://marketplace.visualstudio.com/items?itemName=johnstoncode.svn-scm)
+
+[![Build Status](https://travis-ci.org/JohnstonCode/svn-scm.svg?branch=master)](https://travis-ci.org/JohnstonCode/svn-scm)
+[![Build Status](https://ci.appveyor.com/api/projects/status/github/JohnstonCode/svn-scm?branch=master&svg=true)](https://ci.appveyor.com/project/JohnstonCode/svn-scm)
+
+[![Dependencies Status](https://david-dm.org/JohnstonCode/svn-scm/status.svg)](https://david-dm.org/JohnstonCode/svn-scm)
+[![DevDependencies Status](https://david-dm.org/JohnstonCode/svn-scm/dev-status.svg)](https://david-dm.org/JohnstonCode/svn-scm?type=dev)
+[![Greenkeeper badge](https://badges.greenkeeper.io/JohnstonCode/svn-scm.svg)](https://greenkeeper.io/)
+
+[![codecov](https://codecov.io/gh/JohnstonCode/svn-scm/branch/master/graph/badge.svg)](https://codecov.io/gh/JohnstonCode/svn-scm)
+[![Known Vulnerabilities](https://snyk.io/test/github/JohnstonCode/svn-scm/badge.svg)](https://snyk.io/test/github/JohnstonCode/svn-scm)
+
+[![bitHound Overall Score](https://www.bithound.io/github/JohnstonCode/svn-scm/badges/score.svg)](https://www.bithound.io/github/JohnstonCode/svn-scm)
+[![bitHound Dependencies](https://www.bithound.io/github/JohnstonCode/svn-scm/badges/dependencies.svg)](https://www.bithound.io/github/JohnstonCode/svn-scm/master/dependencies/npm)
+[![bitHound Dev Dependencies](https://www.bithound.io/github/JohnstonCode/svn-scm/badges/devDependencies.svg)](https://www.bithound.io/github/JohnstonCode/svn-scm/master/dependencies/npm)
+[![bitHound Code](https://www.bithound.io/github/JohnstonCode/svn-scm/badges/code.svg)](https://www.bithound.io/github/JohnstonCode/svn-scm)
+
+[![Average time to resolve an issue](https://isitmaintained.com/badge/resolution/JohnstonCode/svn-scm.svg)](https://isitmaintained.com/project/JohnstonCode/svn-scm "Average time to resolve an issue")
+[![Percentage of issues still open](https://isitmaintained.com/badge/open/JohnstonCode/svn-scm.svg)](https://isitmaintained.com/project/JohnstonCode/svn-scm "Percentage of issues still open")
 
 # Prerequisites
 

@@ -1,0 +1,18 @@
+{
+  "ignore": [
+    "**/node_modules/**",
+    "**/out/**",
+    "**/src/*.d.ts"
+  ],
+  "test": [
+    "**/test/**"
+  ],
+  "critics": {
+    "lint": {
+      "engine": "tslint"
+    },
+    "wc": {
+      "limit": 500
+    }
+  }
+}
