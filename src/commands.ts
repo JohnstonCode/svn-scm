@@ -98,6 +98,18 @@ class ChangeListItem implements QuickPickItem {
   }
 }
 
+class NewChangeListItem implements QuickPickItem {
+  constructor() {}
+
+  get label(): string {
+    return "$(plus) New changelist";
+  }
+
+  get description(): string {
+    return "Create a new change list";
+  }
+}
+
 export class SvnCommands {
   private commands: any[] = [];
 
@@ -215,6 +227,78 @@ export class SvnCommands {
     } catch (error) {
       console.log(error);
       window.showErrorMessage("Unable to add file");
+    }
+  }
+
+  @command("svn.addChangelist")
+  async addChangelist(resource: Resource) {
+    const repository = this.model.getRepository(resource.resourceUri.fsPath);
+
+    if (!repository) {
+      return;
+    }
+
+    const picks: QuickPickItem[] = [];
+
+    repository.changelists.forEach((group, changelist) => {
+      if (group.resourceStates.length) {
+        picks.push(new ChangeListItem(group));
+      }
+    });
+    picks.push(new NewChangeListItem());
+
+    const selectedChoice: any = await window.showQuickPick(picks, {});
+    if (!selectedChoice) {
+      return;
+    }
+
+    let changelistName = "";
+
+    if (selectedChoice instanceof NewChangeListItem) {
+      const newChangelistName = await window.showInputBox();
+      if (!newChangelistName) {
+        return;
+      }
+      changelistName = newChangelistName;
+    } else if (selectedChoice instanceof ChangeListItem) {
+      changelistName = selectedChoice.resourceGroup.id.replace(
+        /^changelist-/,
+        ""
+      );
+    } else {
+      return;
+    }
+
+    try {
+      await repository.addChangelist(
+        resource.resourceUri.fsPath,
+        changelistName
+      );
+    } catch (error) {
+      console.log(error);
+      window.showErrorMessage(
+        `Unable to add file "${
+          resource.resourceUri.fsPath
+        }" to changelist "${changelistName}"`
+      );
+    }
+  }
+
+  @command("svn.removeChangelist")
+  async removeChangelist(resource: Resource) {
+    const repository = this.model.getRepository(resource.resourceUri.fsPath);
+
+    if (!repository) {
+      return;
+    }
+
+    try {
+      await repository.removeChangelist(resource.resourceUri.fsPath);
+    } catch (error) {
+      console.log(error);
+      window.showErrorMessage(
+        `Unable to remove file "${resource.resourceUri.fsPath}" from changelist`
+      );
     }
   }
 

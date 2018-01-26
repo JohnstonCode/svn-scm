@@ -26,6 +26,7 @@ export class Repository {
   public watcher: FileSystemWatcher;
   public sourceControl: SourceControl;
   public changes: SourceControlResourceGroup;
+  public unversioned: SourceControlResourceGroup;
   public external: SourceControlResourceGroup;
   public changelists: Map<string, SourceControlResourceGroup> = new Map();
   private disposables: Disposable[] = [];
@@ -124,12 +125,17 @@ export class Repository {
     updateBranchName();
 
     this.changes = this.sourceControl.createResourceGroup("changes", "Changes");
+    this.unversioned = this.sourceControl.createResourceGroup(
+      "unversioned",
+      "Unversioned"
+    );
     this.external = this.sourceControl.createResourceGroup(
       "external",
       "External"
     );
 
     this.changes.hideWhenEmpty = true;
+    this.unversioned.hideWhenEmpty = true;
     this.external.hideWhenEmpty = true;
 
     this.disposables.push(
@@ -155,6 +161,7 @@ export class Repository {
   @debounce(1000)
   async update() {
     let changes: any[] = [];
+    let unversioned: any[] = [];
     let external: any[] = [];
     let changelists: Map<string, Resource[]> = new Map();
 
@@ -181,7 +188,9 @@ export class Repository {
         ? Uri.file(path.join(this.workspaceRoot, status.rename))
         : undefined;
 
-      if (status.status === Status.EXTERNAL) {
+      if (status.status === Status.UNVERSIONED) {
+        unversioned.push(new Resource(uri, status.status, renameUri));
+      } else if (status.status === Status.EXTERNAL) {
         external.push(new Resource(uri, status.status, renameUri));
       } else {
         if (status.status === Status.UNVERSIONED) {
@@ -213,6 +222,7 @@ export class Repository {
     });
 
     this.changes.resourceStates = changes;
+    this.unversioned.resourceStates = unversioned;
 
     this.changelists.forEach((group, changelist) => {
       group.resourceStates = [];
@@ -221,6 +231,7 @@ export class Repository {
     changelists.forEach((resources, changelist) => {
       let group = this.changelists.get(changelist);
       if (!group) {
+        // Prefix 'changelist-' to prevent double id with 'change' or 'external'
         group = this.sourceControl.createResourceGroup(
           `changelist-${changelist}`,
           `Changelist "${changelist}"`
@@ -262,6 +273,14 @@ export class Repository {
 
   addFile(filePath: string) {
     return this.repository.addFile(filePath);
+  }
+
+  addChangelist(filePath: string, changelist: string) {
+    return this.repository.addChangelist(filePath, changelist);
+  }
+
+  removeChangelist(changelist: string) {
+    return this.repository.removeChangelist(changelist);
   }
 
   dispose(): void {

@@ -200,6 +200,16 @@ export class Svn {
     return this.exec("", ["add", path]);
   }
 
+  addChangelist(path: string, changelist: string) {
+    path = path.replace(/\\/g, "/");
+    return this.exec("", ["changelist", changelist, path]);
+  }
+
+  removeChangelist(path: string) {
+    path = path.replace(/\\/g, "/");
+    return this.exec("", ["changelist", path, "--remove"]);
+  }
+
   show(path: string, revision?: string, options: CpOptions = {}) {
     var args = ["cat", path];
 
