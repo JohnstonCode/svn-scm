@@ -9,12 +9,13 @@ import {
   SourceControlResourceGroup
 } from "vscode";
 import { inputCommitMessage } from "./messages";
-import { Svn } from "./svn";
+import { Svn, Status } from "./svn";
 import { Model } from "./model";
 import { Repository } from "./repository";
 import { Resource } from "./resource";
 import { toSvnUri } from "./uri";
 import * as path from "path";
+import { start } from "repl";
 
 interface CommandOptions {
   repository?: boolean;
@@ -200,6 +201,15 @@ export class SvnCommands {
       return state.resourceUri.fsPath;
     });
 
+    //If files is renamed, the commit need previous file
+    choice.resourceGroup.resourceStates.forEach(state => {
+      if (state instanceof Resource) {
+        if (state.type === Status.ADDED && state.renameResourceUri) {
+          filePaths.push(state.renameResourceUri.fsPath);
+        }
+      }
+    });
+
     try {
       const result = await repository.repository.commitFiles(
         message,
@@ -311,6 +321,14 @@ export class SvnCommands {
       const paths = resourceStates.map(state => {
         return state.resourceUri.fsPath;
       });
+
+      //If files is renamed, the commit need previous file
+      resourceStates.forEach(state => {
+        if (state.type === Status.ADDED && state.renameResourceUri) {
+          paths.push(state.renameResourceUri.fsPath);
+        }
+      });
+
       const message = await inputCommitMessage();
 
       if (message === undefined) {
