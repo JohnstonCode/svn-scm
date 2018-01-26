@@ -8,6 +8,16 @@ import { SpawnOptions, ChildProcess } from "child_process";
 const tempDir = os.tmpdir();
 var tempDirList: string[] = [];
 
+export function getSvnUrl(uri: Uri) {
+  const url = uri.toString();
+
+  return url.replace(/%3A/g, ":");
+}
+
+export function delay(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 export function spawn(
   command: string,
   args?: string[],
@@ -46,7 +56,7 @@ export function newTempDir(prefix: string) {
 }
 
 export function createRepoServer() {
-  return new Promise<string>((resolve, reject) => {
+  return new Promise<Uri>((resolve, reject) => {
     const fullpath = newTempDir("svn_server_");
     const dirname = path.basename(fullpath);
 
@@ -58,8 +68,7 @@ export function createRepoServer() {
 
     proc.once("exit", exitCode => {
       if (exitCode === 0) {
-        const url = "file:///" + fullpath.replace(/\\/g, "/");
-        resolve(url);
+        resolve(Uri.file(fullpath));
       }
       reject();
     });
@@ -105,21 +114,21 @@ export async function createStandardLayout(
 }
 
 export function createRepoCheckout(url: string) {
-  return new Promise<string>((resolve, reject) => {
+  return new Promise<Uri>((resolve, reject) => {
     const fullpath = newTempDir("svn_checkout_");
 
     let proc = spawn("svn", ["checkout", url, fullpath], { cwd: tempDir });
 
     proc.once("exit", exitCode => {
       if (exitCode === 0) {
-        resolve(fullpath);
+        resolve(Uri.file(fullpath));
       }
       reject();
     });
   });
 }
 
-export function destroyPath(fullPath: string) {
+export async function destroyPath(fullPath: string) {
   fullPath = fullPath.replace(/^file\:\/\/\//, "");
 
   if (!fs.existsSync(fullPath)) {
@@ -137,10 +146,14 @@ export function destroyPath(fullPath: string) {
   }
 
   //Error in windows with anti-malware
-  try {
-    fs.rmdirSync(fullPath);
-  } catch (error) {
-    console.error(error);
+  for (let i = 0; i < 3; i++) {
+    try {
+      fs.rmdirSync(fullPath);
+      break;
+    } catch (error) {
+      await delay(3000);
+      console.error(error);
+    }
   }
   return true;
 }

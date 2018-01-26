@@ -17,30 +17,40 @@ import { SvnFinder } from "../svnFinder";
 
 // Defines a Mocha test suite to group tests of similar kind together
 suite("Extension Tests", () => {
-
   //Before Each
-  setup(async () => {
-  });
+  setup(async () => {});
 
   teardown(() => {
     testUtil.destroyAllTempPaths();
   });
 
-  test("Find Repository", async () => {
-    const svnFinder = new SvnFinder();
-    const info = await svnFinder.findSvn();
+  test("should be present", () => {
+    assert.ok(vscode.extensions.getExtension("johnstoncode.svn-scm"));
   });
 
-  test("Try Open Repository", async () => {
-    const repoUrl = await testUtil.createRepoServer();
-    await testUtil.createStandardLayout(repoUrl);
-    const checkoutDir = await testUtil.createRepoCheckout(repoUrl + "/trunk");
+  // The extension is already activated by vscode before running mocha test framework.
+  // No need to test activate any more. So commenting this case.
+  // tslint:disable-next-line: only-arrow-functions
+  test("should be able to activate the extension", function(done) {
+    this.timeout(60 * 1000);
+    const extension = vscode.extensions.getExtension("johnstoncode.svn-scm");
 
-    const svnFinder = new SvnFinder();
-    const info = await svnFinder.findSvn();
-    const svn = new Svn({ svnPath: info.path, version: info.version });
-    const model = new Model(svn);
-    await model.tryOpenRepository(checkoutDir);
-    model.dispose();
+    if (!extension) {
+      done("Extension not found");
+      return;
+    }
+
+    if (!extension.isActive) {
+      extension.activate().then(
+        api => {
+          done();
+        },
+        () => {
+          done("Failed to activate extension");
+        }
+      );
+    } else {
+      done();
+    }
   });
 });
