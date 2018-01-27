@@ -18,6 +18,10 @@ export class Repository {
     return await parseStatusXml(result.stdout);
   }
 
+  resetInfo() {
+    this._info = undefined;
+  }
+
   async getInfo(): Promise<ISvnInfo> {
     if (this._info) {
       return this._info;
@@ -28,7 +32,7 @@ export class Repository {
 
     //Cache for 30 seconds
     setTimeout(() => {
-      this._info = undefined;
+      this.resetInfo();
     }, 30000);
 
     return this._info;
@@ -218,6 +222,8 @@ export class Repository {
       throw new Error(switchBranch.stderr);
     }
 
+    this.resetInfo();
+
     return true;
   }
 
@@ -234,6 +240,8 @@ export class Repository {
     if (switchBranch.exitCode !== 0) {
       throw new Error(switchBranch.stderr);
     }
+
+    this.resetInfo();
 
     return true;
   }
