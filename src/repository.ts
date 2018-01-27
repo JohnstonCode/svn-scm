@@ -26,8 +26,9 @@ export class Repository {
   public watcher: FileSystemWatcher;
   public sourceControl: SourceControl;
   public changes: SourceControlResourceGroup;
-  public notTracked: SourceControlResourceGroup;
+  public unversioned: SourceControlResourceGroup;
   public external: SourceControlResourceGroup;
+  public changelists: Map<string, SourceControlResourceGroup> = new Map();
   private disposables: Disposable[] = [];
   public currentBranch = "";
   public isSwitchingBranch: boolean = false;
@@ -124,9 +125,9 @@ export class Repository {
     updateBranchName();
 
     this.changes = this.sourceControl.createResourceGroup("changes", "Changes");
-    this.notTracked = this.sourceControl.createResourceGroup(
+    this.unversioned = this.sourceControl.createResourceGroup(
       "unversioned",
-      "Not Tracked"
+      "Unversioned"
     );
     this.external = this.sourceControl.createResourceGroup(
       "external",
@@ -134,7 +135,7 @@ export class Repository {
     );
 
     this.changes.hideWhenEmpty = true;
-    this.notTracked.hideWhenEmpty = true;
+    this.unversioned.hideWhenEmpty = true;
     this.external.hideWhenEmpty = true;
 
     this.disposables.push(
@@ -160,8 +161,10 @@ export class Repository {
   @debounce(1000)
   async update() {
     let changes: any[] = [];
-    let notTracked: any[] = [];
+    let unversioned: any[] = [];
     let external: any[] = [];
+    let changelists: Map<string, Resource[]> = new Map();
+
     const statuses = (await this.repository.getStatus()) || [];
 
     const fileConfig = workspace.getConfiguration("files");
@@ -185,30 +188,61 @@ export class Repository {
         ? Uri.file(path.join(this.workspaceRoot, status.rename))
         : undefined;
 
-      if (status.status === Status.EXTERNAL) {
+      if (status.status === Status.UNVERSIONED) {
+        unversioned.push(new Resource(uri, status.status, renameUri));
+      } else if (status.status === Status.EXTERNAL) {
         external.push(new Resource(uri, status.status, renameUri));
-      } else if (status.status === Status.UNVERSIONED) {
-        const matches = status.path.match(
-          /(.+?)\.(mine|working|merge-\w+\.r\d+|r\d+)$/
-        );
+      } else {
+        if (status.status === Status.UNVERSIONED) {
+          const matches = status.path.match(
+            /(.+?)\.(mine|working|merge-\w+\.r\d+|r\d+)$/
+          );
 
-        //If file end with (mine, working, merge, etc..) and has file without extension
-        if (
-          matches &&
-          matches[1] &&
-          statuses.some(s => s.path === matches[1])
-        ) {
-          return;
+          //If file end with (mine, working, merge, etc..) and has file without extension
+          if (
+            matches &&
+            matches[1] &&
+            statuses.some(s => s.path === matches[1])
+          ) {
+            return;
+          }
         }
 
-        notTracked.push(new Resource(uri, status.status, renameUri));
-      } else {
-        changes.push(new Resource(uri, status.status, renameUri));
+        if (!status.changelist) {
+          changes.push(new Resource(uri, status.status, renameUri));
+        } else {
+          let changelist = changelists.get(status.changelist);
+          if (!changelist) {
+            changelist = [];
+          }
+          changelist.push(new Resource(uri, status.status, renameUri));
+          changelists.set(status.changelist, changelist);
+        }
       }
     });
 
     this.changes.resourceStates = changes;
-    this.notTracked.resourceStates = notTracked;
+    this.unversioned.resourceStates = unversioned;
+
+    this.changelists.forEach((group, changelist) => {
+      group.resourceStates = [];
+    });
+
+    changelists.forEach((resources, changelist) => {
+      let group = this.changelists.get(changelist);
+      if (!group) {
+        // Prefix 'changelist-' to prevent double id with 'change' or 'external'
+        group = this.sourceControl.createResourceGroup(
+          `changelist-${changelist}`,
+          `Changelist "${changelist}"`
+        );
+        group.hideWhenEmpty = true;
+
+        this.changelists.set(changelist, group);
+      }
+
+      group.resourceStates = resources;
+    });
 
     if (svnConfig.get<boolean>("sourceControl.showExternal")) {
       this.external.resourceStates = external;
@@ -239,6 +273,14 @@ export class Repository {
 
   addFile(filePath: string) {
     return this.repository.addFile(filePath);
+  }
+
+  addChangelist(filePath: string, changelist: string) {
+    return this.repository.addChangelist(filePath, changelist);
+  }
+
+  removeChangelist(changelist: string) {
+    return this.repository.removeChangelist(changelist);
   }
 
   dispose(): void {

@@ -64,6 +64,14 @@ export class Repository {
     return this.svn.add(filePath);
   }
 
+  addChangelist(filePath: string, changelist: string) {
+    return this.svn.addChangelist(filePath, changelist);
+  }
+
+  removeChangelist(filePath: string) {
+    return this.svn.removeChangelist(filePath);
+  }
+
   async getCurrentBranch(): Promise<string> {
     const info = await this.getInfo();
 

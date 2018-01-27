@@ -61,6 +61,24 @@
         }
       },
       {
+        "command": "svn.addChangelist",
+        "title": "Add to a changelist",
+        "category": "SVN",
+        "icon": {
+          "light": "icons/light/add.svg",
+          "dark": "icons/dark/add.svg"
+        }
+      },
+      {
+        "command": "svn.removeChangelist",
+        "title": "Remove from changelist",
+        "category": "SVN",
+        "icon": {
+          "light": "icons/light/remove.svg",
+          "dark": "icons/dark/remove.svg"
+        }
+      },
+      {
         "command": "svn.commit",
         "title": "Commit Selected",
         "category": "SVN"
@@ -130,27 +148,58 @@
       "scm/resourceState/context": [
         {
           "command": "svn.add",
-          "when": "scmProvider == svn && scmResourceGroup == unversioned",
+          "when":
+            "config.svn.enabled && scmProvider == svn && scmResourceGroup == unversioned",
           "group": "inline"
         },
         {
+          "command": "svn.add",
+          "when":
+            "config.svn.enabled && scmProvider == svn && scmResourceGroup == unversioned",
+          "group": "1_modification"
+        },
+        {
+          "command": "svn.addChangelist",
+          "when":
+            "config.svn.enabled && scmProvider == svn && scmResourceGroup != external",
+          "group": "inline"
+        },
+        {
+          "command": "svn.addChangelist",
+          "when":
+            "config.svn.enabled && scmProvider == svn && scmResourceGroup != external",
+          "group": "1_modification"
+        },
+        {
+          "command": "svn.removeChangelist",
+          "when":
+            "config.svn.enabled && scmProvider == svn && scmResourceGroup != changes && scmResourceGroup != unversioned && scmResourceGroup != external",
+          "group": "inline"
+        },
+        {
+          "command": "svn.removeChangelist",
+          "when":
+            "config.svn.enabled && scmProvider == svn && scmResourceGroup != changes && scmResourceGroup != unversioned && scmResourceGroup != external",
+          "group": "1_modification"
+        },
+        {
           "command": "svn.commit",
-          "when": "scmProvider == svn && scmResourceGroup == changes",
+          "when": "scmProvider == svn && scmResourceGroup != unversioned && scmResourceGroup != external",
           "group": "1_modification"
         },
         {
           "command": "svn.openDiffHead",
-          "when": "scmProvider == svn && scmResourceGroup == changes",
+          "when": "scmProvider == svn && scmResourceGroup != unversioned && scmResourceGroup != external",
           "group": "navigation"
         },
         {
           "command": "svn.revert",
-          "when": "scmProvider == svn && scmResourceGroup == changes",
+          "when": "scmProvider == svn && scmResourceGroup != unversioned && scmResourceGroup != external",
           "group": "1_modification"
         },
         {
           "command": "svn.remove",
-          "when": "scmProvider == svn && scmResourceGroup == changes",
+          "when": "scmProvider == svn && scmResourceGroup != unversioned && scmResourceGroup != external",
           "group": "2_modification"
         }
       ],

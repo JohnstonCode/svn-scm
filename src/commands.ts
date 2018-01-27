@@ -5,15 +5,17 @@ import {
   Uri,
   TextDocumentShowOptions,
   QuickPickItem,
-  workspace
+  workspace,
+  SourceControlResourceGroup
 } from "vscode";
 import { inputCommitMessage } from "./messages";
-import { Svn } from "./svn";
+import { Svn, Status } from "./svn";
 import { Model } from "./model";
 import { Repository } from "./repository";
 import { Resource } from "./resource";
 import { toSvnUri } from "./uri";
 import * as path from "path";
+import { start } from "repl";
 
 interface CommandOptions {
   repository?: boolean;
@@ -82,6 +84,33 @@ class SwitchBranchItem implements QuickPickItem {
   }
 }
 
+class ChangeListItem implements QuickPickItem {
+  constructor(protected group: SourceControlResourceGroup) {}
+
+  get label(): string {
+    return this.group.label;
+  }
+
+  get description(): string {
+    return this.group.label;
+  }
+  get resourceGroup(): SourceControlResourceGroup {
+    return this.group;
+  }
+}
+
+class NewChangeListItem implements QuickPickItem {
+  constructor() {}
+
+  get label(): string {
+    return "$(plus) New changelist";
+  }
+
+  get description(): string {
+    return "Create a new change list";
+  }
+}
+
 export class SvnCommands {
   private commands: any[] = [];
 
@@ -138,20 +167,47 @@ export class SvnCommands {
   @command("svn.commitWithMessage", { repository: true })
   async commitWithMessage(repository: Repository) {
     const message = repository.inputBox.value;
-    const changes = repository.changes.resourceStates;
-    let filePaths;
-
     if (!message) {
       return;
     }
 
-    if (changes.length === 0) {
+    const picks: ChangeListItem[] = [];
+
+    if (repository.changes.resourceStates.length) {
+      picks.push(new ChangeListItem(repository.changes));
+    }
+
+    repository.changelists.forEach((group, changelist) => {
+      if (group.resourceStates.length) {
+        picks.push(new ChangeListItem(group));
+      }
+    });
+
+    if (picks.length === 0) {
       window.showInformationMessage("There are no changes to commit.");
       return;
     }
 
-    filePaths = changes.map(state => {
+    let choice = picks[0];
+    if (picks.length > 1) {
+      const selectedChoice = await window.showQuickPick(picks, {});
+      if (!selectedChoice) {
+        return;
+      }
+      choice = selectedChoice;
+    }
+
+    const filePaths = choice.resourceGroup.resourceStates.map(state => {
       return state.resourceUri.fsPath;
+    });
+
+    //If files is renamed, the commit need previous file
+    choice.resourceGroup.resourceStates.forEach(state => {
+      if (state instanceof Resource) {
+        if (state.type === Status.ADDED && state.renameResourceUri) {
+          filePaths.push(state.renameResourceUri.fsPath);
+        }
+      }
     });
 
     try {
@@ -184,6 +240,78 @@ export class SvnCommands {
     }
   }
 
+  @command("svn.addChangelist")
+  async addChangelist(resource: Resource) {
+    const repository = this.model.getRepository(resource.resourceUri.fsPath);
+
+    if (!repository) {
+      return;
+    }
+
+    const picks: QuickPickItem[] = [];
+
+    repository.changelists.forEach((group, changelist) => {
+      if (group.resourceStates.length) {
+        picks.push(new ChangeListItem(group));
+      }
+    });
+    picks.push(new NewChangeListItem());
+
+    const selectedChoice: any = await window.showQuickPick(picks, {});
+    if (!selectedChoice) {
+      return;
+    }
+
+    let changelistName = "";
+
+    if (selectedChoice instanceof NewChangeListItem) {
+      const newChangelistName = await window.showInputBox();
+      if (!newChangelistName) {
+        return;
+      }
+      changelistName = newChangelistName;
+    } else if (selectedChoice instanceof ChangeListItem) {
+      changelistName = selectedChoice.resourceGroup.id.replace(
+        /^changelist-/,
+        ""
+      );
+    } else {
+      return;
+    }
+
+    try {
+      await repository.addChangelist(
+        resource.resourceUri.fsPath,
+        changelistName
+      );
+    } catch (error) {
+      console.log(error);
+      window.showErrorMessage(
+        `Unable to add file "${
+          resource.resourceUri.fsPath
+        }" to changelist "${changelistName}"`
+      );
+    }
+  }
+
+  @command("svn.removeChangelist")
+  async removeChangelist(resource: Resource) {
+    const repository = this.model.getRepository(resource.resourceUri.fsPath);
+
+    if (!repository) {
+      return;
+    }
+
+    try {
+      await repository.removeChangelist(resource.resourceUri.fsPath);
+    } catch (error) {
+      console.log(error);
+      window.showErrorMessage(
+        `Unable to remove file "${resource.resourceUri.fsPath}" from changelist`
+      );
+    }
+  }
+
   @command("svn.commit", { repository: true })
   async commit(
     repository: Repository,
@@ -193,6 +321,14 @@ export class SvnCommands {
       const paths = resourceStates.map(state => {
         return state.resourceUri.fsPath;
       });
+
+      //If files is renamed, the commit need previous file
+      resourceStates.forEach(state => {
+        if (state.type === Status.ADDED && state.renameResourceUri) {
+          paths.push(state.renameResourceUri.fsPath);
+        }
+      });
+
       const message = await inputCommitMessage();
 
       if (message === undefined) {
