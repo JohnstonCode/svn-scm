@@ -177,8 +177,17 @@ export class SvnCommands {
       picks.push(new ChangeListItem(repository.changes));
     }
 
+    const svnConfig = workspace.getConfiguration("svn", Uri.file(repository.workspaceRoot));
+    const ignoreOnCommitList = svnConfig.get<string[]>(
+      "sourceControl.ignoreOnCommit",
+      []
+    );
+
     repository.changelists.forEach((group, changelist) => {
-      if (group.resourceStates.length) {
+      if (
+        group.resourceStates.length &&
+        !ignoreOnCommitList.includes(changelist)
+      ) {
         picks.push(new ChangeListItem(group));
       }
     });
@@ -188,13 +197,18 @@ export class SvnCommands {
       return;
     }
 
-    let choice = picks[0];
-    if (picks.length > 1) {
-      const selectedChoice = await window.showQuickPick(picks, {});
-      if (!selectedChoice) {
-        return;
-      }
-      choice = selectedChoice;
+    let choice;
+    // If has only changes, not prompt to select changelist
+    if (picks.length === 1 && repository.changes.resourceStates.length) {
+      choice = picks[0];
+    } else {
+      choice = await window.showQuickPick(picks, {
+        placeHolder: "Select a changelist to commit"
+      });
+    }
+
+    if (!choice) {
+      return;
     }
 
     const filePaths = choice.resourceGroup.resourceStates.map(state => {
