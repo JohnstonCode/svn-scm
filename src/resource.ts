@@ -6,7 +6,7 @@ import {
   Command
 } from "vscode";
 import * as path from "path";
-import { Status } from "./svn";
+import { Status, PropStatus } from "./svn";
 import { memoize } from "./decorators";
 
 const iconsRootPath = path.join(__dirname, "..", "icons");
@@ -44,7 +44,8 @@ export class Resource implements SourceControlResourceState {
   constructor(
     private _resourceUri: Uri,
     private _type: String,
-    private _renameResourceUri?: Uri
+    private _renameResourceUri?: Uri,
+    private _props?: String
   ) {}
 
   @memoize
@@ -57,6 +58,9 @@ export class Resource implements SourceControlResourceState {
   }
   get renameResourceUri(): Uri | undefined {
     return this._renameResourceUri;
+  }
+  get props(): String | undefined {
+    return this._props;
   }
 
   get decorations(): SourceControlResourceDecorations {
@@ -95,6 +99,16 @@ export class Resource implements SourceControlResourceState {
   private get tooltip(): string {
     if (this.type === Status.ADDED && this.renameResourceUri) {
       return "Renamed from " + this.renameResourceUri.fsPath;
+    }
+
+    if (
+      this.type === Status.NORMAL &&
+      this.props &&
+      this.props !== PropStatus.NONE
+    ) {
+      return (
+        "Property " + this.props.charAt(0).toUpperCase() + this.props.slice(1)
+      );
     }
 
     return this.type.charAt(0).toUpperCase() + this.type.slice(1);

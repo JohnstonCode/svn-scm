@@ -20,7 +20,7 @@ import * as path from "path";
 import * as micromatch from "micromatch";
 import { setInterval, clearInterval } from "timers";
 import { toSvnUri } from "./uri";
-import { Status } from "./svn";
+import { Status, PropStatus } from "./svn";
 
 export class Repository {
   public watcher: FileSystemWatcher;
@@ -188,10 +188,15 @@ export class Repository {
         ? Uri.file(path.join(this.workspaceRoot, status.rename))
         : undefined;
 
-      if (status.status === Status.UNVERSIONED) {
-        unversioned.push(new Resource(uri, status.status, renameUri));
+      const resouce = new Resource(uri, status.status, renameUri, status.props);
+
+      if (status.status === Status.NORMAL && status.props === PropStatus.NONE) {
+        // On commit, `svn status` return all locked files with status="normal" and props="none"
+        return;
+      } else if (status.status === Status.UNVERSIONED) {
+        unversioned.push(resouce);
       } else if (status.status === Status.EXTERNAL) {
-        external.push(new Resource(uri, status.status, renameUri));
+        external.push(resouce);
       } else {
         if (status.status === Status.UNVERSIONED) {
           const matches = status.path.match(
@@ -209,13 +214,13 @@ export class Repository {
         }
 
         if (!status.changelist) {
-          changes.push(new Resource(uri, status.status, renameUri));
+          changes.push(resouce);
         } else {
           let changelist = changelists.get(status.changelist);
           if (!changelist) {
             changelist = [];
           }
-          changelist.push(new Resource(uri, status.status, renameUri));
+          changelist.push(resouce);
           changelists.set(status.changelist, changelist);
         }
       }

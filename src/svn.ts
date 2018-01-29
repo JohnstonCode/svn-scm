@@ -25,6 +25,13 @@ export enum Status {
   UNVERSIONED = "unversioned"
 }
 
+export enum PropStatus {
+  CONFLICTED = "conflicted",
+  MODIFIED = "modified",
+  NONE = "none",
+  NORMAL = "normal"
+}
+
 export interface CpOptions {
   cwd?: string;
   encoding?: string;
