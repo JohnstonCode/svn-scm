@@ -1,3 +1,9 @@
+# **v1.9.0**
+
+## What's New
+
+* @edgardmessias Added changelist support
+
 # **v1.8.0**
 
 ## What's New
