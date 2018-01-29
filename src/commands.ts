@@ -215,7 +215,7 @@ export class SvnCommands {
       return state.resourceUri.fsPath;
     });
 
-    //If files is renamed, the commit need previous file
+    // If files is renamed, the commit need previous file
     choice.resourceGroup.resourceStates.forEach(state => {
       if (state instanceof Resource) {
         if (state.type === Status.ADDED && state.renameResourceUri) {
@@ -336,7 +336,7 @@ export class SvnCommands {
         return state.resourceUri.fsPath;
       });
 
-      //If files is renamed, the commit need previous file
+      // If files is renamed, the commit need previous file
       resourceStates.forEach(state => {
         if (state.type === Status.ADDED && state.renameResourceUri) {
           paths.push(state.renameResourceUri.fsPath);

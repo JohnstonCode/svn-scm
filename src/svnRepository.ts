@@ -30,7 +30,7 @@ export class Repository {
 
     this._info = await parseInfoXml(result.stdout);
 
-    //Cache for 30 seconds
+    // Cache for 30 seconds
     setTimeout(() => {
       this.resetInfo();
     }, 30000);
@@ -230,7 +230,7 @@ export class Repository {
   async switchBranch(ref: string) {
     const repoUrl = await this.getRepoUrl();
 
-    var branchUrl = repoUrl + "/" + ref;
+    const branchUrl = repoUrl + "/" + ref;
 
     const switchBranch = await this.svn.switchBranch(
       this.workspaceRoot,

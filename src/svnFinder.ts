@@ -18,7 +18,7 @@ export function parseVersion(raw: string): string {
 
 export class SvnFinder {
   findSvn(hint?: string): Promise<ISvn> {
-    var first = hint ? this.findSpecificSvn(hint) : Promise.reject<ISvn>(null);
+    const first = hint ? this.findSpecificSvn(hint) : Promise.reject<ISvn>(null);
 
     return first
       .then(void 0, () => {

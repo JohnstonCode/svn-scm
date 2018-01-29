@@ -203,7 +203,7 @@ export class Repository {
             /(.+?)\.(mine|working|merge-\w+\.r\d+|r\d+)$/
           );
 
-          //If file end with (mine, working, merge, etc..) and has file without extension
+          // If file end with (mine, working, merge, etc..) and has file without extension
           if (
             matches &&
             matches[1] &&

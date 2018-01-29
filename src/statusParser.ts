@@ -1,4 +1,5 @@
 import * as xml2js from "xml2js";
+import { camelcase } from "./util";
 
 export interface IFileStatus {
   status: string;
@@ -87,14 +88,6 @@ function xmlToStatus(xml: any) {
   }
 
   return statusList;
-}
-
-function camelcase(name: string) {
-  return name
-    .replace(/(?:^\w|[A-Z]|\b\w)/g, function(letter, index) {
-      return index == 0 ? letter.toLowerCase() : letter.toUpperCase();
-    })
-    .replace(/[\s\-]+/g, "");
 }
 
 export async function parseStatusXml(content: string): Promise<IFileStatus[]> {

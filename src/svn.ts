@@ -218,7 +218,7 @@ export class Svn {
   }
 
   show(path: string, revision?: string, options: CpOptions = {}) {
-    var args = ["cat", path];
+    const args = ["cat", path];
 
     if (revision) {
       args.push("-r", revision);

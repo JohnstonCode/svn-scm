@@ -115,7 +115,7 @@ export class Resource implements SourceControlResourceState {
   }
 
   private get strikeThrough(): boolean {
-    if (this.type == Status.DELETED) {
+    if (this.type === Status.DELETED) {
       return true;
     }
 
