@@ -256,9 +256,13 @@
         },
         "svn.multipleFolders.ignore": {
           "type": "array",
-          "minimum": 4,
           "description": "Folders to ignore using SVN",
           "default": ["**/.git", "**/.hg", "**/vendor", "**/node_modules"]
+        },
+        "svn.sourceControl.ignoreOnCommit": {
+          "type": "array",
+          "description": "Changelists to ignore on commit",
+          "default": ["ignore-on-commit"]
         },
         "svn.sourceControl.showExternal": {
           "type": "boolean",
