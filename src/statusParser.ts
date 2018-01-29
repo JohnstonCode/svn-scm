@@ -2,6 +2,7 @@ import * as xml2js from "xml2js";
 
 export interface IFileStatus {
   status: string;
+  props: string;
   path: string;
   changelist?: string;
   rename?: string;
@@ -14,27 +15,20 @@ export interface IFileStatus {
 }
 
 export interface IEntry {
-  $: {
-    path: string;
-  };
-  "wc-status": {
-    $: {
-      item: string;
-      revision: string;
-      props: string;
-      "moved-to"?: string;
-      "moved-from"?: string;
-    };
+  path: string;
+  wcStatus: {
+    item: string;
+    revision: string;
+    props: string;
+    movedTo?: string;
+    movedFrom?: string;
+    wcLocked?: string;
     commit: {
-      $: {
-        revision: string;
-      };
+      revision: string;
       author: string;
       date: string;
     };
   };
-  path: string;
-  rename?: string;
 }
 
 function processEntry(
@@ -54,21 +48,22 @@ function processEntry(
 
   let r: IFileStatus = {
     changelist: changelist,
-    path: entry["$"].path,
-    status: entry["wc-status"].$.item
+    path: entry.path,
+    status: entry.wcStatus.item,
+    props: entry.wcStatus.props
   };
 
-  if (entry["wc-status"].$["moved-to"] && r.status === "deleted") {
+  if (entry.wcStatus.movedTo && r.status === "deleted") {
     return [];
   }
-  if (entry["wc-status"].$["moved-from"] && r.status === "added") {
-    r.rename = entry["wc-status"].$["moved-from"];
+  if (entry.wcStatus.movedFrom && r.status === "added") {
+    r.rename = entry.wcStatus.movedFrom;
   }
-  if (entry["wc-status"].commit) {
+  if (entry.wcStatus.commit) {
     r.commit = {
-      revision: entry["wc-status"].commit.$.revision,
-      author: entry["wc-status"].commit.author,
-      date: entry["wc-status"].commit.date
+      revision: entry.wcStatus.commit.revision,
+      author: entry.wcStatus.commit.author,
+      date: entry.wcStatus.commit.date
     };
   }
 
@@ -87,11 +82,19 @@ function xmlToStatus(xml: any) {
     }
 
     xml.changelist.forEach((change: any) => {
-      statusList.push(...processEntry(change.entry, change.$.name));
+      statusList.push(...processEntry(change.entry, change.name));
     });
   }
 
   return statusList;
+}
+
+function camelcase(name: string) {
+  return name
+    .replace(/(?:^\w|[A-Z]|\b\w)/g, function(letter, index) {
+      return index == 0 ? letter.toLowerCase() : letter.toUpperCase();
+    })
+    .replace(/[\s\-]+/g, "");
 }
 
 export async function parseStatusXml(content: string): Promise<IFileStatus[]> {
@@ -99,8 +102,11 @@ export async function parseStatusXml(content: string): Promise<IFileStatus[]> {
     xml2js.parseString(
       content,
       {
+        mergeAttrs: true,
         explicitRoot: false,
-        explicitArray: false
+        explicitArray: false,
+        attrNameProcessors: [camelcase],
+        tagNameProcessors: [camelcase]
       },
       (err, result) => {
         if (err) {
