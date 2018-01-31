@@ -42,11 +42,11 @@ If you use [TortoiseSVN](https://tortoisesvn.net/), make sure the option
 
 ## Contributors
 
-* @JohnstonCode
-* @edgardmessias
-* @csholmq
-* @rwatts3
-* @lapo-luchini
+* JohnstonCode
+* edgardmessias
+* csholmq
+* rwatts3
+* lapo-luchini
 
 ## Features
 
@@ -113,3 +113,7 @@ If you use [TortoiseSVN](https://tortoisesvn.net/), make sure the option
 `svn.log.length`
   * Number of commit messages to log  
   `"default"` &mdash; 50
+
+`svn.branch.update`
+  * How frequently (in minutes) to check branch changes. Set to `0` to avoid periodic checks  
+  `"default"` &mdash; 5
