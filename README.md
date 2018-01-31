@@ -33,16 +33,8 @@ If you use [TortoiseSVN](https://tortoisesvn.net/), make sure the option
 **Command Line Tools** is checked during installation and
 `C:\Program Files\TortoiseSVN\bin` is available in PATH.
 
-## Features
-
-* [x] Source Control View
-* [x] Quick Diffs in gutter
-* [x] Status Bar
-* [ ] SVN Commands
-
 ## Feedback & Contributing
 
-* This is a work in progress and im sure there will be some issues.
 * Please report any bugs, suggestions or documentation requests via the
   [Issues](https://github.com/JohnstonCode/svn-scm/issues)
 * Feel free to submit
@@ -54,3 +46,65 @@ If you use [TortoiseSVN](https://tortoisesvn.net/), make sure the option
 * @edgardmessias
 * @csholmq
 * @rwatts3
+
+## Features
+
+* [x] Source Control View
+* [x] Quick Diffs in gutter
+* [x] Status Bar
+* [ ] SVN Commands
+
+## Settings
+
+`svn.enabled`
+
+* Enables Svn as a SCM in VS Code.
+
+`svn.path`
+
+* Path to the svn executable
+
+`svn.diff.withHead`
+
+* Show diff changes using latest revision in the repository. Set false to use latest revision in local folder
+
+`svn.layout.trunk`
+
+* Relative path for 'trunk' in SVN URL, 'null' to disable. (Ex.: 'trunk', 'main')
+
+`svn.layout.branches`
+
+* Relative path for 'branches' in SVN URL, 'null' to disable. (Ex.: 'branches', 'versions')
+
+`svn.layout.tags`
+
+* Relative path for 'tags' in SVN URL, 'null' to disable. (Ex.: 'tags', 'stamps')
+
+`svn.multipleFolders.enabled`
+
+* Allow to find subfolders using SVN
+
+`svn.multipleFolders.depth`
+
+* Maximum depth to find subfolders using SVN
+  `"default"` &mdash; 4
+
+`svn.multipleFolders.ignore`
+
+* Folders to ignore using SVN
+  `"default"` &mdash; `["**/.git", "**/.hg", "**/vendor", "**/node_modules"]`
+
+`svn.sourceControl.ignoreOnCommit`
+
+* Changelists to ignore on commit
+  `"default"` &mdash; `["ignore-on-commit"]`
+
+`svn.sourceControl.showExternal`
+
+* Allow to show in source control the list the external folders
+  `"default"` &mdash; false
+
+`svn.log.length`
+
+* Number of commit messages to log
+  `"default"` &mdash; 50
