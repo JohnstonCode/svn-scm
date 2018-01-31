@@ -1,3 +1,9 @@
+# **v1.10.0**
+
+## What's New
+
+* @JohnstonCode Added conflict support
+
 # **v1.9.0**
 
 ## What's New

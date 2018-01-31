@@ -306,4 +306,8 @@ export class Svn {
 
     return this.exec("", args);
   }
+
+  resolve(file: string, action: string) {
+    return this.exec("", ["resolve", "--accept", action, file]);
+  }
 }

@@ -290,4 +290,14 @@ export class Repository {
 
     return result.stdout;
   }
+
+  async resolve(file: string, action: string) {
+    const result = await this.svn.resolve(file, action);
+
+    if (result.exitCode !== 0) {
+      throw new Error(result.stderr);
+    }
+
+    return result.stdout;
+  }
 }

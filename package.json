@@ -2,7 +2,7 @@
   "name": "svn-scm",
   "displayName": "SVN",
   "description": "Integrated Subversion source control",
-  "version": "1.9.0",
+  "version": "1.10.0",
   "publisher": "johnstoncode",
   "engines": {
     "vscode": "^1.17.0"
@@ -121,6 +121,11 @@
         "command": "svn.remove",
         "title": "Remove Selected",
         "category": "SVN"
+      },
+      {
+        "command": "svn.resolve",
+        "title": "Resolve Conflicts",
+        "category": "SVN"
       }
     ],
     "menus": {
@@ -141,6 +146,10 @@
         },
         {
           "command": "svn.patch",
+          "when": "config.svn.enabled"
+        },
+        {
+          "command": "svn.resolve",
           "when": "config.svn.enabled"
         }
       ],
