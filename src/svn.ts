@@ -170,12 +170,21 @@ export class Svn {
       })
     ]);
 
-    jschardet.MacCyrillicModel.mTypicalPositiveRatio += 0.001;
+    let encoding = "utf8";
 
-    const encodingGuess = jschardet.detect(stdout);
+    // SVN with '--xml' always return 'UTF-8', and jschardet detects this encoding: 'TIS-620'
+    if (!args.includes("--xml")) {
+      jschardet.MacCyrillicModel.mTypicalPositiveRatio += 0.001;
 
-    const encoding =
-      encodingGuess.confidence > 0.8 ? encodingGuess.encoding : "utf8";
+      const encodingGuess = jschardet.detect(stdout);
+
+      if (
+        encodingGuess.confidence > 0.8 &&
+        iconv.encodingExists(encodingGuess.encoding)
+      ) {
+        encoding = encodingGuess.encoding;
+      }
+    }
 
     stdout = iconv.decode(stdout, encoding);
 
