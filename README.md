@@ -68,35 +68,35 @@ If you use [TortoiseSVN](https://tortoisesvn.net/), make sure the option
 
 `svn.enabled`
   * Enables Svn as a SCM in VS Code.  
-  `"default"` &mdash; true
+  `"default"` &mdash; `true`
 
 `svn.path`
   * Path to the svn executable  
-  `"default"` &mdash; null
+  `"default"` &mdash; `null`
 
 `svn.diff.withHead`
   * Show diff changes using latest revision in the repository. Set false to use latest revision in local folder  
-  `"default"` &mdash; true
+  `"default"` &mdash; `true`
 
 `svn.layout.trunk`
   * Relative path for 'trunk' in SVN URL, 'null' to disable. (Ex.: 'trunk', 'main')  
-  `"default"` &mdash; trunk
+  `"default"` &mdash; `trunk`
 
 `svn.layout.branches`
   * Relative path for 'branches' in SVN URL, 'null' to disable. (Ex.: 'branches', 'versions')  
-  `"default"` &mdash; branches
+  `"default"` &mdash; `branches`
 
 `svn.layout.tags`
   * Relative path for 'tags' in SVN URL, 'null' to disable. (Ex.: 'tags', 'stamps')  
-  `"default"` &mdash; tags
+  `"default"` &mdash; `tags`
 
 `svn.multipleFolders.enabled`
   * Allow to find subfolders using SVN  
-  `"default"` &mdash; false
+  `"default"` &mdash; `false`
 
 `svn.multipleFolders.depth`
   * Maximum depth to find subfolders using SVN  
-  `"default"` &mdash; 4
+  `"default"` &mdash; `4`
 
 `svn.multipleFolders.ignore`
   * Folders to ignore using SVN  
@@ -108,12 +108,12 @@ If you use [TortoiseSVN](https://tortoisesvn.net/), make sure the option
 
 `svn.sourceControl.showExternal`
   * Allow to show in source control the list the external folders  
-  `"default"` &mdash; false
+  `"default"` &mdash; `false`
 
 `svn.log.length`
   * Number of commit messages to log  
-  `"default"` &mdash; 50
+  `"default"` &mdash; `50`
 
 `svn.branch.update`
   * How frequently (in minutes) to check branch changes. Set to `0` to avoid periodic checks  
-  `"default"` &mdash; 5
+  `"default"` &mdash; `5`
