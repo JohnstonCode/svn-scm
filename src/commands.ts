@@ -575,6 +575,20 @@ export class SvnCommands {
     }
   }
 
+  @command("svn.log", { repository: true })
+  async log(repository: Repository) {
+    try {
+      const result = await repository.repository.log();
+      // send the log results to a new tab
+      workspace.openTextDocument({ content: result }).then(doc => {
+        window.showTextDocument(doc);
+      });
+    } catch (error) {
+      console.error(error);
+      window.showErrorMessage("Unable to log");
+    }
+  }
+
   private runByRepository<T>(
     resource: Uri,
     fn: (repository: Repository, resource: Uri) => Promise<T>

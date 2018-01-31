@@ -133,7 +133,7 @@ export class Svn {
     this.version = options.version;
   }
 
-  private log(output: string): void {
+  private logOutput(output: string): void {
     this._onOutput.emit("log", output);
   }
 
@@ -144,7 +144,7 @@ export class Svn {
     }
 
     if (options.log !== false) {
-      this.log(
+      this.logOutput(
         `[${this.lastCwd.split(/[\\\/]+/).pop()}]$ svn ${args.join(" ")}\n`
       );
     }
@@ -180,7 +180,7 @@ export class Svn {
     stdout = iconv.decode(stdout, encoding);
 
     if (options.log !== false && stderr.length > 0) {
-      this.log(`${stderr}\n`);
+      this.logOutput(`${stderr}\n`);
     }
 
     return { exitCode, stdout, stderr };
@@ -309,5 +309,9 @@ export class Svn {
 
   resolve(file: string, action: string) {
     return this.exec("", ["resolve", "--accept", action, file]);
+  }
+
+  log(rootPath: string, length: string) {
+    return this.exec(rootPath, ["log", "--limit", length]);
   }
 }

@@ -2,7 +2,7 @@
   "name": "svn-scm",
   "displayName": "SVN",
   "description": "Integrated Subversion source control",
-  "version": "1.10.0",
+  "version": "1.11.0",
   "publisher": "johnstoncode",
   "engines": {
     "vscode": "^1.17.0"
@@ -126,6 +126,11 @@
         "command": "svn.resolve",
         "title": "Resolve Conflicts",
         "category": "SVN"
+      },
+      {
+        "command": "svn.log",
+        "title": "Show commit messages",
+        "category": "SVN"
       }
     ],
     "menus": {
@@ -150,6 +155,10 @@
         },
         {
           "command": "svn.resolve",
+          "when": "config.svn.enabled"
+        },
+        {
+          "command": "svn.log",
           "when": "config.svn.enabled"
         }
       ],
@@ -282,6 +291,12 @@
           "description":
             "Allow to show in source control the list the external folders",
           "default": false
+        },
+        "svn.log.length": {
+          "type": "number",
+          "minimum": 1,
+          "description": "Number of commit messages to log",
+          "default": 50
         }
       }
     }
