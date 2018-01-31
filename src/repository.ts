@@ -262,6 +262,34 @@ export class Repository {
     return Promise.resolve();
   }
 
+  public getResourceFromFile(uri: string | Uri): Resource | undefined {
+    if (typeof uri === "string") {
+      uri = Uri.file(uri);
+    }
+
+    const groups = [
+      this.changes,
+      this.unversioned,
+      this.external,
+      ...this.changelists.values()
+    ];
+
+    const uriString = uri.toString();
+
+    for (const group of groups) {
+      for (const resource of group.resourceStates) {
+        if (
+          uriString === resource.resourceUri.toString() &&
+          resource instanceof Resource
+        ) {
+          return resource;
+        }
+      }
+    }
+
+    return undefined;
+  }
+
   provideOriginalResource(uri: Uri): Uri | undefined {
     if (uri.scheme !== "file") {
       return;

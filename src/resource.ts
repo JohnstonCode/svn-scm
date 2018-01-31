@@ -75,10 +75,21 @@ export class Resource implements SourceControlResourceState {
 
   @memoize
   get command(): Command {
+    const svnConfig = workspace.getConfiguration("svn");
+    const diffHead = svnConfig.get<boolean>("diff.withHead", true);
+
+    if (diffHead) {
+      return {
+        command: "svn.openResourceHead",
+        title: "Open Diff With Head",
+        arguments: [this]
+      };
+    }
+
     return {
-      command: "svn.fileOpen",
-      title: "Open",
-      arguments: [this.resourceUri]
+      command: "svn.openResourceBase",
+      title: "Open Diff With Base",
+      arguments: [this]
     };
   }
 

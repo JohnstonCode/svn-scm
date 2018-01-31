@@ -97,18 +97,10 @@ export class SvnContentProvider implements TextDocumentContentProvider {
 
     this.cache[cacheKey] = cacheValue;
 
-    let revision = undefined;
-
-    const config = workspace.getConfiguration("svn");
-    const diffWithHead = config.get<boolean>("diff.withHead");
-
-    if (diffWithHead) {
-      revision = "HEAD";
-    }
-
     try {
-      const { path } = fromSvnUri(uri);
-      return await repository.show(path, revision);
+      const { path, ref } = fromSvnUri(uri);
+
+      return await repository.show(path, ref);
     } catch (error) {
       return "";
     }
