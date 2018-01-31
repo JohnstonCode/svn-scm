@@ -215,24 +215,22 @@ export class Repository {
         external.push(resource);
       } else if (status.status === Status.CONFLICTED) {
         conflicts.push(resource);
-      } else {
-        if (status.status === Status.UNVERSIONED) {
-          const matches = status.path.match(
-            /(.+?)\.(mine|working|merge-\w+\.r\d+|r\d+)$/
-          );
+      } else if (status.status === Status.UNVERSIONED) {
+        const matches = status.path.match(
+          /(.+?)\.(mine|working|merge-\w+\.r\d+|r\d+)$/
+        );
 
-          // If file end with (mine, working, merge, etc..) and has file without extension
-          if (
-            matches &&
-            matches[1] &&
-            statuses.some(s => s.path === matches[1])
-          ) {
-            return;
-          } else {
-            unversioned.push(resource);
-          }
+        // If file end with (mine, working, merge, etc..) and has file without extension
+        if (
+          matches &&
+          matches[1] &&
+          statuses.some(s => s.path === matches[1])
+        ) {
+          return;
+        } else {
+          unversioned.push(resource);
         }
-
+      } else {
         if (!status.changelist) {
           changes.push(resource);
         } else {

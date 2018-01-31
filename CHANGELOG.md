@@ -1,3 +1,9 @@
+# **v1.13.1**
+
+## Bug Fixes
+
+* @JohnstonCode fixed untracked files showing in changes and unversioned
+
 # **v1.13.0**
 
 ## What's New
