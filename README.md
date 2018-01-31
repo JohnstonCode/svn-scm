@@ -57,54 +57,49 @@ If you use [TortoiseSVN](https://tortoisesvn.net/), make sure the option
 ## Settings
 
 `svn.enabled`
-
-* Enables Svn as a SCM in VS Code.
+  * Enables Svn as a SCM in VS Code.
+  `"default"` &mdash; true
 
 `svn.path`
-
-* Path to the svn executable
+  * Path to the svn executable
+  `"default"` &mdash; null
 
 `svn.diff.withHead`
-
-* Show diff changes using latest revision in the repository. Set false to use latest revision in local folder
+  * Show diff changes using latest revision in the repository. Set false to use latest revision in local folder
+  `"default"` &mdash; true
 
 `svn.layout.trunk`
-
-* Relative path for 'trunk' in SVN URL, 'null' to disable. (Ex.: 'trunk', 'main')
+  * Relative path for 'trunk' in SVN URL, 'null' to disable. (Ex.: 'trunk', 'main')
+  `"default"` &mdash; trunk
 
 `svn.layout.branches`
-
-* Relative path for 'branches' in SVN URL, 'null' to disable. (Ex.: 'branches', 'versions')
+  * Relative path for 'branches' in SVN URL, 'null' to disable. (Ex.: 'branches', 'versions')
+  `"default"` &mdash; branches
 
 `svn.layout.tags`
-
-* Relative path for 'tags' in SVN URL, 'null' to disable. (Ex.: 'tags', 'stamps')
+  * Relative path for 'tags' in SVN URL, 'null' to disable. (Ex.: 'tags', 'stamps')
+  `"default"` &mdash; tags
 
 `svn.multipleFolders.enabled`
-
-* Allow to find subfolders using SVN
+  * Allow to find subfolders using SVN
+  `"default"` &mdash; false
 
 `svn.multipleFolders.depth`
-
-* Maximum depth to find subfolders using SVN
+  * Maximum depth to find subfolders using SVN
   `"default"` &mdash; 4
 
 `svn.multipleFolders.ignore`
-
-* Folders to ignore using SVN
+  * Folders to ignore using SVN
   `"default"` &mdash; `["**/.git", "**/.hg", "**/vendor", "**/node_modules"]`
 
 `svn.sourceControl.ignoreOnCommit`
-
-* Changelists to ignore on commit
+  * Changelists to ignore on commit
   `"default"` &mdash; `["ignore-on-commit"]`
 
 `svn.sourceControl.showExternal`
-
-* Allow to show in source control the list the external folders
+  * Allow to show in source control the list the external folders
   `"default"` &mdash; false
 
 `svn.log.length`
-
-* Number of commit messages to log
+  * Number of commit messages to log
   `"default"` &mdash; 50
