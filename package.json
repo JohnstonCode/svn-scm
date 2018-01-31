@@ -346,6 +346,13 @@
             "Relative path for 'tags' in SVN URL, 'null' to disable. (Ex.: 'tags', 'stamps')",
           "default": "tags"
         },
+        "svn.layout.update": {
+          "type": "number",
+          "minimum": 0,
+          "description":
+            "How frequently (in seconds) to check layout changes. Set to `0` to avoid periodic checks.",
+          "default": 300
+        },
         "svn.multipleFolders.enabled": {
           "type": "boolean",
           "description": "Allow to find subfolders using SVN",
