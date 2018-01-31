@@ -6,14 +6,17 @@ import {
   TextDocumentShowOptions,
   QuickPickItem,
   workspace,
-  SourceControlResourceGroup
+  SourceControlResourceGroup,
+  ViewColumn,
+  SourceControlResourceState
 } from "vscode";
 import { inputCommitMessage } from "./messages";
 import { Svn, Status } from "./svn";
 import { Model } from "./model";
 import { Repository } from "./repository";
 import { Resource } from "./resource";
-import { toSvnUri } from "./uri";
+import { toSvnUri, fromSvnUri } from "./uri";
+import * as fs from "fs";
 import * as path from "path";
 import { start } from "repl";
 import { getConflictPickOptions } from "./conflictItems";
@@ -365,61 +368,269 @@ export class SvnCommands {
     repository.updateBranches();
   }
 
-  async openDiff(resource: Resource, against: string) {
-    const left = this.getLeftResource(resource);
-    const right = this.getRightResource(resource);
-    const title = this.getDiffTitle(resource, against);
+  @command("svn.openResourceBase")
+  async openResourceBase(resource: Resource): Promise<void> {
+    await this._openResource(resource, "BASE", undefined, true, false);
+  }
+
+  @command("svn.openResourceHead")
+  async openResourceHead(resource: Resource): Promise<void> {
+    await this._openResource(resource, "HEAD", undefined, true, false);
+  }
+
+  @command("svn.openFile")
+  async openFile(
+    arg?: Resource | Uri,
+    ...resourceStates: SourceControlResourceState[]
+  ): Promise<void> {
+    const preserveFocus = arg instanceof Resource;
+
+    let uris: Uri[] | undefined;
+
+    if (arg instanceof Uri) {
+      if (arg.scheme === "svn") {
+        uris = [Uri.file(fromSvnUri(arg).path)];
+      } else if (arg.scheme === "file") {
+        uris = [arg];
+      }
+    } else {
+      let resource = arg;
+
+      if (!(resource instanceof Resource)) {
+        // can happen when called from a keybinding
+        resource = this.getSCMResource();
+      }
+
+      if (resource) {
+        uris = [
+          ...resourceStates.map(r => r.resourceUri),
+          resource.resourceUri
+        ];
+      }
+    }
+
+    if (!uris) {
+      return;
+    }
+
+    const preview = uris.length === 1 ? true : false;
+    const activeTextEditor = window.activeTextEditor;
+    for (const uri of uris) {
+      if (fs.statSync(uri.fsPath).isDirectory()) {
+        continue;
+      }
+
+      const opts: TextDocumentShowOptions = {
+        preserveFocus,
+        preview: preview,
+        viewColumn: ViewColumn.Active
+      };
+
+      if (
+        activeTextEditor &&
+        activeTextEditor.document.uri.toString() === uri.toString()
+      ) {
+        opts.selection = activeTextEditor.selection;
+      }
+
+      const document = await workspace.openTextDocument(uri);
+      await window.showTextDocument(document, opts);
+    }
+  }
+
+  @command("svn.openHEADFile")
+  async openHEADFile(arg?: Resource | Uri): Promise<void> {
+    let resource: Resource | undefined = undefined;
+
+    if (arg instanceof Resource) {
+      resource = arg;
+    } else if (arg instanceof Uri) {
+      resource = this.getSCMResource(arg);
+    } else {
+      resource = this.getSCMResource();
+    }
+
+    if (!resource) {
+      return;
+    }
+
+    const HEAD = this.getLeftResource(resource, "HEAD");
+
+    if (!HEAD) {
+      const basename = path.basename(resource.resourceUri.fsPath);
+      window.showWarningMessage(
+        `"HEAD version of '${basename}' is not available."`
+      );
+      return;
+    }
+
+    return await commands.executeCommand<void>("vscode.open", HEAD);
+  }
+
+  @command("svn.openChangeBase")
+  async openChangeBase(
+    arg?: Resource | Uri,
+    ...resourceStates: SourceControlResourceState[]
+  ): Promise<void> {
+    return this.openChange(arg, "BASE", resourceStates);
+  }
+
+  @command("svn.openChangeHead")
+  async openChangeHead(
+    arg?: Resource | Uri,
+    ...resourceStates: SourceControlResourceState[]
+  ): Promise<void> {
+    return this.openChange(arg, "HEAD", resourceStates);
+  }
+
+  async openChange(
+    arg?: Resource | Uri,
+    against?: string,
+    resourceStates?: SourceControlResourceState[]
+  ): Promise<void> {
+    const preserveFocus = arg instanceof Resource;
+    const preserveSelection = arg instanceof Uri || !arg;
+    let resources: Resource[] | undefined = undefined;
+
+    if (arg instanceof Uri) {
+      const resource = this.getSCMResource(arg);
+      if (resource !== undefined) {
+        resources = [resource];
+      }
+    } else {
+      let resource: Resource | undefined = undefined;
+
+      if (arg instanceof Resource) {
+        resource = arg;
+      } else {
+        resource = this.getSCMResource();
+      }
+
+      if (resource) {
+        resources = [...(resourceStates as Resource[]), resource];
+      }
+    }
+
+    if (!resources) {
+      return;
+    }
+
+    const preview = resources.length === 1 ? undefined : false;
+    for (const resource of resources) {
+      await this._openResource(
+        resource,
+        against,
+        preview,
+        preserveFocus,
+        preserveSelection
+      );
+    }
+  }
+
+  private async _openResource(
+    resource: Resource,
+    against?: string,
+    preview?: boolean,
+    preserveFocus?: boolean,
+    preserveSelection?: boolean
+  ): Promise<void> {
+    const left = this.getLeftResource(resource, against);
+    const right = this.getRightResource(resource, against);
+    const title = this.getTitle(resource, against);
 
     if (!right) {
+      // TODO
+      console.error("oh no");
       return;
+    }
+
+    if (fs.statSync(right.fsPath).isDirectory()) {
+      return;
+    }
+
+    const opts: TextDocumentShowOptions = {
+      preserveFocus,
+      preview,
+      viewColumn: ViewColumn.Active
+    };
+
+    const activeTextEditor = window.activeTextEditor;
+
+    if (
+      preserveSelection &&
+      activeTextEditor &&
+      activeTextEditor.document.uri.toString() === right.toString()
+    ) {
+      opts.selection = activeTextEditor.selection;
     }
 
     if (!left) {
-      window.showErrorMessage(`No diff available at ${against}`);
+      const document = await workspace.openTextDocument(right);
+      await window.showTextDocument(document, opts);
       return;
     }
 
-    try {
-      await commands.executeCommand("vscode.diff", left, right, title);
-    } catch (error) {
-      console.log(error);
-    }
+    return await commands.executeCommand<void>(
+      "vscode.diff",
+      left,
+      right,
+      title,
+      opts
+    );
   }
 
-  private getDiffTitle(resource: Resource, ref: string): string {
-    let file = path.basename(resource.resourceUri.fsPath);
-
-    return `${file} (${ref})`;
-  }
-
-  @command("svn.openDiffHead")
-  async openDiffHead(resource: Resource) {
-    if (resource instanceof Resource) {
-      this.openDiff(resource, "HEAD");
-    }
-  }
-
-  private getURI(uri: Uri, ref: string): Uri {
-    return toSvnUri(uri, ref);
-  }
-
-  private getLeftResource(resource: Resource) {
-    const repository = this.model.getRepository(resource.resourceUri.fsPath);
-
-    if (!repository) {
-      return;
+  private getLeftResource(
+    resource: Resource,
+    against: string = ""
+  ): Uri | undefined {
+    if (resource.type === Status.ADDED && resource.renameResourceUri) {
+      return toSvnUri(resource.renameResourceUri, against);
     }
 
     switch (resource.type) {
-      case "modified":
-        return this.getURI(resource.resourceUri, "HEAD");
-      default:
-        return false;
+      case Status.MODIFIED:
+      case Status.REPLACED:
+        return toSvnUri(resource.resourceUri, against);
     }
   }
 
-  private getRightResource(resource: Resource) {
-    return resource.resourceUri;
+  private getRightResource(
+    resource: Resource,
+    against: string = ""
+  ): Uri | undefined {
+    switch (resource.type) {
+      case Status.ADDED:
+      case Status.IGNORED:
+      case Status.MODIFIED:
+      case Status.UNVERSIONED:
+      case Status.REPLACED:
+        return resource.resourceUri;
+      case Status.DELETED:
+      case Status.MISSING:
+        return toSvnUri(resource.resourceUri, against);
+    }
+  }
+
+  private getTitle(resource: Resource, against?: string): string {
+    if (resource.type === Status.ADDED && resource.renameResourceUri) {
+      const basename = path.basename(resource.renameResourceUri.fsPath);
+
+      const newname = path.relative(
+        path.dirname(resource.renameResourceUri.fsPath),
+        resource.resourceUri.fsPath
+      );
+      if (against) {
+        return `${basename} -> ${newname} (${against})`;
+      }
+      return `${basename} -> ${newname}`;
+    }
+    const basename = path.basename(resource.resourceUri.fsPath);
+
+    if (against) {
+      return `${basename} (${against})`;
+    }
+
+    return "";
   }
 
   @command("svn.switchBranch", { repository: true })
@@ -586,6 +797,31 @@ export class SvnCommands {
     } catch (error) {
       console.error(error);
       window.showErrorMessage("Unable to log");
+    }
+  }
+
+  private getSCMResource(uri?: Uri): Resource | undefined {
+    uri = uri
+      ? uri
+      : window.activeTextEditor && window.activeTextEditor.document.uri;
+
+    if (!uri) {
+      return undefined;
+    }
+
+    if (uri.scheme === "svn") {
+      const { path } = fromSvnUri(uri);
+      uri = Uri.file(path);
+    }
+
+    if (uri.scheme === "file") {
+      const repository = this.model.getRepository(uri);
+
+      if (!repository) {
+        return undefined;
+      }
+
+      return repository.getResourceFromFile(uri);
     }
   }
 

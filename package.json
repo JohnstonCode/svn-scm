@@ -84,8 +84,35 @@
         "category": "SVN"
       },
       {
-        "command": "svn.openDiffHead",
-        "title": "Diff Changes HEAD",
+        "command": "svn.openChangeBase",
+        "title": "Open Changes with BASE",
+        "category": "SVN",
+        "icon": {
+          "light": "icons/light/open-change.svg",
+          "dark": "icons/dark/open-change.svg"
+        }
+      },
+      {
+        "command": "svn.openChangeHead",
+        "title": "Open Changes with HEAD",
+        "category": "SVN",
+        "icon": {
+          "light": "icons/light/open-change.svg",
+          "dark": "icons/dark/open-change.svg"
+        }
+      },
+      {
+        "command": "svn.openFile",
+        "title": "Open File",
+        "category": "SVN",
+        "icon": {
+          "light": "icons/light/open-file.svg",
+          "dark": "icons/dark/open-file.svg"
+        }
+      },
+      {
+        "command": "svn.openHEADFile",
+        "title": "Open File (HEAD)",
         "category": "SVN"
       },
       {
@@ -134,7 +161,24 @@
       }
     ],
     "menus": {
-      "commandPalette": [],
+      "commandPalette": [
+        {
+          "command": "svn.openFile",
+          "when": "config.svn.enabled"
+        },
+        {
+          "command": "svn.openHEADFile",
+          "when": "config.svn.enabled"
+        },
+        {
+          "command": "svn.openChangeBase",
+          "when": "config.svn.enabled"
+        },
+        {
+          "command": "svn.openChangeHead",
+          "when": "config.svn.enabled"
+        }
+      ],
       "scm/title": [
         {
           "command": "svn.refresh",
@@ -177,6 +221,30 @@
           "group": "1_modification"
         },
         {
+          "command": "svn.openFile",
+          "when":
+            "config.svn.enabled && scmProvider == svn && scmResourceGroup != external",
+          "group": "navigation"
+        },
+        {
+          "command": "svn.openHEADFile",
+          "when":
+            "config.svn.enabled && scmProvider == svn && scmResourceGroup != unversioned && scmResourceGroup != external",
+          "group": "navigation"
+        },
+        {
+          "command": "svn.openChangeBase",
+          "when":
+            "config.svn.enabled && scmProvider == svn && scmResourceGroup != unversioned && scmResourceGroup != external",
+          "group": "navigation"
+        },
+        {
+          "command": "svn.openChangeHead",
+          "when":
+            "config.svn.enabled && scmProvider == svn && scmResourceGroup != unversioned && scmResourceGroup != external",
+          "group": "navigation"
+        },
+        {
           "command": "svn.addChangelist",
           "when":
             "config.svn.enabled && scmProvider == svn && scmResourceGroup != external",
@@ -207,12 +275,6 @@
           "group": "1_modification"
         },
         {
-          "command": "svn.openDiffHead",
-          "when":
-            "scmProvider == svn && scmResourceGroup != unversioned && scmResourceGroup != external",
-          "group": "navigation"
-        },
-        {
           "command": "svn.revert",
           "when":
             "scmProvider == svn && scmResourceGroup != unversioned && scmResourceGroup != external",
@@ -225,7 +287,26 @@
           "group": "2_modification"
         }
       ],
-      "editor/title": []
+      "editor/title": [
+        {
+          "command": "svn.openFile",
+          "group": "navigation",
+          "when":
+            "config.svn.enabled && isInDiffEditor && resourceScheme != extension && resourceScheme != merge-conflict.conflict-diff"
+        },
+        {
+          "command": "svn.openChangeBase",
+          "group": "navigation",
+          "when":
+            "config.svn.enabled && !isInDiffEditor && resourceScheme == file"
+        },
+        {
+          "command": "svn.openChangeHead",
+          "group": "navigation",
+          "when":
+            "config.svn.enabled && !isInDiffEditor && resourceScheme == file"
+        }
+      ]
     },
     "configuration": {
       "title": "Svn",
