@@ -1,3 +1,9 @@
+# **v1.13.2**
+
+## Bug Fixes
+
+* @edgardmessias Fixed encoding with xml output
+
 # **v1.13.1**
 
 ## Bug Fixes
