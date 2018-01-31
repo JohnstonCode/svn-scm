@@ -49,10 +49,19 @@ If you use [TortoiseSVN](https://tortoisesvn.net/), make sure the option
 
 ## Features
 
-* [x] Source Control View
-* [x] Quick Diffs in gutter
-* [x] Status Bar
-* [ ] SVN Commands
+* Source Control View
+* Quick Diffs in gutter
+* Status Bar
+* Create changelists
+* Add files
+* Revert edits
+* Remove files
+* Create branches
+* Switch branches
+* Create patches
+* Diff changes
+* Commit changes/changelists
+* See commit messages
 
 ## Settings
 
