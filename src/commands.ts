@@ -19,6 +19,7 @@ import { toSvnUri, fromSvnUri } from "./uri";
 import * as fs from "fs";
 import * as path from "path";
 import { start } from "repl";
+import { getConflictPickOptions } from "./conflictItems";
 
 interface CommandOptions {
   repository?: boolean;
@@ -180,10 +181,7 @@ export class SvnCommands {
       picks.push(new ChangeListItem(repository.changes));
     }
 
-    const svnConfig = workspace.getConfiguration(
-      "svn",
-      Uri.file(repository.workspaceRoot)
-    );
+    const svnConfig = workspace.getConfiguration("svn");
     const ignoreOnCommitList = svnConfig.get<string[]>(
       "sourceControl.ignoreOnCommit",
       []
@@ -761,6 +759,44 @@ export class SvnCommands {
     } catch (error) {
       console.error(error);
       window.showErrorMessage("Unable to remove files");
+    }
+  }
+
+  @command("svn.resolve", { repository: true })
+  async resolve(repository: Repository) {
+    const conflicts = repository.conflicts.resourceStates;
+
+    if (!conflicts.length) {
+      window.showInformationMessage("No Conflicts");
+    }
+
+    for (const conflict of conflicts) {
+      const placeHolder = `Select conflict option for ${
+        conflict.resourceUri.path
+      }`;
+      const picks = getConflictPickOptions();
+
+      const choice = await window.showQuickPick(picks, { placeHolder });
+
+      if (!choice) {
+        return;
+      }
+
+      await repository.resolve(conflict.resourceUri.path, choice.label);
+    }
+  }
+
+  @command("svn.log", { repository: true })
+  async log(repository: Repository) {
+    try {
+      const result = await repository.repository.log();
+      // send the log results to a new tab
+      workspace.openTextDocument({ content: result }).then(doc => {
+        window.showTextDocument(doc);
+      });
+    } catch (error) {
+      console.error(error);
+      window.showErrorMessage("Unable to log");
     }
   }
 

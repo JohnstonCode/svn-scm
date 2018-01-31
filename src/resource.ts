@@ -53,6 +53,7 @@ export class Resource implements SourceControlResourceState {
     return this._resourceUri;
   }
 
+  @memoize
   get type(): String {
     return this._type;
   }
@@ -97,7 +98,7 @@ export class Resource implements SourceControlResourceState {
     if (this.type === Status.ADDED && this.renameResourceUri) {
       return Resource.Icons[theme]["Renamed"];
     }
-
+    
     const type = this.type.charAt(0).toUpperCase() + this.type.slice(1);
 
     if (typeof Resource.Icons[theme][type] !== "undefined") {

@@ -1,3 +1,21 @@
+# **v1.11.1**
+
+## Changes
+
+* @JohnstonCode Updated readme file
+
+# **v1.11.0**
+
+## What's New
+
+* @JohnstonCode Added commit message list
+
+# **v1.10.0**
+
+## What's New
+
+* @JohnstonCode Added conflict support
+
 # **v1.9.0**
 
 ## What's New

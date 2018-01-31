@@ -290,4 +290,26 @@ export class Repository {
 
     return result.stdout;
   }
+
+  async resolve(file: string, action: string) {
+    const result = await this.svn.resolve(file, action);
+
+    if (result.exitCode !== 0) {
+      throw new Error(result.stderr);
+    }
+
+    return result.stdout;
+  }
+
+  async log() {
+    const config = workspace.getConfiguration("svn");
+    const logLength = config.get<string>("log.length") || "50";
+    const result = await this.svn.log(this.workspaceRoot, logLength);
+
+    if (result.exitCode !== 0) {
+      throw new Error(result.stderr);
+    }
+
+    return result.stdout;
+  }
 }

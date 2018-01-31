@@ -29,6 +29,7 @@ export class Repository {
   public unversioned: SourceControlResourceGroup;
   public external: SourceControlResourceGroup;
   public changelists: Map<string, SourceControlResourceGroup> = new Map();
+  public conflicts: SourceControlResourceGroup;
   private disposables: Disposable[] = [];
   public currentBranch = "";
   public isSwitchingBranch: boolean = false;
@@ -133,10 +134,15 @@ export class Repository {
       "external",
       "External"
     );
+    this.conflicts = this.sourceControl.createResourceGroup(
+      "conflicts",
+      "conflicts"
+    );
 
     this.changes.hideWhenEmpty = true;
     this.unversioned.hideWhenEmpty = true;
     this.external.hideWhenEmpty = true;
+    this.conflicts.hideWhenEmpty = true;
 
     this.disposables.push(
       toDisposable(() => clearInterval(this.branchesTimer))
@@ -163,14 +169,15 @@ export class Repository {
     let changes: any[] = [];
     let unversioned: any[] = [];
     let external: any[] = [];
+    let conflicts: any[] = [];
     let changelists: Map<string, Resource[]> = new Map();
 
     const statuses = (await this.repository.getStatus()) || [];
 
-    const fileConfig = workspace.getConfiguration("files");
+    const fileConfig = workspace.getConfiguration("files", Uri.file(this.root));
     const svnConfig = workspace.getConfiguration("svn");
 
-    const filesToExclude = fileConfig.get<any>("exclude", null);
+    const filesToExclude = fileConfig.get<any>("exclude");
 
     let excludeList: string[] = [];
     for (const pattern in filesToExclude) {
@@ -188,15 +195,20 @@ export class Repository {
         ? Uri.file(path.join(this.workspaceRoot, status.rename))
         : undefined;
 
-      const resouce = new Resource(uri, status.status, renameUri, status.props);
+      const resource = new Resource(
+        uri,
+        status.status,
+        renameUri,
+        status.props
+      );
 
       if (status.status === Status.NORMAL && status.props === PropStatus.NONE) {
         // On commit, `svn status` return all locked files with status="normal" and props="none"
         return;
-      } else if (status.status === Status.UNVERSIONED) {
-        unversioned.push(resouce);
       } else if (status.status === Status.EXTERNAL) {
-        external.push(resouce);
+        external.push(resource);
+      } else if (status.status === Status.CONFLICTED) {
+        conflicts.push(resource);
       } else {
         if (status.status === Status.UNVERSIONED) {
           const matches = status.path.match(
@@ -210,17 +222,19 @@ export class Repository {
             statuses.some(s => s.path === matches[1])
           ) {
             return;
+          } else {
+            unversioned.push(resource);
           }
         }
 
         if (!status.changelist) {
-          changes.push(resouce);
+          changes.push(resource);
         } else {
           let changelist = changelists.get(status.changelist);
           if (!changelist) {
             changelist = [];
           }
-          changelist.push(resouce);
+          changelist.push(resource);
           changelists.set(status.changelist, changelist);
         }
       }
@@ -228,6 +242,7 @@ export class Repository {
 
     this.changes.resourceStates = changes;
     this.unversioned.resourceStates = unversioned;
+    this.conflicts.resourceStates = conflicts;
 
     this.changelists.forEach((group, changelist) => {
       group.resourceStates = [];
@@ -355,6 +370,15 @@ export class Repository {
       this.isSwitchingBranch = false;
       this.updateBranches();
       this._onDidChangeBranch.fire();
+    }
+  }
+
+  async resolve(file: string, action: string) {
+    try {
+      const response = await this.repository.resolve(file, action);
+      window.showInformationMessage(response);
+    } catch (error) {
+      window.showErrorMessage(error);
     }
   }
 }
