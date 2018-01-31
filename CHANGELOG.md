@@ -1,3 +1,9 @@
+# **v1.12.0**
+
+## What's New
+
+* @edgardmessias Added multiple file open options
+
 # **v1.11.1**
 
 ## Changes
