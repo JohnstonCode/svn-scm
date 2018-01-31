@@ -1,3 +1,9 @@
+# **v1.11.1**
+
+## Changes
+
+* @JohnstonCode Updated readme file
+
 # **v1.11.0**
 
 ## What's New
