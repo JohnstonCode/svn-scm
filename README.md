@@ -46,6 +46,7 @@ If you use [TortoiseSVN](https://tortoisesvn.net/), make sure the option
 * @edgardmessias
 * @csholmq
 * @rwatts3
+* @lapo-luchini
 
 ## Features
 

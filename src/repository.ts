@@ -147,12 +147,15 @@ export class Repository {
     this.disposables.push(
       toDisposable(() => clearInterval(this.branchesTimer))
     );
+
     const svnConfig = workspace.getConfiguration("svn");
-    const updateFreq = svnConfig.get<number>("layout.update");
-    if (updateFreq)
+    const updateFreq = svnConfig.get<number>("branch.update");
+
+    if (updateFreq) {
       setInterval(() => {
         this.updateBranches();
-      }, 1000 * updateFreq);
+      }, 1000 * 60 * updateFreq);
+    }
 
     this.updateBranches();
     this.update();

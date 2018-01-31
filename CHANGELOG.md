@@ -1,3 +1,9 @@
+# **v1.13.0**
+
+## What's New
+
+* @lapo-luchini Added config to set update of branches
+
 # **v1.12.0**
 
 ## What's New
