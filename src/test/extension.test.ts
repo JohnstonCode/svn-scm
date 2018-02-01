@@ -17,7 +17,7 @@ import { SvnFinder } from "../svnFinder";
 
 // Defines a Mocha test suite to group tests of similar kind together
 suite("Extension Tests", () => {
-  //Before Each
+  // Before Each
   setup(async () => {});
 
   teardown(() => {

@@ -9,6 +9,15 @@ os:
   - linux
   - osx
 
+matrix:
+  include:
+    - env: CODE_VERSION=1.17.2
+    - env: CODE_VERSION=1.18.1
+    - env: CODE_VERSION=1.19.3
+    - env: CODE_VERSION=insiders
+  allow_failures:
+    - env: CODE_VERSION=insiders
+
 cache:
   directories:
     - "node_modules"
@@ -29,4 +38,6 @@ script:
   - npm test --silent
 
 after_success:
-  - bash <(curl -s https://codecov.io/bash)
+  - if [ "$TRAVIS_OS_NAME" == "linux" && "$CODE_VERSION" == "" ]; then
+      bash <(curl -s https://codecov.io/bash)
+    fi

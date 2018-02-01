@@ -316,6 +316,12 @@
           "description": "Whether svn is enabled",
           "default": true
         },
+        "svn.decorations.enabled": {
+          "type": "boolean",
+          "description":
+            "Controls if SVN contributes colors and badges to the explorer and the open (VSCode >= 1.18 with proposed-api)",
+          "default": true
+        },
         "svn.path": {
           "type": ["string", "null"],
           "description": "Path to the svn executable",

@@ -6,7 +6,7 @@ import { Uri } from "vscode";
 import { SpawnOptions, ChildProcess } from "child_process";
 
 const tempDir = os.tmpdir();
-var tempDirList: string[] = [];
+let tempDirList: string[] = [];
 
 export function getSvnUrl(uri: Uri) {
   const url = uri.toString();
@@ -145,7 +145,7 @@ export async function destroyPath(fullPath: string) {
     destroyPath(path.join(fullPath, file));
   }
 
-  //Error in windows with anti-malware
+  // Error in windows with anti-malware
   for (let i = 0; i < 3; i++) {
     try {
       fs.rmdirSync(fullPath);

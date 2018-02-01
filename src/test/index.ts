@@ -10,8 +10,8 @@ const istanbul = require("istanbul");
 const remapIstanbul = require("remap-istanbul");
 
 declare var global: {
-    [key:string]: any; // missing index defintion
-}
+  [key: string]: any; // missing index defintion
+};
 
 // Linux: prevent a weird NPE when mocha on Linux requires the window size from the TTY
 // Since we are not running in a tty environment, we just implementt he method statically

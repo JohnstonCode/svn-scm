@@ -18,6 +18,6 @@ export function inputCommitMessage(message?: string) {
         prompt: "Please enter a commit message",
         ignoreFocusOut: true
       })
-      .then(string => resolve(string));
+      .then(input => resolve(input));
   });
 }
