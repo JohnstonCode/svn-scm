@@ -182,6 +182,8 @@ export class Resource implements SourceControlResourceState {
         return "I";
       case Status.MODIFIED:
         return "M";
+      case Status.REPLACED:
+        return "R";
       case Status.UNVERSIONED:
         return "U";
       default:
@@ -192,6 +194,7 @@ export class Resource implements SourceControlResourceState {
   get color(): ThemeColor | undefined {
     switch (this.type) {
       case Status.MODIFIED:
+      case Status.REPLACED:
         return new ThemeColor("gitDecoration.modifiedResourceForeground");
       case Status.DELETED:
         return new ThemeColor("gitDecoration.deletedResourceForeground");
