@@ -97,3 +97,7 @@ export function camelcase(name: string) {
 export function hasSupportToDecorationProvider() {
   return typeof window.registerDecorationProvider === "function";
 }
+
+export function timeout(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}

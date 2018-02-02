@@ -53,23 +53,18 @@ export class Repository {
   ): Promise<string> {
     const result = await this.svn.show(path, revision, options);
 
-    if (result.exitCode !== 0) {
-      throw new Error(result.stderr);
-    }
-
     return result.stdout;
   }
 
   async commitFiles(message: string, files: any[]) {
     const result = await this.svn.commit(message, files);
 
-    if (result.exitCode !== 0) {
-      throw new Error(result.stderr);
+    const matches = result.stdout.match(/Committed revision (.*)\./i);
+    if (matches && matches[0]) {
+      return matches[0];
     }
 
-    const outputMessage = result.stdout.match(/Committed revision (.*)\./i)[0];
-
-    return outputMessage;
+    return result.stdout;
   }
 
   addFile(filePath: string) {
@@ -149,18 +144,18 @@ export class Repository {
     if (trunkLayout) {
       promises.push(
         new Promise<string[]>(async resolve => {
-          let trunkExists = await this.svn.exec("", [
-            "ls",
-            repoUrl + "/" + trunkLayout,
-            "--depth",
-            "empty"
-          ]);
+          try {
+            let trunkExists = await this.svn.exec("", [
+              "ls",
+              repoUrl + "/" + trunkLayout,
+              "--depth",
+              "empty"
+            ]);
 
-          if (trunkExists.exitCode === 0) {
             resolve([trunkLayout]);
-            return;
+          } catch (error) {
+            resolve([]);
           }
-          resolve([]);
         })
       );
     }
@@ -180,21 +175,20 @@ export class Repository {
         new Promise<string[]>(async resolve => {
           const branchUrl = repoUrl + "/" + tree;
 
-          const result = await this.svn.list(branchUrl);
+          try {
+            const result = await this.svn.list(branchUrl);
 
-          if (result.exitCode !== 0) {
+            const list = result.stdout
+              .trim()
+              .replace(/\/|\\/g, "")
+              .split(/[\r\n]+/)
+              .filter((x: string) => !!x)
+              .map((i: string) => tree + "/" + i);
+
+            resolve(list);
+          } catch (error) {
             resolve([]);
-            return;
           }
-
-          const list = result.stdout
-            .trim()
-            .replace(/\/|\\/g, "")
-            .split(/[\r\n]+/)
-            .filter((x: string) => !!x)
-            .map((i: string) => tree + "/" + i);
-
-          resolve(list);
         })
       );
     }
@@ -226,10 +220,6 @@ export class Repository {
       newBranch
     );
 
-    if (switchBranch.exitCode !== 0) {
-      throw new Error(switchBranch.stderr);
-    }
-
     this.resetInfo();
 
     return true;
@@ -245,10 +235,6 @@ export class Repository {
       branchUrl
     );
 
-    if (switchBranch.exitCode !== 0) {
-      throw new Error(switchBranch.stderr);
-    }
-
     this.resetInfo();
 
     return true;
@@ -257,19 +243,11 @@ export class Repository {
   async revert(files: any[]) {
     const result = await this.svn.revert(files);
 
-    if (result.exitCode !== 0) {
-      throw new Error(result.stderr);
-    }
-
     return result.stdout;
   }
 
-  async update() {
+  async update(): Promise<string> {
     const result = await this.svn.update(this.workspaceRoot);
-
-    if (result.exitCode !== 0) {
-      throw new Error(result.stderr);
-    }
 
     this.resetInfo();
 
@@ -278,14 +256,14 @@ export class Repository {
       .split(/\r?\n/)
       .pop();
 
-    return message;
+    if (message) {
+      return message;
+    }
+    return result.stdout;
   }
 
   async patch() {
     const result = await this.svn.patch(this.workspaceRoot);
-    if (result.exitCode !== 0) {
-      throw new Error(result.stderr);
-    }
 
     const message = result.stdout;
     return message;
@@ -294,19 +272,11 @@ export class Repository {
   async removeFiles(files: any[], keepLocal: boolean) {
     const result = await this.svn.remove(files, keepLocal);
 
-    if (result.exitCode !== 0) {
-      throw new Error(result.stderr);
-    }
-
     return result.stdout;
   }
 
   async resolve(file: string, action: string) {
     const result = await this.svn.resolve(file, action);
-
-    if (result.exitCode !== 0) {
-      throw new Error(result.stderr);
-    }
 
     return result.stdout;
   }
@@ -315,10 +285,6 @@ export class Repository {
     const config = workspace.getConfiguration("svn");
     const logLength = config.get<string>("log.length") || "50";
     const result = await this.svn.log(this.workspaceRoot, logLength);
-
-    if (result.exitCode !== 0) {
-      throw new Error(result.stderr);
-    }
 
     return result.stdout;
   }
@@ -331,10 +297,6 @@ export class Repository {
       "-q",
       "--xml"
     ]);
-
-    if (result.exitCode !== 0) {
-      return 0;
-    }
 
     const matches = result.stdout.match(/<logentry/g);
 

@@ -4,6 +4,7 @@ import * as fs from "fs";
 import * as os from "os";
 import { Uri } from "vscode";
 import { SpawnOptions, ChildProcess } from "child_process";
+import { timeout } from "../util";
 
 const tempDir = os.tmpdir();
 let tempDirList: string[] = [];
@@ -12,10 +13,6 @@ export function getSvnUrl(uri: Uri) {
   const url = uri.toString();
 
   return url.replace(/%3A/g, ":");
-}
-
-export function delay(ms: number) {
-  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 export function spawn(
@@ -151,7 +148,7 @@ export async function destroyPath(fullPath: string) {
       fs.rmdirSync(fullPath);
       break;
     } catch (error) {
-      await delay(3000);
+      await timeout(3000);
       console.error(error);
     }
   }

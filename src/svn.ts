@@ -32,6 +32,23 @@ export enum PropStatus {
   NORMAL = "normal"
 }
 
+export const SvnErrorCodes: { [key: string]: string } = {
+  RepositoryIsLocked: "E155004",
+  NotASvnRepository: "E155007"
+};
+
+function getSvnErrorCode(stderr: string): string | undefined {
+  for (const name in SvnErrorCodes) {
+    const code = SvnErrorCodes[name];
+    const regex = new RegExp(`svn: ${code}`);
+    if (regex.test(stderr)) {
+      return code;
+    }
+  }
+
+  return void 0;
+}
+
 export interface CpOptions {
   cwd?: string;
   encoding?: string;
@@ -51,6 +68,12 @@ export interface ISvnErrorData {
 export interface ISvnOptions {
   svnPath: string;
   version: string;
+}
+
+export interface IExecutionResult {
+  exitCode: number;
+  stdout: string;
+  stderr: string;
 }
 
 export function cpErrorHandler(
@@ -137,7 +160,11 @@ export class Svn {
     this._onOutput.emit("log", output);
   }
 
-  async exec(cwd: string, args: any[], options: CpOptions = {}) {
+  async exec(
+    cwd: string,
+    args: any[],
+    options: CpOptions = {}
+  ): Promise<IExecutionResult> {
     if (cwd) {
       this.lastCwd = cwd;
       options.cwd = cwd;
@@ -190,6 +217,19 @@ export class Svn {
 
     if (options.log !== false && stderr.length > 0) {
       this.logOutput(`${stderr}\n`);
+    }
+
+    if (exitCode) {
+      return Promise.reject<IExecutionResult>(
+        new SvnError({
+          message: "Failed to execute git",
+          stdout: stdout,
+          stderr: stderr,
+          exitCode: exitCode,
+          svnErrorCode: getSvnErrorCode(stderr),
+          svnCommand: args[0]
+        })
+      );
     }
 
     return { exitCode, stdout, stderr };
