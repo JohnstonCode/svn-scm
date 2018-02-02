@@ -1,3 +1,9 @@
+# **v1.14.0**
+
+## What's New
+
+* @edgardmessias Added status view decorations
+
 # **v1.13.2**
 
 ## Bug Fixes
