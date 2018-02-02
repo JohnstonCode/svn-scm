@@ -2,6 +2,7 @@ import { workspace } from "vscode";
 import { Svn, CpOptions } from "./svn";
 import { IFileStatus, parseStatusXml } from "./statusParser";
 import { parseInfoXml, ISvnInfo } from "./infoParser";
+import { sequentialize } from "./decorators";
 
 export class Repository {
   private _info?: ISvnInfo;
@@ -28,6 +29,7 @@ export class Repository {
     this._info = undefined;
   }
 
+  @sequentialize
   async getInfo(): Promise<ISvnInfo> {
     if (this._info) {
       return this._info;
@@ -269,6 +271,8 @@ export class Repository {
       throw new Error(result.stderr);
     }
 
+    this.resetInfo();
+
     const message = result.stdout
       .trim()
       .split(/\r?\n/)
@@ -317,5 +321,28 @@ export class Repository {
     }
 
     return result.stdout;
+  }
+
+  async countNewsCommit(revision: string = "BASE:HEAD") {
+    const result = await this.svn.exec(this.workspaceRoot, [
+      "log",
+      "-r",
+      revision,
+      "-q",
+      "--xml"
+    ]);
+
+    if (result.exitCode !== 0) {
+      return 0;
+    }
+
+    const matches = result.stdout.match(/<logentry/g);
+
+    if (matches && matches.length > 0) {
+      // Every return current commit
+      return matches.length - 1;
+    }
+
+    return 0;
   }
 }
