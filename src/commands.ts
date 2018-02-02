@@ -702,7 +702,7 @@ export class SvnCommands {
   @command("svn.update", { repository: true })
   async update(repository: Repository) {
     try {
-      const result = await repository.repository.update();
+      const result = await repository.updateRevision();
       window.showInformationMessage(result);
     } catch (error) {
       console.error(error);

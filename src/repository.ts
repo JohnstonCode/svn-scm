@@ -26,6 +26,7 @@ import { IFileStatus } from "./statusParser";
 export class Repository {
   public watcher: FileSystemWatcher;
   public sourceControl: SourceControl;
+  public statusBar: SvnStatusBar;
   public changes: SvnResourceGroup;
   public unversioned: SvnResourceGroup;
   public external: SvnResourceGroup;
@@ -36,8 +37,10 @@ export class Repository {
   private disposables: Disposable[] = [];
   public currentBranch = "";
   public isSwitchingBranch: boolean = false;
+  public isUpdatingRevision: boolean = false;
   public branches: any[] = [];
   public branchesTimer: NodeJS.Timer;
+  public newsCommit: number = 0;
 
   private _onDidChangeRepository = new EventEmitter<Uri>();
   readonly onDidChangeRepository: Event<Uri> = this._onDidChangeRepository
@@ -48,6 +51,10 @@ export class Repository {
 
   private _onDidChangeBranch = new EventEmitter<void>();
   readonly onDidChangeBranch: Event<void> = this._onDidChangeBranch.event;
+
+  private _onDidChangeNewsCommit = new EventEmitter<void>();
+  readonly onDidChangeNewsCommit: Event<void> = this._onDidChangeNewsCommit
+    .event;
 
   get root(): string {
     return this.repository.root;
@@ -114,19 +121,20 @@ export class Repository {
     this.sourceControl.quickDiffProvider = this;
     this.disposables.push(this.sourceControl);
 
-    const statusBar = new SvnStatusBar(this);
-    this.disposables.push(statusBar);
-    statusBar.onDidChange(
-      () => (this.sourceControl.statusBarCommands = statusBar.commands),
+    this.statusBar = new SvnStatusBar(this);
+    this.disposables.push(this.statusBar);
+    this.statusBar.onDidChange(
+      () => (this.sourceControl.statusBarCommands = this.statusBar.commands),
       null,
       this.disposables
     );
 
-    const updateBranchName = async () => {
+    const updateBranchInfo = async () => {
       this.currentBranch = await this.getCurrentBranch();
-      this.sourceControl.statusBarCommands = statusBar.commands;
+      this.sourceControl.statusBarCommands = this.statusBar.commands;
     };
-    updateBranchName();
+    this.onDidChangeStatus(updateBranchInfo);
+    updateBranchInfo();
 
     this.changes = this.sourceControl.createResourceGroup(
       "changes",
@@ -163,7 +171,15 @@ export class Repository {
       }, 1000 * 60 * updateFreq);
     }
 
+    const updateFreqNews = svnConfig.get<number>("svn.newsCommits.update");
+    if (updateFreqNews) {
+      setInterval(() => {
+        this.updateNewsCommits();
+      }, 1000 * 60 * updateFreqNews);
+    }
+
     this.updateBranches();
+    this.updateNewsCommits();
     this.update();
   }
 
@@ -173,6 +189,15 @@ export class Repository {
       this.branches = await this.repository.getBranches();
     } catch (error) {
       console.error(error);
+    }
+  }
+
+  @debounce(1000)
+  async updateNewsCommits() {
+    const newsCommit = await this.repository.countNewsCommit();
+    if (newsCommit !== this.newsCommit) {
+      this.newsCommit = newsCommit;
+      this._onDidChangeNewsCommit.fire();
     }
   }
 
@@ -286,8 +311,6 @@ export class Repository {
       this.external.resourceStates = [];
     }
 
-    this.currentBranch = await this.getCurrentBranch();
-
     this._onDidChangeStatus.fire();
 
     return Promise.resolve();
@@ -362,6 +385,7 @@ export class Repository {
     this.isSwitchingBranch = false;
     this.updateBranches();
     this._onDidChangeBranch.fire();
+    this.updateNewsCommits()
     return response;
   }
 
@@ -386,7 +410,16 @@ export class Repository {
       this.isSwitchingBranch = false;
       this.updateBranches();
       this._onDidChangeBranch.fire();
+      this.updateNewsCommits()
     }
+  }
+
+  async updateRevision() {
+    this.isUpdatingRevision = true;
+    const response = await this.repository.update();
+    this.isUpdatingRevision = false;
+    this.updateNewsCommits();
+    return response;
   }
 
   async resolve(file: string, action: string) {

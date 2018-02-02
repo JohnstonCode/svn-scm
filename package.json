@@ -360,6 +360,13 @@
             "How frequently (in minutes) to check branch changes. Set to `0` to avoid periodic checks.",
           "default": 5
         },
+        "svn.newsCommits.update": {
+          "type": "number",
+          "minimum": 0,
+          "description":
+            "How frequently (in minutes) to check news commits. Set to `0` to avoid periodic checks.",
+          "default": 5
+        },
         "svn.multipleFolders.enabled": {
           "type": "boolean",
           "description": "Allow to find subfolders using SVN",

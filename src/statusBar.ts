@@ -1,4 +1,11 @@
-import { window, StatusBarItem, Disposable, EventEmitter, Event } from "vscode";
+import {
+  window,
+  StatusBarItem,
+  Disposable,
+  EventEmitter,
+  Event,
+  Command
+} from "vscode";
 import { Repository } from "./repository";
 
 export class SvnStatusBar {
@@ -24,20 +31,41 @@ export class SvnStatusBar {
       null,
       this.disposables
     );
+    repository.onDidChangeNewsCommit(
+      this._onDidChange.fire,
+      this._onDidChange,
+      this.disposables
+    );
   }
 
-  get commands() {
-    const icon = this.repository.isSwitchingBranch ? "sync~spin" : "git-branch";
-    const title = `$(${icon}) ${this.repository.currentBranch}`;
+  get commands(): Command[] {
+    const result: Command[] = [];
 
-    return [
-      {
+    if (this.repository.currentBranch) {
+      const icon = this.repository.isSwitchingBranch
+        ? "sync~spin"
+        : "git-branch";
+      result.push({
         command: "svn.switchBranch",
         tooltip: "switch branch",
-        title,
+        title: `$(${icon}) ${this.repository.currentBranch}`,
         arguments: [this.repository]
-      }
-    ];
+      });
+    }
+
+    const icon = this.repository.isUpdatingRevision ? "sync~spin" : "sync";
+    const title =
+      this.repository.newsCommit > 0
+        ? `${this.repository.newsCommit} news commits`
+        : "Updated";
+
+    result.push({
+      command: "svn.update",
+      tooltip: "Update Revision",
+      title: `$(${icon}) ${title}`,
+      arguments: [this.repository]
+    });
+    return result;
   }
 
   dispose(): void {

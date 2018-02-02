@@ -254,8 +254,8 @@ export class Svn {
     return this.exec("", ["ls", "--xml", filePath]);
   }
 
-  info(path: string) {
-    return this.exec(path, ["info", "--xml"]);
+  info(path: string, revision: string = "BASE") {
+    return this.exec(path, ["info", "--xml", "-r", revision]);
   }
 
   copy(rootPath: string, branchPath: string, name: string) {
