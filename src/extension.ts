@@ -1,4 +1,10 @@
-import { ExtensionContext, Disposable, workspace, window } from "vscode";
+import {
+  ExtensionContext,
+  Disposable,
+  workspace,
+  window,
+  commands
+} from "vscode";
 import { Svn } from "./svn";
 import { SvnFinder } from "./svnFinder";
 import { SvnContentProvider } from "./svnContentProvider";
@@ -26,7 +32,7 @@ async function init(context: ExtensionContext, disposables: Disposable[]) {
   const svn = new Svn({ svnPath: info.path, version: info.version });
   const model = new Model(svn);
   const contentProvider = new SvnContentProvider(model);
-  const commands = new SvnCommands(model);
+  const svnCommands = new SvnCommands(model);
   disposables.push(model, contentProvider);
 
   // First, check the vscode has support to DecorationProvider
@@ -36,6 +42,15 @@ async function init(context: ExtensionContext, disposables: Disposable[]) {
       disposables.push(decoration);
     });
   }
+  const onRepository = () =>
+    commands.executeCommand(
+      "setContext",
+      "svnOpenRepositoryCount",
+      `${model.repositories.length}`
+    );
+  model.onDidOpenRepository(onRepository, null, disposables);
+  model.onDidCloseRepository(onRepository, null, disposables);
+  onRepository();
 
   outputChannel.appendLine("Using svn " + info.version + " from " + info.path);
 
