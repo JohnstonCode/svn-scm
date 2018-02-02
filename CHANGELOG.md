@@ -1,3 +1,9 @@
+# **v1.14.1**
+
+## Changes
+
+* @edgardmessias Added changelist icon
+
 # **v1.14.0**
 
 ## What's New
