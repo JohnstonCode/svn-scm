@@ -1,3 +1,9 @@
+# **v1.15.0**
+
+## What's New
+
+* @edgardmessias Added in StatusBar notification of news commits
+
 # **v1.14.1**
 
 ## Changes
