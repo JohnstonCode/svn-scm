@@ -104,7 +104,7 @@ suite("Repository Tests", () => {
     await repository.addFile(file);
 
     await repository.update();
-    await testUtil.delay(1500); //Wait the debounce time
+    await testUtil.delay(1500); // Wait the debounce time
     assert.equal(repository.changes.resourceStates.length, 1);
 
     const message = await repository.repository.commitFiles("First Commit", [
@@ -113,7 +113,7 @@ suite("Repository Tests", () => {
     assert.ok(/Committed revision (.*)\./i.test(message));
 
     await repository.update();
-    await testUtil.delay(1500); //Wait the debounce time
+    await testUtil.delay(1500); // Wait the debounce time
     assert.equal(repository.changes.resourceStates.length, 0);
 
     const remoteContent = await repository.show(file, "HEAD");

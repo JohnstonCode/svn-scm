@@ -64,15 +64,39 @@ If you use [TortoiseSVN](https://tortoisesvn.net/), make sure the option
 * Commit changes/changelists
 * See commit messages
 
+## Experimental
+
+### * SVN Status in File Explorer (See #34)
+How to enable:
+* Open the file: `<vscode path>\resources\app\product.json`
+* Find `extensionAllowedProposedApi`
+* Append `"johnstoncode.svn-scm"` in the array
+
+Example:
+```json
+// FROM
+{
+  "extensionAllowedProposedApi": [
+    "ms-vsliveshare.vsliveshare"
+  ]
+}
+// TO
+{
+  "extensionAllowedProposedApi": [
+    "ms-vsliveshare.vsliveshare", "johnstoncode.svn-scm"
+  ]
+}
+```
+
 ## Settings
 
 `svn.enabled`
   * Enables Svn as a SCM in VS Code.  
   `"default"` &mdash; `true`
 
-`svn.path`
-  * Path to the svn executable  
-  `"default"` &mdash; `null`
+`svn.decorations.enabled`
+  * Controls if SVN contributes colors and badges to the explorer and the open (VSCode >= 1.18 with proposed-api enabled)
+  `"default"` &mdash; `true`
 
 `svn.diff.withHead`
   * Show diff changes using latest revision in the repository. Set false to use latest revision in local folder  

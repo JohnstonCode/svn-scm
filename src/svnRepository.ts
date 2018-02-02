@@ -12,8 +12,14 @@ export class Repository {
     public workspaceRoot: string
   ) {}
 
-  async getStatus(): Promise<IFileStatus[]> {
-    const result = await this.svn.exec(this.workspaceRoot, ["stat", "--xml"]);
+  async getStatus(includeIgnored: boolean = false): Promise<IFileStatus[]> {
+    let args = ["stat", "--xml"];
+
+    if (includeIgnored) {
+      args.push("--no-ignore");
+    }
+
+    const result = await this.svn.exec(this.workspaceRoot, args);
 
     return await parseStatusXml(result.stdout);
   }

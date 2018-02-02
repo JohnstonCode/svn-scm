@@ -11,7 +11,7 @@ import {
   Event,
   window
 } from "vscode";
-import { Resource } from "./resource";
+import { Resource, SvnResourceGroup } from "./resource";
 import { throttle, debounce } from "./decorators";
 import { Repository as BaseRepository } from "./svnRepository";
 import { SvnStatusBar } from "./statusBar";
@@ -21,15 +21,18 @@ import * as micromatch from "micromatch";
 import { setInterval, clearInterval } from "timers";
 import { toSvnUri } from "./uri";
 import { Status, PropStatus } from "./svn";
+import { IFileStatus } from "./statusParser";
 
 export class Repository {
   public watcher: FileSystemWatcher;
   public sourceControl: SourceControl;
-  public changes: SourceControlResourceGroup;
-  public unversioned: SourceControlResourceGroup;
-  public external: SourceControlResourceGroup;
-  public changelists: Map<string, SourceControlResourceGroup> = new Map();
-  public conflicts: SourceControlResourceGroup;
+  public changes: SvnResourceGroup;
+  public unversioned: SvnResourceGroup;
+  public external: SvnResourceGroup;
+  public changelists: Map<string, SvnResourceGroup> = new Map();
+  public conflicts: SvnResourceGroup;
+  public statusIgnored: IFileStatus[] = [];
+  public statusExternal: IFileStatus[] = [];
   private disposables: Disposable[] = [];
   public currentBranch = "";
   public isSwitchingBranch: boolean = false;
@@ -125,19 +128,22 @@ export class Repository {
     };
     updateBranchName();
 
-    this.changes = this.sourceControl.createResourceGroup("changes", "Changes");
+    this.changes = this.sourceControl.createResourceGroup(
+      "changes",
+      "Changes"
+    ) as SvnResourceGroup;
     this.unversioned = this.sourceControl.createResourceGroup(
       "unversioned",
       "Unversioned"
-    );
+    ) as SvnResourceGroup;
     this.external = this.sourceControl.createResourceGroup(
       "external",
       "External"
-    );
+    ) as SvnResourceGroup;
     this.conflicts = this.sourceControl.createResourceGroup(
       "conflicts",
       "conflicts"
-    );
+    ) as SvnResourceGroup;
 
     this.changes.hideWhenEmpty = true;
     this.unversioned.hideWhenEmpty = true;
@@ -178,7 +184,10 @@ export class Repository {
     let conflicts: any[] = [];
     let changelists: Map<string, Resource[]> = new Map();
 
-    const statuses = (await this.repository.getStatus()) || [];
+    this.statusExternal = [];
+    this.statusIgnored = [];
+
+    const statuses = (await this.repository.getStatus(true)) || [];
 
     const fileConfig = workspace.getConfiguration("files", Uri.file(this.root));
     const svnConfig = workspace.getConfiguration("svn");
@@ -211,7 +220,10 @@ export class Repository {
       if (status.status === Status.NORMAL && status.props === PropStatus.NONE) {
         // On commit, `svn status` return all locked files with status="normal" and props="none"
         return;
+      } else if (status.status === Status.IGNORED) {
+        this.statusIgnored.push(status);
       } else if (status.status === Status.EXTERNAL) {
+        this.statusExternal.push(status);
         external.push(resource);
       } else if (status.status === Status.CONFLICTED) {
         conflicts.push(resource);
@@ -259,7 +271,7 @@ export class Repository {
         group = this.sourceControl.createResourceGroup(
           `changelist-${changelist}`,
           `Changelist "${changelist}"`
-        );
+        ) as SvnResourceGroup;
         group.hideWhenEmpty = true;
 
         this.changelists.set(changelist, group);

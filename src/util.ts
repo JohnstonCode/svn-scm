@@ -1,4 +1,4 @@
-import { Event } from "vscode";
+import { Event, window } from "vscode";
 import { sep } from "path";
 
 export interface BaseDisposable {
@@ -92,4 +92,8 @@ export function camelcase(name: string) {
       return index === 0 ? letter.toLowerCase() : letter.toUpperCase();
     })
     .replace(/[\s\-]+/g, "");
+}
+
+export function hasSupportToDecorationProvider() {
+  return typeof window.registerDecorationProvider === "function";
 }

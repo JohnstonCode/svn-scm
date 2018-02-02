@@ -10,7 +10,7 @@ import { SvnFinder } from "./svnFinder";
 import { SvnContentProvider } from "./svnContentProvider";
 import { SvnCommands } from "./commands";
 import { Model } from "./model";
-import { toDisposable } from "./util";
+import { toDisposable, hasSupportToDecorationProvider } from "./util";
 
 async function init(context: ExtensionContext, disposables: Disposable[]) {
   const outputChannel = window.createOutputChannel("Svn");
@@ -35,6 +35,13 @@ async function init(context: ExtensionContext, disposables: Disposable[]) {
   const svnCommands = new SvnCommands(model);
   disposables.push(model, contentProvider);
 
+  // First, check the vscode has support to DecorationProvider
+  if (hasSupportToDecorationProvider()) {
+    import("./decorationProvider").then(provider => {
+      const decoration = new provider.SvnDecorations(model);
+      disposables.push(decoration);
+    });
+  }
   const onRepository = () =>
     commands.executeCommand(
       "setContext",
