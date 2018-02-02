@@ -38,6 +38,6 @@ script:
   - npm test --silent
 
 after_success:
-  - if [ "$TRAVIS_OS_NAME" == "linux" && "$CODE_VERSION" == "" ]; then
+  - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$CODE_VERSION" == "" ]; then
       bash <(curl -s https://codecov.io/bash)
     fi
