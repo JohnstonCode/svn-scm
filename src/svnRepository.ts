@@ -323,7 +323,7 @@ export class Repository {
     return result.stdout;
   }
 
-  async countNewsCommit(revision: string = "BASE:HEAD") {
+  async countNewCommits(revision: string = "BASE:HEAD") {
     const result = await this.svn.exec(this.workspaceRoot, [
       "log",
       "-r",

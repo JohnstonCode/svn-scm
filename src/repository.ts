@@ -40,7 +40,7 @@ export class Repository {
   public isUpdatingRevision: boolean = false;
   public branches: any[] = [];
   public branchesTimer: NodeJS.Timer;
-  public newsCommit: number = 0;
+  public newCommits: number = 0;
 
   private _onDidChangeRepository = new EventEmitter<Uri>();
   readonly onDidChangeRepository: Event<Uri> = this._onDidChangeRepository
@@ -52,8 +52,8 @@ export class Repository {
   private _onDidChangeBranch = new EventEmitter<void>();
   readonly onDidChangeBranch: Event<void> = this._onDidChangeBranch.event;
 
-  private _onDidChangeNewsCommit = new EventEmitter<void>();
-  readonly onDidChangeNewsCommit: Event<void> = this._onDidChangeNewsCommit
+  private _onDidChangeNewCommits = new EventEmitter<void>();
+  readonly onDidChangeNewCommits: Event<void> = this._onDidChangeNewCommits
     .event;
 
   get root(): string {
@@ -171,15 +171,15 @@ export class Repository {
       }, 1000 * 60 * updateFreq);
     }
 
-    const updateFreqNews = svnConfig.get<number>("svn.newsCommits.update");
-    if (updateFreqNews) {
+    const updateFreqNewCommits = svnConfig.get<number>("svn.newCommits.update");
+    if (updateFreqNewCommits) {
       setInterval(() => {
-        this.updateNewsCommits();
-      }, 1000 * 60 * updateFreqNews);
+        this.updateNewCommits();
+      }, 1000 * 60 * updateFreqNewCommits);
     }
 
     this.updateBranches();
-    this.updateNewsCommits();
+    this.updateNewCommits();
     this.update();
   }
 
@@ -193,11 +193,11 @@ export class Repository {
   }
 
   @debounce(1000)
-  async updateNewsCommits() {
-    const newsCommit = await this.repository.countNewsCommit();
-    if (newsCommit !== this.newsCommit) {
-      this.newsCommit = newsCommit;
-      this._onDidChangeNewsCommit.fire();
+  async updateNewCommits() {
+    const newCommits = await this.repository.countNewCommits();
+    if (newCommits !== this.newCommits) {
+      this.newCommits = newCommits;
+      this._onDidChangeNewCommits.fire();
     }
   }
 
@@ -385,7 +385,7 @@ export class Repository {
     this.isSwitchingBranch = false;
     this.updateBranches();
     this._onDidChangeBranch.fire();
-    this.updateNewsCommits()
+    this.updateNewCommits()
     return response;
   }
 
@@ -410,7 +410,7 @@ export class Repository {
       this.isSwitchingBranch = false;
       this.updateBranches();
       this._onDidChangeBranch.fire();
-      this.updateNewsCommits()
+      this.updateNewCommits()
     }
   }
 
@@ -418,7 +418,7 @@ export class Repository {
     this.isUpdatingRevision = true;
     const response = await this.repository.update();
     this.isUpdatingRevision = false;
-    this.updateNewsCommits();
+    this.updateNewCommits();
     return response;
   }
 

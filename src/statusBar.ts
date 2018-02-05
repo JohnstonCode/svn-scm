@@ -31,7 +31,7 @@ export class SvnStatusBar {
       null,
       this.disposables
     );
-    repository.onDidChangeNewsCommit(
+    repository.onDidChangeNewCommits(
       this._onDidChange.fire,
       this._onDidChange,
       this.disposables
@@ -55,9 +55,9 @@ export class SvnStatusBar {
 
     const icon = this.repository.isUpdatingRevision ? "sync~spin" : "sync";
     const title =
-      this.repository.newsCommit > 0
-        ? `${this.repository.newsCommit} news commits`
-        : "Updated";
+      this.repository.newCommits > 0
+        ? `${this.repository.newCommits} new commits`
+        : "No new commits";
 
     result.push({
       command: "svn.update",
