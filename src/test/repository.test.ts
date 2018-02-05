@@ -135,9 +135,7 @@ suite("Repository Tests", () => {
     if (!newRepository) return;
     assert.ok(newRepository);
 
-    const isSwitched = await newRepository.branch("test");
-    assert.ok(isSwitched);
-
+    await newRepository.branch("test");
     const currentBranch = await newRepository.getCurrentBranch();
 
     assert.equal(currentBranch, "test");
