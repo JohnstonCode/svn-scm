@@ -34,7 +34,8 @@ export enum PropStatus {
 
 export const SvnErrorCodes: { [key: string]: string } = {
   RepositoryIsLocked: "E155004",
-  NotASvnRepository: "E155007"
+  NotASvnRepository: "E155007",
+  NotShareCommonAncestry: "E195012"
 };
 
 function getSvnErrorCode(stderr: string): string | undefined {

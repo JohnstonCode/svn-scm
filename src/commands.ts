@@ -8,10 +8,11 @@ import {
   workspace,
   SourceControlResourceGroup,
   ViewColumn,
-  SourceControlResourceState
+  SourceControlResourceState,
+  ProgressLocation
 } from "vscode";
 import { inputCommitMessage } from "./messages";
-import { Svn, Status } from "./svn";
+import { Svn, Status, SvnErrorCodes } from "./svn";
 import { Model } from "./model";
 import { Repository } from "./repository";
 import { Resource } from "./resource";
@@ -84,7 +85,20 @@ class SwitchBranchItem implements QuickPickItem {
   }
 
   async run(repository: Repository): Promise<void> {
-    await repository.switchBranch(this.ref);
+    try {
+      await repository.switchBranch(this.ref);
+    } catch (error) {
+      if (error.svnErrorCode === SvnErrorCodes.NotShareCommonAncestry) {
+        window.showErrorMessage(
+          `Path '${
+            repository.workspaceRoot
+          }' does not share common version control ancestry with the requested switch location.`
+        );
+        return;
+      }
+
+      window.showErrorMessage("Unable to switch branch");
+    }
   }
 }
 
@@ -235,7 +249,7 @@ export class SvnCommands {
       );
       window.showInformationMessage(result);
       repository.inputBox.value = "";
-      repository.update();
+      repository.updateModelState();
     } catch (error) {
       console.error(error);
       window.showErrorMessage(error);
@@ -355,7 +369,7 @@ export class SvnCommands {
 
       const result = await repository.repository.commitFiles(message, paths);
       window.showInformationMessage(result);
-      repository.update();
+      repository.updateModelState();
     } catch (error) {
       console.error(error);
       window.showErrorMessage("Unable to commit");
@@ -364,8 +378,7 @@ export class SvnCommands {
 
   @command("svn.refresh", { repository: true })
   async refresh(repository: Repository) {
-    repository.update();
-    repository.updateBranches();
+    await repository.status();
   }
 
   @command("svn.openResourceBase")
@@ -635,12 +648,19 @@ export class SvnCommands {
 
   @command("svn.switchBranch", { repository: true })
   async switchBranch(repository: Repository) {
-    const branches = repository.branches.map(
-      branch => new SwitchBranchItem(branch)
+    const branchesPromise = repository.getBranches();
+
+    window.withProgress(
+      { location: ProgressLocation.Window, title: "Checking remote branches" },
+      () => branchesPromise
     );
+
+    const branches = await branchesPromise;
+
+    const branchPicks = branches.map(branch => new SwitchBranchItem(branch));
     const placeHolder = "Pick a branch to switch to.";
     const createBranch = new CreateBranchItem(this);
-    const picks = [createBranch, ...branches];
+    const picks = [createBranch, ...branchPicks];
 
     const choice = await window.showQuickPick(picks, { placeHolder });
 
@@ -755,7 +775,7 @@ export class SvnCommands {
       });
 
       const result = await repository.repository.removeFiles(paths, keepLocal);
-      repository.update();
+      repository.updateModelState();
     } catch (error) {
       console.error(error);
       window.showErrorMessage("Unable to remove files");
@@ -782,7 +802,15 @@ export class SvnCommands {
         return;
       }
 
-      await repository.resolve(conflict.resourceUri.path, choice.label);
+      try {
+        const response = await repository.resolve(
+          conflict.resourceUri.path,
+          choice.label
+        );
+        window.showInformationMessage(response);
+      } catch (error) {
+        window.showErrorMessage(error.stderr);
+      }
     }
   }
 

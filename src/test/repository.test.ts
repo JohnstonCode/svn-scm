@@ -99,12 +99,12 @@ suite("Repository Tests", () => {
 
     const file = path.join(checkoutDir.fsPath, "new.txt");
 
-    await repository.update();
+    await repository.updateModelState();
     fs.writeFileSync(file, "test");
 
     await repository.addFile(file);
 
-    await repository.update();
+    await repository.updateModelState();
     await timeout(1500); // Wait the debounce time
     assert.equal(repository.changes.resourceStates.length, 1);
 
@@ -113,7 +113,7 @@ suite("Repository Tests", () => {
     ]);
     assert.ok(/Committed revision (.*)\./i.test(message));
 
-    await repository.update();
+    await repository.updateModelState();
     await timeout(1500); // Wait the debounce time
     assert.equal(repository.changes.resourceStates.length, 0);
 

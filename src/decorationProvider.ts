@@ -96,8 +96,7 @@ class SvnDecorationProvider implements DecorationProvider {
   constructor(private repository: Repository) {
     this.disposables.push(
       window.registerDecorationProvider(this),
-      // repository.onDidRunOperation(this.onDidRunOperation, this)
-      repository.onDidChangeStatus(this.onDidRunOperation, this)
+      repository.onDidRunOperation(this.onDidRunOperation, this)
     );
   }
 

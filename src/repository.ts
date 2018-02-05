@@ -9,19 +9,101 @@ import {
   Disposable,
   EventEmitter,
   Event,
-  window
+  window,
+  ProgressLocation
 } from "vscode";
 import { Resource, SvnResourceGroup } from "./resource";
-import { throttle, debounce } from "./decorators";
+import { throttle, debounce, memoize } from "./decorators";
 import { Repository as BaseRepository } from "./svnRepository";
 import { SvnStatusBar } from "./statusBar";
-import { dispose, anyEvent, filterEvent, toDisposable } from "./util";
+import {
+  dispose,
+  anyEvent,
+  filterEvent,
+  toDisposable,
+  timeout,
+  eventToPromise
+} from "./util";
 import * as path from "path";
 import * as micromatch from "micromatch";
 import { setInterval, clearInterval } from "timers";
 import { toSvnUri } from "./uri";
-import { Status, PropStatus } from "./svn";
+import { Status, PropStatus, SvnErrorCodes } from "./svn";
 import { IFileStatus } from "./statusParser";
+
+export enum RepositoryState {
+  Idle,
+  Disposed
+}
+
+export enum Operation {
+  Add = "Add",
+  AddChangelist = "AddChangelist",
+  NewBranch = "NewBranch",
+  RemoveChangelist = "RemoveChangelist",
+  Resolve = "Resolve",
+  Show = "Show",
+  Status = "Status",
+  SwitchBranch = "SwitchBranch",
+  Update = "Update"
+}
+
+function isReadOnly(operation: Operation): boolean {
+  switch (operation) {
+    case Operation.Show:
+      return true;
+    default:
+      return false;
+  }
+}
+
+function shouldShowProgress(operation: Operation): boolean {
+  switch (operation) {
+    case Operation.Show:
+      return false;
+    default:
+      return true;
+  }
+}
+
+export interface Operations {
+  isIdle(): boolean;
+  isRunning(operation: Operation): boolean;
+}
+
+class OperationsImpl implements Operations {
+  private operations = new Map<Operation, number>();
+
+  start(operation: Operation): void {
+    this.operations.set(operation, (this.operations.get(operation) || 0) + 1);
+  }
+
+  end(operation: Operation): void {
+    const count = (this.operations.get(operation) || 0) - 1;
+
+    if (count <= 0) {
+      this.operations.delete(operation);
+    } else {
+      this.operations.set(operation, count);
+    }
+  }
+
+  isRunning(operation: Operation): boolean {
+    return this.operations.has(operation);
+  }
+
+  isIdle(): boolean {
+    const operations = this.operations.keys();
+
+    for (const operation of operations) {
+      if (!isReadOnly(operation)) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+}
 
 export class Repository {
   public watcher: FileSystemWatcher;
@@ -36,14 +118,14 @@ export class Repository {
   public statusExternal: IFileStatus[] = [];
   private disposables: Disposable[] = [];
   public currentBranch = "";
-  public isSwitchingBranch: boolean = false;
-  public isUpdatingRevision: boolean = false;
-  public branches: any[] = [];
-  public branchesTimer: NodeJS.Timer;
   public newsCommit: number = 0;
 
   private _onDidChangeRepository = new EventEmitter<Uri>();
   readonly onDidChangeRepository: Event<Uri> = this._onDidChangeRepository
+    .event;
+
+  private _onDidChangeState = new EventEmitter<RepositoryState>();
+  readonly onDidChangeState: Event<RepositoryState> = this._onDidChangeState
     .event;
 
   private _onDidChangeStatus = new EventEmitter<void>();
@@ -56,6 +138,41 @@ export class Repository {
   readonly onDidChangeNewsCommit: Event<void> = this._onDidChangeNewsCommit
     .event;
 
+  private _onRunOperation = new EventEmitter<Operation>();
+  readonly onRunOperation: Event<Operation> = this._onRunOperation.event;
+
+  private _onDidRunOperation = new EventEmitter<Operation>();
+  readonly onDidRunOperation: Event<Operation> = this._onDidRunOperation.event;
+
+  @memoize
+  get onDidChangeOperations(): Event<void> {
+    return anyEvent(
+      this.onRunOperation as Event<any>,
+      this.onDidRunOperation as Event<any>
+    );
+  }
+
+  private _operations = new OperationsImpl();
+  get operations(): Operations {
+    return this._operations;
+  }
+
+  private _state = RepositoryState.Idle;
+  get state(): RepositoryState {
+    return this._state;
+  }
+  set state(state: RepositoryState) {
+    this._state = state;
+    this._onDidChangeState.fire(state);
+
+    this.changes.resourceStates = [];
+    this.unversioned.resourceStates = [];
+    this.external.resourceStates = [];
+    this.conflicts.resourceStates = [];
+    this.changelists.forEach((group, changelist) => {
+      group.resourceStates = [];
+    });
+  }
   get root(): string {
     return this.repository.root;
   }
@@ -86,7 +203,8 @@ export class Repository {
       onRepositoryChange,
       uri => !/[\\\/]\.svn[\\\/]tmp/.test(uri.path)
     );
-    onRelevantRepositoryChange(this.update, this, this.disposables);
+
+    onRelevantRepositoryChange(this.onFSChange, this, this.disposables);
 
     const onRelevantSvnChange = filterEvent(onRelevantRepositoryChange, uri =>
       /[\\\/]\.svn[\\\/]/.test(uri.path)
@@ -95,16 +213,6 @@ export class Repository {
     onRelevantSvnChange(
       this._onDidChangeRepository.fire,
       this._onDidChangeRepository,
-      this.disposables
-    );
-
-    this.onDidChangeRepository(
-      async () => {
-        if (!this.isSwitchingBranch) {
-          this.currentBranch = await this.getCurrentBranch();
-        }
-      },
-      null,
       this.disposables
     );
 
@@ -129,13 +237,6 @@ export class Repository {
       this.disposables
     );
 
-    const updateBranchInfo = async () => {
-      this.currentBranch = await this.getCurrentBranch();
-      this.sourceControl.statusBarCommands = this.statusBar.commands;
-    };
-    this.onDidChangeStatus(updateBranchInfo);
-    updateBranchInfo();
-
     this.changes = this.sourceControl.createResourceGroup(
       "changes",
       "Changes"
@@ -158,18 +259,7 @@ export class Repository {
     this.external.hideWhenEmpty = true;
     this.conflicts.hideWhenEmpty = true;
 
-    this.disposables.push(
-      toDisposable(() => clearInterval(this.branchesTimer))
-    );
-
     const svnConfig = workspace.getConfiguration("svn");
-    const updateFreq = svnConfig.get<number>("branch.update");
-
-    if (updateFreq) {
-      setInterval(() => {
-        this.updateBranches();
-      }, 1000 * 60 * updateFreq);
-    }
 
     const updateFreqNews = svnConfig.get<number>("svn.newsCommits.update");
     if (updateFreqNews) {
@@ -178,18 +268,8 @@ export class Repository {
       }, 1000 * 60 * updateFreqNews);
     }
 
-    this.updateBranches();
     this.updateNewsCommits();
-    this.update();
-  }
-
-  @debounce(1000)
-  async updateBranches() {
-    try {
-      this.branches = await this.repository.getBranches();
-    } catch (error) {
-      console.error(error);
-    }
+    this.status();
   }
 
   @debounce(1000)
@@ -201,8 +281,55 @@ export class Repository {
     }
   }
 
+  private onFSChange(uri: Uri): void {
+    const config = workspace.getConfiguration("svn");
+    const autorefresh = config.get<boolean>("autorefresh");
+
+    if (!autorefresh) {
+      return;
+    }
+
+    if (!this.operations.isIdle()) {
+      return;
+    }
+
+    this.eventuallyUpdateWhenIdleAndWait();
+  }
+
   @debounce(1000)
-  async update() {
+  private eventuallyUpdateWhenIdleAndWait(): void {
+    this.updateWhenIdleAndWait();
+  }
+
+  @throttle
+  private async updateWhenIdleAndWait(): Promise<void> {
+    await this.whenIdleAndFocused();
+    await this.status();
+    await timeout(5000);
+  }
+
+  async whenIdleAndFocused(): Promise<void> {
+    while (true) {
+      if (!this.operations.isIdle()) {
+        await eventToPromise(this.onDidRunOperation);
+        continue;
+      }
+
+      if (!window.state.focused) {
+        const onDidFocusWindow = filterEvent(
+          window.onDidChangeWindowState,
+          e => e.focused
+        );
+        await eventToPromise(onDidFocusWindow);
+        continue;
+      }
+
+      return;
+    }
+  }
+
+  @throttle
+  async updateModelState() {
     let changes: any[] = [];
     let unversioned: any[] = [];
     let external: any[] = [];
@@ -313,6 +440,8 @@ export class Repository {
 
     this._onDidChangeStatus.fire();
 
+    this.currentBranch = await this.repository.getCurrentBranch();
+
     return Promise.resolve();
   }
 
@@ -352,26 +481,41 @@ export class Repository {
     return toSvnUri(uri, "");
   }
 
-  show(filePath: string, revision?: string): Promise<string> {
-    return this.repository.show(filePath, revision, {
-      cwd: this.workspaceRoot
+  async getBranches() {
+    try {
+      return await this.repository.getBranches();
+    } catch (error) {
+      return [];
+    }
+  }
+
+  @throttle
+  async status() {
+    return this.run(Operation.Status);
+  }
+
+  async show(filePath: string, revision?: string): Promise<string> {
+    return this.run<string>(Operation.Show, () => {
+      return this.repository.show(filePath, revision);
     });
   }
 
-  addFile(filePath: string) {
-    return this.repository.addFile(filePath);
+  async addFile(filePath: string) {
+    return await this.run(Operation.Add, () =>
+      this.repository.addFile(filePath)
+    );
   }
 
-  addChangelist(filePath: string, changelist: string) {
-    return this.repository.addChangelist(filePath, changelist);
+  async addChangelist(filePath: string, changelist: string) {
+    return await this.run(Operation.AddChangelist, () =>
+      this.repository.addChangelist(filePath, changelist)
+    );
   }
 
-  removeChangelist(changelist: string) {
-    return this.repository.removeChangelist(changelist);
-  }
-
-  dispose(): void {
-    this.disposables = dispose(this.disposables);
+  async removeChangelist(changelist: string) {
+    return await this.run(Operation.RemoveChangelist, () =>
+      this.repository.removeChangelist(changelist)
+    );
   }
 
   getCurrentBranch() {
@@ -379,55 +523,94 @@ export class Repository {
   }
 
   async branch(name: string) {
-    this.isSwitchingBranch = true;
-    this._onDidChangeBranch.fire();
-    const response = await this.repository.branch(name);
-    this.isSwitchingBranch = false;
-    this.updateBranches();
-    this._onDidChangeBranch.fire();
-    this.updateNewsCommits()
-    return response;
+    return await this.run(Operation.NewBranch, async () => {
+      await this.repository.branch(name);
+      this.updateNewsCommits();
+    });
   }
 
   async switchBranch(name: string) {
-    this.isSwitchingBranch = true;
-    this._onDidChangeBranch.fire();
-
-    try {
-      const response = await this.repository.switchBranch(name);
-    } catch (error) {
-      if (/E195012/.test(error)) {
-        window.showErrorMessage(
-          `Path '${
-            this.workspaceRoot
-          }' does not share common version control ancestry with the requested switch location.`
-        );
-        return;
-      }
-
-      window.showErrorMessage("Unable to switch branch");
-    } finally {
-      this.isSwitchingBranch = false;
-      this.updateBranches();
-      this._onDidChangeBranch.fire();
-      this.updateNewsCommits()
-    }
+    await this.run(Operation.SwitchBranch, async () => {
+      await this.repository.switchBranch(name);
+      this.updateNewsCommits();
+    });
   }
 
-  async updateRevision() {
-    this.isUpdatingRevision = true;
-    const response = await this.repository.update();
-    this.isUpdatingRevision = false;
-    this.updateNewsCommits();
-    return response;
+  async updateRevision(): Promise<string> {
+    return await this.run<string>(Operation.Update, async () => {
+      const response = await this.repository.update();
+      this.updateNewsCommits();
+      return response;
+    });
   }
 
   async resolve(file: string, action: string) {
-    try {
-      const response = await this.repository.resolve(file, action);
-      window.showInformationMessage(response);
-    } catch (error) {
-      window.showErrorMessage(error);
+    return await this.run(Operation.Resolve, () =>
+      this.repository.resolve(file, action)
+    );
+  }
+
+  private async run<T>(
+    operation: Operation,
+    runOperation: () => Promise<T> = () => Promise.resolve<any>(null)
+  ): Promise<T> {
+    if (this.state !== RepositoryState.Idle) {
+      throw new Error("Repository not initialized");
     }
+
+    const run = async () => {
+      this._operations.start(operation);
+      this._onRunOperation.fire(operation);
+
+      try {
+        const result = await this.retryRun(runOperation);
+
+        if (!isReadOnly(operation)) {
+          await this.updateModelState();
+        }
+
+        return result;
+      } catch (err) {
+        if (err.svnErrorCode === SvnErrorCodes.NotASvnRepository) {
+          this.state = RepositoryState.Disposed;
+        }
+
+        throw err;
+      } finally {
+        this._operations.end(operation);
+        this._onDidRunOperation.fire(operation);
+      }
+    };
+
+    return shouldShowProgress(operation)
+      ? window.withProgress({ location: ProgressLocation.SourceControl }, run)
+      : run();
+  }
+
+  private async retryRun<T>(
+    runOperation: () => Promise<T> = () => Promise.resolve<any>(null)
+  ): Promise<T> {
+    let attempt = 0;
+
+    while (true) {
+      try {
+        attempt++;
+        return await runOperation();
+      } catch (err) {
+        if (
+          err.svnErrorCode === SvnErrorCodes.RepositoryIsLocked &&
+          attempt <= 10
+        ) {
+          // quatratic backoff
+          await timeout(Math.pow(attempt, 2) * 50);
+        } else {
+          throw err;
+        }
+      }
+    }
+  }
+
+  dispose(): void {
+    this.disposables = dispose(this.disposables);
   }
 }

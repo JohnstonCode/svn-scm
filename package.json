@@ -317,6 +317,11 @@
           "description": "Whether svn is enabled",
           "default": true
         },
+        "svn.autorefresh": {
+          "type": "boolean",
+          "description": "Whether auto refreshing is enabled",
+          "default": true
+        },
         "svn.decorations.enabled": {
           "type": "boolean",
           "description":
@@ -358,13 +363,6 @@
           "minimum": 0,
           "description":
             "How frequently (in minutes) to check branch changes. Set to `0` to avoid periodic checks.",
-          "default": 5
-        },
-        "svn.newsCommits.update": {
-          "type": "number",
-          "minimum": 0,
-          "description":
-            "How frequently (in minutes) to check news commits. Set to `0` to avoid periodic checks.",
           "default": 5
         },
         "svn.multipleFolders.enabled": {
