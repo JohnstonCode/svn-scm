@@ -82,7 +82,20 @@
       {
         "command": "svn.commit",
         "title": "Commit Selected",
-        "category": "SVN"
+        "category": "SVN",
+        "icon": {
+          "light": "icons/light/check.svg",
+          "dark": "icons/dark/check.svg"
+        }
+      },
+      {
+        "command": "svn.commitWithMessage",
+        "title": "Commit Changes",
+        "category": "SVN",
+        "icon": {
+          "light": "icons/light/check.svg",
+          "dark": "icons/dark/check.svg"
+        }
       },
       {
         "command": "svn.openChangeBase",
@@ -137,12 +150,12 @@
       },
       {
         "command": "svn.update",
-        "title": "Svn update",
+        "title": "Update",
         "category": "SVN"
       },
       {
         "command": "svn.patch",
-        "title": "Svn patch",
+        "title": "Show diff patch",
         "category": "SVN"
       },
       {
@@ -178,13 +191,34 @@
         {
           "command": "svn.openChangeHead",
           "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
+        },
+        {
+          "command": "svn.addChangelist",
+          "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
+        },
+        {
+          "command": "svn.removeChangelist",
+          "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
+        },
+        {
+          "command": "svn.commit",
+          "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
+        },
+        {
+          "command": "svn.commitWithMessage",
+          "when": "false"
         }
       ],
       "scm/title": [
         {
+          "command": "svn.commitWithMessage",
+          "group": "navigation",
+          "when": "config.svn.enabled && scmProvider == svn"
+        },
+        {
           "command": "svn.refresh",
           "group": "navigation",
-          "when": "scmProvider == svn"
+          "when": "config.svn.enabled && scmProvider == svn"
         },
         {
           "command": "svn.switchBranch",

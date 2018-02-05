@@ -512,13 +512,13 @@ export class Repository {
     );
   }
 
-  async addChangelist(filePath: string, changelist: string) {
+  async addChangelist(filePaths: string | string[], changelist: string) {
     return await this.run(Operation.AddChangelist, () =>
-      this.repository.addChangelist(filePath, changelist)
+      this.repository.addChangelist(filePaths, changelist)
     );
   }
 
-  async removeChangelist(changelist: string) {
+  async removeChangelist(changelist: string | string[]) {
     return await this.run(Operation.RemoveChangelist, () =>
       this.repository.removeChangelist(changelist)
     );

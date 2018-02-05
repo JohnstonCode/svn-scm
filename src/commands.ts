@@ -269,106 +269,163 @@ export class SvnCommands {
   }
 
   @command("svn.addChangelist")
-  async addChangelist(resource: Resource) {
-    const repository = this.model.getRepository(resource.resourceUri.fsPath);
+  async addChangelist(
+    ...resourceStates: SourceControlResourceState[]
+  ): Promise<void> {
+    if (
+      resourceStates.length === 0 ||
+      !(resourceStates[0].resourceUri instanceof Uri)
+    ) {
+      const resource = this.getSCMResource();
 
-    if (!repository) {
-      return;
-    }
-
-    const picks: QuickPickItem[] = [];
-
-    repository.changelists.forEach((group, changelist) => {
-      if (group.resourceStates.length) {
-        picks.push(new ChangeListItem(group));
-      }
-    });
-    picks.push(new NewChangeListItem());
-
-    const selectedChoice: any = await window.showQuickPick(picks, {});
-    if (!selectedChoice) {
-      return;
-    }
-
-    let changelistName = "";
-
-    if (selectedChoice instanceof NewChangeListItem) {
-      const newChangelistName = await window.showInputBox();
-      if (!newChangelistName) {
+      if (!resource) {
         return;
       }
-      changelistName = newChangelistName;
-    } else if (selectedChoice instanceof ChangeListItem) {
-      changelistName = selectedChoice.resourceGroup.id.replace(
-        /^changelist-/,
-        ""
-      );
-    } else {
-      return;
+
+      resourceStates = [resource];
     }
 
-    try {
-      await repository.addChangelist(
-        resource.resourceUri.fsPath,
-        changelistName
-      );
-    } catch (error) {
-      console.log(error);
-      window.showErrorMessage(
-        `Unable to add file "${
-          resource.resourceUri.fsPath
-        }" to changelist "${changelistName}"`
-      );
-    }
+    const selection = resourceStates.filter(
+      s => s instanceof Resource
+    ) as Resource[];
+
+    const uris = selection.map(resource => resource.resourceUri);
+
+    await this.runByRepository(uris, async (repository, resources) => {
+      if (!repository) {
+        return;
+      }
+
+      const picks: QuickPickItem[] = [];
+
+      repository.changelists.forEach((group, changelist) => {
+        if (group.resourceStates.length) {
+          picks.push(new ChangeListItem(group));
+        }
+      });
+      picks.push(new NewChangeListItem());
+
+      const selectedChoice: any = await window.showQuickPick(picks, {});
+      if (!selectedChoice) {
+        return;
+      }
+
+      let changelistName = "";
+
+      if (selectedChoice instanceof NewChangeListItem) {
+        const newChangelistName = await window.showInputBox();
+        if (!newChangelistName) {
+          return;
+        }
+        changelistName = newChangelistName;
+      } else if (selectedChoice instanceof ChangeListItem) {
+        changelistName = selectedChoice.resourceGroup.id.replace(
+          /^changelist-/,
+          ""
+        );
+      } else {
+        return;
+      }
+
+      const paths = resources.map(resource => resource.fsPath);
+
+      try {
+        await repository.addChangelist(paths, changelistName);
+      } catch (error) {
+        console.log(error);
+        window.showErrorMessage(
+          `Unable to add file 
+          "${paths.join(",")}" to changelist "${changelistName}"`
+        );
+      }
+    });
   }
 
   @command("svn.removeChangelist")
-  async removeChangelist(resource: Resource) {
-    const repository = this.model.getRepository(resource.resourceUri.fsPath);
-
-    if (!repository) {
-      return;
-    }
-
-    try {
-      await repository.removeChangelist(resource.resourceUri.fsPath);
-    } catch (error) {
-      console.log(error);
-      window.showErrorMessage(
-        `Unable to remove file "${resource.resourceUri.fsPath}" from changelist`
-      );
-    }
-  }
-
-  @command("svn.commit", { repository: true })
-  async commit(
-    repository: Repository,
-    ...resourceStates: Resource[]
+  async removeChangelist(
+    ...resourceStates: SourceControlResourceState[]
   ): Promise<void> {
-    try {
-      const paths = resourceStates.map(state => {
-        return state.resourceUri.fsPath;
-      });
+    if (
+      resourceStates.length === 0 ||
+      !(resourceStates[0].resourceUri instanceof Uri)
+    ) {
+      const resource = this.getSCMResource();
 
-      // If files is renamed, the commit need previous file
-      resourceStates.forEach(state => {
-        if (state.type === Status.ADDED && state.renameResourceUri) {
-          paths.push(state.renameResourceUri.fsPath);
-        }
-      });
-
-      const message = await inputCommitMessage();
-
-      if (message === undefined) {
+      if (!resource) {
         return;
       }
 
-      const result = await repository.commitFiles(message, paths);
-      window.showInformationMessage(result);
-    } catch (error) {
-      console.error(error);
-      window.showErrorMessage("Unable to commit");
+      resourceStates = [resource];
     }
+
+    const selection = resourceStates.filter(
+      s => s instanceof Resource
+    ) as Resource[];
+
+    const uris = selection.map(resource => resource.resourceUri);
+
+    await this.runByRepository(uris, async (repository, resources) => {
+      if (!repository) {
+        return;
+      }
+
+      const paths = resources.map(resource => resource.fsPath);
+
+      try {
+        await repository.removeChangelist(paths);
+      } catch (error) {
+        console.log(error);
+        window.showErrorMessage(
+          `Unable to remove file "${paths.join(",")}" from changelist`
+        );
+      }
+    });
+  }
+
+  @command("svn.commit")
+  async commit(...resources: SourceControlResourceState[]): Promise<void> {
+    if (resources.length === 0 || !(resources[0].resourceUri instanceof Uri)) {
+      const resource = this.getSCMResource();
+
+      if (!resource) {
+        return;
+      }
+
+      resources = [resource];
+    }
+
+    const selection = resources.filter(
+      s => s instanceof Resource
+    ) as Resource[];
+
+    const uris = selection.map(resource => resource.resourceUri);
+    selection.forEach(resource => {
+      if (resource.type === Status.ADDED && resource.renameResourceUri) {
+        uris.push(resource.renameResourceUri);
+      }
+    });
+
+    await this.runByRepository(uris, async (repository, resources) => {
+      if (!repository) {
+        return;
+      }
+
+      const paths = resources.map(resource => resource.fsPath);
+
+      try {
+        const message = await inputCommitMessage();
+
+        if (message === undefined) {
+          return;
+        }
+
+        const result = await repository.commitFiles(message, paths);
+        window.showInformationMessage(result);
+      } catch (error) {
+        console.error(error);
+        window.showErrorMessage("Unable to commit");
+      }
+    });
   }
 
   @command("svn.refresh", { repository: true })

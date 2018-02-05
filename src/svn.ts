@@ -257,14 +257,23 @@ export class Svn {
     return this.exec("", ["add", path]);
   }
 
-  addChangelist(path: string, changelist: string) {
-    path = path.replace(/\\/g, "/");
-    return this.exec("", ["changelist", changelist, path]);
+  addChangelist(filePaths: string | string[], changelist: string) {
+    if (!Array.isArray(filePaths)) {
+      filePaths = [filePaths];
+    }
+
+    filePaths = filePaths.map(path => path.replace(/\\/g, "/"));
+
+    return this.exec("", ["changelist", changelist, ...filePaths]);
   }
 
-  removeChangelist(path: string) {
-    path = path.replace(/\\/g, "/");
-    return this.exec("", ["changelist", path, "--remove"]);
+  removeChangelist(filePaths: string | string[]) {
+    if (!Array.isArray(filePaths)) {
+      filePaths = [filePaths];
+    }
+
+    filePaths = filePaths.map(path => path.replace(/\\/g, "/"));
+    return this.exec("", ["changelist", ...filePaths, "--remove"]);
   }
 
   show(path: string, revision?: string, options: CpOptions = {}) {

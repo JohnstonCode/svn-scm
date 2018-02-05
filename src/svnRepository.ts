@@ -71,12 +71,12 @@ export class Repository {
     return this.svn.add(filePath);
   }
 
-  addChangelist(filePath: string, changelist: string) {
-    return this.svn.addChangelist(filePath, changelist);
+  addChangelist(filePaths: string | string[], changelist: string) {
+    return this.svn.addChangelist(filePaths, changelist);
   }
 
-  removeChangelist(filePath: string) {
-    return this.svn.removeChangelist(filePath);
+  removeChangelist(filePaths: string | string[]) {
+    return this.svn.removeChangelist(filePaths);
   }
 
   async getCurrentBranch(): Promise<string> {
