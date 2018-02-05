@@ -1,4 +1,4 @@
-import { workspace } from "vscode";
+import { workspace, Uri } from "vscode";
 import { Svn, CpOptions } from "./svn";
 import { IFileStatus, parseStatusXml } from "./statusParser";
 import { parseInfoXml, ISvnInfo } from "./infoParser";
@@ -240,7 +240,7 @@ export class Repository {
     return true;
   }
 
-  async revert(files: any[]) {
+  async revert(files: Uri[] | string[]) {
     const result = await this.svn.revert(files);
 
     return result.stdout;

@@ -39,9 +39,14 @@ export enum RepositoryState {
 export enum Operation {
   Add = "Add",
   AddChangelist = "AddChangelist",
+  Commit = "Commit",
+  Log = "Log",
   NewBranch = "NewBranch",
+  Patch = "Patch",
+  Remove = "Remove",
   RemoveChangelist = "RemoveChangelist",
   Resolve = "Resolve",
+  Revert = "Revert",
   Show = "Show",
   Status = "Status",
   SwitchBranch = "SwitchBranch",
@@ -50,6 +55,7 @@ export enum Operation {
 
 function isReadOnly(operation: Operation): boolean {
   switch (operation) {
+    case Operation.Log:
     case Operation.Show:
       return true;
     default:
@@ -548,6 +554,32 @@ export class Repository {
     return await this.run(Operation.Resolve, () =>
       this.repository.resolve(file, action)
     );
+  }
+
+  async commitFiles(message: string, files: any[]) {
+    return await this.run(Operation.Commit, () =>
+      this.repository.commitFiles(message, files)
+    );
+  }
+
+  async revert(files: Uri[] | string[]) {
+    return await this.run(Operation.Revert, () =>
+      this.repository.revert(files)
+    );
+  }
+
+  async patch() {
+    return await this.run(Operation.Patch, () => this.repository.patch());
+  }
+
+  async removeFiles(files: any[], keepLocal: boolean) {
+    return await this.run(Operation.Remove, () =>
+      this.repository.removeFiles(files, keepLocal)
+    );
+  }
+
+  async log() {
+    return await this.run(Operation.Log, () => this.repository.log());
   }
 
   private async run<T>(

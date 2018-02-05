@@ -308,10 +308,10 @@ export class Model {
       throw new Error("There are no available repositories");
     }
 
-    const picks: any[] = this.openRepositories.map(repository => {
+    const picks: any[] = this.repositories.map(repository => {
       return {
-        label: path.basename(repository.repository.root),
-        repository: repository.repository
+        label: path.basename(repository.root),
+        repository: repository
       };
     });
     const placeHolder = "Choose a repository";

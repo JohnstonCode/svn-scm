@@ -317,7 +317,7 @@ export class Svn {
     return this.exec(root, ["switch", path]);
   }
 
-  revert(files: any[]) {
+  revert(files: Uri[] | string[]) {
     let args = ["revert"];
 
     for (let file of files) {

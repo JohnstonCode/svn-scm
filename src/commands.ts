@@ -243,13 +243,9 @@ export class SvnCommands {
     });
 
     try {
-      const result = await repository.repository.commitFiles(
-        message,
-        filePaths
-      );
+      const result = await repository.commitFiles(message, filePaths);
       window.showInformationMessage(result);
       repository.inputBox.value = "";
-      repository.updateModelState();
     } catch (error) {
       console.error(error);
       window.showErrorMessage(error);
@@ -367,9 +363,8 @@ export class SvnCommands {
         return;
       }
 
-      const result = await repository.repository.commitFiles(message, paths);
+      const result = await repository.commitFiles(message, paths);
       window.showInformationMessage(result);
-      repository.updateModelState();
     } catch (error) {
       console.error(error);
       window.showErrorMessage("Unable to commit");
@@ -711,7 +706,7 @@ export class SvnCommands {
       });
 
       await this.runByRepository(paths, async (repository, paths) =>
-        repository.repository.revert(paths)
+        repository.revert(paths)
       );
     } catch (error) {
       console.error(error);
@@ -733,7 +728,7 @@ export class SvnCommands {
   @command("svn.patch", { repository: true })
   async patch(repository: Repository) {
     try {
-      const result = await repository.repository.patch();
+      const result = await repository.patch();
       // send the patch results to a new tab
       workspace
         .openTextDocument({ language: "diff", content: result })
@@ -774,8 +769,7 @@ export class SvnCommands {
         return state.resourceUri.fsPath;
       });
 
-      const result = await repository.repository.removeFiles(paths, keepLocal);
-      repository.updateModelState();
+      const result = await repository.removeFiles(paths, keepLocal);
     } catch (error) {
       console.error(error);
       window.showErrorMessage("Unable to remove files");
@@ -817,7 +811,7 @@ export class SvnCommands {
   @command("svn.log", { repository: true })
   async log(repository: Repository) {
     try {
-      const result = await repository.repository.log();
+      const result = await repository.log();
       // send the log results to a new tab
       workspace.openTextDocument({ content: result }).then(doc => {
         window.showTextDocument(doc);
