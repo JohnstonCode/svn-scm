@@ -29,6 +29,13 @@ import { start } from "repl";
 import { getConflictPickOptions } from "./conflictItems";
 import { applyLineChanges } from "./lineChanges";
 import { IDisposable } from "./util";
+import {
+  getChangelistPickOptions,
+  inputSwitchChangelist,
+  ChangeListItem,
+  getCommitChangelistPickOptions,
+  inputCommitChangelist
+} from "./changelistItems";
 
 interface CommandOptions {
   repository?: boolean;
@@ -111,33 +118,6 @@ class SwitchBranchItem implements QuickPickItem {
   }
 }
 
-class ChangeListItem implements QuickPickItem {
-  constructor(protected group: SourceControlResourceGroup) {}
-
-  get label(): string {
-    return this.group.label;
-  }
-
-  get description(): string {
-    return this.group.label;
-  }
-  get resourceGroup(): SourceControlResourceGroup {
-    return this.group;
-  }
-}
-
-class NewChangeListItem implements QuickPickItem {
-  constructor() {}
-
-  get label(): string {
-    return "$(plus) New changelist";
-  }
-
-  get description(): string {
-    return "Create a new change list";
-  }
-}
-
 export class SvnCommands implements IDisposable {
   private disposables: Disposable[];
 
@@ -202,42 +182,7 @@ export class SvnCommands implements IDisposable {
       return;
     }
 
-    const picks: ChangeListItem[] = [];
-
-    if (repository.changes.resourceStates.length) {
-      picks.push(new ChangeListItem(repository.changes));
-    }
-
-    const svnConfig = workspace.getConfiguration("svn");
-    const ignoreOnCommitList = svnConfig.get<string[]>(
-      "sourceControl.ignoreOnCommit",
-      []
-    );
-
-    repository.changelists.forEach((group, changelist) => {
-      if (
-        group.resourceStates.length &&
-        !ignoreOnCommitList.includes(changelist)
-      ) {
-        picks.push(new ChangeListItem(group));
-      }
-    });
-
-    if (picks.length === 0) {
-      window.showInformationMessage("There are no changes to commit.");
-      return;
-    }
-
-    let choice;
-    // If has only changes, not prompt to select changelist
-    if (picks.length === 1 && repository.changes.resourceStates.length) {
-      choice = picks[0];
-    } else {
-      choice = await window.showQuickPick(picks, {
-        placeHolder: "Select a changelist to commit"
-      });
-    }
-
+    const choice = await inputCommitChangelist(repository);
     if (!choice) {
       return;
     }
@@ -310,34 +255,9 @@ export class SvnCommands implements IDisposable {
         return;
       }
 
-      const picks: QuickPickItem[] = [];
+      const changelistName = await inputSwitchChangelist(repository);
 
-      repository.changelists.forEach((group, changelist) => {
-        if (group.resourceStates.length) {
-          picks.push(new ChangeListItem(group));
-        }
-      });
-      picks.push(new NewChangeListItem());
-
-      const selectedChoice: any = await window.showQuickPick(picks, {});
-      if (!selectedChoice) {
-        return;
-      }
-
-      let changelistName = "";
-
-      if (selectedChoice instanceof NewChangeListItem) {
-        const newChangelistName = await window.showInputBox();
-        if (!newChangelistName) {
-          return;
-        }
-        changelistName = newChangelistName;
-      } else if (selectedChoice instanceof ChangeListItem) {
-        changelistName = selectedChoice.resourceGroup.id.replace(
-          /^changelist-/,
-          ""
-        );
-      } else {
+      if (!changelistName) {
         return;
       }
 

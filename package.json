@@ -304,13 +304,13 @@
         {
           "command": "svn.addChangelist",
           "when":
-            "config.svn.enabled && scmProvider == svn && scmResourceGroup != external",
+            "config.svn.enabled && scmProvider == svn && scmResourceGroup != unversioned && scmResourceGroup != external",
           "group": "inline"
         },
         {
           "command": "svn.addChangelist",
           "when":
-            "config.svn.enabled && scmProvider == svn && scmResourceGroup != external",
+            "config.svn.enabled && scmProvider == svn && scmResourceGroup != unversioned && scmResourceGroup != external",
           "group": "1_modification"
         },
         {
