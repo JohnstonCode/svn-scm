@@ -506,21 +506,21 @@ export class Repository {
     });
   }
 
-  async addFile(filePath: string | string[]) {
+  async addFiles(files: string[]) {
     return await this.run(Operation.Add, () =>
-      this.repository.addFile(filePath)
+      this.repository.addFiles(files)
     );
   }
 
-  async addChangelist(filePaths: string | string[], changelist: string) {
+  async addChangelist(files: string[], changelist: string) {
     return await this.run(Operation.AddChangelist, () =>
-      this.repository.addChangelist(filePaths, changelist)
+      this.repository.addChangelist(files, changelist)
     );
   }
 
-  async removeChangelist(changelist: string | string[]) {
+  async removeChangelist(files: string[]) {
     return await this.run(Operation.RemoveChangelist, () =>
-      this.repository.removeChangelist(changelist)
+      this.repository.removeChangelist(files)
     );
   }
 
@@ -562,7 +562,7 @@ export class Repository {
     );
   }
 
-  async revert(files: Uri[] | string[]) {
+  async revert(files: string[]) {
     return await this.run(Operation.Revert, () =>
       this.repository.revert(files)
     );

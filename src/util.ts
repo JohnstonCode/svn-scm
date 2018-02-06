@@ -65,6 +65,11 @@ export function eventToPromise<T>(event: Event<T>): Promise<T> {
   return new Promise<T>(c => onceEvent(event)(c));
 }
 
+const regexNormalizePath = new RegExp(sep === "/" ? "\\\\" : "/", "g");
+export function fixPathSeparator(file: string) {
+  return file.replace(regexNormalizePath, sep);
+}
+
 export function isDescendant(parent: string, descendant: string): boolean {
   parent = parent.replace(/[\\\/]/g, sep);
   descendant = descendant.replace(/[\\\/]/g, sep);

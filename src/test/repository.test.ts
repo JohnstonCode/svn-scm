@@ -101,7 +101,7 @@ suite("Repository Tests", () => {
 
     fs.writeFileSync(file, "test");
 
-    await repository.addFile(file);
+    await repository.addFiles([file]);
 
     await timeout(1500); // Wait the debounce time
     assert.equal(repository.changes.resourceStates.length, 1);

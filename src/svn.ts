@@ -6,6 +6,7 @@ import * as jschardet from "jschardet";
 import * as path from "path";
 import { Repository } from "./svnRepository";
 import { parseInfoXml } from "./infoParser";
+import { SpawnOptions } from "child_process";
 
 // List: https://github.com/apache/subversion/blob/1.6.x/subversion/svn/schema/status.rnc#L33
 export enum Status {
@@ -50,7 +51,7 @@ function getSvnErrorCode(stderr: string): string | undefined {
   return void 0;
 }
 
-export interface CpOptions {
+export interface CpOptions extends SpawnOptions {
   cwd?: string;
   encoding?: string;
   log?: boolean;
@@ -250,131 +251,5 @@ export class Svn {
 
   open(repositoryRoot: string, workspaceRoot: string): Repository {
     return new Repository(this, repositoryRoot, workspaceRoot);
-  }
-
-  add(filePaths: string | string[]) {
-    if (!Array.isArray(filePaths)) {
-      filePaths = [filePaths];
-    }
-
-    filePaths = filePaths.map(path => path.replace(/\\/g, "/"));
-    return this.exec("", ["add", ...filePaths]);
-  }
-
-  addChangelist(filePaths: string | string[], changelist: string) {
-    if (!Array.isArray(filePaths)) {
-      filePaths = [filePaths];
-    }
-
-    filePaths = filePaths.map(path => path.replace(/\\/g, "/"));
-
-    return this.exec("", ["changelist", changelist, ...filePaths]);
-  }
-
-  removeChangelist(filePaths: string | string[]) {
-    if (!Array.isArray(filePaths)) {
-      filePaths = [filePaths];
-    }
-
-    filePaths = filePaths.map(path => path.replace(/\\/g, "/"));
-    return this.exec("", ["changelist", ...filePaths, "--remove"]);
-  }
-
-  show(path: string, revision?: string, options: CpOptions = {}) {
-    const args = ["cat", path];
-
-    if (revision) {
-      args.push("-r", revision);
-    }
-
-    return this.exec("", args, options);
-  }
-
-  list(path: string) {
-    return this.exec("", ["ls", path]);
-  }
-
-  commit(message: string, files: any[]) {
-    let args = ["commit", "-m", message];
-
-    for (let file of files) {
-      args.push(file);
-    }
-
-    return this.exec("", args);
-  }
-
-  ls(filePath: string) {
-    return this.exec("", ["ls", "--xml", filePath]);
-  }
-
-  info(path: string, revision: string = "BASE") {
-    return this.exec(path, ["info", "--xml", "-r", revision]);
-  }
-
-  copy(rootPath: string, branchPath: string, name: string) {
-    return this.exec("", [
-      "copy",
-      rootPath,
-      branchPath,
-      "-m",
-      `Created new branch ${name}`
-    ]);
-  }
-
-  checkout(root: string, branchPath: string) {
-    return this.exec(root, ["checkout", branchPath]);
-  }
-
-  switchBranch(root: string, path: string) {
-    return this.exec(root, ["switch", path]);
-  }
-
-  revert(files: Uri[] | string[]) {
-    let args = ["revert"];
-
-    for (let file of files) {
-      if (file instanceof Uri) {
-        args.push(file.fsPath);
-      } else {
-        args.push(file);
-      }
-    }
-
-    return this.exec("", args);
-  }
-
-  update(root: string) {
-    return this.exec(root, ["update"]);
-  }
-
-  patch(root: string) {
-    return this.exec(root, ["diff"]);
-  }
-
-  remove(files: any[], keepLocal: boolean) {
-    let args = ["remove"];
-
-    if (keepLocal) {
-      args.push("--keep-local");
-    }
-
-    for (let file of files) {
-      if (file instanceof Uri) {
-        args.push(file.fsPath);
-      } else {
-        args.push(file);
-      }
-    }
-
-    return this.exec("", args);
-  }
-
-  resolve(file: string, action: string) {
-    return this.exec("", ["resolve", "--accept", action, file]);
-  }
-
-  log(rootPath: string, length: string) {
-    return this.exec(rootPath, ["log", "--limit", length]);
   }
 }

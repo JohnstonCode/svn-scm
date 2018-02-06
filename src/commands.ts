@@ -272,7 +272,7 @@ export class SvnCommands {
       const paths = resources.map(resource => resource.fsPath);
 
       try {
-        await repository.addFile(paths);
+        await repository.addFiles(paths);
       } catch (error) {
         console.log(error);
         window.showErrorMessage("Unable to add file");
