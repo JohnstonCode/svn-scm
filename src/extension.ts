@@ -33,7 +33,7 @@ async function init(context: ExtensionContext, disposables: Disposable[]) {
   const model = new Model(svn);
   const contentProvider = new SvnContentProvider(model);
   const svnCommands = new SvnCommands(model);
-  disposables.push(model, contentProvider);
+  disposables.push(model, contentProvider, svnCommands);
 
   // First, check the vscode has support to DecorationProvider
   if (hasSupportToDecorationProvider()) {
@@ -53,10 +53,6 @@ async function init(context: ExtensionContext, disposables: Disposable[]) {
   onRepository();
 
   outputChannel.appendLine("Using svn " + info.version + " from " + info.path);
-
-  context.subscriptions.push(
-    new Disposable(() => Disposable.from(...disposables).dispose())
-  );
 
   const onOutput = (str: string) => outputChannel.append(str);
   svn.onOutput.addListener("log", onOutput);

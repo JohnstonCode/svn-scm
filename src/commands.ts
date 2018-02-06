@@ -14,7 +14,8 @@ import {
   WorkspaceEdit,
   Range,
   Position,
-  TextEditor
+  TextEditor,
+  Disposable
 } from "vscode";
 import { inputCommitMessage } from "./messages";
 import { Svn, Status, SvnErrorCodes } from "./svn";
@@ -27,6 +28,7 @@ import * as path from "path";
 import { start } from "repl";
 import { getConflictPickOptions } from "./conflictItems";
 import { applyLineChanges } from "./lineChanges";
+import { IDisposable } from "./util";
 
 interface CommandOptions {
   repository?: boolean;
@@ -136,11 +138,11 @@ class NewChangeListItem implements QuickPickItem {
   }
 }
 
-export class SvnCommands {
-  private commands: any[] = [];
+export class SvnCommands implements IDisposable {
+  private disposables: Disposable[];
 
   constructor(private model: Model) {
-    Commands.map(({ commandId, method, options }) => {
+    this.disposables = Commands.map(({ commandId, method, options }) => {
       const command = this.createCommand(method, options);
       if (options.diff) {
         return commands.registerDiffInformationCommand(commandId, command);
@@ -1088,5 +1090,9 @@ export class SvnCommands {
     );
 
     return Promise.all(promises);
+  }
+
+  dispose(): void {
+    this.disposables.forEach(d => d.dispose());
   }
 }

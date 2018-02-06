@@ -156,7 +156,8 @@ export async function destroyPath(fullPath: string) {
 }
 
 export function destroyAllTempPaths() {
-  for (let path of tempDirList) {
+  let path;
+  while ((path = tempDirList.shift())) {
     destroyPath(path);
   }
 }

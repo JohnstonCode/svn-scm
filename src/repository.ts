@@ -137,9 +137,6 @@ export class Repository {
   private _onDidChangeStatus = new EventEmitter<void>();
   readonly onDidChangeStatus: Event<void> = this._onDidChangeStatus.event;
 
-  private _onDidChangeBranch = new EventEmitter<void>();
-  readonly onDidChangeBranch: Event<void> = this._onDidChangeBranch.event;
-
   private _onDidChangeNewsCommit = new EventEmitter<void>();
   readonly onDidChangeNewsCommit: Event<void> = this._onDidChangeNewsCommit
     .event;
@@ -265,13 +262,24 @@ export class Repository {
     this.external.hideWhenEmpty = true;
     this.conflicts.hideWhenEmpty = true;
 
+    this.disposables.push(this.changes);
+    this.disposables.push(this.unversioned);
+    this.disposables.push(this.external);
+    this.disposables.push(this.conflicts);
+
     const svnConfig = workspace.getConfiguration("svn");
 
     const updateFreqNews = svnConfig.get<number>("svn.newsCommits.update");
     if (updateFreqNews) {
-      setInterval(() => {
+      const interval = setInterval(() => {
         this.updateNewsCommits();
       }, 1000 * 60 * updateFreqNews);
+
+      this.disposables.push(
+        toDisposable(() => {
+          clearInterval(interval);
+        })
+      );
     }
 
     this.updateNewsCommits();
@@ -431,6 +439,7 @@ export class Repository {
           `Changelist "${changelist}"`
         ) as SvnResourceGroup;
         group.hideWhenEmpty = true;
+        this.disposables.push(group);
 
         this.changelists.set(changelist, group);
       }
@@ -507,9 +516,7 @@ export class Repository {
   }
 
   async addFiles(files: string[]) {
-    return await this.run(Operation.Add, () =>
-      this.repository.addFiles(files)
-    );
+    return await this.run(Operation.Add, () => this.repository.addFiles(files));
   }
 
   async addChangelist(files: string[], changelist: string) {

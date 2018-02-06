@@ -7,6 +7,7 @@ import * as path from "path";
 import { Repository } from "./svnRepository";
 import { parseInfoXml } from "./infoParser";
 import { SpawnOptions } from "child_process";
+import { IDisposable, toDisposable, dispose } from "./util";
 
 // List: https://github.com/apache/subversion/blob/1.6.x/subversion/svn/schema/status.rnc#L33
 export enum Status {
@@ -180,24 +181,46 @@ export class Svn {
 
     let process = cp.spawn(this.svnPath, args, options);
 
+    const disposables: IDisposable[] = [];
+
+    const once = (
+      ee: NodeJS.EventEmitter,
+      name: string,
+      fn: (...args: any[]) => void
+    ) => {
+      ee.once(name, fn);
+      disposables.push(toDisposable(() => ee.removeListener(name, fn)));
+    };
+
+    const on = (
+      ee: NodeJS.EventEmitter,
+      name: string,
+      fn: (...args: any[]) => void
+    ) => {
+      ee.on(name, fn);
+      disposables.push(toDisposable(() => ee.removeListener(name, fn)));
+    };
+
     let [exitCode, stdout, stderr] = await Promise.all<any>([
       new Promise<number>((resolve, reject) => {
-        process.once("error", reject);
-        process.once("exit", resolve);
+        once(process, "error", reject);
+        once(process, "exit", resolve);
       }),
       new Promise<Buffer>(resolve => {
         const buffers: Buffer[] = [];
-        process.stdout.on("data", (b: Buffer) => buffers.push(b));
-        process.stdout.once("close", () => resolve(Buffer.concat(buffers)));
+        on(process.stdout, "data", (b: Buffer) => buffers.push(b));
+        once(process.stdout, "close", () => resolve(Buffer.concat(buffers)));
       }),
       new Promise<string>(resolve => {
         const buffers: Buffer[] = [];
-        process.stderr.on("data", (b: Buffer) => buffers.push(b));
-        process.stderr.once("close", () =>
+        on(process.stderr, "data", (b: Buffer) => buffers.push(b));
+        once(process.stderr, "close", () =>
           resolve(Buffer.concat(buffers).toString())
         );
       })
     ]);
+
+    dispose(disposables);
 
     let encoding = "utf8";
 

@@ -1,7 +1,7 @@
 import { Event, window } from "vscode";
 import { sep } from "path";
 
-export interface BaseDisposable {
+export interface IDisposable {
   dispose(): void;
 }
 
@@ -37,12 +37,12 @@ export function dispose(disposables: any[]): any[] {
 }
 
 export function combinedDisposable(
-  disposables: BaseDisposable[]
-): BaseDisposable {
+  disposables: IDisposable[]
+): IDisposable {
   return toDisposable(() => dispose(disposables));
 }
 
-export function toDisposable(dispose: () => void): BaseDisposable {
+export function toDisposable(dispose: () => void): IDisposable {
   return { dispose };
 }
 

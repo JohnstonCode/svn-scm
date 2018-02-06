@@ -10,9 +10,9 @@ import {
 import * as fs from "fs";
 import * as path from "path";
 import * as micromatch from "micromatch";
-import { Repository } from "./repository";
+import { Repository, RepositoryState } from "./repository";
 import { Svn } from "./svn";
-import { dispose, anyEvent, filterEvent } from "./util";
+import { dispose, anyEvent, filterEvent, IDisposable } from "./util";
 import { sequentialize } from "./decorators";
 
 export interface ModelChangeEvent {
@@ -29,7 +29,7 @@ interface OpenRepository extends Disposable {
   repository: Repository;
 }
 
-export class Model {
+export class Model implements IDisposable {
   private _onDidOpenRepository = new EventEmitter<Repository>();
   readonly onDidOpenRepository: Event<Repository> = this._onDidOpenRepository
     .event;
@@ -284,11 +284,19 @@ export class Model {
   }
 
   private open(repository: Repository): void {
+    const onDidDisappearRepository = filterEvent(
+      repository.onDidChangeState,
+      state => state === RepositoryState.Disposed
+    );
+    const disappearListener = onDidDisappearRepository(() => dispose());
+
     const changeListener = repository.onDidChangeRepository(uri =>
       this._onDidChangeRepository.fire({ repository, uri })
     );
 
     const dispose = () => {
+      disappearListener.dispose();
+      changeListener.dispose();
       changeListener.dispose();
       repository.dispose();
 
@@ -301,6 +309,16 @@ export class Model {
     const openRepository = { repository, dispose };
     this.openRepositories.push(openRepository);
     this._onDidOpenRepository.fire(repository);
+  }
+
+  close(repository: Repository): void {
+    const openRepository = this.getOpenRepository(repository);
+
+    if (!openRepository) {
+      return;
+    }
+
+    openRepository.dispose();
   }
 
   async pickRepository() {

@@ -14,7 +14,8 @@ import {
   filterEvent,
   eventToPromise,
   isDescendant,
-  toDisposable
+  toDisposable,
+  IDisposable
 } from "./util";
 
 interface CacheRow {
@@ -29,7 +30,8 @@ interface Cache {
 const THREE_MINUTES = 1000 * 60 * 3;
 const FIVE_MINUTES = 1000 * 60 * 5;
 
-export class SvnContentProvider implements TextDocumentContentProvider {
+export class SvnContentProvider
+  implements IDisposable, TextDocumentContentProvider {
   private _onDidChange = new EventEmitter<Uri>();
   get onDidChange(): Event<Uri> {
     return this._onDidChange.event;

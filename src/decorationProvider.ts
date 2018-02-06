@@ -146,26 +146,33 @@ class SvnDecorationProvider implements DecorationProvider {
 }
 
 export class SvnDecorations {
+  private enabled: boolean = false;
   private configListener: Disposable;
   private modelListener: Disposable[] = [];
   private providers = new Map<Repository, Disposable>();
 
   constructor(private model: Model) {
-    // this.configListener = workspace.onDidChangeConfiguration(
-    //   e => e.affectsConfiguration("svn.decorations.enabled") && this.update()
-    // );
+    this.configListener = workspace.onDidChangeConfiguration(() =>
+      this.update()
+    );
     this.update();
   }
 
   private update(): void {
     const enabled = workspace
       .getConfiguration()
-      .get<boolean>("svn.decorations.enabled");
+      .get<boolean>("svn.decorations.enabled", true);
+
+    if (this.enabled === enabled) {
+      return;
+    }
+
     if (enabled) {
       this.enable();
     } else {
       this.disable();
     }
+    this.enabled = enabled;
   }
 
   private enable(): void {
@@ -175,11 +182,11 @@ export class SvnDecorations {
       this,
       this.modelListener
     );
-    // this.model.onDidCloseRepository(
-    //   this.onDidCloseRepository,
-    //   this,
-    //   this.modelListener
-    // );
+    this.model.onDidCloseRepository(
+      this.onDidCloseRepository,
+      this,
+      this.modelListener
+    );
     this.model.repositories.forEach(this.onDidOpenRepository, this);
   }
 
@@ -205,8 +212,6 @@ export class SvnDecorations {
 
   dispose(): void {
     this.configListener.dispose();
-    this.modelListener.forEach(d => d.dispose());
-    this.providers.forEach(value => value.dispose);
-    this.providers.clear();
+    this.disable();
   }
 }
