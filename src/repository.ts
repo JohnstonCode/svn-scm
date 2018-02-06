@@ -506,7 +506,7 @@ export class Repository {
     });
   }
 
-  async addFile(filePath: string) {
+  async addFile(filePath: string | string[]) {
     return await this.run(Operation.Add, () =>
       this.repository.addFile(filePath)
     );

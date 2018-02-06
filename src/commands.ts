@@ -253,41 +253,42 @@ export class SvnCommands {
   }
 
   @command("svn.add")
-  async addFile(resource: Resource) {
-    const repository = this.model.getRepository(resource.resourceUri.fsPath);
+  async addFile(
+    ...resourceStates: SourceControlResourceState[]
+  ): Promise<void> {
+    const selection = this.getResourceStates(resourceStates);
 
-    if (!repository) {
+    if (selection.length === 0) {
       return;
     }
 
-    try {
-      await repository.addFile(resource.resourceUri.fsPath);
-    } catch (error) {
-      console.log(error);
-      window.showErrorMessage("Unable to add file");
-    }
+    const uris = selection.map(resource => resource.resourceUri);
+
+    await this.runByRepository(uris, async (repository, resources) => {
+      if (!repository) {
+        return;
+      }
+
+      const paths = resources.map(resource => resource.fsPath);
+
+      try {
+        await repository.addFile(paths);
+      } catch (error) {
+        console.log(error);
+        window.showErrorMessage("Unable to add file");
+      }
+    });
   }
 
   @command("svn.addChangelist")
   async addChangelist(
     ...resourceStates: SourceControlResourceState[]
   ): Promise<void> {
-    if (
-      resourceStates.length === 0 ||
-      !(resourceStates[0].resourceUri instanceof Uri)
-    ) {
-      const resource = this.getSCMResource();
+    const selection = this.getResourceStates(resourceStates);
 
-      if (!resource) {
-        return;
-      }
-
-      resourceStates = [resource];
+    if (selection.length === 0) {
+      return;
     }
-
-    const selection = resourceStates.filter(
-      s => s instanceof Resource
-    ) as Resource[];
 
     const uris = selection.map(resource => resource.resourceUri);
 
@@ -345,22 +346,11 @@ export class SvnCommands {
   async removeChangelist(
     ...resourceStates: SourceControlResourceState[]
   ): Promise<void> {
-    if (
-      resourceStates.length === 0 ||
-      !(resourceStates[0].resourceUri instanceof Uri)
-    ) {
-      const resource = this.getSCMResource();
+    const selection = this.getResourceStates(resourceStates);
 
-      if (!resource) {
-        return;
-      }
-
-      resourceStates = [resource];
+    if (selection.length === 0) {
+      return;
     }
-
-    const selection = resourceStates.filter(
-      s => s instanceof Resource
-    ) as Resource[];
 
     const uris = selection.map(resource => resource.resourceUri);
 
@@ -742,8 +732,10 @@ export class SvnCommands {
   }
 
   @command("svn.revert")
-  async revert(...resourceStates: Resource[]) {
-    if (resourceStates.length === 0) {
+  async revert(...resourceStates: SourceControlResourceState[]): Promise<void> {
+    const selection = this.getResourceStates(resourceStates);
+
+    if (selection.length === 0) {
       return;
     }
 
@@ -757,18 +749,22 @@ export class SvnCommands {
       return;
     }
 
-    try {
-      const paths = resourceStates.map(state => {
-        return state.resourceUri;
-      });
+    const uris = selection.map(resource => resource.resourceUri);
 
-      await this.runByRepository(paths, async (repository, paths) =>
-        repository.revert(paths)
-      );
-    } catch (error) {
-      console.error(error);
-      window.showErrorMessage("Unable to revert");
-    }
+    await this.runByRepository(uris, async (repository, resources) => {
+      if (!repository) {
+        return;
+      }
+
+      const paths = resources.map(resource => resource.fsPath);
+
+      try {
+        await repository.revert(paths);
+      } catch (error) {
+        console.log(error);
+        window.showErrorMessage("Unable to revert");
+      }
+    });
   }
 
   @command("svn.update", { repository: true })
@@ -799,12 +795,15 @@ export class SvnCommands {
     }
   }
 
-  @command("svn.remove", { repository: true })
-  async remove(
-    repository: Repository,
-    ...resourceStates: Resource[]
-  ): Promise<void> {
-    let keepLocal;
+  @command("svn.remove")
+  async remove(...resourceStates: SourceControlResourceState[]): Promise<void> {
+    const selection = this.getResourceStates(resourceStates);
+
+    if (selection.length === 0) {
+      return;
+    }
+
+    let keepLocal: boolean;
     const answer = await window.showWarningMessage(
       "Would you like to keep a local copy of the files?.",
       "Yes",
@@ -821,16 +820,22 @@ export class SvnCommands {
       keepLocal = false;
     }
 
-    try {
-      const paths = resourceStates.map(state => {
-        return state.resourceUri.fsPath;
-      });
+    const uris = selection.map(resource => resource.resourceUri);
 
-      const result = await repository.removeFiles(paths, keepLocal);
-    } catch (error) {
-      console.error(error);
-      window.showErrorMessage("Unable to remove files");
-    }
+    await this.runByRepository(uris, async (repository, resources) => {
+      if (!repository) {
+        return;
+      }
+
+      const paths = resources.map(resource => resource.fsPath);
+
+      try {
+        const result = await repository.removeFiles(paths, keepLocal);
+      } catch (error) {
+        console.log(error);
+        window.showErrorMessage("Unable to remove files");
+      }
+    });
   }
 
   @command("svn.resolve", { repository: true })
@@ -868,7 +873,12 @@ export class SvnCommands {
   @command("svn.log", { repository: true })
   async log(repository: Repository) {
     try {
-      const result = await repository.log();
+      const logPromise = repository.log();
+      window.withProgress(
+        { location: ProgressLocation.Window, title: "Fetching logs" },
+        () => logPromise
+      );
+      const result = await logPromise;
       // send the log results to a new tab
       workspace.openTextDocument({ content: result }).then(doc => {
         window.showTextDocument(doc);
@@ -902,6 +912,25 @@ export class SvnCommands {
 
       return repository.getResourceFromFile(uri);
     }
+  }
+
+  private getResourceStates(
+    resourceStates: SourceControlResourceState[]
+  ): Resource[] {
+    if (
+      resourceStates.length === 0 ||
+      !(resourceStates[0].resourceUri instanceof Uri)
+    ) {
+      const resource = this.getSCMResource();
+
+      if (!resource) {
+        return [];
+      }
+
+      resourceStates = [resource];
+    }
+
+    return resourceStates.filter(s => s instanceof Resource) as Resource[];
   }
 
   private runByRepository<T>(

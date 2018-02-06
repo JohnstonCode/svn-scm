@@ -67,7 +67,7 @@ export class Repository {
     return result.stdout;
   }
 
-  addFile(filePath: string) {
+  addFile(filePath: string | string[]) {
     return this.svn.add(filePath);
   }
 

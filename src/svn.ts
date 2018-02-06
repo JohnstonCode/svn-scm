@@ -252,9 +252,13 @@ export class Svn {
     return new Repository(this, repositoryRoot, workspaceRoot);
   }
 
-  add(path: string) {
-    path = path.replace(/\\/g, "/");
-    return this.exec("", ["add", path]);
+  add(filePaths: string | string[]) {
+    if (!Array.isArray(filePaths)) {
+      filePaths = [filePaths];
+    }
+
+    filePaths = filePaths.map(path => path.replace(/\\/g, "/"));
+    return this.exec("", ["add", ...filePaths]);
   }
 
   addChangelist(filePaths: string | string[], changelist: string) {
