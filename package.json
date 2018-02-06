@@ -145,7 +145,7 @@
       },
       {
         "command": "svn.revert",
-        "title": "Revert Selected",
+        "title": "Revert Selected File",
         "category": "SVN"
       },
       {
@@ -171,6 +171,20 @@
       {
         "command": "svn.log",
         "title": "Show commit messages",
+        "category": "SVN"
+      },
+      {
+        "command": "svn.revertChange",
+        "title": "Revert Change",
+        "category": "SVN",
+        "icon": {
+          "light": "icons/light/clean.svg",
+          "dark": "icons/dark/clean.svg"
+        }
+      },
+      {
+        "command": "svn.revertSelectedRanges",
+        "title": "Revert Selected Ranges",
         "category": "SVN"
       }
     ],
@@ -207,6 +221,14 @@
         {
           "command": "svn.commitWithMessage",
           "when": "false"
+        },
+        {
+          "command": "svn.revertChange",
+          "when": "false"
+        },
+        {
+          "command": "svn.revertSelectedRanges",
+          "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
         }
       ],
       "scm/title": [
@@ -322,6 +344,12 @@
           "group": "2_modification"
         }
       ],
+      "scm/change/title": [
+        {
+          "command": "svn.revertChange",
+          "when": "config.svn.enabled && originalResourceScheme == svn"
+        }
+      ],
       "editor/title": [
         {
           "command": "svn.openFile",
@@ -340,6 +368,12 @@
           "group": "navigation",
           "when":
             "config.svn.enabled && svnOpenRepositoryCount != 0 && !isInDiffEditor && resourceScheme == file"
+        },
+        {
+          "command": "svn.revertSelectedRanges",
+          "group": "2_svn@3",
+          "when":
+            "config.svn.enabled && svnOpenRepositoryCount != 0 && isInDiffEditor && resourceScheme != merge-conflict.conflict-diff"
         }
       ]
     },

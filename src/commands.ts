@@ -9,7 +9,12 @@ import {
   SourceControlResourceGroup,
   ViewColumn,
   SourceControlResourceState,
-  ProgressLocation
+  ProgressLocation,
+  LineChange,
+  WorkspaceEdit,
+  Range,
+  Position,
+  TextEditor
 } from "vscode";
 import { inputCommitMessage } from "./messages";
 import { Svn, Status, SvnErrorCodes } from "./svn";
@@ -21,9 +26,11 @@ import * as fs from "fs";
 import * as path from "path";
 import { start } from "repl";
 import { getConflictPickOptions } from "./conflictItems";
+import { applyLineChanges } from "./lineChanges";
 
 interface CommandOptions {
   repository?: boolean;
+  diff?: boolean;
 }
 
 interface Command {
@@ -135,7 +142,11 @@ export class SvnCommands {
   constructor(private model: Model) {
     Commands.map(({ commandId, method, options }) => {
       const command = this.createCommand(method, options);
-      commands.registerCommand(commandId, command);
+      if (options.diff) {
+        return commands.registerDiffInformationCommand(commandId, command);
+      } else {
+        return commands.registerCommand(commandId, command);
+      }
     });
   }
 
@@ -887,6 +898,108 @@ export class SvnCommands {
       console.error(error);
       window.showErrorMessage("Unable to log");
     }
+  }
+
+  private async _revertChanges(
+    textEditor: TextEditor,
+    changes: LineChange[]
+  ): Promise<void> {
+    const modifiedDocument = textEditor.document;
+    const modifiedUri = modifiedDocument.uri;
+
+    if (modifiedUri.scheme !== "file") {
+      return;
+    }
+
+    const originalUri = toSvnUri(modifiedUri, "BASE");
+    const originalDocument = await workspace.openTextDocument(originalUri);
+    const basename = path.basename(modifiedUri.fsPath);
+    const message = `Are you sure you want to revert the selected changes in ${basename}?`;
+    const yes = "Revert Changes";
+    const pick = await window.showWarningMessage(message, { modal: true }, yes);
+
+    if (pick !== yes) {
+      return;
+    }
+
+    const result = applyLineChanges(
+      originalDocument,
+      modifiedDocument,
+      changes
+    );
+    const edit = new WorkspaceEdit();
+    edit.replace(
+      modifiedUri,
+      new Range(
+        new Position(0, 0),
+        modifiedDocument.lineAt(modifiedDocument.lineCount - 1).range.end
+      ),
+      result
+    );
+    workspace.applyEdit(edit);
+    await modifiedDocument.save();
+  }
+
+  @command("svn.revertChange")
+  async revertChange(
+    uri: Uri,
+    changes: LineChange[],
+    index: number
+  ): Promise<void> {
+    const textEditor = window.visibleTextEditors.filter(
+      e => e.document.uri.toString() === uri.toString()
+    )[0];
+
+    if (!textEditor) {
+      return;
+    }
+
+    await this._revertChanges(textEditor, [
+      ...changes.slice(0, index),
+      ...changes.slice(index + 1)
+    ]);
+  }
+
+  @command("svn.revertSelectedRanges", { diff: true })
+  async revertSelectedRanges(changes: LineChange[]): Promise<void> {
+    const textEditor = window.activeTextEditor;
+
+    if (!textEditor) {
+      return;
+    }
+
+    const modifiedDocument = textEditor.document;
+    const selections = textEditor.selections;
+    const selectedChanges = changes.filter(change => {
+      const modifiedRange =
+        change.modifiedEndLineNumber === 0
+          ? new Range(
+              modifiedDocument.lineAt(
+                change.modifiedStartLineNumber - 1
+              ).range.end,
+              modifiedDocument.lineAt(
+                change.modifiedStartLineNumber
+              ).range.start
+            )
+          : new Range(
+              modifiedDocument.lineAt(
+                change.modifiedStartLineNumber - 1
+              ).range.start,
+              modifiedDocument.lineAt(
+                change.modifiedEndLineNumber - 1
+              ).range.end
+            );
+
+      return selections.every(
+        selection => !selection.intersection(modifiedRange)
+      );
+    });
+
+    if (selectedChanges.length === changes.length) {
+      return;
+    }
+
+    await this._revertChanges(textEditor, selectedChanges);
   }
 
   private getSCMResource(uri?: Uri): Resource | undefined {
