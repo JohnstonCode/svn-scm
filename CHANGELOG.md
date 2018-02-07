@@ -1,3 +1,9 @@
+# **v1.16.0** #UNDER DEV
+
+## Bug Fixes
+
+* @edgardmessias Fixed tile title for commit log
+
 # **v1.16.0**
 
 ## What's New
