@@ -14,7 +14,7 @@
 
 ## What's New
 
-* @edgardmessias Added in StatusBar notification of news commits
+* @edgardmessias Added in StatusBar notification of new commits
 
 # **v1.14.1**
 
@@ -149,7 +149,7 @@
 
 * @edgardmessias Not check SVN version if folder not contains ".svn" folder
 * @edgardmessias Fixed ignored folder for multifolder svn to work with Windows
-* @JohnstonCode Possilbe fix for #67
+* @JohnstonCode Possible fix for #67
 
 # **v1.4.0**
 
