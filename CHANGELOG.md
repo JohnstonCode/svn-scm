@@ -1,3 +1,9 @@
+# **v1.16.0**
+
+## What's New
+
+* @edgardmessias Made Some under the hood tweaks
+
 # **v1.15.0**
 
 ## What's New
