@@ -228,7 +228,7 @@
         },
         {
           "command": "svn.revertSelectedRanges",
-          "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
+          "when": "config.svn.enabled && svnOpenRepositoryCount != 0 && svnHasSupportToRegisterDiffCommand == 1"
         }
       ],
       "scm/title": [
@@ -373,7 +373,7 @@
           "command": "svn.revertSelectedRanges",
           "group": "2_svn@3",
           "when":
-            "config.svn.enabled && svnOpenRepositoryCount != 0 && isInDiffEditor && resourceScheme != merge-conflict.conflict-diff"
+            "config.svn.enabled && svnOpenRepositoryCount != 0 && isInDiffEditor && resourceScheme != merge-conflict.conflict-diff &&  && svnHasSupportToRegisterDiffCommand == 1"
         }
       ]
     },

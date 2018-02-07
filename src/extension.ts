@@ -10,7 +10,11 @@ import { SvnFinder } from "./svnFinder";
 import { SvnContentProvider } from "./svnContentProvider";
 import { SvnCommands } from "./commands";
 import { Model } from "./model";
-import { toDisposable, hasSupportToDecorationProvider } from "./util";
+import {
+  toDisposable,
+  hasSupportToDecorationProvider,
+  hasSupportToRegisterDiffCommand
+} from "./util";
 
 async function init(context: ExtensionContext, disposables: Disposable[]) {
   const outputChannel = window.createOutputChannel("Svn");
@@ -51,6 +55,12 @@ async function init(context: ExtensionContext, disposables: Disposable[]) {
   model.onDidOpenRepository(onRepository, null, disposables);
   model.onDidCloseRepository(onRepository, null, disposables);
   onRepository();
+
+  commands.executeCommand(
+    "setContext",
+    "svnHasSupportToRegisterDiffCommand",
+    hasSupportToRegisterDiffCommand() ? "1" : "0"
+  );
 
   outputChannel.appendLine("Using svn " + info.version + " from " + info.path);
 

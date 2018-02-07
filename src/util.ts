@@ -1,4 +1,4 @@
-import { Event, window } from "vscode";
+import { Event, window, commands } from "vscode";
 import { sep } from "path";
 
 export interface IDisposable {
@@ -36,9 +36,7 @@ export function dispose(disposables: any[]): any[] {
   return [];
 }
 
-export function combinedDisposable(
-  disposables: IDisposable[]
-): IDisposable {
+export function combinedDisposable(disposables: IDisposable[]): IDisposable {
   return toDisposable(() => dispose(disposables));
 }
 
@@ -101,6 +99,19 @@ export function camelcase(name: string) {
 
 export function hasSupportToDecorationProvider() {
   return typeof window.registerDecorationProvider === "function";
+}
+
+export function hasSupportToRegisterDiffCommand() {
+  try {
+    const disposable = commands.registerDiffInformationCommand(
+      "svn.testDiff",
+      () => {}
+    );
+    disposable.dispose();
+    return true;
+  } catch (error) {
+    return false;
+  }
 }
 
 export function timeout(ms: number) {

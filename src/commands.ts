@@ -28,7 +28,7 @@ import * as path from "path";
 import { start } from "repl";
 import { getConflictPickOptions } from "./conflictItems";
 import { applyLineChanges } from "./lineChanges";
-import { IDisposable } from "./util";
+import { IDisposable, hasSupportToRegisterDiffCommand } from "./util";
 import {
   getChangelistPickOptions,
   inputSwitchChangelist,
@@ -124,7 +124,7 @@ export class SvnCommands implements IDisposable {
   constructor(private model: Model) {
     this.disposables = Commands.map(({ commandId, method, options }) => {
       const command = this.createCommand(method, options);
-      if (options.diff) {
+      if (options.diff && hasSupportToRegisterDiffCommand()) {
         return commands.registerDiffInformationCommand(commandId, command);
       } else {
         return commands.registerCommand(commandId, command);
