@@ -2,8 +2,9 @@ import * as cp from "child_process";
 import * as path from "path";
 import * as fs from "fs";
 import * as os from "os";
-import { Uri } from "vscode";
+import { Uri, extensions } from "vscode";
 import { SpawnOptions, ChildProcess } from "child_process";
+import { timeout } from "../util";
 
 const tempDir = os.tmpdir();
 let tempDirList: string[] = [];
@@ -12,10 +13,6 @@ export function getSvnUrl(uri: Uri) {
   const url = uri.toString();
 
   return url.replace(/%3A/g, ":");
-}
-
-export function delay(ms: number) {
-  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 export function spawn(
@@ -151,7 +148,7 @@ export async function destroyPath(fullPath: string) {
       fs.rmdirSync(fullPath);
       break;
     } catch (error) {
-      await delay(3000);
+      await timeout(3000);
       console.error(error);
     }
   }
@@ -159,7 +156,24 @@ export async function destroyPath(fullPath: string) {
 }
 
 export function destroyAllTempPaths() {
-  for (let path of tempDirList) {
+  let path;
+  while ((path = tempDirList.shift())) {
     destroyPath(path);
   }
+}
+
+export function activeExtension() {
+  return new Promise<void>((resolve, reject) => {
+    const extension = extensions.getExtension("johnstoncode.svn-scm");
+    if (!extension) {
+      reject();
+      return;
+    }
+
+    if (!extension.isActive) {
+      extension.activate().then(() => resolve(), () => reject());
+    } else {
+      resolve();
+    }
+  });
 }

@@ -28,6 +28,8 @@ suite("Repository Tests", () => {
   let model: Model;
 
   suiteSetup(async () => {
+    await testUtil.activeExtension();
+
     repoUri = await testUtil.createRepoServer();
     await testUtil.createStandardLayout(testUtil.getSvnUrl(repoUri));
     checkoutDir = await testUtil.createRepoCheckout(
@@ -98,22 +100,17 @@ suite("Repository Tests", () => {
 
     const file = path.join(checkoutDir.fsPath, "new.txt");
 
-    await repository.update();
     fs.writeFileSync(file, "test");
 
-    await repository.addFile(file);
+    await repository.addFiles([file]);
 
-    await repository.update();
-    await testUtil.delay(1500); // Wait the debounce time
     assert.equal(repository.changes.resourceStates.length, 1);
 
-    const message = await repository.repository.commitFiles("First Commit", [
+    const message = await repository.commitFiles("First Commit", [
       file
     ]);
     assert.ok(/Committed revision (.*)\./i.test(message));
 
-    await repository.update();
-    await testUtil.delay(1500); // Wait the debounce time
     assert.equal(repository.changes.resourceStates.length, 0);
 
     const remoteContent = await repository.show(file, "HEAD");
@@ -134,9 +131,7 @@ suite("Repository Tests", () => {
     if (!newRepository) return;
     assert.ok(newRepository);
 
-    const isSwitched = await newRepository.branch("test");
-    assert.ok(isSwitched);
-
+    await newRepository.branch("test");
     const currentBranch = await newRepository.getCurrentBranch();
 
     assert.equal(currentBranch, "test");

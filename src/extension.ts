@@ -10,7 +10,11 @@ import { SvnFinder } from "./svnFinder";
 import { SvnContentProvider } from "./svnContentProvider";
 import { SvnCommands } from "./commands";
 import { Model } from "./model";
-import { toDisposable, hasSupportToDecorationProvider } from "./util";
+import {
+  toDisposable,
+  hasSupportToDecorationProvider,
+  hasSupportToRegisterDiffCommand
+} from "./util";
 
 async function init(context: ExtensionContext, disposables: Disposable[]) {
   const outputChannel = window.createOutputChannel("Svn");
@@ -33,7 +37,7 @@ async function init(context: ExtensionContext, disposables: Disposable[]) {
   const model = new Model(svn);
   const contentProvider = new SvnContentProvider(model);
   const svnCommands = new SvnCommands(model);
-  disposables.push(model, contentProvider);
+  disposables.push(model, contentProvider, svnCommands);
 
   // First, check the vscode has support to DecorationProvider
   if (hasSupportToDecorationProvider()) {
@@ -52,11 +56,13 @@ async function init(context: ExtensionContext, disposables: Disposable[]) {
   model.onDidCloseRepository(onRepository, null, disposables);
   onRepository();
 
-  outputChannel.appendLine("Using svn " + info.version + " from " + info.path);
-
-  context.subscriptions.push(
-    new Disposable(() => Disposable.from(...disposables).dispose())
+  commands.executeCommand(
+    "setContext",
+    "svnHasSupportToRegisterDiffCommand",
+    hasSupportToRegisterDiffCommand() ? "1" : "0"
   );
+
+  outputChannel.appendLine("Using svn " + info.version + " from " + info.path);
 
   const onOutput = (str: string) => outputChannel.append(str);
   svn.onOutput.addListener("log", onOutput);

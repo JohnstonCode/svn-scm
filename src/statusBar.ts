@@ -17,21 +17,13 @@ export class SvnStatusBar {
   }
 
   constructor(private repository: Repository) {
-    repository.onDidChangeBranch(
+    repository.onDidChangeStatus(
       this._onDidChange.fire,
       this._onDidChange,
       this.disposables
     );
-    repository.onDidChangeRepository(
-      () => {
-        if (!this.repository.isSwitchingBranch) {
-          this._onDidChange.fire();
-        }
-      },
-      null,
-      this.disposables
-    );
-    repository.onDidChangeNewCommits(
+
+    repository.onDidChangeOperations(
       this._onDidChange.fire,
       this._onDidChange,
       this.disposables
@@ -42,22 +34,22 @@ export class SvnStatusBar {
     const result: Command[] = [];
 
     if (this.repository.currentBranch) {
-      const icon = this.repository.isSwitchingBranch
-        ? "sync~spin"
-        : "git-branch";
       result.push({
         command: "svn.switchBranch",
         tooltip: "switch branch",
-        title: `$(${icon}) ${this.repository.currentBranch}`,
+        title: `$(git-branch) ${this.repository.currentBranch}`,
         arguments: [this.repository]
       });
     }
 
-    const icon = this.repository.isUpdatingRevision ? "sync~spin" : "sync";
-    const title =
-      this.repository.newCommits > 0
-        ? `${this.repository.newCommits} new commits`
-        : "No new commits";
+    const isIdle = this.repository.operations.isIdle();
+
+    const icon = isIdle ? "sync" : "sync~spin";
+    const title = !isIdle
+      ? "Running"
+      : this.repository.newsCommit > 0
+        ? `${this.repository.newCommit} new commits`
+        : "Updated";
 
     result.push({
       command: "svn.update",

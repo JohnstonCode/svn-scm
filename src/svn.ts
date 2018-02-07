@@ -6,6 +6,8 @@ import * as jschardet from "jschardet";
 import * as path from "path";
 import { Repository } from "./svnRepository";
 import { parseInfoXml } from "./infoParser";
+import { SpawnOptions } from "child_process";
+import { IDisposable, toDisposable, dispose } from "./util";
 
 // List: https://github.com/apache/subversion/blob/1.6.x/subversion/svn/schema/status.rnc#L33
 export enum Status {
@@ -32,7 +34,25 @@ export enum PropStatus {
   NORMAL = "normal"
 }
 
-export interface CpOptions {
+export const SvnErrorCodes: { [key: string]: string } = {
+  RepositoryIsLocked: "E155004",
+  NotASvnRepository: "E155007",
+  NotShareCommonAncestry: "E195012"
+};
+
+function getSvnErrorCode(stderr: string): string | undefined {
+  for (const name in SvnErrorCodes) {
+    const code = SvnErrorCodes[name];
+    const regex = new RegExp(`svn: ${code}`);
+    if (regex.test(stderr)) {
+      return code;
+    }
+  }
+
+  return void 0;
+}
+
+export interface CpOptions extends SpawnOptions {
   cwd?: string;
   encoding?: string;
   log?: boolean;
@@ -51,6 +71,12 @@ export interface ISvnErrorData {
 export interface ISvnOptions {
   svnPath: string;
   version: string;
+}
+
+export interface IExecutionResult {
+  exitCode: number;
+  stdout: string;
+  stderr: string;
 }
 
 export function cpErrorHandler(
@@ -137,7 +163,11 @@ export class Svn {
     this._onOutput.emit("log", output);
   }
 
-  async exec(cwd: string, args: any[], options: CpOptions = {}) {
+  async exec(
+    cwd: string,
+    args: any[],
+    options: CpOptions = {}
+  ): Promise<IExecutionResult> {
     if (cwd) {
       this.lastCwd = cwd;
       options.cwd = cwd;
@@ -151,24 +181,46 @@ export class Svn {
 
     let process = cp.spawn(this.svnPath, args, options);
 
+    const disposables: IDisposable[] = [];
+
+    const once = (
+      ee: NodeJS.EventEmitter,
+      name: string,
+      fn: (...args: any[]) => void
+    ) => {
+      ee.once(name, fn);
+      disposables.push(toDisposable(() => ee.removeListener(name, fn)));
+    };
+
+    const on = (
+      ee: NodeJS.EventEmitter,
+      name: string,
+      fn: (...args: any[]) => void
+    ) => {
+      ee.on(name, fn);
+      disposables.push(toDisposable(() => ee.removeListener(name, fn)));
+    };
+
     let [exitCode, stdout, stderr] = await Promise.all<any>([
       new Promise<number>((resolve, reject) => {
-        process.once("error", reject);
-        process.once("exit", resolve);
+        once(process, "error", reject);
+        once(process, "exit", resolve);
       }),
       new Promise<Buffer>(resolve => {
         const buffers: Buffer[] = [];
-        process.stdout.on("data", (b: Buffer) => buffers.push(b));
-        process.stdout.once("close", () => resolve(Buffer.concat(buffers)));
+        on(process.stdout, "data", (b: Buffer) => buffers.push(b));
+        once(process.stdout, "close", () => resolve(Buffer.concat(buffers)));
       }),
       new Promise<string>(resolve => {
         const buffers: Buffer[] = [];
-        process.stderr.on("data", (b: Buffer) => buffers.push(b));
-        process.stderr.once("close", () =>
+        on(process.stderr, "data", (b: Buffer) => buffers.push(b));
+        once(process.stderr, "close", () =>
           resolve(Buffer.concat(buffers).toString())
         );
       })
     ]);
+
+    dispose(disposables);
 
     let encoding = "utf8";
 
@@ -192,6 +244,19 @@ export class Svn {
       this.logOutput(`${stderr}\n`);
     }
 
+    if (exitCode) {
+      return Promise.reject<IExecutionResult>(
+        new SvnError({
+          message: "Failed to execute git",
+          stdout: stdout,
+          stderr: stderr,
+          exitCode: exitCode,
+          svnErrorCode: getSvnErrorCode(stderr),
+          svnCommand: args[0]
+        })
+      );
+    }
+
     return { exitCode, stdout, stderr };
   }
 
@@ -209,118 +274,5 @@ export class Svn {
 
   open(repositoryRoot: string, workspaceRoot: string): Repository {
     return new Repository(this, repositoryRoot, workspaceRoot);
-  }
-
-  add(path: string) {
-    path = path.replace(/\\/g, "/");
-    return this.exec("", ["add", path]);
-  }
-
-  addChangelist(path: string, changelist: string) {
-    path = path.replace(/\\/g, "/");
-    return this.exec("", ["changelist", changelist, path]);
-  }
-
-  removeChangelist(path: string) {
-    path = path.replace(/\\/g, "/");
-    return this.exec("", ["changelist", path, "--remove"]);
-  }
-
-  show(path: string, revision?: string, options: CpOptions = {}) {
-    const args = ["cat", path];
-
-    if (revision) {
-      args.push("-r", revision);
-    }
-
-    return this.exec("", args, options);
-  }
-
-  list(path: string) {
-    return this.exec("", ["ls", path]);
-  }
-
-  commit(message: string, files: any[]) {
-    let args = ["commit", "-m", message];
-
-    for (let file of files) {
-      args.push(file);
-    }
-
-    return this.exec("", args);
-  }
-
-  ls(filePath: string) {
-    return this.exec("", ["ls", "--xml", filePath]);
-  }
-
-  info(path: string, revision: string = "BASE") {
-    return this.exec(path, ["info", "--xml", "-r", revision]);
-  }
-
-  copy(rootPath: string, branchPath: string, name: string) {
-    return this.exec("", [
-      "copy",
-      rootPath,
-      branchPath,
-      "-m",
-      `Created new branch ${name}`
-    ]);
-  }
-
-  checkout(root: string, branchPath: string) {
-    return this.exec(root, ["checkout", branchPath]);
-  }
-
-  switchBranch(root: string, path: string) {
-    return this.exec(root, ["switch", path]);
-  }
-
-  revert(files: any[]) {
-    let args = ["revert"];
-
-    for (let file of files) {
-      if (file instanceof Uri) {
-        args.push(file.fsPath);
-      } else {
-        args.push(file);
-      }
-    }
-
-    return this.exec("", args);
-  }
-
-  update(root: string) {
-    return this.exec(root, ["update"]);
-  }
-
-  patch(root: string) {
-    return this.exec(root, ["diff"]);
-  }
-
-  remove(files: any[], keepLocal: boolean) {
-    let args = ["remove"];
-
-    if (keepLocal) {
-      args.push("--keep-local");
-    }
-
-    for (let file of files) {
-      if (file instanceof Uri) {
-        args.push(file.fsPath);
-      } else {
-        args.push(file);
-      }
-    }
-
-    return this.exec("", args);
-  }
-
-  resolve(file: string, action: string) {
-    return this.exec("", ["resolve", "--accept", action, file]);
-  }
-
-  log(rootPath: string, length: string) {
-    return this.exec(rootPath, ["log", "--limit", length]);
   }
 }

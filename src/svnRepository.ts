@@ -1,8 +1,10 @@
-import { workspace } from "vscode";
-import { Svn, CpOptions } from "./svn";
+import { workspace, Uri } from "vscode";
+import { Svn, CpOptions, IExecutionResult } from "./svn";
 import { IFileStatus, parseStatusXml } from "./statusParser";
 import { parseInfoXml, ISvnInfo } from "./infoParser";
 import { sequentialize } from "./decorators";
+import * as path from "path";
+import { fixPathSeparator } from "./util";
 
 export class Repository {
   private _info?: ISvnInfo;
@@ -13,6 +15,19 @@ export class Repository {
     public workspaceRoot: string
   ) {}
 
+  async exec(
+    args: string[],
+    options: CpOptions = {}
+  ): Promise<IExecutionResult> {
+    return await this.svn.exec(this.workspaceRoot, args, options);
+  }
+
+  removeAbsolutePath(file: string) {
+    file = fixPathSeparator(file);
+
+    return path.relative(this.workspaceRoot, file);
+  }
+
   async getStatus(includeIgnored: boolean = false): Promise<IFileStatus[]> {
     let args = ["stat", "--xml"];
 
@@ -20,7 +35,7 @@ export class Repository {
       args.push("--no-ignore");
     }
 
-    const result = await this.svn.exec(this.workspaceRoot, args);
+    const result = await this.exec(args);
 
     return await parseStatusXml(result.stdout);
   }
@@ -34,7 +49,7 @@ export class Repository {
     if (this._info) {
       return this._info;
     }
-    const result = await this.svn.info(this.workspaceRoot);
+    const result = await this.exec(["info", "--xml", "-r", "BASE"]);
 
     this._info = await parseInfoXml(result.stdout);
 
@@ -47,41 +62,48 @@ export class Repository {
   }
 
   async show(
-    path: string,
+    file: string,
     revision?: string,
     options: CpOptions = {}
   ): Promise<string> {
-    const result = await this.svn.show(path, revision, options);
+    file = this.removeAbsolutePath(file);
+    const args = ["cat", file];
 
-    if (result.exitCode !== 0) {
-      throw new Error(result.stderr);
+    if (revision) {
+      args.push("-r", revision);
+    }
+
+    const result = await this.exec(args);
+
+    return result.stdout;
+  }
+
+  async commitFiles(message: string, files: string[]) {
+    files = files.map(file => this.removeAbsolutePath(file));
+
+    const result = await this.exec(["commit", "-m", message, ...files]);
+
+    const matches = result.stdout.match(/Committed revision (.*)\./i);
+    if (matches && matches[0]) {
+      return matches[0];
     }
 
     return result.stdout;
   }
 
-  async commitFiles(message: string, files: any[]) {
-    const result = await this.svn.commit(message, files);
-
-    if (result.exitCode !== 0) {
-      throw new Error(result.stderr);
-    }
-
-    const outputMessage = result.stdout.match(/Committed revision (.*)\./i)[0];
-
-    return outputMessage;
+  addFiles(files: string[]) {
+    files = files.map(file => this.removeAbsolutePath(file));
+    return this.exec(["add", ...files]);
   }
 
-  addFile(filePath: string) {
-    return this.svn.add(filePath);
+  addChangelist(files: string[], changelist: string) {
+    files = files.map(file => this.removeAbsolutePath(file));
+    return this.exec(["changelist", changelist, ...files]);
   }
 
-  addChangelist(filePath: string, changelist: string) {
-    return this.svn.addChangelist(filePath, changelist);
-  }
-
-  removeChangelist(filePath: string) {
-    return this.svn.removeChangelist(filePath);
+  removeChangelist(files: string[]) {
+    files = files.map(file => this.removeAbsolutePath(file));
+    return this.exec(["changelist", "--remove", ...files]);
   }
 
   async getCurrentBranch(): Promise<string> {
@@ -149,18 +171,18 @@ export class Repository {
     if (trunkLayout) {
       promises.push(
         new Promise<string[]>(async resolve => {
-          let trunkExists = await this.svn.exec("", [
-            "ls",
-            repoUrl + "/" + trunkLayout,
-            "--depth",
-            "empty"
-          ]);
+          try {
+            let trunkExists = await this.exec([
+              "ls",
+              repoUrl + "/" + trunkLayout,
+              "--depth",
+              "empty"
+            ]);
 
-          if (trunkExists.exitCode === 0) {
             resolve([trunkLayout]);
-            return;
+          } catch (error) {
+            resolve([]);
           }
-          resolve([]);
         })
       );
     }
@@ -180,21 +202,20 @@ export class Repository {
         new Promise<string[]>(async resolve => {
           const branchUrl = repoUrl + "/" + tree;
 
-          const result = await this.svn.list(branchUrl);
+          try {
+            const result = await this.exec(["ls", branchUrl]);
 
-          if (result.exitCode !== 0) {
+            const list = result.stdout
+              .trim()
+              .replace(/\/|\\/g, "")
+              .split(/[\r\n]+/)
+              .filter((x: string) => !!x)
+              .map((i: string) => tree + "/" + i);
+
+            resolve(list);
+          } catch (error) {
             resolve([]);
-            return;
           }
-
-          const list = result.stdout
-            .trim()
-            .replace(/\/|\\/g, "")
-            .split(/[\r\n]+/)
-            .filter((x: string) => !!x)
-            .map((i: string) => tree + "/" + i);
-
-          resolve(list);
         })
       );
     }
@@ -219,16 +240,15 @@ export class Repository {
     const newBranch = repoUrl + "/" + branchesLayout + "/" + name;
     const info = await this.getInfo();
     const currentBranch = info.url;
-    const result = await this.svn.copy(currentBranch, newBranch, name);
+    const result = await this.exec([
+      "copy",
+      currentBranch,
+      newBranch,
+      "-m",
+      `Created new branch ${name}`
+    ]);
 
-    const switchBranch = await this.svn.switchBranch(
-      this.workspaceRoot,
-      newBranch
-    );
-
-    if (switchBranch.exitCode !== 0) {
-      throw new Error(switchBranch.stderr);
-    }
+    const switchBranch = await this.exec(["switch", newBranch]);
 
     this.resetInfo();
 
@@ -240,36 +260,21 @@ export class Repository {
 
     const branchUrl = repoUrl + "/" + ref;
 
-    const switchBranch = await this.svn.switchBranch(
-      this.workspaceRoot,
-      branchUrl
-    );
-
-    if (switchBranch.exitCode !== 0) {
-      throw new Error(switchBranch.stderr);
-    }
+    const switchBranch = await this.exec(["switch", branchUrl]);
 
     this.resetInfo();
 
     return true;
   }
 
-  async revert(files: any[]) {
-    const result = await this.svn.revert(files);
-
-    if (result.exitCode !== 0) {
-      throw new Error(result.stderr);
-    }
-
+  async revert(files: string[]) {
+    files = files.map(file => this.removeAbsolutePath(file));
+    const result = await this.exec(["revert", ...files]);
     return result.stdout;
   }
 
-  async update() {
-    const result = await this.svn.update(this.workspaceRoot);
-
-    if (result.exitCode !== 0) {
-      throw new Error(result.stderr);
-    }
+  async update(): Promise<string> {
+    const result = await this.exec(["update"]);
 
     this.resetInfo();
 
@@ -278,35 +283,38 @@ export class Repository {
       .split(/\r?\n/)
       .pop();
 
-    return message;
+    if (message) {
+      return message;
+    }
+    return result.stdout;
   }
 
   async patch() {
-    const result = await this.svn.patch(this.workspaceRoot);
-    if (result.exitCode !== 0) {
-      throw new Error(result.stderr);
-    }
+    const result = await this.exec(["diff"]);
 
     const message = result.stdout;
     return message;
   }
 
   async removeFiles(files: any[], keepLocal: boolean) {
-    const result = await this.svn.remove(files, keepLocal);
+    files = files.map(file => this.removeAbsolutePath(file));
+    const args = ["remove"];
 
-    if (result.exitCode !== 0) {
-      throw new Error(result.stderr);
+    if (keepLocal) {
+      args.push("--keep-local");
     }
+
+    args.push(...files);
+
+    const result = await this.exec(args);
 
     return result.stdout;
   }
 
   async resolve(file: string, action: string) {
-    const result = await this.svn.resolve(file, action);
+    file = this.removeAbsolutePath(file);
 
-    if (result.exitCode !== 0) {
-      throw new Error(result.stderr);
-    }
+    const result = await this.exec(["resolve", "--accept", action, file]);
 
     return result.stdout;
   }
@@ -314,27 +322,13 @@ export class Repository {
   async log() {
     const config = workspace.getConfiguration("svn");
     const logLength = config.get<string>("log.length") || "50";
-    const result = await this.svn.log(this.workspaceRoot, logLength);
-
-    if (result.exitCode !== 0) {
-      throw new Error(result.stderr);
-    }
+    const result = await this.exec(["log", "--limit", logLength]);
 
     return result.stdout;
   }
 
-  async countNewCommits(revision: string = "BASE:HEAD") {
-    const result = await this.svn.exec(this.workspaceRoot, [
-      "log",
-      "-r",
-      revision,
-      "-q",
-      "--xml"
-    ]);
-
-    if (result.exitCode !== 0) {
-      return 0;
-    }
+  async countNewCommit(revision: string = "BASE:HEAD") {
+    const result = await this.exec(["log", "-r", revision, "-q", "--xml"]);
 
     const matches = result.stdout.match(/<logentry/g);
 

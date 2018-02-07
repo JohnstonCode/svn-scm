@@ -82,7 +82,20 @@
       {
         "command": "svn.commit",
         "title": "Commit Selected",
-        "category": "SVN"
+        "category": "SVN",
+        "icon": {
+          "light": "icons/light/check.svg",
+          "dark": "icons/dark/check.svg"
+        }
+      },
+      {
+        "command": "svn.commitWithMessage",
+        "title": "Commit Changes",
+        "category": "SVN",
+        "icon": {
+          "light": "icons/light/check.svg",
+          "dark": "icons/dark/check.svg"
+        }
       },
       {
         "command": "svn.openChangeBase",
@@ -132,17 +145,17 @@
       },
       {
         "command": "svn.revert",
-        "title": "Revert Selected",
+        "title": "Revert Selected File",
         "category": "SVN"
       },
       {
         "command": "svn.update",
-        "title": "Svn update",
+        "title": "Update",
         "category": "SVN"
       },
       {
         "command": "svn.patch",
-        "title": "Svn patch",
+        "title": "Show diff patch",
         "category": "SVN"
       },
       {
@@ -158,6 +171,20 @@
       {
         "command": "svn.log",
         "title": "Show commit messages",
+        "category": "SVN"
+      },
+      {
+        "command": "svn.revertChange",
+        "title": "Revert Change",
+        "category": "SVN",
+        "icon": {
+          "light": "icons/light/clean.svg",
+          "dark": "icons/dark/clean.svg"
+        }
+      },
+      {
+        "command": "svn.revertSelectedRanges",
+        "title": "Revert Selected Ranges",
         "category": "SVN"
       }
     ],
@@ -178,13 +205,42 @@
         {
           "command": "svn.openChangeHead",
           "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
+        },
+        {
+          "command": "svn.addChangelist",
+          "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
+        },
+        {
+          "command": "svn.removeChangelist",
+          "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
+        },
+        {
+          "command": "svn.commit",
+          "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
+        },
+        {
+          "command": "svn.commitWithMessage",
+          "when": "false"
+        },
+        {
+          "command": "svn.revertChange",
+          "when": "false"
+        },
+        {
+          "command": "svn.revertSelectedRanges",
+          "when": "config.svn.enabled && svnOpenRepositoryCount != 0 && svnHasSupportToRegisterDiffCommand == 1"
         }
       ],
       "scm/title": [
         {
+          "command": "svn.commitWithMessage",
+          "group": "navigation",
+          "when": "config.svn.enabled && scmProvider == svn"
+        },
+        {
           "command": "svn.refresh",
           "group": "navigation",
-          "when": "scmProvider == svn"
+          "when": "config.svn.enabled && scmProvider == svn"
         },
         {
           "command": "svn.switchBranch",
@@ -248,13 +304,13 @@
         {
           "command": "svn.addChangelist",
           "when":
-            "config.svn.enabled && scmProvider == svn && scmResourceGroup != external",
+            "config.svn.enabled && scmProvider == svn && scmResourceGroup != unversioned && scmResourceGroup != external",
           "group": "inline"
         },
         {
           "command": "svn.addChangelist",
           "when":
-            "config.svn.enabled && scmProvider == svn && scmResourceGroup != external",
+            "config.svn.enabled && scmProvider == svn && scmResourceGroup != unversioned && scmResourceGroup != external",
           "group": "1_modification"
         },
         {
@@ -288,6 +344,12 @@
           "group": "2_modification"
         }
       ],
+      "scm/change/title": [
+        {
+          "command": "svn.revertChange",
+          "when": "config.svn.enabled && originalResourceScheme == svn"
+        }
+      ],
       "editor/title": [
         {
           "command": "svn.openFile",
@@ -306,6 +368,12 @@
           "group": "navigation",
           "when":
             "config.svn.enabled && svnOpenRepositoryCount != 0 && !isInDiffEditor && resourceScheme == file"
+        },
+        {
+          "command": "svn.revertSelectedRanges",
+          "group": "2_svn@3",
+          "when":
+            "config.svn.enabled && svnOpenRepositoryCount != 0 && isInDiffEditor && resourceScheme != merge-conflict.conflict-diff &&  && svnHasSupportToRegisterDiffCommand == 1"
         }
       ]
     },
@@ -315,6 +383,11 @@
         "svn.enabled": {
           "type": "boolean",
           "description": "Whether svn is enabled",
+          "default": true
+        },
+        "svn.autorefresh": {
+          "type": "boolean",
+          "description": "Whether auto refreshing is enabled",
           "default": true
         },
         "svn.decorations.enabled": {
@@ -358,12 +431,6 @@
           "minimum": 0,
           "description":
             "How frequently (in minutes) to check branch changes. Set to `0` to avoid periodic checks.",
-          "default": 5
-        },
-        "svn.newCommits.update": {
-          "type": "number",
-          "minimum": 0,
-          "description": "How frequently (in minutes) to check for new commits. Set to `0` to avoid periodic checks.",
           "default": 5
         },
         "svn.multipleFolders.enabled": {

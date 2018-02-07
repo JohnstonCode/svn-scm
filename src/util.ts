@@ -1,7 +1,7 @@
-import { Event, window } from "vscode";
+import { Event, window, commands } from "vscode";
 import { sep } from "path";
 
-export interface BaseDisposable {
+export interface IDisposable {
   dispose(): void;
 }
 
@@ -36,13 +36,11 @@ export function dispose(disposables: any[]): any[] {
   return [];
 }
 
-export function combinedDisposable(
-  disposables: BaseDisposable[]
-): BaseDisposable {
+export function combinedDisposable(disposables: IDisposable[]): IDisposable {
   return toDisposable(() => dispose(disposables));
 }
 
-export function toDisposable(dispose: () => void): BaseDisposable {
+export function toDisposable(dispose: () => void): IDisposable {
   return { dispose };
 }
 
@@ -63,6 +61,11 @@ export function onceEvent<T>(event: Event<T>): Event<T> {
 
 export function eventToPromise<T>(event: Event<T>): Promise<T> {
   return new Promise<T>(c => onceEvent(event)(c));
+}
+
+const regexNormalizePath = new RegExp(sep === "/" ? "\\\\" : "/", "g");
+export function fixPathSeparator(file: string) {
+  return file.replace(regexNormalizePath, sep);
 }
 
 export function isDescendant(parent: string, descendant: string): boolean {
@@ -96,4 +99,21 @@ export function camelcase(name: string) {
 
 export function hasSupportToDecorationProvider() {
   return typeof window.registerDecorationProvider === "function";
+}
+
+export function hasSupportToRegisterDiffCommand() {
+  try {
+    const disposable = commands.registerDiffInformationCommand(
+      "svn.testDiff",
+      () => {}
+    );
+    disposable.dispose();
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
+export function timeout(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }

@@ -8,10 +8,17 @@ import {
   workspace,
   SourceControlResourceGroup,
   ViewColumn,
-  SourceControlResourceState
+  SourceControlResourceState,
+  ProgressLocation,
+  LineChange,
+  WorkspaceEdit,
+  Range,
+  Position,
+  TextEditor,
+  Disposable
 } from "vscode";
 import { inputCommitMessage } from "./messages";
-import { Svn, Status } from "./svn";
+import { Svn, Status, SvnErrorCodes } from "./svn";
 import { Model } from "./model";
 import { Repository } from "./repository";
 import { Resource } from "./resource";
@@ -20,9 +27,19 @@ import * as fs from "fs";
 import * as path from "path";
 import { start } from "repl";
 import { getConflictPickOptions } from "./conflictItems";
+import { applyLineChanges } from "./lineChanges";
+import { IDisposable, hasSupportToRegisterDiffCommand } from "./util";
+import {
+  getChangelistPickOptions,
+  inputSwitchChangelist,
+  ChangeListItem,
+  getCommitChangelistPickOptions,
+  inputCommitChangelist
+} from "./changelistItems";
 
 interface CommandOptions {
   repository?: boolean;
+  diff?: boolean;
 }
 
 interface Command {
@@ -84,44 +101,34 @@ class SwitchBranchItem implements QuickPickItem {
   }
 
   async run(repository: Repository): Promise<void> {
-    await repository.switchBranch(this.ref);
+    try {
+      await repository.switchBranch(this.ref);
+    } catch (error) {
+      if (error.svnErrorCode === SvnErrorCodes.NotShareCommonAncestry) {
+        window.showErrorMessage(
+          `Path '${
+            repository.workspaceRoot
+          }' does not share common version control ancestry with the requested switch location.`
+        );
+        return;
+      }
+
+      window.showErrorMessage("Unable to switch branch");
+    }
   }
 }
 
-class ChangeListItem implements QuickPickItem {
-  constructor(protected group: SourceControlResourceGroup) {}
-
-  get label(): string {
-    return this.group.label;
-  }
-
-  get description(): string {
-    return this.group.label;
-  }
-  get resourceGroup(): SourceControlResourceGroup {
-    return this.group;
-  }
-}
-
-class NewChangeListItem implements QuickPickItem {
-  constructor() {}
-
-  get label(): string {
-    return "$(plus) New changelist";
-  }
-
-  get description(): string {
-    return "Create a new change list";
-  }
-}
-
-export class SvnCommands {
-  private commands: any[] = [];
+export class SvnCommands implements IDisposable {
+  private disposables: Disposable[];
 
   constructor(private model: Model) {
-    Commands.map(({ commandId, method, options }) => {
+    this.disposables = Commands.map(({ commandId, method, options }) => {
       const command = this.createCommand(method, options);
-      commands.registerCommand(commandId, command);
+      if (options.diff && hasSupportToRegisterDiffCommand()) {
+        return commands.registerDiffInformationCommand(commandId, command);
+      } else {
+        return commands.registerCommand(commandId, command);
+      }
     });
   }
 
@@ -175,42 +182,7 @@ export class SvnCommands {
       return;
     }
 
-    const picks: ChangeListItem[] = [];
-
-    if (repository.changes.resourceStates.length) {
-      picks.push(new ChangeListItem(repository.changes));
-    }
-
-    const svnConfig = workspace.getConfiguration("svn");
-    const ignoreOnCommitList = svnConfig.get<string[]>(
-      "sourceControl.ignoreOnCommit",
-      []
-    );
-
-    repository.changelists.forEach((group, changelist) => {
-      if (
-        group.resourceStates.length &&
-        !ignoreOnCommitList.includes(changelist)
-      ) {
-        picks.push(new ChangeListItem(group));
-      }
-    });
-
-    if (picks.length === 0) {
-      window.showInformationMessage("There are no changes to commit.");
-      return;
-    }
-
-    let choice;
-    // If has only changes, not prompt to select changelist
-    if (picks.length === 1 && repository.changes.resourceStates.length) {
-      choice = picks[0];
-    } else {
-      choice = await window.showQuickPick(picks, {
-        placeHolder: "Select a changelist to commit"
-      });
-    }
-
+    const choice = await inputCommitChangelist(repository);
     if (!choice) {
       return;
     }
@@ -229,13 +201,9 @@ export class SvnCommands {
     });
 
     try {
-      const result = await repository.repository.commitFiles(
-        message,
-        filePaths
-      );
+      const result = await repository.commitFiles(message, filePaths);
       window.showInformationMessage(result);
       repository.inputBox.value = "";
-      repository.update();
     } catch (error) {
       console.error(error);
       window.showErrorMessage(error);
@@ -243,129 +211,149 @@ export class SvnCommands {
   }
 
   @command("svn.add")
-  async addFile(resource: Resource) {
-    const repository = this.model.getRepository(resource.resourceUri.fsPath);
+  async addFile(
+    ...resourceStates: SourceControlResourceState[]
+  ): Promise<void> {
+    const selection = this.getResourceStates(resourceStates);
 
-    if (!repository) {
+    if (selection.length === 0) {
       return;
     }
 
-    try {
-      await repository.addFile(resource.resourceUri.fsPath);
-    } catch (error) {
-      console.log(error);
-      window.showErrorMessage("Unable to add file");
-    }
+    const uris = selection.map(resource => resource.resourceUri);
+
+    await this.runByRepository(uris, async (repository, resources) => {
+      if (!repository) {
+        return;
+      }
+
+      const paths = resources.map(resource => resource.fsPath);
+
+      try {
+        await repository.addFiles(paths);
+      } catch (error) {
+        console.log(error);
+        window.showErrorMessage("Unable to add file");
+      }
+    });
   }
 
   @command("svn.addChangelist")
-  async addChangelist(resource: Resource) {
-    const repository = this.model.getRepository(resource.resourceUri.fsPath);
+  async addChangelist(
+    ...resourceStates: SourceControlResourceState[]
+  ): Promise<void> {
+    const selection = this.getResourceStates(resourceStates);
 
-    if (!repository) {
+    if (selection.length === 0) {
       return;
     }
 
-    const picks: QuickPickItem[] = [];
+    const uris = selection.map(resource => resource.resourceUri);
 
-    repository.changelists.forEach((group, changelist) => {
-      if (group.resourceStates.length) {
-        picks.push(new ChangeListItem(group));
-      }
-    });
-    picks.push(new NewChangeListItem());
-
-    const selectedChoice: any = await window.showQuickPick(picks, {});
-    if (!selectedChoice) {
-      return;
-    }
-
-    let changelistName = "";
-
-    if (selectedChoice instanceof NewChangeListItem) {
-      const newChangelistName = await window.showInputBox();
-      if (!newChangelistName) {
+    await this.runByRepository(uris, async (repository, resources) => {
+      if (!repository) {
         return;
       }
-      changelistName = newChangelistName;
-    } else if (selectedChoice instanceof ChangeListItem) {
-      changelistName = selectedChoice.resourceGroup.id.replace(
-        /^changelist-/,
-        ""
-      );
-    } else {
-      return;
-    }
 
-    try {
-      await repository.addChangelist(
-        resource.resourceUri.fsPath,
-        changelistName
-      );
-    } catch (error) {
-      console.log(error);
-      window.showErrorMessage(
-        `Unable to add file "${
-          resource.resourceUri.fsPath
-        }" to changelist "${changelistName}"`
-      );
-    }
+      const changelistName = await inputSwitchChangelist(repository);
+
+      if (!changelistName) {
+        return;
+      }
+
+      const paths = resources.map(resource => resource.fsPath);
+
+      try {
+        await repository.addChangelist(paths, changelistName);
+      } catch (error) {
+        console.log(error);
+        window.showErrorMessage(
+          `Unable to add file 
+          "${paths.join(",")}" to changelist "${changelistName}"`
+        );
+      }
+    });
   }
 
   @command("svn.removeChangelist")
-  async removeChangelist(resource: Resource) {
-    const repository = this.model.getRepository(resource.resourceUri.fsPath);
+  async removeChangelist(
+    ...resourceStates: SourceControlResourceState[]
+  ): Promise<void> {
+    const selection = this.getResourceStates(resourceStates);
 
-    if (!repository) {
+    if (selection.length === 0) {
       return;
     }
 
-    try {
-      await repository.removeChangelist(resource.resourceUri.fsPath);
-    } catch (error) {
-      console.log(error);
-      window.showErrorMessage(
-        `Unable to remove file "${resource.resourceUri.fsPath}" from changelist`
-      );
-    }
-  }
+    const uris = selection.map(resource => resource.resourceUri);
 
-  @command("svn.commit", { repository: true })
-  async commit(
-    repository: Repository,
-    ...resourceStates: Resource[]
-  ): Promise<void> {
-    try {
-      const paths = resourceStates.map(state => {
-        return state.resourceUri.fsPath;
-      });
-
-      // If files is renamed, the commit need previous file
-      resourceStates.forEach(state => {
-        if (state.type === Status.ADDED && state.renameResourceUri) {
-          paths.push(state.renameResourceUri.fsPath);
-        }
-      });
-
-      const message = await inputCommitMessage();
-
-      if (message === undefined) {
+    await this.runByRepository(uris, async (repository, resources) => {
+      if (!repository) {
         return;
       }
 
-      const result = await repository.repository.commitFiles(message, paths);
-      window.showInformationMessage(result);
-      repository.update();
-    } catch (error) {
-      console.error(error);
-      window.showErrorMessage("Unable to commit");
+      const paths = resources.map(resource => resource.fsPath);
+
+      try {
+        await repository.removeChangelist(paths);
+      } catch (error) {
+        console.log(error);
+        window.showErrorMessage(
+          `Unable to remove file "${paths.join(",")}" from changelist`
+        );
+      }
+    });
+  }
+
+  @command("svn.commit")
+  async commit(...resources: SourceControlResourceState[]): Promise<void> {
+    if (resources.length === 0 || !(resources[0].resourceUri instanceof Uri)) {
+      const resource = this.getSCMResource();
+
+      if (!resource) {
+        return;
+      }
+
+      resources = [resource];
     }
+
+    const selection = resources.filter(
+      s => s instanceof Resource
+    ) as Resource[];
+
+    const uris = selection.map(resource => resource.resourceUri);
+    selection.forEach(resource => {
+      if (resource.type === Status.ADDED && resource.renameResourceUri) {
+        uris.push(resource.renameResourceUri);
+      }
+    });
+
+    await this.runByRepository(uris, async (repository, resources) => {
+      if (!repository) {
+        return;
+      }
+
+      const paths = resources.map(resource => resource.fsPath);
+
+      try {
+        const message = await inputCommitMessage();
+
+        if (message === undefined) {
+          return;
+        }
+
+        const result = await repository.commitFiles(message, paths);
+        window.showInformationMessage(result);
+      } catch (error) {
+        console.error(error);
+        window.showErrorMessage("Unable to commit");
+      }
+    });
   }
 
   @command("svn.refresh", { repository: true })
   async refresh(repository: Repository) {
-    repository.update();
-    repository.updateBranches();
+    await repository.status();
   }
 
   @command("svn.openResourceBase")
@@ -635,12 +623,19 @@ export class SvnCommands {
 
   @command("svn.switchBranch", { repository: true })
   async switchBranch(repository: Repository) {
-    const branches = repository.branches.map(
-      branch => new SwitchBranchItem(branch)
+    const branchesPromise = repository.getBranches();
+
+    window.withProgress(
+      { location: ProgressLocation.Window, title: "Checking remote branches" },
+      () => branchesPromise
     );
+
+    const branches = await branchesPromise;
+
+    const branchPicks = branches.map(branch => new SwitchBranchItem(branch));
     const placeHolder = "Pick a branch to switch to.";
     const createBranch = new CreateBranchItem(this);
-    const picks = [createBranch, ...branches];
+    const picks = [createBranch, ...branchPicks];
 
     const choice = await window.showQuickPick(picks, { placeHolder });
 
@@ -670,8 +665,10 @@ export class SvnCommands {
   }
 
   @command("svn.revert")
-  async revert(...resourceStates: Resource[]) {
-    if (resourceStates.length === 0) {
+  async revert(...resourceStates: SourceControlResourceState[]): Promise<void> {
+    const selection = this.getResourceStates(resourceStates);
+
+    if (selection.length === 0) {
       return;
     }
 
@@ -685,18 +682,22 @@ export class SvnCommands {
       return;
     }
 
-    try {
-      const paths = resourceStates.map(state => {
-        return state.resourceUri;
-      });
+    const uris = selection.map(resource => resource.resourceUri);
 
-      await this.runByRepository(paths, async (repository, paths) =>
-        repository.repository.revert(paths)
-      );
-    } catch (error) {
-      console.error(error);
-      window.showErrorMessage("Unable to revert");
-    }
+    await this.runByRepository(uris, async (repository, resources) => {
+      if (!repository) {
+        return;
+      }
+
+      const paths = resources.map(resource => resource.fsPath);
+
+      try {
+        await repository.revert(paths);
+      } catch (error) {
+        console.log(error);
+        window.showErrorMessage("Unable to revert");
+      }
+    });
   }
 
   @command("svn.update", { repository: true })
@@ -713,7 +714,7 @@ export class SvnCommands {
   @command("svn.patch", { repository: true })
   async patch(repository: Repository) {
     try {
-      const result = await repository.repository.patch();
+      const result = await repository.patch();
       // send the patch results to a new tab
       workspace
         .openTextDocument({ language: "diff", content: result })
@@ -727,12 +728,15 @@ export class SvnCommands {
     }
   }
 
-  @command("svn.remove", { repository: true })
-  async remove(
-    repository: Repository,
-    ...resourceStates: Resource[]
-  ): Promise<void> {
-    let keepLocal;
+  @command("svn.remove")
+  async remove(...resourceStates: SourceControlResourceState[]): Promise<void> {
+    const selection = this.getResourceStates(resourceStates);
+
+    if (selection.length === 0) {
+      return;
+    }
+
+    let keepLocal: boolean;
     const answer = await window.showWarningMessage(
       "Would you like to keep a local copy of the files?.",
       "Yes",
@@ -749,17 +753,22 @@ export class SvnCommands {
       keepLocal = false;
     }
 
-    try {
-      const paths = resourceStates.map(state => {
-        return state.resourceUri.fsPath;
-      });
+    const uris = selection.map(resource => resource.resourceUri);
 
-      const result = await repository.repository.removeFiles(paths, keepLocal);
-      repository.update();
-    } catch (error) {
-      console.error(error);
-      window.showErrorMessage("Unable to remove files");
-    }
+    await this.runByRepository(uris, async (repository, resources) => {
+      if (!repository) {
+        return;
+      }
+
+      const paths = resources.map(resource => resource.fsPath);
+
+      try {
+        const result = await repository.removeFiles(paths, keepLocal);
+      } catch (error) {
+        console.log(error);
+        window.showErrorMessage("Unable to remove files");
+      }
+    });
   }
 
   @command("svn.resolve", { repository: true })
@@ -782,14 +791,27 @@ export class SvnCommands {
         return;
       }
 
-      await repository.resolve(conflict.resourceUri.path, choice.label);
+      try {
+        const response = await repository.resolve(
+          conflict.resourceUri.path,
+          choice.label
+        );
+        window.showInformationMessage(response);
+      } catch (error) {
+        window.showErrorMessage(error.stderr);
+      }
     }
   }
 
   @command("svn.log", { repository: true })
   async log(repository: Repository) {
     try {
-      const result = await repository.repository.log();
+      const logPromise = repository.log();
+      window.withProgress(
+        { location: ProgressLocation.Window, title: "Fetching logs" },
+        () => logPromise
+      );
+      const result = await logPromise;
       // send the log results to a new tab
       workspace.openTextDocument({ content: result }).then(doc => {
         window.showTextDocument(doc);
@@ -798,6 +820,108 @@ export class SvnCommands {
       console.error(error);
       window.showErrorMessage("Unable to log");
     }
+  }
+
+  private async _revertChanges(
+    textEditor: TextEditor,
+    changes: LineChange[]
+  ): Promise<void> {
+    const modifiedDocument = textEditor.document;
+    const modifiedUri = modifiedDocument.uri;
+
+    if (modifiedUri.scheme !== "file") {
+      return;
+    }
+
+    const originalUri = toSvnUri(modifiedUri, "BASE");
+    const originalDocument = await workspace.openTextDocument(originalUri);
+    const basename = path.basename(modifiedUri.fsPath);
+    const message = `Are you sure you want to revert the selected changes in ${basename}?`;
+    const yes = "Revert Changes";
+    const pick = await window.showWarningMessage(message, { modal: true }, yes);
+
+    if (pick !== yes) {
+      return;
+    }
+
+    const result = applyLineChanges(
+      originalDocument,
+      modifiedDocument,
+      changes
+    );
+    const edit = new WorkspaceEdit();
+    edit.replace(
+      modifiedUri,
+      new Range(
+        new Position(0, 0),
+        modifiedDocument.lineAt(modifiedDocument.lineCount - 1).range.end
+      ),
+      result
+    );
+    workspace.applyEdit(edit);
+    await modifiedDocument.save();
+  }
+
+  @command("svn.revertChange")
+  async revertChange(
+    uri: Uri,
+    changes: LineChange[],
+    index: number
+  ): Promise<void> {
+    const textEditor = window.visibleTextEditors.filter(
+      e => e.document.uri.toString() === uri.toString()
+    )[0];
+
+    if (!textEditor) {
+      return;
+    }
+
+    await this._revertChanges(textEditor, [
+      ...changes.slice(0, index),
+      ...changes.slice(index + 1)
+    ]);
+  }
+
+  @command("svn.revertSelectedRanges", { diff: true })
+  async revertSelectedRanges(changes: LineChange[]): Promise<void> {
+    const textEditor = window.activeTextEditor;
+
+    if (!textEditor) {
+      return;
+    }
+
+    const modifiedDocument = textEditor.document;
+    const selections = textEditor.selections;
+    const selectedChanges = changes.filter(change => {
+      const modifiedRange =
+        change.modifiedEndLineNumber === 0
+          ? new Range(
+              modifiedDocument.lineAt(
+                change.modifiedStartLineNumber - 1
+              ).range.end,
+              modifiedDocument.lineAt(
+                change.modifiedStartLineNumber
+              ).range.start
+            )
+          : new Range(
+              modifiedDocument.lineAt(
+                change.modifiedStartLineNumber - 1
+              ).range.start,
+              modifiedDocument.lineAt(
+                change.modifiedEndLineNumber - 1
+              ).range.end
+            );
+
+      return selections.every(
+        selection => !selection.intersection(modifiedRange)
+      );
+    });
+
+    if (selectedChanges.length === changes.length) {
+      return;
+    }
+
+    await this._revertChanges(textEditor, selectedChanges);
   }
 
   private getSCMResource(uri?: Uri): Resource | undefined {
@@ -823,6 +947,25 @@ export class SvnCommands {
 
       return repository.getResourceFromFile(uri);
     }
+  }
+
+  private getResourceStates(
+    resourceStates: SourceControlResourceState[]
+  ): Resource[] {
+    if (
+      resourceStates.length === 0 ||
+      !(resourceStates[0].resourceUri instanceof Uri)
+    ) {
+      const resource = this.getSCMResource();
+
+      if (!resource) {
+        return [];
+      }
+
+      resourceStates = [resource];
+    }
+
+    return resourceStates.filter(s => s instanceof Resource) as Resource[];
   }
 
   private runByRepository<T>(
@@ -867,5 +1010,9 @@ export class SvnCommands {
     );
 
     return Promise.all(promises);
+  }
+
+  dispose(): void {
+    this.disposables.forEach(d => d.dispose());
   }
 }
