@@ -124,7 +124,7 @@ export class Repository {
   public statusExternal: IFileStatus[] = [];
   private disposables: Disposable[] = [];
   public currentBranch = "";
-  public newsCommit: number = 0;
+  public newCommit: number = 0;
 
   private _onDidChangeRepository = new EventEmitter<Uri>();
   readonly onDidChangeRepository: Event<Uri> = this._onDidChangeRepository
@@ -137,9 +137,8 @@ export class Repository {
   private _onDidChangeStatus = new EventEmitter<void>();
   readonly onDidChangeStatus: Event<void> = this._onDidChangeStatus.event;
 
-  private _onDidChangeNewsCommit = new EventEmitter<void>();
-  readonly onDidChangeNewsCommit: Event<void> = this._onDidChangeNewsCommit
-    .event;
+  private _onDidChangeNewCommit = new EventEmitter<void>();
+  readonly onDidChangeNewCommit: Event<void> = this._onDidChangeNewCommit.event;
 
   private _onRunOperation = new EventEmitter<Operation>();
   readonly onRunOperation: Event<Operation> = this._onRunOperation.event;
@@ -268,12 +267,12 @@ export class Repository {
     this.disposables.push(this.conflicts);
 
     const svnConfig = workspace.getConfiguration("svn");
-
-    const updateFreqNews = svnConfig.get<number>("svn.newsCommits.update");
-    if (updateFreqNews) {
+                                                
+    const updateFreqNew = svnConfig.get<number>("svn.newCommits.update");
+    if (updateFreqNew) {
       const interval = setInterval(() => {
-        this.updateNewsCommits();
-      }, 1000 * 60 * updateFreqNews);
+        this.updateNewCommits();
+      }, 1000 * 60 * updateFreqNew);
 
       this.disposables.push(
         toDisposable(() => {
@@ -282,16 +281,16 @@ export class Repository {
       );
     }
 
-    this.updateNewsCommits();
+    this.updateNewCommits();
     this.status();
   }
 
   @debounce(1000)
-  async updateNewsCommits() {
-    const newsCommit = await this.repository.countNewsCommit();
-    if (newsCommit !== this.newsCommit) {
-      this.newsCommit = newsCommit;
-      this._onDidChangeNewsCommit.fire();
+  async updateNewCommits() {
+    const newCommits = await this.repository.countNewCommits();
+    if (newCommits !== this.newCommits) {
+      this.newCommits = newCommits;
+      this._onDidChangeNewCommits.fire();
     }
   }
 
@@ -538,7 +537,7 @@ export class Repository {
   async branch(name: string) {
     return await this.run(Operation.NewBranch, async () => {
       await this.repository.branch(name);
-      this.updateNewsCommits();
+      this.updateNewCommits();
     });
   }
 

@@ -327,7 +327,7 @@ export class Repository {
     return result.stdout;
   }
 
-  async countNewsCommit(revision: string = "BASE:HEAD") {
+  async countNewCommit(revision: string = "BASE:HEAD") {
     const result = await this.exec(["log", "-r", revision, "-q", "--xml"]);
 
     const matches = result.stdout.match(/<logentry/g);

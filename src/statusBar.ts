@@ -22,6 +22,7 @@ export class SvnStatusBar {
       this._onDidChange,
       this.disposables
     );
+
     repository.onDidChangeOperations(
       this._onDidChange.fire,
       this._onDidChange,
@@ -47,7 +48,7 @@ export class SvnStatusBar {
     const title = !isIdle
       ? "Running"
       : this.repository.newsCommit > 0
-        ? `${this.repository.newsCommit} news commits`
+        ? `${this.repository.newCommit} new commits`
         : "Updated";
 
     result.push({
