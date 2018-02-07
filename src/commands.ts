@@ -22,7 +22,7 @@ import { Svn, Status, SvnErrorCodes } from "./svn";
 import { Model } from "./model";
 import { Repository } from "./repository";
 import { Resource } from "./resource";
-import { toSvnUri, fromSvnUri } from "./uri";
+import { toSvnUri, fromSvnUri, SvnUriAction } from "./uri";
 import * as fs from "fs";
 import * as path from "path";
 import { start } from "repl";
@@ -377,7 +377,7 @@ export class SvnCommands implements IDisposable {
 
     if (arg instanceof Uri) {
       if (arg.scheme === "svn") {
-        uris = [Uri.file(fromSvnUri(arg).path)];
+        uris = [Uri.file(fromSvnUri(arg).fsPath)];
       } else if (arg.scheme === "file") {
         uris = [arg];
       }
@@ -444,15 +444,23 @@ export class SvnCommands implements IDisposable {
 
     const HEAD = this.getLeftResource(resource, "HEAD");
 
+    const basename = path.basename(resource.resourceUri.fsPath);
     if (!HEAD) {
-      const basename = path.basename(resource.resourceUri.fsPath);
       window.showWarningMessage(
         `"HEAD version of '${basename}' is not available."`
       );
       return;
     }
 
-    return await commands.executeCommand<void>("vscode.open", HEAD);
+    const basedir = path.dirname(resource.resourceUri.fsPath);
+
+    const uri = HEAD.with({
+      path: path.join(basedir, `(HEAD) ${basename}`) // change document title
+    });
+
+    return await commands.executeCommand<void>("vscode.open", uri, {
+      preview: true
+    });
   }
 
   @command("svn.openChangeBase")
@@ -572,13 +580,17 @@ export class SvnCommands implements IDisposable {
     against: string = ""
   ): Uri | undefined {
     if (resource.type === Status.ADDED && resource.renameResourceUri) {
-      return toSvnUri(resource.renameResourceUri, against);
+      return toSvnUri(resource.renameResourceUri, SvnUriAction.SHOW, {
+        ref: against
+      });
     }
 
     switch (resource.type) {
       case Status.MODIFIED:
       case Status.REPLACED:
-        return toSvnUri(resource.resourceUri, against);
+        return toSvnUri(resource.resourceUri, SvnUriAction.SHOW, {
+          ref: against
+        });
     }
   }
 
@@ -595,7 +607,9 @@ export class SvnCommands implements IDisposable {
         return resource.resourceUri;
       case Status.DELETED:
       case Status.MISSING:
-        return toSvnUri(resource.resourceUri, against);
+        return toSvnUri(resource.resourceUri, SvnUriAction.SHOW, {
+          ref: against
+        });
     }
   }
 
@@ -714,14 +728,17 @@ export class SvnCommands implements IDisposable {
   @command("svn.patch", { repository: true })
   async patch(repository: Repository) {
     try {
-      const result = await repository.patch();
-      // send the patch results to a new tab
-      workspace
-        .openTextDocument({ language: "diff", content: result })
-        .then(doc => {
-          window.showTextDocument(doc);
-        });
-      window.showInformationMessage("Files Patched");
+      const resource = toSvnUri(
+        Uri.file(repository.workspaceRoot),
+        SvnUriAction.PATCH
+      );
+      const uri = resource.with({
+        path: path.join(resource.path, "svn.patch") // change document title
+      });
+
+      await commands.executeCommand<void>("vscode.open", uri, {
+        preview: true
+      });
     } catch (error) {
       console.error(error);
       window.showErrorMessage("Unable to patch");
@@ -806,15 +823,16 @@ export class SvnCommands implements IDisposable {
   @command("svn.log", { repository: true })
   async log(repository: Repository) {
     try {
-      const logPromise = repository.log();
-      window.withProgress(
-        { location: ProgressLocation.Window, title: "Fetching logs" },
-        () => logPromise
+      const resource = toSvnUri(
+        Uri.file(repository.workspaceRoot),
+        SvnUriAction.LOG
       );
-      const result = await logPromise;
-      // send the log results to a new tab
-      workspace.openTextDocument({ content: result }).then(doc => {
-        window.showTextDocument(doc);
+      const uri = resource.with({
+        path: path.join(resource.path, "svn.log") // change document title
+      });
+
+      await commands.executeCommand<void>("vscode.open", uri, {
+        preview: true
       });
     } catch (error) {
       console.error(error);
@@ -833,7 +851,9 @@ export class SvnCommands implements IDisposable {
       return;
     }
 
-    const originalUri = toSvnUri(modifiedUri, "BASE");
+    const originalUri = toSvnUri(modifiedUri, SvnUriAction.SHOW, {
+      ref: "BASE"
+    });
     const originalDocument = await workspace.openTextDocument(originalUri);
     const basename = path.basename(modifiedUri.fsPath);
     const message = `Are you sure you want to revert the selected changes in ${basename}?`;
@@ -934,8 +954,8 @@ export class SvnCommands implements IDisposable {
     }
 
     if (uri.scheme === "svn") {
-      const { path } = fromSvnUri(uri);
-      uri = Uri.file(path);
+      const { fsPath } = fromSvnUri(uri);
+      uri = Uri.file(fsPath);
     }
 
     if (uri.scheme === "file") {

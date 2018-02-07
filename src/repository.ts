@@ -27,7 +27,7 @@ import {
 import * as path from "path";
 import * as micromatch from "micromatch";
 import { setInterval, clearInterval } from "timers";
-import { toSvnUri } from "./uri";
+import { toSvnUri, SvnUriAction } from "./uri";
 import { Status, PropStatus, SvnErrorCodes } from "./svn";
 import { IFileStatus } from "./statusParser";
 
@@ -492,7 +492,7 @@ export class Repository {
       return;
     }
 
-    return toSvnUri(uri, "");
+    return toSvnUri(uri, SvnUriAction.SHOW);
   }
 
   async getBranches() {
