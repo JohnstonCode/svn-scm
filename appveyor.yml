@@ -1,16 +1,34 @@
 environment:
-  ELECTRON_RUN_AS_NODE: 1
+  ELECTRON_NO_ATTACH_CONSOLE: 1
   VSCODE_BUILD_VERBOSE: true
 
+# platform:
+#   - x86
+#   - x64
+
 cache:
+  - node_modules
   - '%LOCALAPPDATA%\Yarn\cache'
+  - '%APPDATA%\npm-cache'
 
 install:
-  - ps: Install-Product node 8.9.1 x64
-
-build_script:
+  - ps: Install-Product node 8.9.1
+  - npm install -g npm
+  - node --version
+  - npm --version
   - npm install
+  
+build_script:
   - npm run vscode:prepublish
+  # For coverage
+  - ps: (get-content package.json) | %{$_ -replace '"\*"',''} | set-content package.json
+
 
 test_script:
-  - npm run test --silent
+  - npm test --silent
+
+after_test:
+  - ps: |
+      $env:PATH = 'C:\msys64\usr\bin;' + $env:PATH
+      Invoke-WebRequest -Uri 'https://codecov.io/bash' -OutFile codecov.sh
+      bash codecov.sh

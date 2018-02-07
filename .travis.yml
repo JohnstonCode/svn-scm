@@ -33,11 +33,11 @@ install:
   - npm install
 #- npm run prettier
   - npm run vscode:prepublish
+  # For coverage
+  - sed -i.bak 's/"\*"//g' package.json
 
 script:
   - npm test --silent
 
 after_success:
-  - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$CODE_VERSION" == "" ]; then
-      bash <(curl -s https://codecov.io/bash);
-    fi
+  - bash <(curl -s https://codecov.io/bash)

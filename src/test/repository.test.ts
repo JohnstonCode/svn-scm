@@ -12,7 +12,7 @@ import * as fs from "fs";
 import * as path from "path";
 import * as vscode from "vscode";
 import * as testUtil from "./testUtil";
-import { Uri } from "vscode";
+import { Uri, commands, workspace, window } from "vscode";
 import { Svn } from "../svn";
 import { Model } from "../model";
 import { SvnFinder, ISvn } from "../svnFinder";
@@ -22,9 +22,6 @@ import { Repository } from "../repository";
 suite("Repository Tests", () => {
   let repoUri: Uri;
   let checkoutDir: Uri;
-  let svnFinder: SvnFinder;
-  let info: ISvn;
-  let svn: Svn;
   let model: Model;
 
   suiteSetup(async () => {
@@ -36,24 +33,23 @@ suite("Repository Tests", () => {
       testUtil.getSvnUrl(repoUri) + "/trunk"
     );
 
-    svnFinder = new SvnFinder();
-    info = await svnFinder.findSvn();
-    svn = new Svn({ svnPath: info.path, version: info.version });
-    model = new Model(svn);
-    await model.tryOpenRepository(checkoutDir.fsPath);
+    model = (await commands.executeCommand(
+      "svn._getModel",
+      checkoutDir
+    )) as Model;
   });
 
   suiteTeardown(() => {
+    model.openRepositories.forEach(repository => repository.dispose());
     testUtil.destroyAllTempPaths();
   });
 
-  test("Find Repository", async () => {
-    assert.ok(info);
-    assert.ok(info.path);
-    assert.ok(info.version);
+  test("Empty Open Repository", async function() {
+    assert.equal(model.repositories.length, 0);
   });
 
   test("Try Open Repository", async function() {
+    await model.tryOpenRepository(checkoutDir.fsPath);
     assert.equal(model.repositories.length, 1);
   });
 
@@ -102,13 +98,14 @@ suite("Repository Tests", () => {
 
     fs.writeFileSync(file, "test");
 
+    const document = await workspace.openTextDocument(file);
+    await window.showTextDocument(document);
+
     await repository.addFiles([file]);
 
     assert.equal(repository.changes.resourceStates.length, 1);
 
-    const message = await repository.commitFiles("First Commit", [
-      file
-    ]);
+    const message = await repository.commitFiles("First Commit", [file]);
     assert.ok(/Committed revision (.*)\./i.test(message));
 
     assert.equal(repository.changes.resourceStates.length, 0);

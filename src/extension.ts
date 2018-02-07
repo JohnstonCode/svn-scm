@@ -19,6 +19,7 @@ import {
 async function init(context: ExtensionContext, disposables: Disposable[]) {
   const outputChannel = window.createOutputChannel("Svn");
   disposables.push(outputChannel);
+  outputChannel.show();
 
   const config = workspace.getConfiguration("svn");
   const enabled = config.get<boolean>("enabled") === true;
@@ -71,16 +72,14 @@ async function init(context: ExtensionContext, disposables: Disposable[]) {
   );
 }
 
-function activate(context: ExtensionContext): any {
+export async function activate(context: ExtensionContext) {
   const disposables: Disposable[] = [];
   context.subscriptions.push(
     new Disposable(() => Disposable.from(...disposables).dispose())
   );
 
-  init(context, disposables).catch(err => console.error(err));
+  await init(context, disposables).catch(err => console.error(err));
 }
-
-exports.activate = activate;
 
 // this method is called when your extension is deactivated
 function deactivate() {}
