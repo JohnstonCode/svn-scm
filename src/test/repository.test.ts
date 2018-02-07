@@ -17,7 +17,6 @@ import { Svn } from "../svn";
 import { Model } from "../model";
 import { SvnFinder, ISvn } from "../svnFinder";
 import { Repository } from "../repository";
-import { timeout } from "../util";
 
 // Defines a Mocha test suite to group tests of similar kind together
 suite("Repository Tests", () => {
@@ -29,6 +28,8 @@ suite("Repository Tests", () => {
   let model: Model;
 
   suiteSetup(async () => {
+    await testUtil.activeExtension();
+
     repoUri = await testUtil.createRepoServer();
     await testUtil.createStandardLayout(testUtil.getSvnUrl(repoUri));
     checkoutDir = await testUtil.createRepoCheckout(
@@ -103,7 +104,6 @@ suite("Repository Tests", () => {
 
     await repository.addFiles([file]);
 
-    await timeout(1500); // Wait the debounce time
     assert.equal(repository.changes.resourceStates.length, 1);
 
     const message = await repository.commitFiles("First Commit", [
@@ -111,7 +111,6 @@ suite("Repository Tests", () => {
     ]);
     assert.ok(/Committed revision (.*)\./i.test(message));
 
-    await timeout(1500); // Wait the debounce time
     assert.equal(repository.changes.resourceStates.length, 0);
 
     const remoteContent = await repository.show(file, "HEAD");

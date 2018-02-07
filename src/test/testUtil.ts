@@ -2,7 +2,7 @@ import * as cp from "child_process";
 import * as path from "path";
 import * as fs from "fs";
 import * as os from "os";
-import { Uri } from "vscode";
+import { Uri, extensions } from "vscode";
 import { SpawnOptions, ChildProcess } from "child_process";
 import { timeout } from "../util";
 
@@ -160,4 +160,20 @@ export function destroyAllTempPaths() {
   while ((path = tempDirList.shift())) {
     destroyPath(path);
   }
+}
+
+export function activeExtension() {
+  return new Promise<void>((resolve, reject) => {
+    const extension = extensions.getExtension("johnstoncode.svn-scm");
+    if (!extension) {
+      reject();
+      return;
+    }
+
+    if (!extension.isActive) {
+      extension.activate().then(() => resolve(), () => reject());
+    } else {
+      resolve();
+    }
+  });
 }
