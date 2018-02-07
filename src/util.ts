@@ -74,8 +74,8 @@ export function isDescendant(parent: string, descendant: string): boolean {
 
   // IF Windows
   if (sep === "\\") {
-    parent = parent.toLowerCase();
-    descendant = descendant.toLowerCase();
+    parent = parent.replace(/^\\/, "").toLowerCase();
+    descendant = descendant.replace(/^\\/, "").toLowerCase();
   }
 
   if (parent === descendant) {

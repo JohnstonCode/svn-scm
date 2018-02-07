@@ -8,7 +8,7 @@ import {
   window
 } from "vscode";
 import { Model, ModelChangeEvent, OriginalResourceChangeEvent } from "./model";
-import { toSvnUri, fromSvnUri } from "./uri";
+import { toSvnUri, fromSvnUri, SvnUriAction } from "./uri";
 import { throttle, debounce } from "./decorators";
 import {
   filterEvent,
@@ -100,12 +100,20 @@ export class SvnContentProvider
     this.cache[cacheKey] = cacheValue;
 
     try {
-      const { path, ref } = fromSvnUri(uri);
+      const { fsPath, action, extra } = fromSvnUri(uri);
 
-      return await repository.show(path, ref);
-    } catch (error) {
-      return "";
-    }
+      if (action === SvnUriAction.SHOW) {
+        const ref = extra.ref;
+        return await repository.show(fsPath, ref);
+      }
+      if (action === SvnUriAction.LOG) {
+        return await repository.log();
+      }
+      if (action === SvnUriAction.PATCH) {
+        return await repository.patch();
+      }
+    } catch (error) {}
+    return "";
   }
 
   private cleanup(): void {
@@ -114,10 +122,10 @@ export class SvnContentProvider
 
     Object.keys(this.cache).forEach(key => {
       const row = this.cache[key];
-      const { path } = fromSvnUri(row.uri);
+      const { fsPath } = fromSvnUri(row.uri);
       const isOpen = workspace.textDocuments
         .filter(d => d.uri.scheme === "file")
-        .some(d => d.uri.fsPath === path);
+        .some(d => d.uri.fsPath === fsPath);
 
       if (isOpen || now - row.timestamp < THREE_MINUTES) {
         cache[row.uri.toString()] = row;
