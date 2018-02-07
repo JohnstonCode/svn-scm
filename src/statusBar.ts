@@ -47,7 +47,7 @@ export class SvnStatusBar {
     const icon = isIdle ? "sync" : "sync~spin";
     const title = !isIdle
       ? "Running"
-      : this.repository.newsCommit > 0
+      : this.repository.newCommit > 0
         ? `${this.repository.newCommit} new commits`
         : "Updated";
 

@@ -267,7 +267,7 @@ export class Repository {
     this.disposables.push(this.conflicts);
 
     const svnConfig = workspace.getConfiguration("svn");
-                                                
+
     const updateFreqNew = svnConfig.get<number>("svn.newCommits.update");
     if (updateFreqNew) {
       const interval = setInterval(() => {
@@ -287,10 +287,10 @@ export class Repository {
 
   @debounce(1000)
   async updateNewCommits() {
-    const newCommits = await this.repository.countNewCommits();
-    if (newCommits !== this.newCommits) {
-      this.newCommits = newCommits;
-      this._onDidChangeNewCommits.fire();
+    const newCommits = await this.repository.countNewCommit();
+    if (newCommits !== this.newCommit) {
+      this.newCommit = newCommits;
+      this._onDidChangeNewCommit.fire();
     }
   }
 
@@ -544,14 +544,14 @@ export class Repository {
   async switchBranch(name: string) {
     await this.run(Operation.SwitchBranch, async () => {
       await this.repository.switchBranch(name);
-      this.updateNewsCommits();
+      this.updateNewCommits();
     });
   }
 
   async updateRevision(): Promise<string> {
     return await this.run<string>(Operation.Update, async () => {
       const response = await this.repository.update();
-      this.updateNewsCommits();
+      this.updateNewCommits();
       return response;
     });
   }
