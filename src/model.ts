@@ -237,7 +237,9 @@ export class Model implements IDisposable {
 
   getRepository(hint: any) {
     const liveRepository = this.getOpenRepository(hint);
-    return liveRepository && liveRepository.repository;
+    if (liveRepository && liveRepository.repository) {
+      return liveRepository.repository;
+    }
   }
 
   getOpenRepository(hint: any): OpenRepository | undefined {
