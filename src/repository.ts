@@ -223,6 +223,8 @@ export class Repository {
       "SVN",
       Uri.file(repository.workspaceRoot)
     );
+
+    this.sourceControl.count = 0;
     this.sourceControl.acceptInputCommand = {
       command: "svn.commitWithMessage",
       title: "commit",
@@ -451,6 +453,22 @@ export class Repository {
     } else {
       this.external.resourceStates = [];
     }
+
+    // svnConfig.
+    const counts = [this.changes, this.conflicts, ...this.changelists.values()];
+
+    if (svnConfig.get<boolean>("sourceControl.countExternal", false)) {
+      counts.push(this.external);
+    }
+
+    if (svnConfig.get<boolean>("sourceControl.countUnversioned", false)) {
+      counts.push(this.unversioned);
+    }
+
+    this.sourceControl.count = counts.reduce(
+      (a, b) => a + b.resourceStates.length,
+      0
+    );
 
     this._onDidChangeStatus.fire();
 
