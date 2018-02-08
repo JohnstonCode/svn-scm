@@ -2,9 +2,10 @@ import * as cp from "child_process";
 import * as path from "path";
 import * as fs from "fs";
 import * as os from "os";
-import { Uri, extensions } from "vscode";
+import { Uri, extensions, window } from "vscode";
 import { SpawnOptions, ChildProcess } from "child_process";
 import { timeout } from "../util";
+import { type } from "os";
 
 const tempDir = os.tmpdir();
 let tempDirList: string[] = [];
@@ -177,3 +178,48 @@ export function activeExtension() {
     }
   });
 }
+
+const overridesShowInputBox: any[] = [];
+
+export function overrideNextShowInputBox(value: any) {
+  overridesShowInputBox.push(value);
+}
+
+const originalShowInputBox = window.showInputBox;
+
+window.showInputBox = (options?: any, token?: any) => {
+  const next = overridesShowInputBox.shift();
+  if (typeof next === "undefined") {
+    return originalShowInputBox.call(null, arguments);
+  }
+  return new Promise((resolve, reject) => {
+    resolve(next);
+  });
+};
+
+const overridesShowQuickPick: any[] = [];
+
+export function overrideNextShowQuickPick(value: any) {
+  overridesShowQuickPick.push(value);
+}
+
+const originalShowQuickPick = window.showQuickPick;
+
+window.showQuickPick = (
+  items: any[] | Thenable<any[]>,
+  options?: any,
+  token?: any
+): Thenable<any | undefined> => {
+  let next = overridesShowQuickPick.shift();
+  if (typeof next === "undefined") {
+    return originalShowQuickPick.call(null, arguments);
+  }
+
+  if (typeof next === "number" && Array.isArray(items)) {
+    next = items[next];
+  }
+
+  return new Promise((resolve, reject) => {
+    resolve(next);
+  });
+};

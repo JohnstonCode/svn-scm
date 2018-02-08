@@ -176,8 +176,8 @@ export class SvnCommands implements IDisposable {
   }
 
   @command("svn.fileOpen")
-  fileOpen(resourceUri: Uri) {
-    commands.executeCommand("vscode.open", resourceUri);
+  async fileOpen(resourceUri: Uri) {
+    await commands.executeCommand("vscode.open", resourceUri);
   }
 
   @command("svn.commitWithMessage", { repository: true })
