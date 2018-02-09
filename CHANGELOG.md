@@ -1,8 +1,15 @@
-# **v1.16.0** #UNDER DEV
+# **v1.17.0**
+
+## What's New
+
+* @edgardmessias Added config option for status count
 
 ## Bug Fixes
 
 * @edgardmessias Fixed tile title for commit log
+* @edgardmessias Fixed an issue what would cause SVN SCM to stop working when opening an external file.
+* @johnjacobkenny Fixed typos
+* @katrinleinweber Fixed typos
 
 # **v1.16.0**
 
