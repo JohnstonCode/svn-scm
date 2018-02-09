@@ -97,22 +97,35 @@ export function camelcase(name: string) {
     .replace(/[\s\-]+/g, "");
 }
 
+let hasDecorationProvider = false;
 export function hasSupportToDecorationProvider() {
-  return typeof window.registerDecorationProvider === "function";
+  return hasDecorationProvider;
 }
 
+try {
+  const fake = {
+    onDidChangeDecorations: (value: any): any => toDisposable(() => {}),
+    provideDecoration: (uri: any, token: any): any => {},
+    dispose: () => {}
+  };
+  const disposable = window.registerDecorationProvider(fake);
+  hasDecorationProvider = true;
+  disposable.dispose();
+} catch (error) {}
+
+let hasRegisterDiffCommand = false;
 export function hasSupportToRegisterDiffCommand() {
-  try {
-    const disposable = commands.registerDiffInformationCommand(
-      "svn.testDiff",
-      () => {}
-    );
-    disposable.dispose();
-    return true;
-  } catch (error) {
-    return false;
-  }
+  return hasRegisterDiffCommand;
 }
+
+try {
+  const disposable = commands.registerDiffInformationCommand(
+    "svn.testDiff",
+    () => {}
+  );
+  hasRegisterDiffCommand = true;
+  disposable.dispose();
+} catch (error) {}
 
 export function timeout(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
