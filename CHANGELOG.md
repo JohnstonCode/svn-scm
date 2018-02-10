@@ -1,3 +1,9 @@
+# **v1.17.1**
+
+## Bug Fixes
+
+* @JohnstonCode Fixed #149
+
 # **v1.17.0**
 
 ## What's New
