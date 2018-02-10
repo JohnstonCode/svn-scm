@@ -257,6 +257,10 @@ export class Model implements IDisposable {
 
     if (hint instanceof Uri) {
       for (const liveRepository of this.openRepositories) {
+        if (liveRepository.repository.workspaceRoot.split(path.sep)[0] !== hint.fsPath.split(path.sep)[0]) {
+          return undefined;
+        }
+
         const relativePath = path.relative(
           liveRepository.repository.workspaceRoot,
           hint.fsPath

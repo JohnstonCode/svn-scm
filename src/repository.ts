@@ -112,7 +112,6 @@ class OperationsImpl implements Operations {
 }
 
 export class Repository {
-  public watcher: FileSystemWatcher;
   public sourceControl: SourceControl;
   public statusBar: SvnStatusBar;
   public changes: SvnResourceGroup;
