@@ -17,11 +17,16 @@ import {
 } from "./util";
 
 async function init(context: ExtensionContext, disposables: Disposable[]) {
+  const config = workspace.getConfiguration("svn");
   const outputChannel = window.createOutputChannel("Svn");
   disposables.push(outputChannel);
-  outputChannel.show();
 
-  const config = workspace.getConfiguration("svn");
+  const showOutput = config.get<boolean>("showOutput");
+
+  if (showOutput) {
+    outputChannel.show();
+  }
+
   const enabled = config.get<boolean>("enabled") === true;
   const pathHint = config.get<string>("path");
   const svnFinder = new SvnFinder();

@@ -2,7 +2,7 @@
   "name": "svn-scm",
   "displayName": "SVN",
   "description": "Integrated Subversion source control",
-  "version": "1.17.1",
+  "version": "1.18.0",
   "publisher": "johnstoncode",
   "engines": {
     "vscode": "^1.17.0"
@@ -476,6 +476,11 @@
           "minimum": 1,
           "description": "Number of commit messages to log",
           "default": 50
+        },
+        "svn.showOutput": {
+          "type": "boolean",
+          "description": "Show the output window when the extension starts",
+          "default": false
         }
       }
     }

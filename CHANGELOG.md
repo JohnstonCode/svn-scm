@@ -1,3 +1,9 @@
+# **v1.18.0**
+
+## What's New
+
+* @JohnstonCode Added config option for showing output on startup
+
 # **v1.17.1**
 
 ## Bug Fixes
