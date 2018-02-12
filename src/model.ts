@@ -12,7 +12,13 @@ import * as path from "path";
 import * as micromatch from "micromatch";
 import { Repository, RepositoryState } from "./repository";
 import { Svn } from "./svn";
-import { dispose, anyEvent, filterEvent, IDisposable } from "./util";
+import {
+  dispose,
+  anyEvent,
+  filterEvent,
+  IDisposable,
+  isDescendant
+} from "./util";
 import { sequentialize } from "./decorators";
 
 export interface ModelChangeEvent {
@@ -248,7 +254,7 @@ export class Model implements IDisposable {
     }
 
     if (hint instanceof Repository) {
-      return this.openRepositories.filter(r => r.repository === hint)[0];
+      return this.openRepositories.find(r => r.repository === hint);
     }
 
     if (typeof hint === "string") {
@@ -256,26 +262,9 @@ export class Model implements IDisposable {
     }
 
     if (hint instanceof Uri) {
-      for (const liveRepository of this.openRepositories) {
-        //if on different drive not need to check
-        if (
-          liveRepository.repository.workspaceRoot.split(path.sep)[0] !==
-          hint.fsPath.split(path.sep)[0]
-        ) {
-          return undefined;
-        }
-
-        const relativePath = path.relative(
-          liveRepository.repository.workspaceRoot,
-          hint.fsPath
-        );
-
-        if (!/^\.\./.test(relativePath)) {
-          return liveRepository;
-        }
-      }
-
-      return undefined;
+      return this.openRepositories.find(liveRepository =>
+        isDescendant(liveRepository.repository.workspaceRoot, hint.fsPath)
+      );
     }
 
     for (const liveRepository of this.openRepositories) {
