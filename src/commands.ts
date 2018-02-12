@@ -733,16 +733,29 @@ export class SvnCommands implements IDisposable {
   @command("svn.patch", { repository: true })
   async patch(repository: Repository) {
     try {
-      const resource = toSvnUri(
-        Uri.file(repository.workspaceRoot),
-        SvnUriAction.PATCH
-      );
-      const uri = resource.with({
-        path: path.join(resource.path, "svn.patch") // change document title
+      const tempFile = path.join(repository.root, ".svn", "tmp", "svn.patch");
+
+      if (fs.existsSync(tempFile)) {
+        fs.unlinkSync(tempFile);
+      }
+
+      const uri = Uri.file(tempFile).with({
+        scheme: "untitled"
       });
 
-      await commands.executeCommand<void>("vscode.open", uri, {
-        preview: true
+      const document = await workspace.openTextDocument(uri);
+      const textEditor = await window.showTextDocument(document);
+
+      const content = await repository.patch();
+      await textEditor.edit(e => {
+        // if is opened, clear content
+        e.delete(
+          new Range(
+            new Position(0, 0),
+            new Position(Number.MAX_SAFE_INTEGER, 0)
+          )
+        );
+        e.insert(new Position(0, 0), content);
       });
     } catch (error) {
       console.error(error);
@@ -836,9 +849,7 @@ export class SvnCommands implements IDisposable {
         path: path.join(resource.path, "svn.log") // change document title
       });
 
-      await commands.executeCommand<void>("vscode.open", uri, {
-        preview: true
-      });
+      await commands.executeCommand<void>("vscode.open", uri);
     } catch (error) {
       console.error(error);
       window.showErrorMessage("Unable to log");
