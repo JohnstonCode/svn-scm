@@ -110,7 +110,7 @@ export class SvnContentProvider
         return await repository.log();
       }
       if (action === SvnUriAction.PATCH) {
-        return await repository.patch();
+        return await repository.patch([fsPath]);
       }
     } catch (error) {}
     return "";

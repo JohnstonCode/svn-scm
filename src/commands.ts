@@ -730,8 +730,7 @@ export class SvnCommands implements IDisposable {
     }
   }
 
-  @command("svn.patch", { repository: true })
-  async patch(repository: Repository) {
+  private async showDiffPath(repository: Repository, files: string[] = []) {
     try {
       const tempFile = path.join(repository.root, ".svn", "tmp", "svn.patch");
 
@@ -746,7 +745,7 @@ export class SvnCommands implements IDisposable {
       const document = await workspace.openTextDocument(uri);
       const textEditor = await window.showTextDocument(document);
 
-      const content = await repository.patch();
+      const content = await repository.patch(files);
       await textEditor.edit(e => {
         // if is opened, clear content
         e.delete(
@@ -761,6 +760,32 @@ export class SvnCommands implements IDisposable {
       console.error(error);
       window.showErrorMessage("Unable to patch");
     }
+  }
+
+  @command("svn.patchAll", { repository: true })
+  async patchAll(repository: Repository): Promise<void> {
+    await this.showDiffPath(repository, []);
+  }
+
+  @command("svn.patch")
+  async patch(...resourceStates: SourceControlResourceState[]): Promise<void> {
+    const selection = this.getResourceStates(resourceStates);
+
+    if (selection.length === 0) {
+      return;
+    }
+
+    const uris = selection.map(resource => resource.resourceUri);
+
+    await this.runByRepository(uris, async (repository, resources) => {
+      if (!repository) {
+        return;
+      }
+
+      const files = resources.map(resource => resource.fsPath);
+
+      await this.showDiffPath(repository, files);
+    });
   }
 
   @command("svn.remove")

@@ -289,9 +289,9 @@ export class Repository {
     return result.stdout;
   }
 
-  async patch() {
-    const result = await this.exec(["diff"]);
-
+  async patch(files: string[]) {
+    files = files.map(file => this.removeAbsolutePath(file));
+    const result = await this.exec(["diff", ...files]);
     const message = result.stdout;
     return message;
   }
