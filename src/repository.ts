@@ -22,7 +22,8 @@ import {
   filterEvent,
   toDisposable,
   timeout,
-  eventToPromise
+  eventToPromise,
+  isDescendant
 } from "./util";
 import * as path from "path";
 import * as micromatch from "micromatch";
@@ -506,6 +507,11 @@ export class Repository {
 
   provideOriginalResource(uri: Uri): Uri | undefined {
     if (uri.scheme !== "file") {
+      return;
+    }
+
+    // Not has original resource for content of ".svn" folder
+    if (isDescendant(path.join(this.root, ".svn"), uri.fsPath)) {
       return;
     }
 
