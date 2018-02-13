@@ -10,10 +10,11 @@ import {
   EventEmitter,
   Event,
   window,
-  ProgressLocation
+  ProgressLocation,
+  commands
 } from "vscode";
 import { Resource, SvnResourceGroup } from "./resource";
-import { throttle, debounce, memoize } from "./decorators";
+import { throttle, debounce, memoize, sequentialize } from "./decorators";
 import { Repository as BaseRepository } from "./svnRepository";
 import { SvnStatusBar } from "./statusBar";
 import {
@@ -41,8 +42,10 @@ export enum Operation {
   Add = "Add",
   AddChangelist = "AddChangelist",
   Commit = "Commit",
+  CurrentBranch = "CurrentBranch",
   Log = "Log",
   NewBranch = "NewBranch",
+  NewCommits = "NewCommits",
   Patch = "Patch",
   Remove = "Remove",
   RemoveChangelist = "RemoveChangelist",
@@ -56,7 +59,9 @@ export enum Operation {
 
 function isReadOnly(operation: Operation): boolean {
   switch (operation) {
+    case Operation.CurrentBranch:
     case Operation.Log:
+    case Operation.NewCommits:
     case Operation.Show:
       return true;
     default:
@@ -66,6 +71,8 @@ function isReadOnly(operation: Operation): boolean {
 
 function shouldShowProgress(operation: Operation): boolean {
   switch (operation) {
+    case Operation.CurrentBranch:
+    case Operation.NewCommits:
     case Operation.Show:
       return false;
     default:
@@ -126,6 +133,8 @@ export class Repository {
   public currentBranch = "";
   public newCommit: number = 0;
 
+  private lastPromptAuth?: Thenable<void | undefined>;
+
   private _onDidChangeRepository = new EventEmitter<Uri>();
   readonly onDidChangeRepository: Event<Uri> = this._onDidChangeRepository
     .event;
@@ -185,6 +194,22 @@ export class Repository {
 
   get inputBox(): SourceControlInputBox {
     return this.sourceControl.inputBox;
+  }
+
+  get username(): string | undefined {
+    return this.repository.username;
+  }
+
+  set username(username: string | undefined) {
+    this.repository.username = username;
+  }
+
+  get password(): string | undefined {
+    return this.repository.password;
+  }
+
+  set password(password: string | undefined) {
+    this.repository.password = password;
   }
 
   constructor(public repository: BaseRepository) {
@@ -283,17 +308,19 @@ export class Repository {
       );
     }
 
-    this.updateNewCommits();
     this.status();
+    this.updateNewCommits();
   }
 
   @debounce(1000)
   async updateNewCommits() {
-    const newCommits = await this.repository.countNewCommit();
-    if (newCommits !== this.newCommit) {
-      this.newCommit = newCommits;
-      this._onDidChangeNewCommit.fire();
-    }
+    this.run(Operation.NewCommits, async () => {
+      const newCommits = await this.repository.countNewCommit();
+      if (newCommits !== this.newCommit) {
+        this.newCommit = newCommits;
+        this._onDidChangeNewCommit.fire();
+      }
+    });
   }
 
   private onFSChange(uri: Uri): void {
@@ -472,7 +499,7 @@ export class Repository {
 
     this._onDidChangeStatus.fire();
 
-    this.currentBranch = await this.repository.getCurrentBranch();
+    this.currentBranch = await this.getCurrentBranch();
 
     return Promise.resolve();
   }
@@ -553,8 +580,10 @@ export class Repository {
     );
   }
 
-  getCurrentBranch() {
-    return this.repository.getCurrentBranch();
+  async getCurrentBranch() {
+    return await this.run(Operation.CurrentBranch, async () => {
+      return this.repository.getCurrentBranch();
+    });
   }
 
   async branch(name: string) {
@@ -611,6 +640,18 @@ export class Repository {
     return await this.run(Operation.Log, () => this.repository.log());
   }
 
+  async promptAuth() {
+    // Prevent multiple prompts for auth
+    if (this.lastPromptAuth) {
+      await this.lastPromptAuth;
+      return;
+    }
+
+    this.lastPromptAuth = commands.executeCommand("svn.promptAuth");
+    await this.lastPromptAuth;
+    this.lastPromptAuth = undefined;
+  }
+
   private async run<T>(
     operation: Operation,
     runOperation: () => Promise<T> = () => Promise.resolve<any>(null)
@@ -664,6 +705,8 @@ export class Repository {
         ) {
           // quatratic backoff
           await timeout(Math.pow(attempt, 2) * 50);
+        } else if (err.svnErrorCode === SvnErrorCodes.AuthorizationFailed && attempt <= 3) {
+          await this.promptAuth();
         } else {
           throw err;
         }
