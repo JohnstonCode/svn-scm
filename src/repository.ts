@@ -597,8 +597,8 @@ export class Repository {
     );
   }
 
-  async patch() {
-    return await this.run(Operation.Patch, () => this.repository.patch());
+  async patch(files: string[]) {
+    return await this.run(Operation.Patch, () => this.repository.patch(files));
   }
 
   async removeFiles(files: any[], keepLocal: boolean) {

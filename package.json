@@ -155,7 +155,12 @@
       },
       {
         "command": "svn.patch",
-        "title": "Show diff patch",
+        "title": "Show diff patch for selected",
+        "category": "SVN"
+      },
+      {
+        "command": "svn.patchAll",
+        "title": "Show all diff patch",
         "category": "SVN"
       },
       {
@@ -303,6 +308,12 @@
           "group": "navigation"
         },
         {
+          "command": "svn.patch",
+          "when":
+            "config.svn.enabled && scmProvider == svn && scmResourceGroup != unversioned && scmResourceGroup != external",
+          "group": "navigation"
+        },
+        {
           "command": "svn.addChangelist",
           "when":
             "config.svn.enabled && scmProvider == svn && scmResourceGroup != unversioned && scmResourceGroup != external",
@@ -336,7 +347,7 @@
           "command": "svn.revert",
           "when":
             "scmProvider == svn && scmResourceGroup != unversioned && scmResourceGroup != external",
-          "group": "1_modification"
+          "group": "2_modification"
         },
         {
           "command": "svn.remove",
