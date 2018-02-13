@@ -1,3 +1,10 @@
+# **v1.19.0**
+
+## What's New
+
+* @edgardmessias Added auth support
+* @edgardmessias Added support for show diff patch for selected
+
 # **v1.18.1**
 
 ## Changes
