@@ -35,6 +35,7 @@ export enum PropStatus {
 }
 
 export const SvnErrorCodes: { [key: string]: string } = {
+  AuthorizationFailed: "E170001",
   RepositoryIsLocked: "E155004",
   NotASvnRepository: "E155007",
   NotShareCommonAncestry: "E195012"
@@ -56,6 +57,8 @@ export interface CpOptions extends SpawnOptions {
   cwd?: string;
   encoding?: string;
   log?: boolean;
+  username?: string;
+  password?: string;
 }
 
 export interface ISvnErrorData {
@@ -177,6 +180,13 @@ export class Svn {
       this.logOutput(
         `[${this.lastCwd.split(/[\\\/]+/).pop()}]$ svn ${args.join(" ")}\n`
       );
+    }
+
+    if (options.username) {
+      args.push("--username", options.username);
+    }
+    if (options.password) {
+      args.push("--password", options.password);
     }
 
     let process = cp.spawn(this.svnPath, args, options);

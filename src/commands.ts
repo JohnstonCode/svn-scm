@@ -62,7 +62,7 @@ function command(commandId: string, options: CommandOptions = {}): Function {
 }
 
 class CreateBranchItem implements QuickPickItem {
-  constructor(private commands: SvnCommands) {}
+  constructor(private commands: SvnCommands) { }
 
   get label(): string {
     return "$(plus) Create new branch";
@@ -107,7 +107,7 @@ class SwitchBranchItem implements QuickPickItem {
       if (error.svnErrorCode === SvnErrorCodes.NotShareCommonAncestry) {
         window.showErrorMessage(
           `Path '${
-            repository.workspaceRoot
+          repository.workspaceRoot
           }' does not share common version control ancestry with the requested switch location.`
         );
         return;
@@ -178,6 +178,19 @@ export class SvnCommands implements IDisposable {
   @command("svn.fileOpen")
   async fileOpen(resourceUri: Uri) {
     await commands.executeCommand("vscode.open", resourceUri);
+  }
+
+  @command("svn.promptAuth", { repository: true })
+  async promptAuth(repository: Repository) {
+    repository.username = await window.showInputBox({
+      placeHolder: "Svn repository username",
+      prompt: "Please enter your username"
+    });
+
+    repository.password = await window.showInputBox({
+      placeHolder: "Svn repository password",
+      prompt: "Please enter your password"
+    });
   }
 
   @command("svn.commitWithMessage", { repository: true })
@@ -817,7 +830,7 @@ export class SvnCommands implements IDisposable {
     for (const conflict of conflicts) {
       const placeHolder = `Select conflict option for ${
         conflict.resourceUri.path
-      }`;
+        }`;
       const picks = getConflictPickOptions();
 
       const choice = await window.showQuickPick(picks, { placeHolder });
@@ -932,21 +945,21 @@ export class SvnCommands implements IDisposable {
       const modifiedRange =
         change.modifiedEndLineNumber === 0
           ? new Range(
-              modifiedDocument.lineAt(
-                change.modifiedStartLineNumber - 1
-              ).range.end,
-              modifiedDocument.lineAt(
-                change.modifiedStartLineNumber
-              ).range.start
-            )
+            modifiedDocument.lineAt(
+              change.modifiedStartLineNumber - 1
+            ).range.end,
+            modifiedDocument.lineAt(
+              change.modifiedStartLineNumber
+            ).range.start
+          )
           : new Range(
-              modifiedDocument.lineAt(
-                change.modifiedStartLineNumber - 1
-              ).range.start,
-              modifiedDocument.lineAt(
-                change.modifiedEndLineNumber - 1
-              ).range.end
-            );
+            modifiedDocument.lineAt(
+              change.modifiedStartLineNumber - 1
+            ).range.start,
+            modifiedDocument.lineAt(
+              change.modifiedEndLineNumber - 1
+            ).range.end
+          );
 
       return selections.every(
         selection => !selection.intersection(modifiedRange)

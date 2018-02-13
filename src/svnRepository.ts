@@ -9,16 +9,22 @@ import { fixPathSeparator } from "./util";
 export class Repository {
   private _info?: ISvnInfo;
 
+  public username?: string;
+  public password?: string;
+
   constructor(
     private svn: Svn,
     public root: string,
     public workspaceRoot: string
-  ) {}
+  ) { }
 
   async exec(
     args: string[],
     options: CpOptions = {}
   ): Promise<IExecutionResult> {
+    options.username = this.username;
+    options.password = this.password;
+
     return await this.svn.exec(this.workspaceRoot, args, options);
   }
 
@@ -49,7 +55,7 @@ export class Repository {
     if (this._info) {
       return this._info;
     }
-    const result = await this.exec(["info", "--xml", "-r", "BASE"]);
+    const result = await this.exec(["info", "--xml"]);
 
     this._info = await parseInfoXml(result.stdout);
 
