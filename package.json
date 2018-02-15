@@ -466,16 +466,12 @@
           "description": "Changelists to ignore on commit",
           "default": ["ignore-on-commit"]
         },
-        "svn.sourceControl.showExternal": {
+        "svn.detectExternals": {
           "type": "boolean",
+          "scope": "resource",
+          "default": true,
           "description":
-            "Allow to show in source control the list the external folders",
-          "default": false
-        },
-        "svn.sourceControl.countExternal": {
-          "type": "boolean",
-          "description": "Allow to count external files in status count",
-          "default": false
+            "Controls whether to automatically detect svn externals."
         },
         "svn.sourceControl.countUnversioned": {
           "type": "boolean",

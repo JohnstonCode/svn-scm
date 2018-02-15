@@ -124,7 +124,6 @@ export class Repository {
   public statusBar: SvnStatusBar;
   public changes: SvnResourceGroup;
   public unversioned: SvnResourceGroup;
-  public external: SvnResourceGroup;
   public changelists: Map<string, SvnResourceGroup> = new Map();
   public conflicts: SvnResourceGroup;
   public statusIgnored: IFileStatus[] = [];
@@ -178,7 +177,6 @@ export class Repository {
 
     this.changes.resourceStates = [];
     this.unversioned.resourceStates = [];
-    this.external.resourceStates = [];
     this.conflicts.resourceStates = [];
     this.changelists.forEach((group, changelist) => {
       group.resourceStates = [];
@@ -274,10 +272,6 @@ export class Repository {
       "unversioned",
       "Unversioned"
     ) as SvnResourceGroup;
-    this.external = this.sourceControl.createResourceGroup(
-      "external",
-      "External"
-    ) as SvnResourceGroup;
     this.conflicts = this.sourceControl.createResourceGroup(
       "conflicts",
       "conflicts"
@@ -285,12 +279,10 @@ export class Repository {
 
     this.changes.hideWhenEmpty = true;
     this.unversioned.hideWhenEmpty = true;
-    this.external.hideWhenEmpty = true;
     this.conflicts.hideWhenEmpty = true;
 
     this.disposables.push(this.changes);
     this.disposables.push(this.unversioned);
-    this.disposables.push(this.external);
     this.disposables.push(this.conflicts);
 
     const svnConfig = workspace.getConfiguration("svn");
@@ -394,7 +386,21 @@ export class Repository {
       excludeList.push((negate ? "!" : "") + pattern);
     }
 
-    statuses.forEach(status => {
+    this.statusExternal = statuses.filter(
+      status => status.status === Status.EXTERNAL
+    );
+
+    const statusesRepository = statuses.filter(status => {
+      if (status.status === Status.EXTERNAL) {
+        return false;
+      }
+
+      return !this.statusExternal.some(external =>
+        isDescendant(external.path, status.path)
+      );
+    });
+
+    statusesRepository.forEach(status => {
       if (micromatch.some(status.path, excludeList)) {
         return;
       }
@@ -416,9 +422,6 @@ export class Repository {
         return;
       } else if (status.status === Status.IGNORED) {
         this.statusIgnored.push(status);
-      } else if (status.status === Status.EXTERNAL) {
-        this.statusExternal.push(status);
-        external.push(resource);
       } else if (status.status === Status.CONFLICTED) {
         conflicts.push(resource);
       } else if (status.status === Status.UNVERSIONED) {
@@ -475,18 +478,8 @@ export class Repository {
       group.resourceStates = resources;
     });
 
-    if (svnConfig.get<boolean>("sourceControl.showExternal")) {
-      this.external.resourceStates = external;
-    } else {
-      this.external.resourceStates = [];
-    }
-
     // svnConfig.
     const counts = [this.changes, this.conflicts, ...this.changelists.values()];
-
-    if (svnConfig.get<boolean>("sourceControl.countExternal", false)) {
-      counts.push(this.external);
-    }
 
     if (svnConfig.get<boolean>("sourceControl.countUnversioned", false)) {
       counts.push(this.unversioned);
@@ -512,7 +505,6 @@ export class Repository {
     const groups = [
       this.changes,
       this.unversioned,
-      this.external,
       ...this.changelists.values()
     ];
 
@@ -705,7 +697,10 @@ export class Repository {
         ) {
           // quatratic backoff
           await timeout(Math.pow(attempt, 2) * 50);
-        } else if (err.svnErrorCode === SvnErrorCodes.AuthorizationFailed && attempt <= 3) {
+        } else if (
+          err.svnErrorCode === SvnErrorCodes.AuthorizationFailed &&
+          attempt <= 3
+        ) {
           await this.promptAuth();
         } else {
           throw err;
