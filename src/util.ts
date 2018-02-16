@@ -64,8 +64,11 @@ export function eventToPromise<T>(event: Event<T>): Promise<T> {
 }
 
 const regexNormalizePath = new RegExp(sep === "/" ? "\\\\" : "/", "g");
+const regexNormalizeWindows = new RegExp("^\\\\(\\w:)", "g");
 export function fixPathSeparator(file: string) {
-  return file.replace(regexNormalizePath, sep);
+  file = file.replace(regexNormalizePath, sep);
+  file = file.replace(regexNormalizeWindows, "$1"); // "\t:\test" => "t:\test"
+  return file;
 }
 
 export function isDescendant(parent: string, descendant: string): boolean {
@@ -105,12 +108,11 @@ export function hasSupportToDecorationProvider() {
 try {
   const fake = {
     onDidChangeDecorations: (value: any): any => toDisposable(() => {}),
-    provideDecoration: (uri: any, token: any): any => {},
-    dispose: () => {}
+    provideDecoration: (uri: any, token: any): any => {}
   };
   const disposable = window.registerDecorationProvider(fake);
   hasDecorationProvider = true;
-  disposable.dispose();
+  // disposable.dispose(); // Not dispose to prevent: Cannot read property 'provideDecoration' of undefined
 } catch (error) {}
 
 let hasRegisterDiffCommand = false;
