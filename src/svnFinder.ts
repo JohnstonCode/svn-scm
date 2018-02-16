@@ -116,13 +116,4 @@ export class SvnFinder {
       );
     });
   }
-
-  parseVersion(raw: string): string {
-    const match = raw.match(/(\d+\.\d+\.\d+ \(r\d+\))/);
-
-    if (match && match[0]) {
-      return match[0];
-    }
-    return raw.split(/[\r\n]+/)[0];
-  }
 }
