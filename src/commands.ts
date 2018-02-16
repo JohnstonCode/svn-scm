@@ -604,6 +604,7 @@ export class SvnCommands implements IDisposable {
     }
 
     switch (resource.type) {
+      case Status.CONFLICTED:
       case Status.MODIFIED:
       case Status.REPLACED:
         return toSvnUri(resource.resourceUri, SvnUriAction.SHOW, {
@@ -618,6 +619,7 @@ export class SvnCommands implements IDisposable {
   ): Uri | undefined {
     switch (resource.type) {
       case Status.ADDED:
+      case Status.CONFLICTED:
       case Status.IGNORED:
       case Status.MODIFIED:
       case Status.UNVERSIONED:
