@@ -1,3 +1,16 @@
+# **v1.20.0**
+
+## What's New
+
+* @edgardmessias Improved conflict resolution
+
+## Bug Fixes
+
+* @edgardmessias Disabled commands for non SVN repository
+* @edgardmessias Show external folder as a repository
+* @edgardmessias Fixed no diff for conflicted files
+* @edgardmessias Fixed file paths on different drives on windows
+
 # **v1.19.0**
 
 ## What's New
