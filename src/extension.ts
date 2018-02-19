@@ -17,6 +17,8 @@ import {
 } from "./util";
 
 async function init(context: ExtensionContext, disposables: Disposable[]) {
+  commands.executeCommand("setContext", "svnOpenRepositoryCount", "0");
+
   const config = workspace.getConfiguration("svn");
   const outputChannel = window.createOutputChannel("Svn");
   disposables.push(outputChannel);
