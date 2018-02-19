@@ -19,7 +19,7 @@ import {
   IDisposable,
   isDescendant
 } from "./util";
-import { sequentialize } from "./decorators";
+import { sequentialize, debounce } from "./decorators";
 
 export interface ModelChangeEvent {
   repository: Repository;
@@ -52,7 +52,7 @@ export class Model implements IDisposable {
   private disposables: Disposable[] = [];
   private enabled = false;
   private possibleSvnRepositoryPaths = new Set<string>();
-  private ignoreList: string[];
+  private ignoreList: string[] = [];
   private maxDepth: number = 0;
 
   private configurationChangeDisposable: Disposable;
@@ -141,16 +141,36 @@ export class Model implements IDisposable {
 
   private onPossibleSvnRepositoryChange(uri: Uri): void {
     const possibleSvnRepositoryPath = uri.fsPath.replace(/\.svn.*$/, "");
-    this.possibleSvnRepositoryPaths.add(possibleSvnRepositoryPath);
+    this.eventuallyScanPossibleSvnRepository(possibleSvnRepositoryPath);
+  }
+
+  private eventuallyScanPossibleSvnRepository(path: string) {
+    this.possibleSvnRepositoryPaths.add(path);
     this.eventuallyScanPossibleSvnRepositories();
   }
 
+  @debounce(500)
   private eventuallyScanPossibleSvnRepositories(): void {
     for (const path of this.possibleSvnRepositoryPaths) {
       this.tryOpenRepository(path);
     }
 
     this.possibleSvnRepositoryPaths.clear();
+  }
+
+  private scanExternals(repository: Repository): void {
+    const shouldScanExternals =
+      workspace
+        .getConfiguration("svn", Uri.file(repository.workspaceRoot))
+        .get<boolean>("detectExternals") === true;
+
+    if (!shouldScanExternals) {
+      return;
+    }
+
+    repository.statusExternal
+      .map(r => path.join(repository.workspaceRoot, r.path))
+      .forEach(p => this.eventuallyScanPossibleSvnRepository(p));
   }
 
   private disable(): void {
@@ -262,9 +282,25 @@ export class Model implements IDisposable {
     }
 
     if (hint instanceof Uri) {
-      return this.openRepositories.find(liveRepository =>
-        isDescendant(liveRepository.repository.workspaceRoot, hint.fsPath)
-      );
+      return this.openRepositories.find(liveRepository => {
+        if (
+          !isDescendant(liveRepository.repository.workspaceRoot, hint.fsPath)
+        ) {
+          return false;
+        }
+
+        for (const external of liveRepository.repository.statusExternal) {
+          const externalPath = path.join(
+            liveRepository.repository.workspaceRoot,
+            external.path
+          );
+          if (isDescendant(hint.fsPath, externalPath)) {
+            return false;
+          }
+        }
+
+        return true;
+      });
     }
 
     for (const liveRepository of this.openRepositories) {
@@ -293,10 +329,15 @@ export class Model implements IDisposable {
       this._onDidChangeRepository.fire({ repository, uri })
     );
 
+    const statusListener = repository.onDidChangeStatus(() =>
+      this.scanExternals(repository)
+    );
+    this.scanExternals(repository);
+
     const dispose = () => {
       disappearListener.dispose();
       changeListener.dispose();
-      changeListener.dispose();
+      statusListener.dispose();
       repository.dispose();
 
       this.openRepositories = this.openRepositories.filter(
