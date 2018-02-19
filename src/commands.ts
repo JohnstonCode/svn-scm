@@ -62,7 +62,7 @@ function command(commandId: string, options: CommandOptions = {}): Function {
 }
 
 class CreateBranchItem implements QuickPickItem {
-  constructor(private commands: SvnCommands) { }
+  constructor(private commands: SvnCommands) {}
 
   get label(): string {
     return "$(plus) Create new branch";
@@ -107,7 +107,7 @@ class SwitchBranchItem implements QuickPickItem {
       if (error.svnErrorCode === SvnErrorCodes.NotShareCommonAncestry) {
         window.showErrorMessage(
           `Path '${
-          repository.workspaceRoot
+            repository.workspaceRoot
           }' does not share common version control ancestry with the requested switch location.`
         );
         return;
@@ -846,8 +846,8 @@ export class SvnCommands implements IDisposable {
     });
   }
 
-  @command("svn.resolve", { repository: true })
-  async resolve(repository: Repository) {
+  @command("svn.resolveAll", { repository: true })
+  async resolveAll(repository: Repository) {
     const conflicts = repository.conflicts.resourceStates;
 
     if (!conflicts.length) {
@@ -857,7 +857,7 @@ export class SvnCommands implements IDisposable {
     for (const conflict of conflicts) {
       const placeHolder = `Select conflict option for ${
         conflict.resourceUri.path
-        }`;
+      }`;
       const picks = getConflictPickOptions();
 
       const choice = await window.showQuickPick(picks, { placeHolder });
@@ -868,7 +868,7 @@ export class SvnCommands implements IDisposable {
 
       try {
         const response = await repository.resolve(
-          conflict.resourceUri.path,
+          [conflict.resourceUri.path],
           choice.label
         );
         window.showInformationMessage(response);
@@ -876,6 +876,74 @@ export class SvnCommands implements IDisposable {
         window.showErrorMessage(error.stderr);
       }
     }
+  }
+
+  @command("svn.resolve")
+  async resolve(
+    ...resourceStates: SourceControlResourceState[]
+  ): Promise<void> {
+    const selection = this.getResourceStates(resourceStates);
+
+    if (selection.length === 0) {
+      return;
+    }
+    const picks = getConflictPickOptions();
+
+    const choice = await window.showQuickPick(picks, {
+      placeHolder: "Select conflict option"
+    });
+
+    if (!choice) {
+      return;
+    }
+
+    const uris = selection.map(resource => resource.resourceUri);
+
+    await this.runByRepository(uris, async (repository, resources) => {
+      if (!repository) {
+        return;
+      }
+
+      const files = resources.map(resource => resource.fsPath);
+
+      await repository.resolve(files, choice.label);
+    });
+  }
+
+  @command("svn.resolved")
+  async resolved(uri: Uri): Promise<void> {
+    if (!uri) {
+      return;
+    }
+
+    const autoResolve = workspace
+      .getConfiguration("svn")
+      .get<boolean>("conflict.autoResolve", false);
+
+    if (!autoResolve) {
+      const basename = path.basename(uri.fsPath);
+      const pick = await window.showWarningMessage(
+        `Mark the conflict as resolved for "${basename}"?`,
+        "Yes",
+        "No"
+      );
+
+      if (pick !== "Yes") {
+        return;
+      }
+    }
+
+    const uris = [uri];
+
+    await this.runByRepository(uris, async (repository, resources) => {
+      if (!repository) {
+        return;
+      }
+
+      const files = resources.map(resource => resource.fsPath);
+
+      await repository.resolve(files, "working");
+    });
   }
 
   @command("svn.log", { repository: true })
@@ -972,21 +1040,21 @@ export class SvnCommands implements IDisposable {
       const modifiedRange =
         change.modifiedEndLineNumber === 0
           ? new Range(
-            modifiedDocument.lineAt(
-              change.modifiedStartLineNumber - 1
-            ).range.end,
-            modifiedDocument.lineAt(
-              change.modifiedStartLineNumber
-            ).range.start
-          )
+              modifiedDocument.lineAt(
+                change.modifiedStartLineNumber - 1
+              ).range.end,
+              modifiedDocument.lineAt(
+                change.modifiedStartLineNumber
+              ).range.start
+            )
           : new Range(
-            modifiedDocument.lineAt(
-              change.modifiedStartLineNumber - 1
-            ).range.start,
-            modifiedDocument.lineAt(
-              change.modifiedEndLineNumber - 1
-            ).range.end
-          );
+              modifiedDocument.lineAt(
+                change.modifiedStartLineNumber - 1
+              ).range.start,
+              modifiedDocument.lineAt(
+                change.modifiedEndLineNumber - 1
+              ).range.end
+            );
 
       return selections.every(
         selection => !selection.intersection(modifiedRange)

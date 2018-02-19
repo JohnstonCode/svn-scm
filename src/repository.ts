@@ -11,7 +11,8 @@ import {
   Event,
   window,
   ProgressLocation,
-  commands
+  commands,
+  TextDocument
 } from "vscode";
 import { Resource, SvnResourceGroup } from "./resource";
 import { throttle, debounce, memoize, sequentialize } from "./decorators";
@@ -50,6 +51,7 @@ export enum Operation {
   Remove = "Remove",
   RemoveChangelist = "RemoveChangelist",
   Resolve = "Resolve",
+  Resolved = "Resolved",
   Revert = "Revert",
   Show = "Show",
   Status = "Status",
@@ -268,13 +270,13 @@ export class Repository {
       "changes",
       "Changes"
     ) as SvnResourceGroup;
-    this.unversioned = this.sourceControl.createResourceGroup(
-      "unversioned",
-      "Unversioned"
-    ) as SvnResourceGroup;
     this.conflicts = this.sourceControl.createResourceGroup(
       "conflicts",
       "conflicts"
+    ) as SvnResourceGroup;
+    this.unversioned = this.sourceControl.createResourceGroup(
+      "unversioned",
+      "Unversioned"
     ) as SvnResourceGroup;
 
     this.changes.hideWhenEmpty = true;
@@ -302,6 +304,12 @@ export class Repository {
 
     this.status();
     this.updateNewCommits();
+
+    this.disposables.push(
+      workspace.onDidSaveTextDocument(document => {
+        this.onDidSaveTextDocument(document);
+      })
+    );
   }
 
   @debounce(1000)
@@ -504,6 +512,7 @@ export class Repository {
 
     const groups = [
       this.changes,
+      this.conflicts,
       this.unversioned,
       ...this.changelists.values()
     ];
@@ -600,9 +609,9 @@ export class Repository {
     });
   }
 
-  async resolve(file: string, action: string) {
+  async resolve(files: string[], action: string) {
     return await this.run(Operation.Resolve, () =>
-      this.repository.resolve(file, action)
+      this.repository.resolve(files, action)
     );
   }
 
@@ -642,6 +651,23 @@ export class Repository {
     this.lastPromptAuth = commands.executeCommand("svn.promptAuth");
     await this.lastPromptAuth;
     this.lastPromptAuth = undefined;
+  }
+
+  onDidSaveTextDocument(document: TextDocument) {
+    const uriString = document.uri.toString();
+    const conflict = this.conflicts.resourceStates.find(
+      resource => resource.resourceUri.toString() === uriString
+    );
+    if (!conflict) {
+      return;
+    }
+
+    const text = document.getText();
+
+    // Check for lines begin with "<<<<<<", "=======", ">>>>>>>"
+    if (!/^<{7}[^]+^={7}[^]+^>{7}/m.test(text)) {
+      commands.executeCommand("svn.resolved", conflict.resourceUri);
+    }
   }
 
   private async run<T>(
