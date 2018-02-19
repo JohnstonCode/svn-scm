@@ -846,8 +846,8 @@ export class SvnCommands implements IDisposable {
     });
   }
 
-  @command("svn.resolve", { repository: true })
-  async resolve(repository: Repository) {
+  @command("svn.resolveAll", { repository: true })
+  async resolveAll(repository: Repository) {
     const conflicts = repository.conflicts.resourceStates;
 
     if (!conflicts.length) {
@@ -876,6 +876,38 @@ export class SvnCommands implements IDisposable {
         window.showErrorMessage(error.stderr);
       }
     }
+  }
+
+  @command("svn.resolve")
+  async resolve(
+    ...resourceStates: SourceControlResourceState[]
+  ): Promise<void> {
+    const selection = this.getResourceStates(resourceStates);
+
+    if (selection.length === 0) {
+      return;
+    }
+    const picks = getConflictPickOptions();
+
+    const choice = await window.showQuickPick(picks, {
+      placeHolder: "Select conflict option"
+    });
+
+    if (!choice) {
+      return;
+    }
+
+    const uris = selection.map(resource => resource.resourceUri);
+
+    await this.runByRepository(uris, async (repository, resources) => {
+      if (!repository) {
+        return;
+      }
+
+      const files = resources.map(resource => resource.fsPath);
+
+      await repository.resolve(files, choice.label);
+    });
   }
 
   @command("svn.resolved")

@@ -270,13 +270,13 @@ export class Repository {
       "changes",
       "Changes"
     ) as SvnResourceGroup;
-    this.unversioned = this.sourceControl.createResourceGroup(
-      "unversioned",
-      "Unversioned"
-    ) as SvnResourceGroup;
     this.conflicts = this.sourceControl.createResourceGroup(
       "conflicts",
       "conflicts"
+    ) as SvnResourceGroup;
+    this.unversioned = this.sourceControl.createResourceGroup(
+      "unversioned",
+      "Unversioned"
     ) as SvnResourceGroup;
 
     this.changes.hideWhenEmpty = true;
@@ -512,6 +512,7 @@ export class Repository {
 
     const groups = [
       this.changes,
+      this.conflicts,
       this.unversioned,
       ...this.changelists.values()
     ];
