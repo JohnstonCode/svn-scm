@@ -16,7 +16,7 @@ export class Repository {
     private svn: Svn,
     public root: string,
     public workspaceRoot: string
-  ) { }
+  ) {}
 
   async exec(
     args: string[],
@@ -317,10 +317,10 @@ export class Repository {
     return result.stdout;
   }
 
-  async resolve(file: string, action: string) {
-    file = this.removeAbsolutePath(file);
+  async resolve(files: string[], action: string) {
+    files = files.map(file => this.removeAbsolutePath(file));
 
-    const result = await this.exec(["resolve", "--accept", action, file]);
+    const result = await this.exec(["resolve", "--accept", action, ...files]);
 
     return result.stdout;
   }
