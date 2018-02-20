@@ -2,8 +2,16 @@
 - OS Version:
 - Extension Version:
 - System Language:
+- SVN Version:
 
-Steps to Reproduce:
+## Issue ##
+
+## Steps to Reproduce ##
 
 1.
 2.
+
+## SVN Output ##
+
+
+## Screenshots ##
