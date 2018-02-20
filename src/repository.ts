@@ -319,6 +319,7 @@ export class Repository {
       if (newCommits !== this.newCommit) {
         this.newCommit = newCommits;
         this._onDidChangeNewCommit.fire();
+        window.showInformationMessage(`New Updates on Detected ${this.newCommit}`);
       }
     });
   }
