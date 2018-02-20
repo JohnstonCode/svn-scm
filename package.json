@@ -483,6 +483,11 @@
           "default": null,
           "isExecutable": true
         },
+        "svn.ignoreMissingSvnWarning": {
+          "type": "boolean",
+          "description": "Ignores the warning when SVN is missing",
+          "default": false
+        },
         "svn.diff.withHead": {
           "type": "boolean",
           "description":
