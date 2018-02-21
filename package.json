@@ -559,7 +559,6 @@
         },
         "svn.detectExternals": {
           "type": "boolean",
-          "scope": "resource",
           "default": true,
           "description": "Controls whether to automatically detect svn externals."
         },
