@@ -36,6 +36,7 @@ import {
   getCommitChangelistPickOptions,
   inputCommitChangelist
 } from "./changelistItems";
+import { configuration } from './helpers/configuration';
 
 interface CommandOptions {
   repository?: boolean;
@@ -916,9 +917,7 @@ export class SvnCommands implements IDisposable {
       return;
     }
 
-    const autoResolve = workspace
-      .getConfiguration("svn")
-      .get<boolean>("conflict.autoResolve", false);
+    const autoResolve = configuration.get<boolean>("conflict.autoResolve");
 
     if (!autoResolve) {
       const basename = path.basename(uri.fsPath);

@@ -12,6 +12,7 @@ import * as path from "path";
 import { Status, PropStatus } from "./svn";
 import { memoize } from "./decorators";
 import { hasSupportToDecorationProvider } from "./util";
+import { configuration } from "./helpers/configuration";
 
 const iconsRootPath = path.join(__dirname, "..", "icons");
 
@@ -76,7 +77,7 @@ export class Resource implements SourceControlResourceState {
     // TODO@joh, still requires restart/redraw in the SCM viewlet
     const decorations =
       hasSupportToDecorationProvider() &&
-      workspace.getConfiguration().get<boolean>("svn.decorations.enabled");
+      configuration.get<boolean>("decorations.enabled");
     const light = !decorations
       ? { iconPath: this.getIconPath("light") }
       : undefined;
@@ -103,8 +104,7 @@ export class Resource implements SourceControlResourceState {
 
   @memoize
   get command(): Command {
-    const svnConfig = workspace.getConfiguration("svn");
-    const diffHead = svnConfig.get<boolean>("diff.withHead", true);
+    const diffHead = configuration.get<boolean>("diff.withHead", true);
 
     if (diffHead) {
       return {

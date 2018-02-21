@@ -17,6 +17,7 @@ import {
   hasSupportToDecorationProvider,
   hasSupportToRegisterDiffCommand
 } from "./util";
+import { configuration } from "./helpers/configuration";
 
 async function init(
   context: ExtensionContext,
@@ -25,8 +26,7 @@ async function init(
 ) {
   commands.executeCommand("setContext", "svnOpenRepositoryCount", "0");
 
-  const config = workspace.getConfiguration("svn");
-  const pathHint = config.get<string>("path");
+  const pathHint = configuration.get<string>("path");
   const svnFinder = new SvnFinder();
 
   const info = await svnFinder.findSvn(pathHint);
@@ -69,13 +69,11 @@ async function init(
 }
 
 async function _activate(context: ExtensionContext, disposables: Disposable[]) {
-  const config = workspace.getConfiguration("svn");
-
   const outputChannel = window.createOutputChannel("Svn");
   commands.registerCommand("svn.showOutput", () => outputChannel.show());
   disposables.push(outputChannel);
 
-  const showOutput = config.get<boolean>("showOutput");
+  const showOutput = configuration.get<boolean>("showOutput");
 
   if (showOutput) {
     outputChannel.show();
@@ -89,7 +87,7 @@ async function _activate(context: ExtensionContext, disposables: Disposable[]) {
     }
 
     const shouldIgnore =
-      config.get<boolean>("ignoreMissingSvnWarning") === true;
+      configuration.get<boolean>("ignoreMissingSvnWarning") === true;
 
     if (shouldIgnore) {
       return;
@@ -113,7 +111,7 @@ async function _activate(context: ExtensionContext, disposables: Disposable[]) {
         Uri.parse("https://subversion.apache.org/packages.html")
       );
     } else if (choice === neverShowAgain) {
-      await config.update("ignoreMissingSvnWarning", true, true);
+      await configuration.update("ignoreMissingSvnWarning", true);
     }
   }
 }

@@ -5,6 +5,7 @@ import {
   workspace
 } from "vscode";
 import { Repository } from "./repository";
+import { configuration } from "./helpers/configuration";
 
 export class ChangeListItem implements QuickPickItem {
   constructor(protected group: SourceControlResourceGroup) {}
@@ -57,10 +58,8 @@ export function getCommitChangelistPickOptions(
     picks.push(new ChangeListItem(repository.changes));
   }
 
-  const svnConfig = workspace.getConfiguration("svn");
-  const ignoreOnCommitList = svnConfig.get<string[]>(
-    "sourceControl.ignoreOnCommit",
-    []
+  const ignoreOnCommitList = configuration.get<string[]>(
+    "sourceControl.ignoreOnCommit"
   );
 
   repository.changelists.forEach((group, changelist) => {

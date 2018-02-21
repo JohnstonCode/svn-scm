@@ -5,6 +5,7 @@ import { parseInfoXml, ISvnInfo } from "./infoParser";
 import { sequentialize } from "./decorators";
 import * as path from "path";
 import { fixPathSeparator } from "./util";
+import { configuration } from "./helpers/configuration";
 
 export class Repository {
   private _info?: ISvnInfo;
@@ -115,10 +116,9 @@ export class Repository {
   async getCurrentBranch(): Promise<string> {
     const info = await this.getInfo();
 
-    const config = workspace.getConfiguration("svn");
-    const trunkLayout = config.get<string>("layout.trunk");
-    const branchesLayout = config.get<string>("layout.branches");
-    const tagsLayout = config.get<string>("layout.tags");
+    const trunkLayout = configuration.get<string>("layout.trunk");
+    const branchesLayout = configuration.get<string>("layout.branches");
+    const tagsLayout = configuration.get<string>("layout.tags");
 
     const trees = [trunkLayout, branchesLayout, tagsLayout].filter(
       x => x != null
@@ -140,10 +140,9 @@ export class Repository {
   }
 
   async getRepoUrl() {
-    const config = workspace.getConfiguration("svn");
-    const trunkLayout = config.get<string>("layout.trunk");
-    const branchesLayout = config.get<string>("layout.branches");
-    const tagsLayout = config.get<string>("layout.tags");
+    const trunkLayout = configuration.get<string>("layout.trunk");
+    const branchesLayout = configuration.get<string>("layout.branches");
+    const tagsLayout = configuration.get<string>("layout.tags");
 
     const trees = [trunkLayout, branchesLayout, tagsLayout].filter(
       x => x != null
@@ -163,10 +162,9 @@ export class Repository {
   }
 
   async getBranches() {
-    const config = workspace.getConfiguration("svn");
-    const trunkLayout = config.get<string>("layout.trunk");
-    const branchesLayout = config.get<string>("layout.branches");
-    const tagsLayout = config.get<string>("layout.tags");
+    const trunkLayout = configuration.get<string>("layout.trunk");
+    const branchesLayout = configuration.get<string>("layout.branches");
+    const tagsLayout = configuration.get<string>("layout.tags");
 
     const repoUrl = await this.getRepoUrl();
 
@@ -235,8 +233,7 @@ export class Repository {
   }
 
   async branch(name: string) {
-    const config = workspace.getConfiguration("svn");
-    const branchesLayout = config.get<string>("layout.branches");
+    const branchesLayout = configuration.get<string>("layout.branches");
 
     if (!branchesLayout) {
       return false;
@@ -326,8 +323,7 @@ export class Repository {
   }
 
   async log() {
-    const config = workspace.getConfiguration("svn");
-    const logLength = config.get<string>("log.length") || "50";
+    const logLength = configuration.get<string>("log.length") || "50";
     const result = await this.exec(["log", "--limit", logLength]);
 
     return result.stdout;

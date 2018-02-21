@@ -23,6 +23,7 @@ import { filterEvent, isDescendant } from "./util";
 import { SvnResourceGroup } from "./resource";
 import { Status } from "./svn";
 import * as path from "path";
+import { configuration } from "./helpers/configuration";
 
 class SvnIgnoreDecorationProvider implements DecorationProvider {
   private readonly _onDidChangeDecorations = new EventEmitter<Uri[]>();
@@ -159,9 +160,7 @@ export class SvnDecorations {
   }
 
   private update(): void {
-    const enabled = workspace
-      .getConfiguration()
-      .get<boolean>("svn.decorations.enabled", true);
+    const enabled = configuration.get<boolean>("decorations.enabled");
 
     if (this.enabled === enabled) {
       return;

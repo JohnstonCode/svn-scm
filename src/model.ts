@@ -20,6 +20,7 @@ import {
   isDescendant
 } from "./util";
 import { sequentialize, debounce } from "./decorators";
+import { configuration } from "./helpers/configuration";
 
 export interface ModelChangeEvent {
   repository: Repository;
@@ -62,8 +63,7 @@ export class Model implements IDisposable {
   }
 
   constructor(private svn: Svn) {
-    const config = workspace.getConfiguration("svn");
-    this.enabled = config.get("enabled") === true;
+    this.enabled = configuration.get<boolean>("enabled") === true;
 
     this.configurationChangeDisposable = workspace.onDidChangeConfiguration(
       this.onDidChangeConfiguration,
@@ -76,10 +76,9 @@ export class Model implements IDisposable {
   }
 
   private onDidChangeConfiguration(): void {
-    const config = workspace.getConfiguration("svn");
-    const enabled = config.get("enabled") === true;
+    const enabled = configuration.get<boolean>("enabled") === true;
 
-    this.maxDepth = config.get<number>("multipleFolders.depth", 0);
+    this.maxDepth = configuration.get<number>("multipleFolders.depth", 0);
 
     if (enabled === this.enabled) {
       return;
@@ -95,17 +94,15 @@ export class Model implements IDisposable {
   }
 
   private enable(): void {
-    const config = workspace.getConfiguration("svn");
-
-    const multipleFolders = config.get<boolean>(
+    const multipleFolders = configuration.get<boolean>(
       "multipleFolders.enabled",
       false
     );
 
     if (multipleFolders) {
-      this.maxDepth = config.get<number>("multipleFolders.depth", 0);
+      this.maxDepth = configuration.get<number>("multipleFolders.depth", 0);
 
-      this.ignoreList = config.get("multipleFolders.ignore", []);
+      this.ignoreList = configuration.get("multipleFolders.ignore", []);
     }
 
     workspace.onDidChangeWorkspaceFolders(
@@ -160,9 +157,7 @@ export class Model implements IDisposable {
 
   private scanExternals(repository: Repository): void {
     const shouldScanExternals =
-      workspace
-        .getConfiguration("svn", Uri.file(repository.workspaceRoot))
-        .get<boolean>("detectExternals") === true;
+      configuration.get<boolean>("detectExternals") === true;
 
     if (!shouldScanExternals) {
       return;

@@ -33,6 +33,7 @@ import { setInterval, clearInterval } from "timers";
 import { toSvnUri, SvnUriAction } from "./uri";
 import { Status, PropStatus, SvnErrorCodes } from "./svn";
 import { IFileStatus } from "./statusParser";
+import { configuration } from "./helpers/configuration";
 
 export enum RepositoryState {
   Idle,
@@ -287,9 +288,7 @@ export class Repository {
     this.disposables.push(this.unversioned);
     this.disposables.push(this.conflicts);
 
-    const svnConfig = workspace.getConfiguration("svn");
-
-    const updateFreqNew = svnConfig.get<number>("svn.newCommits.update");
+    const updateFreqNew = configuration.get<number>("svn.newCommits.update");
     if (updateFreqNew) {
       const interval = setInterval(() => {
         this.updateNewCommits();
@@ -324,8 +323,7 @@ export class Repository {
   }
 
   private onFSChange(uri: Uri): void {
-    const config = workspace.getConfiguration("svn");
-    const autorefresh = config.get<boolean>("autorefresh");
+    const autorefresh = configuration.get<boolean>("autorefresh");
 
     if (!autorefresh) {
       return;
@@ -384,7 +382,6 @@ export class Repository {
     const statuses = (await this.repository.getStatus(true)) || [];
 
     const fileConfig = workspace.getConfiguration("files", Uri.file(this.root));
-    const svnConfig = workspace.getConfiguration("svn");
 
     const filesToExclude = fileConfig.get<any>("exclude");
 
@@ -489,7 +486,7 @@ export class Repository {
     // svnConfig.
     const counts = [this.changes, this.conflicts, ...this.changelists.values()];
 
-    if (svnConfig.get<boolean>("sourceControl.countUnversioned", false)) {
+    if (configuration.get<boolean>("sourceControl.countUnversioned", false)) {
       counts.push(this.unversioned);
     }
 
