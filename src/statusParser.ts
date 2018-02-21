@@ -12,6 +12,7 @@ export interface IFileStatus {
     author: string;
     date: string;
   };
+  repositoryUuid?: string;
   [key: number]: IFileStatus;
 }
 

@@ -1,5 +1,5 @@
 import { workspace, Uri } from "vscode";
-import { Svn, CpOptions, IExecutionResult } from "./svn";
+import { Svn, CpOptions, IExecutionResult, Status } from "./svn";
 import { IFileStatus, parseStatusXml } from "./statusParser";
 import { parseInfoXml, ISvnInfo } from "./infoParser";
 import { sequentialize } from "./decorators";
@@ -8,7 +8,7 @@ import { fixPathSeparator } from "./util";
 import { configuration } from "./helpers/configuration";
 
 export class Repository {
-  private _info?: ISvnInfo;
+  private _info: { [index: string]: ISvnInfo } = {};
 
   public username?: string;
   public password?: string;
@@ -44,28 +44,45 @@ export class Repository {
 
     const result = await this.exec(args);
 
-    return await parseStatusXml(result.stdout);
+    const status: IFileStatus[] = await parseStatusXml(result.stdout);
+
+    for (const s of status) {
+      if (s.status === Status.EXTERNAL) {
+        const info = await this.getInfo(s.path);
+        s.repositoryUuid = info.repository.uuid;
+      }
+    }
+
+    return status;
   }
 
-  resetInfo() {
-    this._info = undefined;
+  resetInfo(file: string = "") {
+    delete this._info[file];
   }
 
   @sequentialize
-  async getInfo(): Promise<ISvnInfo> {
-    if (this._info) {
-      return this._info;
+  async getInfo(file: string = ""): Promise<ISvnInfo> {
+    if (this._info[file]) {
+      return this._info[file];
     }
-    const result = await this.exec(["info", "--xml"]);
 
-    this._info = await parseInfoXml(result.stdout);
+    const args = ["info", "--xml"];
 
-    // Cache for 30 seconds
+    if (file) {
+      file = fixPathSeparator(file);
+      args.push(file);
+    }
+
+    const result = await this.exec(args);
+
+    this._info[file] = await parseInfoXml(result.stdout);
+
+    // Cache for 2 minutes
     setTimeout(() => {
-      this.resetInfo();
-    }, 30000);
+      this.resetInfo(file);
+    }, 2 * 60 * 1000);
 
-    return this._info;
+    return this._info[file];
   }
 
   async show(
@@ -137,6 +154,12 @@ export class Repository {
     }
 
     return "";
+  }
+
+  async getRepositoryUuid(): Promise<string> {
+    const info = await this.getInfo();
+
+    return info.repository.uuid;
   }
 
   async getRepoUrl() {
