@@ -200,6 +200,11 @@
         "command": "svn.revertSelectedRanges",
         "title": "Revert Selected Ranges",
         "category": "SVN"
+      },
+      {
+        "command": "svn.close",
+        "title": "Close repository",
+        "category": "SVN"
       }
     ],
     "menus": {
@@ -288,6 +293,10 @@
           "command": "svn.revertSelectedRanges",
           "when":
             "config.svn.enabled && svnOpenRepositoryCount != 0 && svnHasSupportToRegisterDiffCommand == 1"
+        },
+        {
+          "command": "svn.close",
+          "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
         }
       ],
       "scm/title": [
@@ -324,6 +333,13 @@
         {
           "command": "svn.log",
           "when": "config.svn.enabled && scmProvider == svn"
+        }
+      ],
+      "scm/sourceControl": [
+        {
+          "command": "svn.close",
+          "group": "navigation",
+          "when": "scmProvider == svn"
         }
       ],
       "scm/resourceGroup/context": [],

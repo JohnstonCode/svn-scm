@@ -1068,6 +1068,11 @@ export class SvnCommands implements IDisposable {
     await this._revertChanges(textEditor, selectedChanges);
   }
 
+  @command('svn.close', {repository: true})
+  async close(repository: Repository): Promise<void> {
+    this.model.close(repository);
+  }
+
   private getSCMResource(uri?: Uri): Resource | undefined {
     uri = uri
       ? uri
