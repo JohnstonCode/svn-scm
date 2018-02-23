@@ -562,6 +562,11 @@
           "default": true,
           "description": "Controls whether to automatically detect svn externals."
         },
+        "svn.sourceControl.combineExternalIfSameServer": {
+          "type": "boolean",
+          "default": false,
+          "description": "Combine the svn external in the main if is from the same server."
+        },
         "svn.sourceControl.countUnversioned": {
           "type": "boolean",
           "description": "Allow to count unversioned files in status count",

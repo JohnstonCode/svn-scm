@@ -395,6 +395,17 @@ export class Repository {
       status => status.status === Status.EXTERNAL
     );
 
+    const combineExternal = configuration.get<boolean>(
+      "sourceControl.combineExternalIfSameServer", false
+    );
+
+    if (combineExternal && this.statusExternal.length) {
+      const repositoryUuid = await this.repository.getRepositoryUuid();
+      this.statusExternal = this.statusExternal.filter(
+        status => repositoryUuid !== status.repositoryUuid
+      );
+    }
+
     const statusesRepository = statuses.filter(status => {
       if (status.status === Status.EXTERNAL) {
         return false;
