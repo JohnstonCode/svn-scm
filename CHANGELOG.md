@@ -1,3 +1,9 @@
+# **v1.21.1**
+
+## Bug Fixes
+
+* @edgardmessias Fixed HEAD information on UNC path
+
 # **v1.21.0**
 
 ## What's New
