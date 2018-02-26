@@ -35,11 +35,17 @@ export class Repository {
     return path.relative(this.workspaceRoot, file);
   }
 
-  async getStatus(includeIgnored: boolean = false): Promise<IFileStatus[]> {
+  async getStatus(
+    includeIgnored: boolean = false,
+    includeExternals: boolean = true
+  ): Promise<IFileStatus[]> {
     let args = ["stat", "--xml"];
 
     if (includeIgnored) {
       args.push("--no-ignore");
+    }
+    if (!includeExternals) {
+      args.push("--ignore-externals");
     }
 
     const result = await this.exec(args);

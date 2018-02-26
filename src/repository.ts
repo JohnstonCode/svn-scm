@@ -379,7 +379,11 @@ export class Repository {
     this.statusExternal = [];
     this.statusIgnored = [];
 
-    const statuses = (await this.repository.getStatus(true)) || [];
+    const combineExternal = configuration.get<boolean>(
+      "sourceControl.combineExternalIfSameServer", false
+    );
+
+    const statuses = (await this.repository.getStatus(true, combineExternal)) || [];
 
     const fileConfig = workspace.getConfiguration("files", Uri.file(this.root));
 
@@ -393,10 +397,6 @@ export class Repository {
 
     this.statusExternal = statuses.filter(
       status => status.status === Status.EXTERNAL
-    );
-
-    const combineExternal = configuration.get<boolean>(
-      "sourceControl.combineExternalIfSameServer", false
     );
 
     if (combineExternal && this.statusExternal.length) {
