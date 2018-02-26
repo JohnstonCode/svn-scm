@@ -1,3 +1,16 @@
+# **v1.21.0**
+
+## What's New
+
+* @edgardmessias Added suggestion to install SVN when not found
+* @JohnstonCode Ability to close repositories when multiple are open
+* @edgardmessias Added option for external on same server
+
+## Bug Fixes
+
+* @edgardmessias Hide commands if no svn installed
+* @JohnstonCode Fixed repository duplication when updating
+
 # **v1.20.0**
 
 ## What's New
