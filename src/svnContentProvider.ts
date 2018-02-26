@@ -87,20 +87,20 @@ export class SvnContentProvider
   }
 
   async provideTextDocumentContent(uri: Uri): Promise<string> {
-    const repository = this.model.getRepository(uri.fsPath);
-
-    if (!repository) {
-      return "";
-    }
-
-    const cacheKey = uri.toString();
-    const timestamp = new Date().getTime();
-    const cacheValue: CacheRow = { uri, timestamp };
-
-    this.cache[cacheKey] = cacheValue;
-
     try {
       const { fsPath, action, extra } = fromSvnUri(uri);
+
+      const repository = this.model.getRepository(fsPath);
+
+      if (!repository) {
+        return "";
+      }
+
+      const cacheKey = uri.toString();
+      const timestamp = new Date().getTime();
+      const cacheValue: CacheRow = { uri, timestamp };
+
+      this.cache[cacheKey] = cacheValue;
 
       if (action === SvnUriAction.SHOW) {
         const ref = extra.ref;
