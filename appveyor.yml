@@ -17,7 +17,7 @@ artifacts:
 
 install:
   - ps: Install-Product node 8.9.1
-  - npm install -g npm
+  - npm install -g npm vsce
   - node --version
   - npm --version
   - npm install
