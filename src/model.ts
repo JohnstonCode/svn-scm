@@ -289,7 +289,7 @@ export class Model implements IDisposable {
             liveRepository.repository.workspaceRoot,
             external.path
           );
-          if (isDescendant(hint.fsPath, externalPath)) {
+          if (isDescendant(externalPath, hint.fsPath)) {
             return false;
           }
         }
