@@ -11,6 +11,10 @@ cache:
   - '%LOCALAPPDATA%\Yarn\cache'
   - '%APPDATA%\npm-cache'
 
+artifacts:
+  - path: svn-scm.vsix
+    name: SVN-SCM
+
 install:
   - ps: Install-Product node 8.9.1
   - npm install -g npm
@@ -32,3 +36,4 @@ after_test:
       $env:PATH = 'C:\msys64\usr\bin;' + $env:PATH
       Invoke-WebRequest -Uri 'https://codecov.io/bash' -OutFile codecov.sh
       bash codecov.sh
+  - vsce package -o svn-scm.vsix
