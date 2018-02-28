@@ -1,3 +1,9 @@
+# **v1.21.3**
+
+## Bug Fixes
+
+* @edgardmessias Fixed branch switching if not share common ancestry
+
 # **v1.21.2**
 
 ## Bug Fixes
