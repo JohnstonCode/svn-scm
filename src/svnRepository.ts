@@ -294,7 +294,11 @@ export class Repository {
 
     const branchUrl = repoUrl + "/" + ref;
 
-    const switchBranch = await this.exec(["switch", branchUrl]);
+    try {
+      await this.exec(["switch", branchUrl]);
+    } catch (error) {
+      await this.exec(["switch", branchUrl, "--ignore-ancestry"]);
+    }
 
     this.resetInfo();
 
