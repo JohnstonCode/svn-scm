@@ -54,8 +54,10 @@ export class Repository {
 
     for (const s of status) {
       if (s.status === Status.EXTERNAL) {
-        const info = await this.getInfo(s.path);
-        s.repositoryUuid = info.repository.uuid;
+        try {
+          const info = await this.getInfo(s.path);
+          s.repositoryUuid = info.repository.uuid;
+        } catch (error) {}
       }
     }
 
