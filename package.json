@@ -231,11 +231,11 @@
         },
         {
           "command": "svn.openChangeBase",
-          "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
+          "when": "config.svn.enabled && svnOpenRepositoryCount != 0 && svnActiveEditorHasChanges"
         },
         {
           "command": "svn.openChangeHead",
-          "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
+          "when": "config.svn.enabled && svnOpenRepositoryCount != 0 && svnActiveEditorHasChanges"
         },
         {
           "command": "svn.openFile",
@@ -458,13 +458,13 @@
           "command": "svn.openChangeBase",
           "group": "navigation",
           "when":
-            "config.svn.enabled && svnOpenRepositoryCount != 0 && !isInDiffEditor && resourceScheme == file"
+            "config.svn.enabled && svnOpenRepositoryCount != 0 && svnActiveEditorHasChanges && !isInDiffEditor && resourceScheme == file"
         },
         {
           "command": "svn.openChangeHead",
           "group": "navigation",
           "when":
-            "config.svn.enabled && svnOpenRepositoryCount != 0 && !isInDiffEditor && resourceScheme == file"
+            "config.svn.enabled && svnOpenRepositoryCount != 0 && svnActiveEditorHasChanges && !isInDiffEditor && resourceScheme == file"
         },
         {
           "command": "svn.revertSelectedRanges",
