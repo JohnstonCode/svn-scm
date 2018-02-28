@@ -605,6 +605,21 @@ export class SvnCommands implements IDisposable {
       });
     }
 
+    // Show file if has conflicts marks
+    if (
+      resource.type == Status.CONFLICTED &&
+      fs.existsSync(resource.resourceUri.fsPath)
+    ) {
+      const text = fs.readFileSync(resource.resourceUri.fsPath, {
+        encoding: "utf8"
+      });
+
+      // Check for lines begin with "<<<<<<", "=======", ">>>>>>>"
+      if (/^<{7}[^]+^={7}[^]+^>{7}/m.test(text)) {
+        return undefined;
+      }
+    }
+
     switch (resource.type) {
       case Status.CONFLICTED:
       case Status.MODIFIED:
