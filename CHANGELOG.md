@@ -1,3 +1,10 @@
+# **v1.21.2**
+
+## Bug Fixes
+
+* @edgardmessias Fixed branch names in switch menu
+* @edgardmessias Fixed svn info for externals if not exists
+
 # **v1.21.1**
 
 ## Bug Fixes
