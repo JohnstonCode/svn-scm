@@ -36,7 +36,7 @@ import {
   getCommitChangelistPickOptions,
   inputCommitChangelist
 } from "./changelistItems";
-import { configuration } from './helpers/configuration';
+import { configuration } from "./helpers/configuration";
 
 interface CommandOptions {
   repository?: boolean;
@@ -85,8 +85,9 @@ class SwitchBranchItem implements QuickPickItem {
   constructor(protected ref: string) {
     let parts = ref.split("/");
     if (parts[1]) {
-      this.tree = parts[0];
-      this.name = parts[1];
+      // Name is the last part
+      this.name = parts.pop() || "";
+      this.tree = parts.join("/");
     } else {
       this.tree = parts[0];
       this.name = parts[0];
@@ -1067,7 +1068,7 @@ export class SvnCommands implements IDisposable {
     await this._revertChanges(textEditor, selectedChanges);
   }
 
-  @command('svn.close', {repository: true})
+  @command("svn.close", { repository: true })
   async close(repository: Repository): Promise<void> {
     this.model.close(repository);
   }
