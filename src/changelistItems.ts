@@ -11,7 +11,7 @@ export class ChangeListItem implements QuickPickItem {
   constructor(protected group: SourceControlResourceGroup) {}
 
   get label(): string {
-    return this.group.label;
+    return this.group.id.replace(/^changelist-/, "");
   }
 
   get description(): string {
@@ -34,17 +34,55 @@ export class NewChangeListItem implements QuickPickItem {
   }
 }
 
+export class IgnoredChangeListItem implements QuickPickItem {
+  constructor(protected _id: string) {}
+
+  get label(): string {
+    return this._id;
+  }
+
+  get description(): string {
+    return "Ignored on commit";
+  }
+}
+
+export class RemoveChangeListItem implements QuickPickItem {
+  constructor() {}
+
+  get label(): string {
+    return "$(dash) Remove changelist";
+  }
+
+  get description(): string {
+    return "Remove changelist of file(s)";
+  }
+}
+
 export function getChangelistPickOptions(
-  repository: Repository
+  repository: Repository,
+  canRemove = false
 ): QuickPickItem[] {
   const picks: QuickPickItem[] = [];
 
+  picks.push(new NewChangeListItem());
   repository.changelists.forEach((group, changelist) => {
     if (group.resourceStates.length) {
       picks.push(new ChangeListItem(group));
     }
   });
-  picks.push(new NewChangeListItem());
+
+  const ignoreOnCommitList = configuration.get<string[]>(
+    "sourceControl.ignoreOnCommit"
+  );
+  for (const ignoreOnCommit of ignoreOnCommitList) {
+    if(!picks.some(p => p.label === ignoreOnCommit)){
+      picks.push(new IgnoredChangeListItem(ignoreOnCommit));
+    }
+  }
+
+  if (canRemove) {
+    picks.push(new RemoveChangeListItem());
+  }
 
   return picks;
 }
@@ -73,8 +111,14 @@ export function getCommitChangelistPickOptions(
   return picks;
 }
 
-export async function inputSwitchChangelist(repository: Repository) {
-  const picks: QuickPickItem[] = getChangelistPickOptions(repository);
+export async function inputSwitchChangelist(
+  repository: Repository,
+  canRemove = false
+) {
+  const picks: QuickPickItem[] = getChangelistPickOptions(
+    repository,
+    canRemove
+  );
 
   const selectedChoice: any = await window.showQuickPick(picks, {
     placeHolder: "Select an existing changelist or create a new"
@@ -85,7 +129,9 @@ export async function inputSwitchChangelist(repository: Repository) {
 
   let changelistName;
 
-  if (selectedChoice instanceof NewChangeListItem) {
+  if (selectedChoice instanceof RemoveChangeListItem) {
+    return false;
+  } else if (selectedChoice instanceof NewChangeListItem) {
     const newChangelistName = await window.showInputBox({
       placeHolder: "Changelist name",
       prompt: "Please enter a changelist name"
@@ -94,11 +140,8 @@ export async function inputSwitchChangelist(repository: Repository) {
       return;
     }
     changelistName = newChangelistName;
-  } else if (selectedChoice instanceof ChangeListItem) {
-    changelistName = selectedChoice.resourceGroup.id.replace(
-      /^changelist-/,
-      ""
-    );
+  } else {
+    changelistName = selectedChoice.label;
   }
 
   return changelistName;
