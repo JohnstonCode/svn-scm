@@ -1,12 +1,18 @@
 import * as xml2js from "xml2js";
 import { camelcase } from "./util";
 
+interface IWcStatus {
+  locked: boolean;
+  switched: boolean;
+}
+
 export interface IFileStatus {
   status: string;
   props: string;
   path: string;
   changelist?: string;
   rename?: string;
+  wcStatus: IWcStatus;
   commit?: {
     revision: string;
     author: string;
@@ -25,6 +31,7 @@ export interface IEntry {
     movedTo?: string;
     movedFrom?: string;
     wcLocked?: string;
+    switched?: string;
     commit: {
       revision: string;
       author: string;
@@ -48,11 +55,17 @@ function processEntry(
     return list;
   }
 
+  const wcStatus: IWcStatus = {
+    locked: !!entry.wcStatus.wcLocked && entry.wcStatus.wcLocked === "true",
+    switched: !!entry.wcStatus.switched && entry.wcStatus.switched === "true"
+  };
+
   let r: IFileStatus = {
     changelist: changelist,
     path: entry.path,
     status: entry.wcStatus.item,
-    props: entry.wcStatus.props
+    props: entry.wcStatus.props,
+    wcStatus: wcStatus
   };
 
   if (entry.wcStatus.movedTo && r.status === "deleted") {

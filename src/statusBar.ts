@@ -44,16 +44,33 @@ export class SvnStatusBar {
 
     const isIdle = this.repository.operations.isIdle();
 
-    const icon = isIdle ? "sync" : "sync~spin";
-    const title = !isIdle
-      ? "Running"
-      : this.repository.newCommit > 0
-        ? `${this.repository.newCommit} new commits`
-        : "Updated";
+    let icon = "sync";
+    let title = "Updated";
+    let command = "svn.update";
+    let tooltip = "Update Revision";
+
+    if (!isIdle) {
+      icon = "sync~spin";
+      title = "Running";
+      tooltip = "Running";
+      command = "";
+    } else if (this.repository.needCleanUp) {
+      icon = "alert";
+      title = "Need cleanup";
+      tooltip = "Run cleanup command";
+      command = "svn.cleanup";
+    } else if (this.repository.isIncomplete) {
+      icon = "issue-reopened";
+      title = "Incomplete (Need finish checkout)";
+      tooltip = "Run update to complete";
+      command = "svn.finishCheckout";
+    } else if (this.repository.newCommit > 0) {
+      title = `${this.repository.newCommit} new commits`;
+    }
 
     result.push({
-      command: "svn.update",
-      tooltip: "Update Revision",
+      command: command,
+      tooltip: tooltip,
       title: `$(${icon}) ${title}`,
       arguments: [this.repository]
     });

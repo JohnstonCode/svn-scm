@@ -376,4 +376,19 @@ export class Repository {
 
     return 0;
   }
+
+  async cleanup() {
+    const result = await this.exec(["cleanup"]);
+
+    return result.stdout;
+  }
+
+  async finishCheckout() {
+    const info = await this.getInfo();
+
+    const result = await this.exec(["switch", info.url]);
+
+    return result.stdout;
+  }
+
 }

@@ -43,6 +43,7 @@ export enum RepositoryState {
 export enum Operation {
   Add = "Add",
   AddChangelist = "AddChangelist",
+  CleanUp = "CleanUp",
   Commit = "Commit",
   CurrentBranch = "CurrentBranch",
   Log = "Log",
@@ -134,6 +135,8 @@ export class Repository {
   private disposables: Disposable[] = [];
   public currentBranch = "";
   public newCommit: number = 0;
+  public isIncomplete: boolean = false;
+  public needCleanUp: boolean = false;
 
   private lastPromptAuth?: Thenable<void | undefined>;
 
@@ -184,6 +187,9 @@ export class Repository {
     this.changelists.forEach((group, changelist) => {
       group.resourceStates = [];
     });
+
+    this.isIncomplete = false;
+    this.needCleanUp = false;
   }
   get root(): string {
     return this.repository.root;
@@ -378,12 +384,16 @@ export class Repository {
 
     this.statusExternal = [];
     this.statusIgnored = [];
+    this.isIncomplete = false;
+    this.needCleanUp = false;
 
     const combineExternal = configuration.get<boolean>(
-      "sourceControl.combineExternalIfSameServer", false
+      "sourceControl.combineExternalIfSameServer",
+      false
     );
 
-    const statuses = (await this.repository.getStatus(true, combineExternal)) || [];
+    const statuses =
+      (await this.repository.getStatus(true, combineExternal)) || [];
 
     const fileConfig = workspace.getConfiguration("files", Uri.file(this.root));
 
@@ -416,9 +426,31 @@ export class Repository {
       );
     });
 
-    statusesRepository.forEach(status => {
+    for (const status of statusesRepository) {
+      if (status.path === ".") {
+        this.isIncomplete = status.status === Status.INCOMPLETE;
+        this.needCleanUp = status.wcStatus.locked;
+        continue;
+      }
+
+      // If exists a switched item, the repository is incomplete
+      // To simulate, run "svn switch" and kill "svn" proccess
+      // After, run "svn update"
+      if (status.wcStatus.switched) {
+        this.isIncomplete = true;
+      }
+
+      if (
+        status.wcStatus.locked ||
+        status.wcStatus.switched ||
+        status.status === Status.INCOMPLETE
+      ) {
+        // On commit, `svn status` return all locked files with status="normal" and props="none"
+        continue;
+      }
+
       if (micromatch.some(status.path, excludeList)) {
-        return;
+        continue;
       }
 
       const uri = Uri.file(path.join(this.workspaceRoot, status.path));
@@ -433,10 +465,7 @@ export class Repository {
         status.props
       );
 
-      if (status.status === Status.NORMAL && status.props === PropStatus.NONE) {
-        // On commit, `svn status` return all locked files with status="normal" and props="none"
-        return;
-      } else if (status.status === Status.IGNORED) {
+      if (status.status === Status.IGNORED) {
         this.statusIgnored.push(status);
       } else if (status.status === Status.CONFLICTED) {
         conflicts.push(resource);
@@ -451,7 +480,7 @@ export class Repository {
           matches[1] &&
           statuses.some(s => s.path === matches[1])
         ) {
-          return;
+          continue;
         } else {
           unversioned.push(resource);
         }
@@ -467,7 +496,7 @@ export class Repository {
           changelists.set(status.changelist, changelist);
         }
       }
-    });
+    }
 
     this.changes.resourceStates = changes;
     this.unversioned.resourceStates = unversioned;
@@ -647,6 +676,16 @@ export class Repository {
 
   async log() {
     return await this.run(Operation.Log, () => this.repository.log());
+  }
+
+  async cleanup() {
+    return await this.run(Operation.CleanUp, () => this.repository.cleanup());
+  }
+
+  async finishCheckout() {
+    return await this.run(Operation.SwitchBranch, () =>
+      this.repository.finishCheckout()
+    );
   }
 
   async promptAuth() {

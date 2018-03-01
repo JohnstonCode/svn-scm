@@ -1088,6 +1088,16 @@ export class SvnCommands implements IDisposable {
     this.model.close(repository);
   }
 
+  @command("svn.cleanup", { repository: true })
+  async cleanup(repository: Repository) {
+    await repository.cleanup();
+  }
+
+  @command("svn.finishCheckout", { repository: true })
+  async finishCheckout(repository: Repository) {
+    await repository.finishCheckout();
+  }
+
   private getSCMResource(uri?: Uri): Resource | undefined {
     uri = uri
       ? uri
