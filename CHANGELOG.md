@@ -1,3 +1,15 @@
+# **v1.22.0**
+
+## What's New
+
+* @edgardmessias Added svn cleanup and status in status bar
+
+## Bug Fixes
+
+* @edgardmessias Show original file if has conflict marks
+* @edgardmessias Hide "Open changes" buttons if no has change
+* @edgardmessias Removed locked items in changes lists
+
 # **v1.21.3**
 
 ## Bug Fixes
