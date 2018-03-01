@@ -205,6 +205,11 @@
         "command": "svn.close",
         "title": "Close repository",
         "category": "SVN"
+      },
+      {
+        "command": "svn.cleanup",
+        "title": "Clean up working copy",
+        "category": "SVN"
       }
     ],
     "menus": {
@@ -297,6 +302,10 @@
         {
           "command": "svn.close",
           "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
+        },
+        {
+          "command": "svn.cleanup",
+          "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
         }
       ],
       "scm/title": [
@@ -332,6 +341,10 @@
         },
         {
           "command": "svn.log",
+          "when": "config.svn.enabled && scmProvider == svn"
+        },
+        {
+          "command": "svn.cleanup",
           "when": "config.svn.enabled && scmProvider == svn"
         }
       ],
