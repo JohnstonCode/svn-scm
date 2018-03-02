@@ -177,15 +177,17 @@ suite("Commands Tests", () => {
   });
 
   test("New Branch", async function() {
+    testUtil.overrideNextShowQuickPick(0);
+    testUtil.overrideNextShowQuickPick(1);
     testUtil.overrideNextShowInputBox("test");
-    await commands.executeCommand("svn.branch");
+    await commands.executeCommand("svn.switchBranch");
 
     const repository = model.getRepository(checkoutDir) as Repository;
-    assert.equal(await repository.getCurrentBranch(), "test");
+    assert.equal(await repository.getCurrentBranch(), "branches/test");
   });
 
   test("Switch Branch", async function() {
-    testUtil.overrideNextShowQuickPick(1);
+    testUtil.overrideNextShowQuickPick(2);
     await commands.executeCommand("svn.switchBranch");
 
     const repository = model.getRepository(checkoutDir) as Repository;
