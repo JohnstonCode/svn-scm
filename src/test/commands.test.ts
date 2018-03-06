@@ -135,7 +135,7 @@ suite("Commands Tests", () => {
     testUtil.overrideNextShowQuickPick(0);
     testUtil.overrideNextShowInputBox("changelist-test");
 
-    await commands.executeCommand("svn.addChangelist", resource);
+    await commands.executeCommand("svn.changelist", resource);
     assert.ok(repository.changelists.has("changelist-test"));
   });
 
@@ -147,7 +147,9 @@ suite("Commands Tests", () => {
     ) as SvnResourceGroup;
     const resource = group.resourceStates[0];
 
-    await commands.executeCommand("svn.removeChangelist", resource);
+    testUtil.overrideNextShowQuickPick(3);
+
+    await commands.executeCommand("svn.changelist", resource);
     assert.equal(group.resourceStates.length, 0);
   });
 

@@ -62,21 +62,12 @@
         }
       },
       {
-        "command": "svn.addChangelist",
-        "title": "Add to a changelist",
+        "command": "svn.changelist",
+        "title": "Set changelist",
         "category": "SVN",
         "icon": {
           "light": "icons/light/changelist.svg",
           "dark": "icons/dark/changelist.svg"
-        }
-      },
-      {
-        "command": "svn.removeChangelist",
-        "title": "Remove from changelist",
-        "category": "SVN",
-        "icon": {
-          "light": "icons/light/remove.svg",
-          "dark": "icons/dark/remove.svg"
         }
       },
       {
@@ -219,11 +210,7 @@
           "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
         },
         {
-          "command": "svn.addChangelist",
-          "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
-        },
-        {
-          "command": "svn.removeChangelist",
+          "command": "svn.changelist",
           "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
         },
         {
@@ -414,27 +401,13 @@
           "group": "1_modification"
         },
         {
-          "command": "svn.addChangelist",
-          "when":
-            "config.svn.enabled && scmProvider == svn && scmResourceGroup != unversioned && scmResourceGroup != external && scmResourceGroup != conflicts",
+          "command": "svn.changelist",
+          "when": "config.svn.enabled && scmProvider == svn && scmResourceGroup != unversioned && scmResourceGroup != external && scmResourceGroup != conflicts",
           "group": "inline"
         },
         {
-          "command": "svn.addChangelist",
-          "when":
-            "config.svn.enabled && scmProvider == svn && scmResourceGroup != unversioned && scmResourceGroup != external && scmResourceGroup != conflicts",
-          "group": "1_modification"
-        },
-        {
-          "command": "svn.removeChangelist",
-          "when":
-            "config.svn.enabled && scmProvider == svn && scmResourceGroup != changes && scmResourceGroup != unversioned && scmResourceGroup != external && scmResourceGroup != conflicts",
-          "group": "inline"
-        },
-        {
-          "command": "svn.removeChangelist",
-          "when":
-            "config.svn.enabled && scmProvider == svn && scmResourceGroup != changes && scmResourceGroup != unversioned && scmResourceGroup != external && scmResourceGroup != conflicts",
+          "command": "svn.changelist",
+          "when": "config.svn.enabled && scmProvider == svn && scmResourceGroup != unversioned && scmResourceGroup != external && scmResourceGroup != conflicts",
           "group": "1_modification"
         },
         {
