@@ -32,7 +32,6 @@ import { IDisposable, hasSupportToRegisterDiffCommand } from "./util";
 import {
   getChangelistPickOptions,
   inputSwitchChangelist,
-  ChangeListItem,
   getCommitChangelistPickOptions,
   inputCommitChangelist
 } from "./changelistItems";
@@ -258,8 +257,8 @@ export class SvnCommands implements IDisposable {
     });
   }
 
-  @command("svn.addChangelist")
-  async addChangelist(
+  @command("svn.changelist")
+  async changelist(
     ...resourceStates: SourceControlResourceState[]
   ): Promise<void> {
     const selection = this.getResourceStates(resourceStates);
@@ -275,52 +274,47 @@ export class SvnCommands implements IDisposable {
         return;
       }
 
-      const changelistName = await inputSwitchChangelist(repository);
+      let canRemove = false;
 
-      if (!changelistName) {
+      repository.changelists.forEach((group, changelist) => {
+        if (
+          group.resourceStates.some(state =>
+            resources.includes(state.resourceUri)
+          )
+        ) {
+          canRemove = true;
+          return false;
+        }
+      });
+
+      const changelistName = await inputSwitchChangelist(repository, canRemove);
+
+      if (!changelistName && changelistName !== false) {
         return;
       }
 
       const paths = resources.map(resource => resource.fsPath);
 
-      try {
-        await repository.addChangelist(paths, changelistName);
-      } catch (error) {
-        console.log(error);
-        window.showErrorMessage(
-          `Unable to add file 
+      if (changelistName === false) {
+        try {
+          await repository.removeChangelist(paths);
+        } catch (error) {
+          console.log(error);
+          window.showErrorMessage(
+            `Unable to remove file 
+          "${paths.join(",")}" from changelist`
+          );
+        }
+      } else {
+        try {
+          await repository.addChangelist(paths, changelistName);
+        } catch (error) {
+          console.log(error);
+          window.showErrorMessage(
+            `Unable to add file 
           "${paths.join(",")}" to changelist "${changelistName}"`
-        );
-      }
-    });
-  }
-
-  @command("svn.removeChangelist")
-  async removeChangelist(
-    ...resourceStates: SourceControlResourceState[]
-  ): Promise<void> {
-    const selection = this.getResourceStates(resourceStates);
-
-    if (selection.length === 0) {
-      return;
-    }
-
-    const uris = selection.map(resource => resource.resourceUri);
-
-    await this.runByRepository(uris, async (repository, resources) => {
-      if (!repository) {
-        return;
-      }
-
-      const paths = resources.map(resource => resource.fsPath);
-
-      try {
-        await repository.removeChangelist(paths);
-      } catch (error) {
-        console.log(error);
-        window.showErrorMessage(
-          `Unable to remove file "${paths.join(",")}" from changelist`
-        );
+          );
+        }
       }
     });
   }
