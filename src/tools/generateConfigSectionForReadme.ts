@@ -9,7 +9,7 @@ const properties = packageJson.contributes.configuration.properties;
 console.log("|Config|Description|Default|");
 console.log("|-|-|-|");
 
-Object.keys(properties).forEach( val => {
-    let prop = properties[val];
-    console.log(`|\`${val}\`|${prop.description}|\`${prop.default}\`|);
+Object.keys(properties).forEach(val => {
+    const prop = properties[val];
+    console.log(`|\`${val}\`|${prop.description}|\`${prop.default}\`|`);
 });
