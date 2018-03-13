@@ -90,18 +90,28 @@ Example:
 
 ## Settings
 
-| Config | Description | Default |
+|Config|Description|Default|
 |-|-|-|
-|`svn.enabled`|Enables Svn as a SCM in VS Code|`true`|
-|`svn.decorations.enabled`|Controls if SVN contributes colors and badges to the explorer and the open (VSCode >= 1.18 with proposed-api enabled)|`true`|
+|`svn.enabled`|Whether svn is enabled|`true`|
+|`svn.autorefresh`|Whether auto refreshing is enabled|`true`|
+|`svn.decorations.enabled`|Controls if SVN contributes colors and badges to the explorer and the open (VSCode \>= 1.18 with proposed-api)|`true`|
+|`svn.path`|Path to the svn executable|`null`|
+|`svn.ignoreMissingSvnWarning`|Ignores the warning when SVN is missing|`false`|
 |`svn.diff.withHead`|Show diff changes using latest revision in the repository. Set false to use latest revision in local folder|`true`|
-|`svn.layout.trunk`|Relative path for 'trunk' in SVN URL, 'null' to disable. (Ex.: 'trunk', 'main')|`trunk`|
-|`svn.layout.branches`|Relative path for 'branches' in SVN URL, 'null' to disable. (Ex.: 'branches', 'versions')|`branches`|
-|`svn.layout.tags`|Relative path for 'tags' in SVN URL, 'null' to disable. (Ex.: 'tags', 'stamps')|`tags`|
+|`svn.layout.trunkRegex`|Regex to detect path for 'trunk' in SVN URL, 'null' to disable. (Ex.: '(trunk)', '(main)')|`"(trunk)"`|
+|`svn.layout.trunkRegexName`|Regex group position for name of trunk|`1`|
+|`svn.layout.branchesRegex`|Regex to detect path for 'branches' in SVN URL, 'null' to disable. Subpath use 'branches/.\*/(.\*)' (Ex.: 'branches/.\*/(.\*)', 'versions/(.\*)')|`"branches/(.*)"`|
+|`svn.layout.branchesRegexName`|Regex group position for name of branch|`1`|
+|`svn.layout.tagsRegex`|Regex to detect path for 'tags' in SVN URL, 'null' to disable. Subpath use 'tags/.\*/(.\*)'. (Ex.: 'tags/(.\*)', 'stamps/(.\*)')|`"tags/(.*)"`|
+|`svn.layout.tagRegexName`|Regex group position for name of tag|`1`|
+|`svn.layout.showFullName`|Set true to show 'branches/\<name\>' and false to show only '\<name\>'|`true`|
 |`svn.multipleFolders.enabled`|Allow to find subfolders using SVN|`false`|
 |`svn.multipleFolders.depth`|Maximum depth to find subfolders using SVN|`4`|
-|`svn.multipleFolders.ignore`|Folders to ignore using SVN|`["**/.git", "**/.hg", "**/vendor", "**/node_modules"]`|
+|`svn.multipleFolders.ignore`|Folders to ignore using SVN|`["**/.git","**/.hg","**/vendor","**/node_modules"]`|
 |`svn.sourceControl.ignoreOnCommit`|Changelists to ignore on commit|`["ignore-on-commit"]`|
-|`svn.sourceControl.showExternal`|Allow to show in source control the list the external folders|`false`|
+|`svn.detectExternals`|Controls whether to automatically detect svn externals.|`true`|
+|`svn.sourceControl.combineExternalIfSameServer`|Combine the svn external in the main if is from the same server.|`false`|
+|`svn.sourceControl.countUnversioned`|Allow to count unversioned files in status count|`true`|
 |`svn.log.length`|Number of commit messages to log|`50`|
-|`svn.branch.update`|How frequently (in minutes) to check branch changes. Set to `0` to avoid periodic checks|`5`|
+|`svn.showOutput`|Show the output window when the extension starts|`false`|
+|`svn.conflicts.autoResolve`|Set file to status resolved after fix conflictss|`false`|
