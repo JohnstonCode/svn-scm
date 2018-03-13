@@ -575,9 +575,7 @@ export class SvnCommands implements IDisposable {
     }
 
     if (!left) {
-      const document = await workspace.openTextDocument(right);
-      await window.showTextDocument(document, opts);
-      return;
+      return await commands.executeCommand<void>("vscode.open", right, opts);
     }
 
     return await commands.executeCommand<void>(
