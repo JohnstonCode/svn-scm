@@ -26,7 +26,8 @@
     "compile": "tsc -watch -p ./",
     "postinstall": "node ./node_modules/vscode/bin/install",
     "test": "node ./node_modules/vscode/bin/test",
-    "prettier": "prettier --no-config --list-different 'src/**/*.ts'"
+    "prettier": "prettier --no-config --list-different 'src/**/*.ts'",
+    "tools:genReadme": "node ./out/tools/generateConfigSectionForReadme.js"
   },
   "dependencies": {
     "@types/xml2js": "^0.4.2",
