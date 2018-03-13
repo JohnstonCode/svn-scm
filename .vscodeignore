@@ -6,6 +6,7 @@ coverage/**
 coverconfig.json
 jsconfig.json
 out/test/**
+out/tools/**
 src/**
 test/**
 tsconfig.json
