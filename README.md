@@ -90,54 +90,18 @@ Example:
 
 ## Settings
 
-`svn.enabled`
-  * Enables Svn as a SCM in VS Code.  
-  `"default"` &mdash; `true`
-
-`svn.decorations.enabled`
-  * Controls if SVN contributes colors and badges to the explorer and the open (VSCode >= 1.18 with proposed-api enabled)
-  `"default"` &mdash; `true`
-
-`svn.diff.withHead`
-  * Show diff changes using latest revision in the repository. Set false to use latest revision in local folder  
-  `"default"` &mdash; `true`
-
-`svn.layout.trunk`
-  * Relative path for 'trunk' in SVN URL, 'null' to disable. (Ex.: 'trunk', 'main')  
-  `"default"` &mdash; `trunk`
-
-`svn.layout.branches`
-  * Relative path for 'branches' in SVN URL, 'null' to disable. (Ex.: 'branches', 'versions')  
-  `"default"` &mdash; `branches`
-
-`svn.layout.tags`
-  * Relative path for 'tags' in SVN URL, 'null' to disable. (Ex.: 'tags', 'stamps')  
-  `"default"` &mdash; `tags`
-
-`svn.multipleFolders.enabled`
-  * Allow to find subfolders using SVN  
-  `"default"` &mdash; `false`
-
-`svn.multipleFolders.depth`
-  * Maximum depth to find subfolders using SVN  
-  `"default"` &mdash; `4`
-
-`svn.multipleFolders.ignore`
-  * Folders to ignore using SVN  
-  `"default"` &mdash; `["**/.git", "**/.hg", "**/vendor", "**/node_modules"]`
-
-`svn.sourceControl.ignoreOnCommit`
-  * Changelists to ignore on commit  
-  `"default"` &mdash; `["ignore-on-commit"]`
-
-`svn.sourceControl.showExternal`
-  * Allow to show in source control the list the external folders  
-  `"default"` &mdash; `false`
-
-`svn.log.length`
-  * Number of commit messages to log  
-  `"default"` &mdash; `50`
-
-`svn.branch.update`
-  * How frequently (in minutes) to check branch changes. Set to `0` to avoid periodic checks  
-  `"default"` &mdash; `5`
+| Config | Description | Default |
+|-|-|-|
+|`svn.enabled`|Enables Svn as a SCM in VS Code|`true`|
+|`svn.decorations.enabled`|Controls if SVN contributes colors and badges to the explorer and the open (VSCode >= 1.18 with proposed-api enabled)|`true`|
+|`svn.diff.withHead`|Show diff changes using latest revision in the repository. Set false to use latest revision in local folder|`true`|
+|`svn.layout.trunk`|Relative path for 'trunk' in SVN URL, 'null' to disable. (Ex.: 'trunk', 'main')|`trunk`|
+|`svn.layout.branches`|Relative path for 'branches' in SVN URL, 'null' to disable. (Ex.: 'branches', 'versions')|`branches`|
+|`svn.layout.tags`|Relative path for 'tags' in SVN URL, 'null' to disable. (Ex.: 'tags', 'stamps')|`tags`|
+|`svn.multipleFolders.enabled`|Allow to find subfolders using SVN|`false`|
+|`svn.multipleFolders.depth`|Maximum depth to find subfolders using SVN|`4`|
+|`svn.multipleFolders.ignore`|Folders to ignore using SVN|`["**/.git", "**/.hg", "**/vendor", "**/node_modules"]`|
+|`svn.sourceControl.ignoreOnCommit`|Changelists to ignore on commit|`["ignore-on-commit"]`|
+|`svn.sourceControl.showExternal`|Allow to show in source control the list the external folders|`false`|
+|`svn.log.length`|Number of commit messages to log|`50`|
+|`svn.branch.update`|How frequently (in minutes) to check branch changes. Set to `0` to avoid periodic checks|`5`|
