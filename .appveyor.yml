@@ -23,7 +23,7 @@ install:
   - npm install
   
 build_script:
-  - npm run vscode:prepublish
+  - vsce package -o svn-scm.vsix
   # For coverage
   - ps: (get-content package.json) | %{$_ -replace '"\*"',''} | set-content package.json
 
@@ -36,5 +36,3 @@ after_test:
       $env:PATH = 'C:\msys64\usr\bin;' + $env:PATH
       Invoke-WebRequest -Uri 'https://codecov.io/bash' -OutFile codecov.sh
       bash codecov.sh
-  - git checkout package.json
-  - vsce package -o svn-scm.vsix

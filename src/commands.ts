@@ -36,6 +36,7 @@ import {
   inputCommitChangelist
 } from "./changelistItems";
 import { configuration } from "./helpers/configuration";
+import { selectBranch } from "./branches";
 
 interface CommandOptions {
   repository?: boolean;
@@ -59,64 +60,6 @@ function command(commandId: string, options: CommandOptions = {}): Function {
 
     Commands.push({ commandId, key, method: descriptor.value, options });
   };
-}
-
-class CreateBranchItem implements QuickPickItem {
-  constructor(private commands: SvnCommands) {}
-
-  get label(): string {
-    return "$(plus) Create new branch";
-  }
-
-  get description(): string {
-    return "";
-  }
-
-  async run(repository: Repository): Promise<void> {
-    await this.commands.branch(repository);
-  }
-}
-
-class SwitchBranchItem implements QuickPickItem {
-  protected tree: string = "";
-  protected name: string = "";
-
-  constructor(protected ref: string) {
-    let parts = ref.split("/");
-    if (parts[1]) {
-      // Name is the last part
-      this.name = parts.pop() || "";
-      this.tree = parts.join("/");
-    } else {
-      this.tree = parts[0];
-      this.name = parts[0];
-    }
-  }
-
-  get label(): string {
-    return this.name;
-  }
-
-  get description(): string {
-    return this.tree;
-  }
-
-  async run(repository: Repository): Promise<void> {
-    try {
-      await repository.switchBranch(this.ref);
-    } catch (error) {
-      if (error.svnErrorCode === SvnErrorCodes.NotShareCommonAncestry) {
-        window.showErrorMessage(
-          `Path '${
-            repository.workspaceRoot
-          }' does not share common version control ancestry with the requested switch location.`
-        );
-        return;
-      }
-
-      window.showErrorMessage("Unable to switch branch");
-    }
-  }
 }
 
 export class SvnCommands implements IDisposable {
@@ -666,45 +609,26 @@ export class SvnCommands implements IDisposable {
 
   @command("svn.switchBranch", { repository: true })
   async switchBranch(repository: Repository) {
-    const branchesPromise = repository.getBranches();
+    const branch = await selectBranch(repository, true);
 
-    window.withProgress(
-      { location: ProgressLocation.Window, title: "Checking remote branches" },
-      () => branchesPromise
-    );
-
-    const branches = await branchesPromise;
-
-    const branchPicks = branches.map(branch => new SwitchBranchItem(branch));
-    const placeHolder = "Pick a branch to switch to.";
-    const createBranch = new CreateBranchItem(this);
-    const picks = [createBranch, ...branchPicks];
-
-    const choice = await window.showQuickPick(picks, { placeHolder });
-
-    if (!choice) {
+    if (!branch) {
       return;
     }
 
-    await choice.run(repository);
-  }
-
-  @command("svn.branch", { repository: true })
-  async branch(repository: Repository): Promise<void> {
-    const result = await window.showInputBox({
-      prompt: "Please provide a branch name",
-      ignoreFocusOut: true
-    });
-
-    if (!result) {
-      return;
+    try {
+      if (branch.isNew) {
+        await repository.branch(branch.path);
+      } else {
+        await repository.switchBranch(branch.path);
+      }
+    } catch (error) {
+      console.log(error);
+      if (branch.isNew) {
+        window.showErrorMessage("Unable to create new branch");
+      } else {
+        window.showErrorMessage("Unable to switch branch");
+      }
     }
-
-    const name = result.replace(
-      /^\.|\/\.|\.\.|~|\^|:|\/$|\.lock$|\.lock\/|\\|\*|\s|^\s*$|\.$/g,
-      "-"
-    );
-    await repository.branch(name);
   }
 
   @command("svn.revert")

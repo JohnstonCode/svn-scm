@@ -128,9 +128,9 @@ suite("Repository Tests", () => {
     if (!newRepository) return;
     assert.ok(newRepository);
 
-    await newRepository.branch("test");
+    await newRepository.branch("branches/test");
     const currentBranch = await newRepository.getCurrentBranch();
 
-    assert.equal(currentBranch, "test");
+    assert.equal(currentBranch, "branches/test");
   });
 });

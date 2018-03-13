@@ -257,7 +257,7 @@ export class Svn {
     if (exitCode) {
       return Promise.reject<IExecutionResult>(
         new SvnError({
-          message: "Failed to execute git",
+          message: "Failed to execute svn",
           stdout: stdout,
           stderr: stderr,
           exitCode: exitCode,

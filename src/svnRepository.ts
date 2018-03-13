@@ -6,6 +6,8 @@ import { sequentialize } from "./decorators";
 import * as path from "path";
 import { fixPathSeparator } from "./util";
 import { configuration } from "./helpers/configuration";
+import { parseSvnList } from "./listParser";
+import { getBranchName } from "./branches";
 
 export class Repository {
   private _info: { [index: string]: ISvnInfo } = {};
@@ -141,23 +143,14 @@ export class Repository {
   async getCurrentBranch(): Promise<string> {
     const info = await this.getInfo();
 
-    const trunkLayout = configuration.get<string>("layout.trunk");
-    const branchesLayout = configuration.get<string>("layout.branches");
-    const tagsLayout = configuration.get<string>("layout.tags");
+    const branch = getBranchName(info.url);
 
-    const trees = [trunkLayout, branchesLayout, tagsLayout].filter(
-      x => x != null
-    );
-    const regex = new RegExp("(.*?)/(" + trees.join("|") + ")(/([^/]+))?.*?");
-
-    const match = info.url.match(regex);
-
-    if (match) {
-      if (match[4] && match[2] !== trunkLayout) {
-        return match[4];
-      }
-      if (match[2]) {
-        return match[2];
+    if (branch) {
+      const showFullName = configuration.get<boolean>("layout.showFullName");
+      if (showFullName) {
+        return branch.path;
+      } else {
+        return branch.name;
       }
     }
 
@@ -171,25 +164,15 @@ export class Repository {
   }
 
   async getRepoUrl() {
-    const trunkLayout = configuration.get<string>("layout.trunk");
-    const branchesLayout = configuration.get<string>("layout.branches");
-    const tagsLayout = configuration.get<string>("layout.tags");
-
-    const trees = [trunkLayout, branchesLayout, tagsLayout].filter(
-      x => x != null
-    );
-    const regex = new RegExp("(.*?)/(" + trees.join("|") + ").*?");
-
     const info = await this.getInfo();
 
-    let repoUrl = info.repository.root;
-    const match = info.url.match(regex);
+    const branch = getBranchName(info.url);
 
-    if (match && match[1]) {
-      repoUrl = match[1];
+    if (!branch) {
+      return info.repository.root;
     }
 
-    return repoUrl;
+    return info.url.replace(branch.path, "").replace(/\/$/, "");
   }
 
   async getBranches() {
@@ -264,14 +247,8 @@ export class Repository {
   }
 
   async branch(name: string) {
-    const branchesLayout = configuration.get<string>("layout.branches");
-
-    if (!branchesLayout) {
-      return false;
-    }
-
     const repoUrl = await this.getRepoUrl();
-    const newBranch = repoUrl + "/" + branchesLayout + "/" + name;
+    const newBranch = repoUrl + "/" + name;
     const info = await this.getInfo();
     const currentBranch = info.url;
     const result = await this.exec([
@@ -282,9 +259,7 @@ export class Repository {
       `Created new branch ${name}`
     ]);
 
-    const switchBranch = await this.exec(["switch", newBranch]);
-
-    this.resetInfo();
+    await this.switchBranch(name);
 
     return true;
   }
@@ -391,4 +366,15 @@ export class Repository {
     return result.stdout;
   }
 
+  async list(folder?: string) {
+    let url = await this.getRepoUrl();
+
+    if (folder) {
+      url += "/" + folder;
+    }
+
+    const result = await this.exec(["list", url, "--xml"]);
+
+    return parseSvnList(result.stdout);
+  }
 }
