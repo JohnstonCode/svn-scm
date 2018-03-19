@@ -4,6 +4,7 @@ import { IFileStatus, parseStatusXml } from "./statusParser";
 import { parseInfoXml, ISvnInfo } from "./infoParser";
 import { sequentialize } from "./decorators";
 import * as path from "path";
+import * as fs from "fs";
 import { fixPathSeparator } from "./util";
 import { configuration } from "./helpers/configuration";
 import { parseSvnList } from "./listParser";
@@ -115,7 +116,14 @@ export class Repository {
   async commitFiles(message: string, files: string[]) {
     files = files.map(file => this.removeAbsolutePath(file));
 
-    const result = await this.exec(["commit", "-m", message, ...files]);
+    const args = ["commit", ...files];
+
+    if (fs.existsSync(path.join(this.workspaceRoot, message))) {
+      args.push("--force-log");
+    }
+    args.push("-m", message);
+
+    const result = await this.exec(args);
 
     const matches = result.stdout.match(/Committed revision (.*)\./i);
     if (matches && matches[0]) {
