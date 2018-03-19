@@ -138,7 +138,7 @@ export class Repository {
   public isIncomplete: boolean = false;
   public needCleanUp: boolean = false;
 
-  private lastPromptAuth?: Thenable<void | undefined>;
+  private lastPromptAuth?: Thenable<boolean | undefined>;
 
   private _onDidChangeRepository = new EventEmitter<Uri>();
   readonly onDidChangeRepository: Event<Uri> = this._onDidChangeRepository
@@ -688,16 +688,16 @@ export class Repository {
     );
   }
 
-  async promptAuth() {
+  async promptAuth(): Promise<boolean | undefined> {
     // Prevent multiple prompts for auth
     if (this.lastPromptAuth) {
-      await this.lastPromptAuth;
-      return;
+      return await this.lastPromptAuth;
     }
 
     this.lastPromptAuth = commands.executeCommand("svn.promptAuth");
-    await this.lastPromptAuth;
+    const result = await this.lastPromptAuth;
     this.lastPromptAuth = undefined;
+    return result;
   }
 
   onDidSaveTextDocument(document: TextDocument) {
@@ -774,7 +774,10 @@ export class Repository {
           err.svnErrorCode === SvnErrorCodes.AuthorizationFailed &&
           attempt <= 3
         ) {
-          await this.promptAuth();
+          const result = await this.promptAuth();
+          if (!result) {
+            throw err;
+          }
         } else {
           throw err;
         }
