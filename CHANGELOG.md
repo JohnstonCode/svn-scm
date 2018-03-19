@@ -1,3 +1,15 @@
+# **v1.23.0**
+
+## What's New
+
+* @edgardmessias Improved Changelists
+* @edgardmessias Added support to work with sub branchs
+* @johnjacobkenny Added new settings table layout
+
+## Bug Fixes
+
+* @edgardmessias Fixed image asset not opening from vcs sidebar
+
 # **v1.22.0**
 
 ## What's New
