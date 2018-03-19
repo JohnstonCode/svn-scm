@@ -50,6 +50,10 @@ function getSvnErrorCode(stderr: string): string | undefined {
     }
   }
 
+  if (/No more credentials or we tried too many times/.test(stderr)) {
+    return SvnErrorCodes.AuthorizationFailed;
+  }
+
   return void 0;
 }
 

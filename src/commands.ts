@@ -125,16 +125,31 @@ export class SvnCommands implements IDisposable {
   }
 
   @command("svn.promptAuth", { repository: true })
-  async promptAuth(repository: Repository) {
-    repository.username = await window.showInputBox({
+  async promptAuth(repository: Repository): Promise<boolean> {
+    const username = await window.showInputBox({
       placeHolder: "Svn repository username",
-      prompt: "Please enter your username"
+      prompt: "Please enter your username",
+      value: repository.username
     });
 
-    repository.password = await window.showInputBox({
+    if(username === undefined) {
+      return false;
+    }
+
+    const password = await window.showInputBox({
       placeHolder: "Svn repository password",
-      prompt: "Please enter your password"
+      prompt: "Please enter your password",
+      password: true
     });
+
+    if(username === undefined) {
+      return false;
+    }
+
+    repository.username = username;
+    repository.password = password;
+
+    return true;
   }
 
   @command("svn.commitWithMessage", { repository: true })
@@ -168,7 +183,7 @@ export class SvnCommands implements IDisposable {
       repository.inputBox.value = "";
     } catch (error) {
       console.error(error);
-      window.showErrorMessage(error);
+      window.showErrorMessage("Unable to commit");
     }
   }
 
