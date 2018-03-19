@@ -324,11 +324,7 @@
           "when": "config.svn.enabled && scmProvider == svn"
         },
         {
-          "command": "svn.patch",
-          "when": "config.svn.enabled && scmProvider == svn"
-        },
-        {
-          "command": "svn.resolve",
+          "command": "svn.patchAll",
           "when": "config.svn.enabled && scmProvider == svn"
         },
         {
