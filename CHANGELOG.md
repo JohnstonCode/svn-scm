@@ -1,3 +1,9 @@
+# **v1.23.1**
+
+## Bug Fixes
+
+* @JohnstonCode Fixed diff patch for selected in title menu
+
 # **v1.23.0**
 
 ## What's New
