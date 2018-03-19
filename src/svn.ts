@@ -177,8 +177,9 @@ export class Svn {
     }
 
     if (options.log !== false) {
+      const argsOut = args.map(arg => (/ /.test(arg) ? `'${arg}'` : arg));
       this.logOutput(
-        `[${this.lastCwd.split(/[\\\/]+/).pop()}]$ svn ${args.join(" ")}\n`
+        `[${this.lastCwd.split(/[\\\/]+/).pop()}]$ svn ${argsOut.join(" ")}\n`
       );
     }
 
