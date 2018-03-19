@@ -1,3 +1,10 @@
+# **v1.23.2**
+
+## Bug Fixes
+
+* @edgardmessias Fixed commit when message is a existent file
+* @edgardmessias Improved Authentications
+
 # **v1.23.1**
 
 ## Bug Fixes
