@@ -110,3 +110,4 @@ Example:
 |`svn.showOutput`|Show the output window when the extension starts|`false`|
 |`svn.conflicts.autoResolve`|Set file to status resolved after fix conflictss|`false`|
 |`svn.update.ignoreExternals`|Set to ignore externals definitions on update (add --ignore-externals)|`true`|
+|`svn.default.encoding`|Encoding of svn output if the output is not utf-8. When this parameter is null, the encoding is automatically detected. Example: 'windows-1252'.|`null`|
