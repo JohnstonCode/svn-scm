@@ -40,13 +40,7 @@ If you use [TortoiseSVN](https://tortoisesvn.net/), make sure the option
 * Feel free to submit
   [pull requests](https://github.com/JohnstonCode/svn-scm/pulls)
 
-## Contributors
-
-* JohnstonCode
-* edgardmessias
-* csholmq
-* rwatts3
-* lapo-luchini
+## [Contributors](https://github.com/JohnstonCode/svn-scm/graphs/contributors)
 
 ## Features
 
