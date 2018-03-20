@@ -638,9 +638,9 @@ export class Repository {
     });
   }
 
-  async updateRevision(): Promise<string> {
+  async updateRevision(ignoreExternals: boolean = false): Promise<string> {
     return await this.run<string>(Operation.Update, async () => {
-      const response = await this.repository.update();
+      const response = await this.repository.update(ignoreExternals);
       this.updateNewCommits();
       return response;
     });

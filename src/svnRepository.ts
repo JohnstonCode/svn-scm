@@ -35,7 +35,14 @@ export class Repository {
   removeAbsolutePath(file: string) {
     file = fixPathSeparator(file);
 
-    return path.relative(this.workspaceRoot, file);
+    file = path.relative(this.workspaceRoot, file);
+
+    // Fix Peg Revision Algorithm (http://svnbook.red-bean.com/en/1.8/svn.advanced.pegrevs.html)
+    if (/@/.test(file)) {
+      file += "@";
+    }
+
+    return file;
   }
 
   async getStatus(
@@ -294,8 +301,14 @@ export class Repository {
     return result.stdout;
   }
 
-  async update(): Promise<string> {
-    const result = await this.exec(["update"]);
+  async update(ignoreExternals: boolean = true): Promise<string> {
+    const args = ["update"];
+
+    if (ignoreExternals) {
+      args.push("--ignore-externals");
+    }
+
+    const result = await this.exec(args);
 
     this.resetInfo();
 

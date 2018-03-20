@@ -40,13 +40,7 @@ If you use [TortoiseSVN](https://tortoisesvn.net/), make sure the option
 * Feel free to submit
   [pull requests](https://github.com/JohnstonCode/svn-scm/pulls)
 
-## Contributors
-
-* JohnstonCode
-* edgardmessias
-* csholmq
-* rwatts3
-* lapo-luchini
+## [Contributors](https://github.com/JohnstonCode/svn-scm/graphs/contributors)
 
 ## Features
 
@@ -115,3 +109,4 @@ Example:
 |`svn.log.length`|Number of commit messages to log|`50`|
 |`svn.showOutput`|Show the output window when the extension starts|`false`|
 |`svn.conflicts.autoResolve`|Set file to status resolved after fix conflictss|`false`|
+|`svn.update.ignoreExternals`|Set to ignore externals definitions on update (add --ignore-externals)|`true`|

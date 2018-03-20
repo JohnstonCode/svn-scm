@@ -2,7 +2,7 @@
   "name": "svn-scm",
   "displayName": "SVN",
   "description": "Integrated Subversion source control",
-  "version": "1.23.2",
+  "version": "1.24.0",
   "publisher": "johnstoncode",
   "engines": {
     "vscode": "^1.18.0"
@@ -597,6 +597,11 @@
           "type": "boolean",
           "description": "Set file to status resolved after fix conflictss",
           "default": false
+        },
+        "svn.update.ignoreExternals": {
+          "type": "boolean",
+          "description": "Set to ignore externals definitions on update (add --ignore-externals)",
+          "default": true
         },
         "svn.default.encoding": {
           "type": [
