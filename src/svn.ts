@@ -8,6 +8,9 @@ import { Repository } from "./svnRepository";
 import { parseInfoXml } from "./infoParser";
 import { SpawnOptions } from "child_process";
 import { IDisposable, toDisposable, dispose } from "./util";
+import { configuration } from "./helpers/configuration";
+
+const isUtf8 = require("is-utf8");
 
 // List: https://github.com/apache/subversion/blob/1.6.x/subversion/svn/schema/status.rnc#L33
 export enum Status {
@@ -241,15 +244,27 @@ export class Svn {
 
     // SVN with '--xml' always return 'UTF-8', and jschardet detects this encoding: 'TIS-620'
     if (!args.includes("--xml")) {
-      jschardet.MacCyrillicModel.mTypicalPositiveRatio += 0.001;
 
-      const encodingGuess = jschardet.detect(stdout);
+      const default_encoding = configuration.get<string>("default.encoding");
+      if (default_encoding) {
+        if (!iconv.encodingExists(default_encoding)) {
+          this.logOutput("svn.default.encoding: Invalid Parameter: '" + default_encoding + "'.\n")
+        } else if (!isUtf8(stdout)) {
+          encoding = default_encoding;
+        }
 
-      if (
-        encodingGuess.confidence > 0.8 &&
-        iconv.encodingExists(encodingGuess.encoding)
-      ) {
-        encoding = encodingGuess.encoding;
+      } else {
+
+        jschardet.MacCyrillicModel.mTypicalPositiveRatio += 0.001;
+
+        const encodingGuess = jschardet.detect(stdout);
+
+        if (
+          encodingGuess.confidence > 0.8 &&
+          iconv.encodingExists(encodingGuess.encoding)
+        ) {
+          encoding = encodingGuess.encoding;
+        }
       }
     }
 

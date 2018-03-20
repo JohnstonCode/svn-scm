@@ -41,6 +41,7 @@
   "dependencies": {
     "@types/xml2js": "^0.4.2",
     "iconv-lite": "^0.4.19",
+    "is-utf8": "^0.2.1",
     "jschardet": "^1.6.0",
     "micromatch": "^3.1.5",
     "xml2js": "^0.4.19"
@@ -601,6 +602,14 @@
           "type": "boolean",
           "description": "Set to ignore externals definitions on update (add --ignore-externals)",
           "default": true
+        },
+        "svn.default.encoding": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Encoding of svn output if the output is not utf-8. When this parameter is null, the encoding is automatically detected. Example: 'windows-1252'.",
+          "default": null
         }
       }
     }
