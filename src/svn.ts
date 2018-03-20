@@ -251,9 +251,6 @@ export class Svn {
           this.logOutput("svn.default.encoding: Invalid Parameter: '" + default_encoding + "'.\n")
         } else if (!isUtf8(stdout)) {
           encoding = default_encoding;
-          console.info("encoding: " + encoding)
-        } else {
-          console.info("encoding is UTF-8");
         }
 
       } else {
