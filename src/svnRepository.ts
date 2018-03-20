@@ -294,8 +294,14 @@ export class Repository {
     return result.stdout;
   }
 
-  async update(): Promise<string> {
-    const result = await this.exec(["update"]);
+  async update(ignoreExternals: boolean = true): Promise<string> {
+    const args = ["update"];
+
+    if (ignoreExternals) {
+      args.push("--ignore-externals");
+    }
+
+    const result = await this.exec(args);
 
     this.resetInfo();
 

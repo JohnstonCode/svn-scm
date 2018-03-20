@@ -109,3 +109,4 @@ Example:
 |`svn.log.length`|Number of commit messages to log|`50`|
 |`svn.showOutput`|Show the output window when the extension starts|`false`|
 |`svn.conflicts.autoResolve`|Set file to status resolved after fix conflictss|`false`|
+|`svn.update.ignoreExternals`|Set to ignore externals definitions on update (add --ignore-externals)|`true`|

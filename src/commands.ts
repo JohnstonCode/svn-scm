@@ -132,7 +132,7 @@ export class SvnCommands implements IDisposable {
       value: repository.username
     });
 
-    if(username === undefined) {
+    if (username === undefined) {
       return false;
     }
 
@@ -142,7 +142,7 @@ export class SvnCommands implements IDisposable {
       password: true
     });
 
-    if(username === undefined) {
+    if (username === undefined) {
       return false;
     }
 
@@ -685,7 +685,12 @@ export class SvnCommands implements IDisposable {
   @command("svn.update", { repository: true })
   async update(repository: Repository) {
     try {
-      const result = await repository.updateRevision();
+      const ignoreExternals = configuration.get<boolean>(
+        "ignoreExternals",
+        false
+      );
+
+      const result = await repository.updateRevision(ignoreExternals);
       window.showInformationMessage(result);
     } catch (error) {
       console.error(error);
