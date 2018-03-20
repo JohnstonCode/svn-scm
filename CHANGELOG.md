@@ -1,3 +1,13 @@
+# **v1.24.0**
+
+## What's New
+
+* @edgardmessias Added option to ignore externals on update
+
+## Bug Fixes
+
+* @edgardmessias Fixed file name with "@"
+
 # **v1.23.2**
 
 ## Bug Fixes
