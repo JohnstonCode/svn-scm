@@ -1,3 +1,9 @@
+# **v1.25.0**
+
+## What's New
+
+* @TheoHegemann Added configuration parameter svn.default.encoding
+
 # **v1.24.0**
 
 ## What's New
