@@ -5,6 +5,10 @@
 * @JohnstonCode Added configuration option to disable update message
 * @JohnstonCode Added command show patch from changelist
 
+## Bug Fixes
+
+* @JohnstonCode Corrected config name in command #210
+
 # **v1.25.0**
 
 ## What's New

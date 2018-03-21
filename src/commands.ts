@@ -685,7 +685,7 @@ export class SvnCommands implements IDisposable {
   async update(repository: Repository) {
     try {
       const ignoreExternals = configuration.get<boolean>(
-        "ignoreExternals",
+        "update.ignoreExternals",
         false
       );
       const showUpdateMessage = configuration.get<boolean>(
