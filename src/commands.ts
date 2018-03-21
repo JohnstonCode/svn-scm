@@ -704,7 +704,7 @@ export class SvnCommands implements IDisposable {
     }
   }
 
-  private async showDiffPath(repository: Repository, files: string[] = []) {
+  private async showDiffPath(repository: Repository, content: string) {
     try {
       const tempFile = path.join(repository.root, ".svn", "tmp", "svn.patch");
 
@@ -719,7 +719,6 @@ export class SvnCommands implements IDisposable {
       const document = await workspace.openTextDocument(uri);
       const textEditor = await window.showTextDocument(document);
 
-      const content = await repository.patch(files);
       await textEditor.edit(e => {
         // if is opened, clear content
         e.delete(
@@ -738,7 +737,8 @@ export class SvnCommands implements IDisposable {
 
   @command("svn.patchAll", { repository: true })
   async patchAll(repository: Repository): Promise<void> {
-    await this.showDiffPath(repository, []);
+    const content = await repository.patch([]);
+    await this.showDiffPath(repository, content);
   }
 
   @command("svn.patch")
@@ -757,8 +757,8 @@ export class SvnCommands implements IDisposable {
       }
 
       const files = resources.map(resource => resource.fsPath);
-
-      await this.showDiffPath(repository, files);
+      const content = await repository.patch(files);
+      await this.showDiffPath(repository, content);
     });
   }
   
@@ -770,37 +770,8 @@ export class SvnCommands implements IDisposable {
       return;
     }
     
-    //@TODO clean up the try catch below copied code from showDiffPatch
-    
-    try {
-      const tempFile = path.join(repository.root, ".svn", "tmp", "svn.patch");
-
-      if (fs.existsSync(tempFile)) {
-        fs.unlinkSync(tempFile);
-      }
-
-      const uri = Uri.file(tempFile).with({
-        scheme: "untitled"
-      });
-
-      const document = await workspace.openTextDocument(uri);
-      const textEditor = await window.showTextDocument(document);
-
-      const content = await repository.patchChangelist(changelistName);
-      await textEditor.edit(e => {
-        // if is opened, clear content
-        e.delete(
-          new Range(
-            new Position(0, 0),
-            new Position(Number.MAX_SAFE_INTEGER, 0)
-          )
-        );
-        e.insert(new Position(0, 0), content);
-      });
-    } catch (error) {
-      console.error(error);
-      window.showErrorMessage("Unable to patch");
-    }
+    const content = await repository.patchChangelist(changelistName);
+    await this.showDiffPath(repository, content);
   }
 
   @command("svn.remove")
