@@ -329,6 +329,12 @@ export class Repository {
     const message = result.stdout;
     return message;
   }
+  
+  async patchChangelist(changelistName: string) {
+    const result = await this.exec(["diff", "--changelist", changelistName]);
+    const message = result.stdout;
+    return message;
+  }
 
   async removeFiles(files: any[], keepLocal: boolean) {
     files = files.map(file => this.removeAbsolutePath(file));

@@ -30,10 +30,9 @@ import { getConflictPickOptions } from "./conflictItems";
 import { applyLineChanges } from "./lineChanges";
 import { IDisposable, hasSupportToRegisterDiffCommand } from "./util";
 import {
-  getChangelistPickOptions,
   inputSwitchChangelist,
-  getCommitChangelistPickOptions,
-  inputCommitChangelist
+  inputCommitChangelist,
+  getPatchChangelist
 } from "./changelistItems";
 import { configuration } from "./helpers/configuration";
 import { selectBranch } from "./branches";
@@ -761,6 +760,47 @@ export class SvnCommands implements IDisposable {
 
       await this.showDiffPath(repository, files);
     });
+  }
+  
+  @command("svn.patchChangeList", { repository: true })
+  async patchChangeList(repository: Repository): Promise<void> {
+    const changelistName = await getPatchChangelist(repository);
+    
+    if (!changelistName) {
+      return;
+    }
+    
+    //@TODO clean up the try catch below copied code from showDiffPatch
+    
+    try {
+      const tempFile = path.join(repository.root, ".svn", "tmp", "svn.patch");
+
+      if (fs.existsSync(tempFile)) {
+        fs.unlinkSync(tempFile);
+      }
+
+      const uri = Uri.file(tempFile).with({
+        scheme: "untitled"
+      });
+
+      const document = await workspace.openTextDocument(uri);
+      const textEditor = await window.showTextDocument(document);
+
+      const content = await repository.patchChangelist(changelistName);
+      await textEditor.edit(e => {
+        // if is opened, clear content
+        e.delete(
+          new Range(
+            new Position(0, 0),
+            new Position(Number.MAX_SAFE_INTEGER, 0)
+          )
+        );
+        e.insert(new Position(0, 0), content);
+      });
+    } catch (error) {
+      console.error(error);
+      window.showErrorMessage("Unable to patch");
+    }
   }
 
   @command("svn.remove")

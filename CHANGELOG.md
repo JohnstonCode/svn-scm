@@ -3,6 +3,7 @@
 ## What's New
 
 * @JohnstonCode Added configuration option to disable update message
+* @JohnstonCode Added command show patch from changelist
 
 # **v1.25.0**
 

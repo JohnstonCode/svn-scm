@@ -167,3 +167,33 @@ export async function inputCommitChangelist(repository: Repository) {
 
   return choice;
 }
+
+export function patchChangelistOptions(repository: Repository) {
+  const picks: QuickPickItem[] = [];
+
+  repository.changelists.forEach((group, changelist) => {
+    if (group.resourceStates.length) {
+      picks.push(new ChangeListItem(group));
+    }
+  });
+
+  return picks;
+}
+
+export async function getPatchChangelist(repository: Repository) {
+  const picks: QuickPickItem[] = patchChangelistOptions(repository);
+
+  if (!picks.length) {
+    window.showErrorMessage('No changelists to pick from');
+    return;
+  }
+
+  const selectedChoice: any = await window.showQuickPick(picks, {
+    placeHolder: "Select a changelist"
+  });
+  if (!selectedChoice) {
+    return;
+  }
+
+  return selectedChoice.label;
+}

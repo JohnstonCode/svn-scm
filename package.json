@@ -212,6 +212,11 @@
         "command": "svn.cleanup",
         "title": "Clean up working copy",
         "category": "SVN"
+      },
+      {
+        "command": "svn.patchChangeList",
+        "title": "Show patch from changelist",
+        "category": "SVN"
       }
     ],
     "menus": {
@@ -338,6 +343,10 @@
         },
         {
           "command": "svn.cleanup",
+          "when": "config.svn.enabled && scmProvider == svn"
+        },
+        {
+          "command": "svn.patchChangeList",
           "when": "config.svn.enabled && scmProvider == svn"
         }
       ],

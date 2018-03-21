@@ -667,6 +667,10 @@ export class Repository {
   async patch(files: string[]) {
     return await this.run(Operation.Patch, () => this.repository.patch(files));
   }
+  
+  async patchChangelist(changelistName: string) {
+    return await this.run(Operation.Patch, () => this.repository.patchChangelist(changelistName));
+  }
 
   async removeFiles(files: any[], keepLocal: boolean) {
     return await this.run(Operation.Remove, () =>
