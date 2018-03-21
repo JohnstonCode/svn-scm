@@ -502,7 +502,7 @@
             "null"
           ],
           "description": "Regex to detect path for 'trunk' in SVN URL, 'null' to disable. (Ex.: '(trunk)', '(main)')",
-          "default": "(trunk)"
+          "default": "(trunk)(/.*)?"
         },
         "svn.layout.trunkRegexName": {
           "type": [
@@ -516,8 +516,8 @@
             "string",
             "null"
           ],
-          "description": "Regex to detect path for 'branches' in SVN URL, 'null' to disable. Subpath use 'branches/.*/(.*)' (Ex.: 'branches/.*/(.*)', 'versions/(.*)')",
-          "default": "branches/(.*)"
+          "description": "Regex to detect path for 'branches' in SVN URL, 'null' to disable. Subpath use 'branches/[^/]+/([^/]+)(/.*)?' (Ex.: 'branches/...', 'versions/...')",
+          "default": "branches/([^/]+)(/.*)?"
         },
         "svn.layout.branchesRegexName": {
           "type": [
@@ -531,8 +531,8 @@
             "string",
             "null"
           ],
-          "description": "Regex to detect path for 'tags' in SVN URL, 'null' to disable. Subpath use 'tags/.*/(.*)'. (Ex.: 'tags/(.*)', 'stamps/(.*)')",
-          "default": "tags/(.*)"
+          "description": "Regex to detect path for 'tags' in SVN URL, 'null' to disable. Subpath use 'tags/[^/]+/([^/]+)(/.*)?'. (Ex.: 'tags/...', 'stamps/...')",
+          "default": "tags/([^/]+)(/.*)?"
         },
         "svn.layout.tagRegexName": {
           "type": [
