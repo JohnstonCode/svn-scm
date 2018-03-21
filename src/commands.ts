@@ -689,9 +689,16 @@ export class SvnCommands implements IDisposable {
         "ignoreExternals",
         false
       );
+      const showUpdateMessage = configuration.get<boolean>(
+        "showUpdateMessage",
+        true
+      );
 
       const result = await repository.updateRevision(ignoreExternals);
-      window.showInformationMessage(result);
+      
+      if (showUpdateMessage) {
+        window.showInformationMessage(result);
+      }
     } catch (error) {
       console.error(error);
       window.showErrorMessage("Unable to update");

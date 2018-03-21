@@ -1,3 +1,9 @@
+# **v1.26.0**
+
+## What's New
+
+* @JohnstonCode Added configuration option to disable update message
+
 # **v1.25.0**
 
 ## What's New

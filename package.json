@@ -610,6 +610,11 @@
           ],
           "description": "Encoding of svn output if the output is not utf-8. When this parameter is null, the encoding is automatically detected. Example: 'windows-1252'.",
           "default": null
+        },
+        "svn.showUpdateMessage": {
+          "type": "boolean",
+          "description": "Show the update message when update is run",
+          "default": true
         }
       }
     }
