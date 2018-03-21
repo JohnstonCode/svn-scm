@@ -7,7 +7,7 @@
 
 ## Bug Fixes
 
-* @JohnstonCode Corrected config name in command #210
+* @edgardmessias Fixed ignoreExternals configuration
 
 # **v1.25.0**
 
