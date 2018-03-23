@@ -10,7 +10,6 @@ import {
 } from "vscode";
 import * as fs from "fs";
 import * as path from "path";
-import * as micromatch from "micromatch";
 import { Repository, RepositoryState } from "./repository";
 import { Svn, Status } from "./svn";
 import {
@@ -22,6 +21,7 @@ import {
 } from "./util";
 import { sequentialize, debounce } from "./decorators";
 import { configuration } from "./helpers/configuration";
+import { Minimatch } from "minimatch";
 
 export interface ModelChangeEvent {
   repository: Repository;
@@ -294,6 +294,7 @@ export class Model implements IDisposable {
       return;
     }
 
+    const mm = new Minimatch("*");
     const newLevel = level + 1;
     if (newLevel <= this.maxDepth) {
       fs.readdirSync(path).forEach(file => {
@@ -301,7 +302,7 @@ export class Model implements IDisposable {
 
         if (
           fs.statSync(dir).isDirectory() &&
-          !micromatch.some([dir], this.ignoreList)
+          !mm.matchOne([dir], this.ignoreList, false)
         ) {
           this.tryOpenRepository(dir, newLevel);
         }
