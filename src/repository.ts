@@ -28,12 +28,12 @@ import {
   isDescendant
 } from "./util";
 import * as path from "path";
-import * as micromatch from "micromatch";
 import { setInterval, clearInterval } from "timers";
 import { toSvnUri, SvnUriAction } from "./uri";
 import { Status, PropStatus, SvnErrorCodes } from "./svn";
 import { IFileStatus } from "./statusParser";
 import { configuration } from "./helpers/configuration";
+import { Minimatch } from "minimatch";
 
 export enum RepositoryState {
   Idle,
@@ -449,7 +449,8 @@ export class Repository {
         continue;
       }
 
-      if (micromatch.some(status.path, excludeList)) {
+      const mm = new Minimatch("*");
+      if (mm.matchOne([status.path], excludeList, false)) {
         continue;
       }
 
@@ -667,9 +668,11 @@ export class Repository {
   async patch(files: string[]) {
     return await this.run(Operation.Patch, () => this.repository.patch(files));
   }
-  
+
   async patchChangelist(changelistName: string) {
-    return await this.run(Operation.Patch, () => this.repository.patchChangelist(changelistName));
+    return await this.run(Operation.Patch, () =>
+      this.repository.patchChangelist(changelistName)
+    );
   }
 
   async removeFiles(files: any[], keepLocal: boolean) {

@@ -122,7 +122,7 @@ export class SvnError {
       this.error = void 0;
     }
 
-    this.message = this.message || data.message || "SVN error";
+    this.message = data.message || "SVN error";
     this.stdout = data.stdout;
     this.stderr = data.stderr;
     this.exitCode = data.exitCode;
