@@ -1,3 +1,9 @@
+# **v1.26.1**
+
+## Bug Fixes
+
+* @JohnstonCode Fixed issue removing items from changelists.
+
 # **v1.26.0**
 
 ## What's New
