@@ -236,9 +236,14 @@ export class SvnCommands implements IDisposable {
       repository.changelists.forEach((group, changelist) => {
         if (
           group.resourceStates.some(state =>
-            resources.includes(state.resourceUri)
+            {
+              return resources.some(resource => {
+                return resource.path === state.resourceUri.path;
+              });
+            }
           )
         ) {
+          console.log('canRemove true');
           canRemove = true;
           return false;
         }
