@@ -36,7 +36,6 @@ import {
 } from "./changelistItems";
 import { configuration } from "./helpers/configuration";
 import { selectBranch } from "./branches";
-import { IgnorePropertyItem } from "./propertyItems";
 
 interface CommandOptions {
   repository?: boolean;
