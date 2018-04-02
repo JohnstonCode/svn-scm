@@ -235,15 +235,13 @@ export class SvnCommands implements IDisposable {
 
       repository.changelists.forEach((group, changelist) => {
         if (
-          group.resourceStates.some(state =>
-            {
-              return resources.some(resource => {
-                return resource.path === state.resourceUri.path;
-              });
-            }
-          )
+          group.resourceStates.some(state => {
+            return resources.some(resource => {
+              return resource.path === state.resourceUri.path;
+            });
+          })
         ) {
-          console.log('canRemove true');
+          console.log("canRemove true");
           canRemove = true;
           return false;
         }
@@ -699,7 +697,7 @@ export class SvnCommands implements IDisposable {
       );
 
       const result = await repository.updateRevision(ignoreExternals);
-      
+
       if (showUpdateMessage) {
         window.showInformationMessage(result);
       }
@@ -766,15 +764,15 @@ export class SvnCommands implements IDisposable {
       await this.showDiffPath(repository, content);
     });
   }
-  
+
   @command("svn.patchChangeList", { repository: true })
   async patchChangeList(repository: Repository): Promise<void> {
     const changelistName = await getPatchChangelist(repository);
-    
+
     if (!changelistName) {
       return;
     }
-    
+
     const content = await repository.patchChangelist(changelistName);
     await this.showDiffPath(repository, content);
   }
@@ -1055,6 +1053,34 @@ export class SvnCommands implements IDisposable {
   @command("svn.finishCheckout", { repository: true })
   async finishCheckout(repository: Repository) {
     await repository.finishCheckout();
+  }
+
+  @command("svn.addFileToIgnore")
+  async addFileToIgnore(
+    ...resourceStates: SourceControlResourceState[]
+  ): Promise<void> {
+    const selection = this.getResourceStates(resourceStates);
+
+    if (selection.length === 0) {
+      return;
+    }
+
+    const uris = selection.map(resource => resource.resourceUri);
+
+    await this.runByRepository(uris, async (repository, resources) => {
+      if (!repository) {
+        return;
+      }
+
+      for (const resource of resources) {
+        try {
+          await repository.addFileToIgnore(resource.fsPath);
+        } catch (error) {
+          console.log(error);
+          window.showErrorMessage("Unable to set property");
+        }
+      }
+    });
   }
 
   private getSCMResource(uri?: Uri): Resource | undefined {
