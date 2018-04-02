@@ -209,7 +209,7 @@
         "category": "SVN"
       },
       {
-        "command": "svn.ignore",
+        "command": "svn.addFileToIgnore",
         "title": "Ignore",
         "category": "SVN"
       }
@@ -308,7 +308,7 @@
           "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
         },
         {
-          "command": "svn.ignore",
+          "command": "svn.addFileToIgnore",
           "when": "false"
         }
       ],
@@ -446,7 +446,7 @@
           "group": "2_modification"
         },
         {
-          "command": "svn.ignore",
+          "command": "svn.addFileToIgnore",
           "when":
             "config.svn.enabled && scmProvider == svn && scmResourceGroup == unversioned",
           "group": "1_modification"

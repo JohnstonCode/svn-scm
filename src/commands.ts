@@ -1055,8 +1055,8 @@ export class SvnCommands implements IDisposable {
     await repository.finishCheckout();
   }
 
-  @command("svn.ignore")
-  async propset(
+  @command("svn.addFileToIgnore")
+  async addFileToIgnore(
     ...resourceStates: SourceControlResourceState[]
   ): Promise<void> {
     const selection = this.getResourceStates(resourceStates);
@@ -1074,7 +1074,7 @@ export class SvnCommands implements IDisposable {
 
       for (const resource of resources) {
         try {
-          await repository.ignore(resource.fsPath);
+          await repository.addFileToIgnore(resource.fsPath);
         } catch (error) {
           console.log(error);
           window.showErrorMessage("Unable to set property");

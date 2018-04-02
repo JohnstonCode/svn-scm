@@ -696,9 +696,9 @@ export class Repository {
     );
   }
 
-  async ignore(filePath: string) {
+  async addFileToIgnore(filePath: string) {
     return await this.run(Operation.Ignore, () =>
-      this.repository.ignore(filePath)
+      this.repository.addFileToIgnore(filePath)
     );
   }
 

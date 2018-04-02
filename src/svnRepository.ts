@@ -405,7 +405,7 @@ export class Repository {
     return parseSvnList(result.stdout);
   }
 
-  async ignore(filePath: string) {
+  async addFileToIgnore(filePath: string) {
     const fileName = path.basename(filePath);
     const parentDir = path.dirname(filePath);
     let currentIgnore = "";
