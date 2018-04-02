@@ -1,3 +1,9 @@
+# **v1.27.0**
+
+## What's New
+
+* @JohnstonCode Added menu option to ignore unversioned files
+
 # **v1.26.1**
 
 ## Bug Fixes
