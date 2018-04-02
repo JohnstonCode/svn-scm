@@ -329,7 +329,7 @@ export class Repository {
     const message = result.stdout;
     return message;
   }
-  
+
   async patchChangelist(changelistName: string) {
     const result = await this.exec(["diff", "--changelist", changelistName]);
     const message = result.stdout;
@@ -403,5 +403,32 @@ export class Repository {
     const result = await this.exec(["list", url, "--xml"]);
 
     return parseSvnList(result.stdout);
+  }
+
+  async ignore(filePath: string) {
+    const fileName = path.basename(filePath);
+    const parentDir = path.dirname(filePath);
+    let currentIgnore = "";
+
+    try {
+      const currentIgnoreResult = await this.exec([
+        "propget",
+        "svn:ignore",
+        parentDir
+      ]);
+
+      currentIgnore = currentIgnoreResult.stdout.trim();
+    } catch (error) {}
+
+    const newIgnore = currentIgnore + "\n" + fileName;
+
+    const result = await this.exec([
+      "propset",
+      "svn:ignore",
+      newIgnore,
+      parentDir
+    ]);
+
+    return result.stdout;
   }
 }

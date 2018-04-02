@@ -58,7 +58,8 @@ export enum Operation {
   Show = "Show",
   Status = "Status",
   SwitchBranch = "SwitchBranch",
-  Update = "Update"
+  Update = "Update",
+  Ignore = "Ignore"
 }
 
 function isReadOnly(operation: Operation): boolean {
@@ -692,6 +693,12 @@ export class Repository {
   async finishCheckout() {
     return await this.run(Operation.SwitchBranch, () =>
       this.repository.finishCheckout()
+    );
+  }
+
+  async ignore(filePath: string) {
+    return await this.run(Operation.Ignore, () =>
+      this.repository.ignore(filePath)
     );
   }
 
