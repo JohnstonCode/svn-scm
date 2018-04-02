@@ -1075,9 +1075,13 @@ export class SvnCommands implements IDisposable {
       for (const resource of resources) {
         try {
           await repository.addFileToIgnore(resource.fsPath);
+
+          const assetName = path.basename(resource.fsPath);
+
+          window.showInformationMessage(`${assetName} is now being ignored`);
         } catch (error) {
           console.log(error);
-          window.showErrorMessage("Unable to set property");
+          window.showErrorMessage("Unable to set property ignore");
         }
       }
     });

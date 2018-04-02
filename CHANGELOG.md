@@ -1,3 +1,9 @@
+# **v1.27.1**
+
+## Changes
+
+* @JohnstonCode Updated ignore error message and now shows information message on completion
+
 # **v1.27.0**
 
 ## What's New
