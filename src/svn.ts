@@ -244,17 +244,18 @@ export class Svn {
 
     // SVN with '--xml' always return 'UTF-8', and jschardet detects this encoding: 'TIS-620'
     if (!args.includes("--xml")) {
-
       const default_encoding = configuration.get<string>("default.encoding");
       if (default_encoding) {
         if (!iconv.encodingExists(default_encoding)) {
-          this.logOutput("svn.default.encoding: Invalid Parameter: '" + default_encoding + "'.\n")
+          this.logOutput(
+            "svn.default.encoding: Invalid Parameter: '" +
+              default_encoding +
+              "'.\n"
+          );
         } else if (!isUtf8(stdout)) {
           encoding = default_encoding;
         }
-
       } else {
-
         jschardet.MacCyrillicModel.mTypicalPositiveRatio += 0.001;
 
         const encodingGuess = jschardet.detect(stdout);
