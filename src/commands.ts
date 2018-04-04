@@ -36,6 +36,7 @@ import {
 } from "./changelistItems";
 import { configuration } from "./helpers/configuration";
 import { selectBranch } from "./branches";
+import { inputIgnoreList } from "./ignoreitems";
 
 interface CommandOptions {
   repository?: boolean;
@@ -1055,7 +1056,7 @@ export class SvnCommands implements IDisposable {
     await repository.finishCheckout();
   }
 
-  @command("svn.addFileToIgnore")
+  @command("svn.addToIgnoreSCM")
   async addFileToIgnore(
     ...resourceStates: SourceControlResourceState[]
   ): Promise<void> {
@@ -1067,22 +1068,31 @@ export class SvnCommands implements IDisposable {
 
     const uris = selection.map(resource => resource.resourceUri);
 
+    return await this.addToIgnore(uris);
+  }
+
+  @command("svn.addToIgnoreExplorer")
+  async addToIgnoreExplorer(mainUri?: Uri, allUris?: Uri[]): Promise<void> {
+    if (!allUris || allUris.length === 0) {
+      return;
+    }
+
+    return await this.addToIgnore(allUris);
+  }
+
+  async addToIgnore(uris: Uri[]): Promise<void> {
     await this.runByRepository(uris, async (repository, resources) => {
       if (!repository) {
         return;
       }
 
-      for (const resource of resources) {
-        try {
-          await repository.addFileToIgnore(resource.fsPath);
+      try {
+        await inputIgnoreList(repository, resources);
 
-          const assetName = path.basename(resource.fsPath);
-
-          window.showInformationMessage(`${assetName} is now being ignored`);
-        } catch (error) {
-          console.log(error);
-          window.showErrorMessage("Unable to set property ignore");
-        }
+        window.showInformationMessage(`File(s) is now being ignored`);
+      } catch (error) {
+        console.log(error);
+        window.showErrorMessage("Unable to set property ignore");
       }
     });
   }
