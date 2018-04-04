@@ -420,7 +420,11 @@ export class Repository {
       currentIgnore = currentIgnoreResult.stdout.trim();
     } catch (error) {}
 
-    const newIgnore = currentIgnore + "\n" + fileName;
+    const ignores = currentIgnore.split(/[\r\n]+/);
+
+    ignores.push(fileName);
+
+    const newIgnore = ignores.sort().join("\n");
 
     const result = await this.exec([
       "propset",
