@@ -1,3 +1,14 @@
+# **v1.28.0**
+
+## What's New
+
+* @edgardmessias Added support to ignoring files by ext
+
+## Bug Fixes
+
+* @JohnstonCode svn log revision is now HEAD:1
+* @edgardmessias Fixed inconsistent line ending style error
+
 # **v1.27.1**
 
 ## Changes
