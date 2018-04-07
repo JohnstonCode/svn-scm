@@ -212,8 +212,13 @@
         "category": "SVN"
       },
       {
-        "command": "svn.addFileToIgnore",
-        "title": "Ignore",
+        "command": "svn.addToIgnoreSCM",
+        "title": "Ignore file/ext from SVN (svn:ignore)",
+        "category": "SVN"
+      },
+      {
+        "command": "svn.addToIgnoreExplorer",
+        "title": "Ignore file/ext from SVN (svn:ignore)",
         "category": "SVN"
       }
     ],
@@ -311,7 +316,7 @@
           "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
         },
         {
-          "command": "svn.addFileToIgnore",
+          "command": "svn.addToIgnoreExplorer",
           "when": "false"
         }
       ],
@@ -449,7 +454,7 @@
           "group": "2_modification"
         },
         {
-          "command": "svn.addFileToIgnore",
+          "command": "svn.addToIgnoreSCM",
           "when":
             "config.svn.enabled && scmProvider == svn && scmResourceGroup == unversioned",
           "group": "1_modification"
@@ -485,6 +490,13 @@
           "group": "2_svn@3",
           "when":
             "config.svn.enabled && svnOpenRepositoryCount != 0 && isInDiffEditor && resourceScheme != merge-conflicts.conflicts-diff && && svnHasSupportToRegisterDiffCommand == 1"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "svn.addToIgnoreExplorer",
+          "group": "9_svn",
+          "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
         }
       ]
     },

@@ -405,33 +405,55 @@ export class Repository {
     return parseSvnList(result.stdout);
   }
 
-  async addFileToIgnore(filePath: string) {
-    const fileName = path.basename(filePath);
-    const parentDir = path.dirname(filePath);
+  async getCurrentIgnore(directory: string) {
+    directory = this.removeAbsolutePath(directory);
+
     let currentIgnore = "";
 
     try {
-      const currentIgnoreResult = await this.exec([
-        "propget",
-        "svn:ignore",
-        parentDir
-      ]);
+      const args = ["propget", "svn:ignore"];
+
+      if (directory) {
+        args.push(directory);
+      }
+
+      const currentIgnoreResult = await this.exec(args);
 
       currentIgnore = currentIgnoreResult.stdout.trim();
     } catch (error) {}
 
     const ignores = currentIgnore.split(/[\r\n]+/);
 
-    ignores.push(fileName);
+    return ignores;
+  }
 
-    const newIgnore = ignores.sort().join("\n");
+  async addToIgnore(
+    expressions: string[],
+    directory: string,
+    recursive: boolean = false
+  ) {
+    const ignores = await this.getCurrentIgnore(directory);
 
-    const result = await this.exec([
-      "propset",
-      "svn:ignore",
-      newIgnore,
-      parentDir
-    ]);
+    directory = this.removeAbsolutePath(directory);
+
+    ignores.push(...expressions);
+    const newIgnore = [...new Set(ignores)]
+      .filter(v => !!v)
+      .sort()
+      .join("\n");
+
+    const args = ["propset", "svn:ignore", newIgnore];
+
+    if (directory) {
+      args.push(directory);
+    } else {
+      args.push(".");
+    }
+    if (recursive) {
+      args.push("--recursive");
+    }
+
+    const result = await this.exec(args);
 
     return result.stdout;
   }
