@@ -183,7 +183,7 @@ export class SvnCommands implements IDisposable {
       repository.inputBox.value = "";
     } catch (error) {
       console.error(error);
-      window.showErrorMessage("Unable to commit");
+      window.showErrorMessage(error.stderrFormated);
     }
   }
 
@@ -324,7 +324,7 @@ export class SvnCommands implements IDisposable {
         repository.inputBox.value = "";
       } catch (error) {
         console.error(error);
-        window.showErrorMessage("Unable to commit");
+        window.showErrorMessage(error.stderrFormated);
       }
     });
   }
