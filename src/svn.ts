@@ -73,6 +73,7 @@ export interface ISvnErrorData {
   message?: string;
   stdout?: string;
   stderr?: string;
+  stderrFormated?: string;
   exitCode?: number;
   svnErrorCode?: string;
   svnCommand?: string;
@@ -110,6 +111,7 @@ export class SvnError {
   message: string;
   stdout?: string;
   stderr?: string;
+  stderrFormated?: string;
   exitCode?: number;
   svnErrorCode?: string;
   svnCommand?: string;
@@ -125,6 +127,7 @@ export class SvnError {
     this.message = data.message || "SVN error";
     this.stdout = data.stdout;
     this.stderr = data.stderr;
+    this.stderrFormated = data.stderrFormated;
     this.exitCode = data.exitCode;
     this.svnErrorCode = data.svnErrorCode;
     this.svnCommand = data.svnCommand;
@@ -184,7 +187,7 @@ export class Svn {
     }
 
     if (options.log !== false) {
-      const argsOut = args.map(arg => (/ /.test(arg) ? `'${arg}'` : arg));
+      const argsOut = args.map(arg => (/ |^$/.test(arg) ? `'${arg}'` : arg));
       this.logOutput(
         `[${this.lastCwd.split(/[\\\/]+/).pop()}]$ svn ${argsOut.join(" ")}\n`
       );
@@ -281,6 +284,7 @@ export class Svn {
           message: "Failed to execute svn",
           stdout: stdout,
           stderr: stderr,
+          stderrFormated: stderr.replace(/^svn: E\d+: +/gm, ""),
           exitCode: exitCode,
           svnErrorCode: getSvnErrorCode(stderr),
           svnCommand: args[0]

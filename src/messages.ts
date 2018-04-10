@@ -4,20 +4,31 @@ export function noChangesToCommit() {
   return window.showInformationMessage("There are no changes to commit.");
 }
 
-export function inputCommitMessage(message?: string) {
-  return new Promise<string>((resolve, reject) => {
-    if (message) {
-      resolve(message);
-      return;
-    }
+export async function inputCommitMessage(
+  message?: string,
+  promptNew: boolean = true
+): Promise<string | undefined> {
+  if (promptNew) {
+    message = await window.showInputBox({
+      value: message,
+      placeHolder: "Commit message",
+      prompt: "Please enter a commit message",
+      ignoreFocusOut: true
+    });
+  }
 
-    window
-      .showInputBox({
-        value: "",
-        placeHolder: "Commit message",
-        prompt: "Please enter a commit message",
-        ignoreFocusOut: true
-      })
-      .then(input => resolve(input));
-  });
+  if (!message) {
+    const allowEmpty = await window.showWarningMessage(
+      "Do you really want to commit an empty message?",
+      { modal: true },
+      "Yes"
+    );
+
+    if (allowEmpty === "Yes") {
+      return "";
+    } else {
+      return undefined;
+    }
+  }
+  return message;
 }

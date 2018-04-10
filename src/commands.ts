@@ -154,13 +154,13 @@ export class SvnCommands implements IDisposable {
 
   @command("svn.commitWithMessage", { repository: true })
   async commitWithMessage(repository: Repository) {
-    const message = repository.inputBox.value;
-    if (!message) {
+    const choice = await inputCommitChangelist(repository);
+    if (!choice) {
       return;
     }
 
-    const choice = await inputCommitChangelist(repository);
-    if (!choice) {
+    const message = await inputCommitMessage(repository.inputBox.value, false);
+    if (message === undefined) {
       return;
     }
 
@@ -183,7 +183,7 @@ export class SvnCommands implements IDisposable {
       repository.inputBox.value = "";
     } catch (error) {
       console.error(error);
-      window.showErrorMessage("Unable to commit");
+      window.showErrorMessage(error.stderrFormated);
     }
   }
 
@@ -311,17 +311,20 @@ export class SvnCommands implements IDisposable {
       const paths = resources.map(resource => resource.fsPath);
 
       try {
-        const message = await inputCommitMessage();
+        const message = await inputCommitMessage(repository.inputBox.value);
 
         if (message === undefined) {
           return;
         }
 
+        repository.inputBox.value = message;
+
         const result = await repository.commitFiles(message, paths);
         window.showInformationMessage(result);
+        repository.inputBox.value = "";
       } catch (error) {
         console.error(error);
-        window.showErrorMessage("Unable to commit");
+        window.showErrorMessage(error.stderrFormated);
       }
     });
   }
