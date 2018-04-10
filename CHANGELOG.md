@@ -1,3 +1,10 @@
+# **v1.29.0**
+
+## What's New
+
+* @edgardmessias Improved commits
+* @edgardmessias Added config option to count pending changes
+
 # **v1.28.0**
 
 ## What's New
