@@ -508,6 +508,16 @@ export class Repository {
       group.resourceStates = [];
     });
 
+    const counts = [this.changes, this.conflicts];
+
+    const countIgnoreOnCommit = configuration.get<boolean>(
+      "sourceControl.countIgnoreOnCommit",
+      false
+    );
+    const ignoreOnCommitList = configuration.get<string[]>(
+      "sourceControl.ignoreOnCommit"
+    );
+
     changelists.forEach((resources, changelist) => {
       let group = this.changelists.get(changelist);
       if (!group) {
@@ -523,10 +533,11 @@ export class Repository {
       }
 
       group.resourceStates = resources;
-    });
 
-    // svnConfig.
-    const counts = [this.changes, this.conflicts, ...this.changelists.values()];
+      if (countIgnoreOnCommit && ignoreOnCommitList.includes(changelist)) {
+        counts.push(group);
+      }
+    });
 
     if (configuration.get<boolean>("sourceControl.countUnversioned", false)) {
       counts.push(this.unversioned);

@@ -613,6 +613,12 @@
           "description": "Allow to count unversioned files in status count",
           "default": true
         },
+        "svn.sourceControl.countIgnoreOnCommit": {
+          "type": "boolean",
+          "description":
+            "Allow to count ignored files to commit in status count",
+          "default": false
+        },
         "svn.log.length": {
           "type": "number",
           "minimum": 1,
