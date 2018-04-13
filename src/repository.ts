@@ -46,20 +46,21 @@ export enum Operation {
   CleanUp = "CleanUp",
   Commit = "Commit",
   CurrentBranch = "CurrentBranch",
+  Ignore = "Ignore",
   Log = "Log",
   NewBranch = "NewBranch",
   NewCommits = "NewCommits",
   Patch = "Patch",
   Remove = "Remove",
   RemoveChangelist = "RemoveChangelist",
+  Rename = "Rename",
   Resolve = "Resolve",
   Resolved = "Resolved",
   Revert = "Revert",
   Show = "Show",
   Status = "Status",
   SwitchBranch = "SwitchBranch",
-  Update = "Update",
-  Ignore = "Ignore"
+  Update = "Update"
 }
 
 function isReadOnly(operation: Operation): boolean {
@@ -714,6 +715,12 @@ export class Repository {
   ) {
     return await this.run(Operation.Ignore, () =>
       this.repository.addToIgnore(expressions, directory, recursive)
+    );
+  }
+
+  async rename(oldFile: string, newFile: string) {
+    return await this.run(Operation.Rename, () =>
+      this.repository.rename(oldFile, newFile)
     );
   }
 

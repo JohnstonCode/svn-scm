@@ -28,7 +28,11 @@ import * as path from "path";
 import { start } from "repl";
 import { getConflictPickOptions } from "./conflictItems";
 import { applyLineChanges } from "./lineChanges";
-import { IDisposable, hasSupportToRegisterDiffCommand } from "./util";
+import {
+  IDisposable,
+  hasSupportToRegisterDiffCommand,
+  fixPathSeparator
+} from "./util";
 import {
   inputSwitchChangelist,
   inputCommitChangelist,
@@ -1098,6 +1102,39 @@ export class SvnCommands implements IDisposable {
         window.showErrorMessage("Unable to set property ignore");
       }
     });
+  }
+
+  @command("svn.renameExplorer", { repository: true })
+  async renameExplorer(repository: Repository, mainUri?: Uri, allUris?: Uri[]) {
+    if (!mainUri) {
+      return;
+    }
+
+    const oldName = mainUri.fsPath;
+
+    return await this.rename(repository, oldName);
+  }
+
+  @command("svn.rename", { repository: true })
+  async rename(repository: Repository, oldFile: string, newName?: string) {
+    oldFile = fixPathSeparator(oldFile);
+
+    if (!newName) {
+      const root = fixPathSeparator(repository.workspaceRoot);
+      const oldName = path.relative(root, oldFile);
+      newName = await window.showInputBox({
+        value: path.basename(oldFile),
+        prompt: `New name name for ${oldName}`
+      });
+    }
+    if (!newName) {
+      return;
+    }
+
+    const basepath = path.dirname(oldFile);
+    newName = path.join(basepath, newName);
+
+    await repository.rename(oldFile, newName);
   }
 
   private getSCMResource(uri?: Uri): Resource | undefined {
