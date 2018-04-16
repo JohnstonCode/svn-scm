@@ -220,6 +220,11 @@
         "command": "svn.addToIgnoreExplorer",
         "title": "Ignore file/ext from SVN (svn:ignore)",
         "category": "SVN"
+      },
+      {
+        "command": "svn.renameExplorer",
+        "title": "Rename with SVN",
+        "category": "SVN"
       }
     ],
     "menus": {
@@ -317,6 +322,10 @@
         },
         {
           "command": "svn.addToIgnoreExplorer",
+          "when": "false"
+        },
+        {
+          "command": "svn.renameExplorer",
           "when": "false"
         }
       ],
@@ -497,6 +506,12 @@
           "command": "svn.addToIgnoreExplorer",
           "group": "9_svn",
           "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
+        },
+        {
+          "command": "svn.renameExplorer",
+          "group": "7_modification",
+          "when":
+            "config.svn.enabled && svnOpenRepositoryCount != 0 && explorerViewletVisible && filesExplorerFocus && !explorerResourceIsRoot && !inputFocus"
         }
       ]
     },

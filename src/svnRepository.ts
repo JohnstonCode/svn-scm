@@ -361,7 +361,13 @@ export class Repository {
 
   async log() {
     const logLength = configuration.get<string>("log.length") || "50";
-    const result = await this.exec(["log", "-r", "HEAD:1", "--limit", logLength]);
+    const result = await this.exec([
+      "log",
+      "-r",
+      "HEAD:1",
+      "--limit",
+      logLength
+    ]);
 
     return result.stdout;
   }
@@ -452,6 +458,16 @@ export class Repository {
     if (recursive) {
       args.push("--recursive");
     }
+
+    const result = await this.exec(args);
+
+    return result.stdout;
+  }
+
+  async rename(oldName: string, newName: string): Promise<string> {
+    oldName = this.removeAbsolutePath(oldName);
+    newName = this.removeAbsolutePath(newName);
+    const args = ["rename", oldName, newName];
 
     const result = await this.exec(args);
 
