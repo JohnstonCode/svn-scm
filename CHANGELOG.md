@@ -1,3 +1,10 @@
+# **v1.29.1**
+
+## Bug Fixes
+
+* @edgardmessias Fixed error: ENOENT: no such file or directory
+* @edgardmessias Fixed compatibility with SVN 1.6
+
 # **v1.29.0**
 
 ## What's New

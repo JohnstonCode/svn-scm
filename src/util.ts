@@ -9,9 +9,9 @@ export function done<T>(promise: Promise<T>): Promise<void> {
   return promise.then<void>(() => void 0);
 }
 export function anyEvent<T>(...events: Event<T>[]): Event<T> {
-  return (listener, thisArgs = null, disposables?) => {
+  return (listener: any, thisArgs = null, disposables?: any) => {
     const result = combinedDisposable(
-      events.map(event => event(i => listener.call(thisArgs, i)))
+      events.map(event => event((i: any) => listener.call(thisArgs, i)))
     );
 
     if (disposables) {
@@ -26,8 +26,12 @@ export function filterEvent<T>(
   event: Event<T>,
   filter: (e: T) => boolean
 ): Event<T> {
-  return (listener, thisArgs = null, disposables?) =>
-    event(e => filter(e) && listener.call(thisArgs, e), null, disposables);
+  return (listener: any, thisArgs = null, disposables?: any) =>
+    event(
+      (e: any) => filter(e) && listener.call(thisArgs, e),
+      null,
+      disposables
+    );
 }
 
 export function dispose(disposables: any[]): any[] {
@@ -45,9 +49,9 @@ export function toDisposable(dispose: () => void): IDisposable {
 }
 
 export function onceEvent<T>(event: Event<T>): Event<T> {
-  return (listener, thisArgs = null, disposables?) => {
+  return (listener: any, thisArgs = null, disposables?: any) => {
     const result = event(
-      e => {
+      (e: any) => {
         result.dispose();
         return listener.call(thisArgs, e);
       },
