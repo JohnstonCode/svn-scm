@@ -300,7 +300,13 @@ export class Svn {
       const result = await this.exec(path, ["info", "--xml"]);
 
       const info = await parseInfoXml(result.stdout);
-      return info.wcInfo.wcrootAbspath;
+
+      if (info && info.wcInfo && info.wcInfo.wcrootAbspath) {
+        return info.wcInfo.wcrootAbspath;
+      }
+
+      // SVN 1.6 not has "wcroot-abspath"
+      return path;
     } catch (error) {
       console.error(error);
       throw new Error("Unable to find repository root path");
