@@ -522,7 +522,10 @@ export class SvnCommands implements IDisposable {
       return;
     }
 
-    if (fs.statSync(right.fsPath).isDirectory()) {
+    if (
+      fs.existsSync(right.fsPath) &&
+      fs.statSync(right.fsPath).isDirectory()
+    ) {
       return;
     }
 
