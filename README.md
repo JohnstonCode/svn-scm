@@ -113,3 +113,4 @@ Example:
 |`svn.update.ignoreExternals`|Set to ignore externals definitions on update (add --ignore-externals)|`true`|
 |`svn.default.encoding`|Encoding of svn output if the output is not utf-8. When this parameter is null, the encoding is automatically detected. Example: 'windows-1252'.|`null`|
 |`svn.showUpdateMessage`|Show the update message when update is run|`true`|
+|`svn.newCommits.checkFrequency`|Set the interval in seconds to check new commits on remote repository and show in statusbar. 0 to disable|`300`|

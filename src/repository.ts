@@ -296,7 +296,9 @@ export class Repository {
     this.disposables.push(this.unversioned);
     this.disposables.push(this.conflicts);
 
-    const updateFreqNew = configuration.get<number>("svn.newCommits.update");
+    const updateFreqNew = configuration.get<number>(
+      "newCommits.checkFrequency"
+    );
     if (updateFreqNew) {
       const interval = setInterval(() => {
         this.updateNewCommits();
