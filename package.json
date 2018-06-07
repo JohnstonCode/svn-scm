@@ -666,6 +666,12 @@
           "type": "boolean",
           "description": "Show the update message when update is run",
           "default": true
+        },
+        "svn.newCommits.checkFrequency": {
+          "type": "number",
+          "description":
+            "Set the interval in seconds to check new commits on remote repository and show in statusbar. 0 to disable",
+          "default": 300
         }
       }
     }
