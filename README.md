@@ -14,11 +14,6 @@
 [![codecov](https://codecov.io/gh/JohnstonCode/svn-scm/branch/master/graph/badge.svg)](https://codecov.io/gh/JohnstonCode/svn-scm)
 [![Known Vulnerabilities](https://snyk.io/test/github/JohnstonCode/svn-scm/badge.svg)](https://snyk.io/test/github/JohnstonCode/svn-scm)
 
-[![bitHound Overall Score](https://www.bithound.io/github/JohnstonCode/svn-scm/badges/score.svg)](https://www.bithound.io/github/JohnstonCode/svn-scm)
-[![bitHound Dependencies](https://www.bithound.io/github/JohnstonCode/svn-scm/badges/dependencies.svg)](https://www.bithound.io/github/JohnstonCode/svn-scm/master/dependencies/npm)
-[![bitHound Dev Dependencies](https://www.bithound.io/github/JohnstonCode/svn-scm/badges/devDependencies.svg)](https://www.bithound.io/github/JohnstonCode/svn-scm/master/dependencies/npm)
-[![bitHound Code](https://www.bithound.io/github/JohnstonCode/svn-scm/badges/code.svg)](https://www.bithound.io/github/JohnstonCode/svn-scm)
-
 [![Average time to resolve an issue](https://isitmaintained.com/badge/resolution/JohnstonCode/svn-scm.svg)](https://isitmaintained.com/project/JohnstonCode/svn-scm "Average time to resolve an issue")
 [![Percentage of issues still open](https://isitmaintained.com/badge/open/JohnstonCode/svn-scm.svg)](https://isitmaintained.com/project/JohnstonCode/svn-scm "Percentage of issues still open")
 
