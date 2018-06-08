@@ -14,6 +14,8 @@
 [![codecov](https://codecov.io/gh/JohnstonCode/svn-scm/branch/master/graph/badge.svg)](https://codecov.io/gh/JohnstonCode/svn-scm)
 [![Known Vulnerabilities](https://snyk.io/test/github/JohnstonCode/svn-scm/badge.svg)](https://snyk.io/test/github/JohnstonCode/svn-scm)
 
+[![CodeFactor](https://www.codefactor.io/repository/github/johnstoncode/svn-scm/badge)](https://www.codefactor.io/repository/github/johnstoncode/svn-scm)
+
 [![Average time to resolve an issue](https://isitmaintained.com/badge/resolution/JohnstonCode/svn-scm.svg)](https://isitmaintained.com/project/JohnstonCode/svn-scm "Average time to resolve an issue")
 [![Percentage of issues still open](https://isitmaintained.com/badge/open/JohnstonCode/svn-scm.svg)](https://isitmaintained.com/project/JohnstonCode/svn-scm "Percentage of issues still open")
 
