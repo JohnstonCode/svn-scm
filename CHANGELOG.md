@@ -1,3 +1,9 @@
+# **v1.29.2**
+
+## Bug Fixes
+
+* @JohnstonCode Fixed #261 pylint errors stay around after deleting
+
 # **v1.29.1**
 
 ## Bug Fixes
