@@ -22,7 +22,7 @@ export function fromSvnUri(uri: Uri): SvnUriParams {
   return JSON.parse(uri.query);
 }
 
-export function toSvnUri(uri: Uri, action: SvnUriAction, extra: SvnUriExtraParams = {}): Uri {
+export function toSvnUri(uri: Uri, action: SvnUriAction, extra: SvnUriExtraParams = {}, replaceFileExtension = false): Uri {
   const params: SvnUriParams = {
     action: action,
     fsPath: uri.fsPath,
@@ -31,7 +31,7 @@ export function toSvnUri(uri: Uri, action: SvnUriAction, extra: SvnUriExtraParam
 
   return uri.with({
     scheme: "svn",
-    path: uri.path,
+    path: replaceFileExtension ? uri.path + '.svn' : uri.path,
     query: JSON.stringify(params)
   });
 }

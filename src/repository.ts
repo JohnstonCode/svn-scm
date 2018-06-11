@@ -596,7 +596,7 @@ export class Repository {
       return;
     }
 
-    return toSvnUri(uri, SvnUriAction.SHOW);
+    return toSvnUri(uri, SvnUriAction.SHOW, {}, true);
   }
 
   async getBranches() {
