@@ -430,6 +430,10 @@ export class Repository {
       );
     });
 
+    const hideUnversioned = configuration.get<boolean>(
+      "sourceControl.hideUnversioned"
+    );
+
     for (const status of statusesRepository) {
       if (status.path === ".") {
         this.isIncomplete = status.status === Status.INCOMPLETE;
@@ -479,11 +483,13 @@ export class Repository {
           /(.+?)\.(mine|working|merge-\w+\.r\d+|r\d+)$/
         );
 
-        // If file end with (mine, working, merge, etc..) and has file without extension
+        // If file end with (mine, working, merge, etc..), has file without extension and
+        // sourceControl.hideUnversioned flag is turned on.
         if (
           matches &&
           matches[1] &&
-          statuses.some(s => s.path === matches[1])
+          statuses.some(s => s.path === matches[1]) &&
+          hideUnversioned
         ) {
           continue;
         } else {
