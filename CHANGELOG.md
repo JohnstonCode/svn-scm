@@ -1,3 +1,9 @@
+# **v1.29.4**
+
+## Bug Fixes
+
+* @JohnstonCode Fixed #276 Empty commit message warning although the comment is entered in the input field
+
 # **v1.29.3**
 
 ## Bug Fixes
