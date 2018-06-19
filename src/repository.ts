@@ -619,29 +619,29 @@ export class Repository {
   }
 
   async addFiles(files: string[]) {
-    return await this.run(Operation.Add, () => this.repository.addFiles(files));
+    return this.run(Operation.Add, () => this.repository.addFiles(files));
   }
 
   async addChangelist(files: string[], changelist: string) {
-    return await this.run(Operation.AddChangelist, () =>
+    return this.run(Operation.AddChangelist, () =>
       this.repository.addChangelist(files, changelist)
     );
   }
 
   async removeChangelist(files: string[]) {
-    return await this.run(Operation.RemoveChangelist, () =>
+    return this.run(Operation.RemoveChangelist, () =>
       this.repository.removeChangelist(files)
     );
   }
 
   async getCurrentBranch() {
-    return await this.run(Operation.CurrentBranch, async () => {
+    return this.run(Operation.CurrentBranch, async () => {
       return this.repository.getCurrentBranch();
     });
   }
 
   async branch(name: string) {
-    return await this.run(Operation.NewBranch, async () => {
+    return this.run(Operation.NewBranch, async () => {
       await this.repository.branch(name);
       this.updateNewCommits();
     });
@@ -655,7 +655,7 @@ export class Repository {
   }
 
   async updateRevision(ignoreExternals: boolean = false): Promise<string> {
-    return await this.run<string>(Operation.Update, async () => {
+    return this.run<string>(Operation.Update, async () => {
       const response = await this.repository.update(ignoreExternals);
       this.updateNewCommits();
       return response;
@@ -663,49 +663,47 @@ export class Repository {
   }
 
   async resolve(files: string[], action: string) {
-    return await this.run(Operation.Resolve, () =>
+    return this.run(Operation.Resolve, () =>
       this.repository.resolve(files, action)
     );
   }
 
   async commitFiles(message: string, files: any[]) {
-    return await this.run(Operation.Commit, () =>
+    return this.run(Operation.Commit, () =>
       this.repository.commitFiles(message, files)
     );
   }
 
   async revert(files: string[]) {
-    return await this.run(Operation.Revert, () =>
-      this.repository.revert(files)
-    );
+    return this.run(Operation.Revert, () => this.repository.revert(files));
   }
 
   async patch(files: string[]) {
-    return await this.run(Operation.Patch, () => this.repository.patch(files));
+    return this.run(Operation.Patch, () => this.repository.patch(files));
   }
 
   async patchChangelist(changelistName: string) {
-    return await this.run(Operation.Patch, () =>
+    return this.run(Operation.Patch, () =>
       this.repository.patchChangelist(changelistName)
     );
   }
 
   async removeFiles(files: any[], keepLocal: boolean) {
-    return await this.run(Operation.Remove, () =>
+    return this.run(Operation.Remove, () =>
       this.repository.removeFiles(files, keepLocal)
     );
   }
 
   async log() {
-    return await this.run(Operation.Log, () => this.repository.log());
+    return this.run(Operation.Log, () => this.repository.log());
   }
 
   async cleanup() {
-    return await this.run(Operation.CleanUp, () => this.repository.cleanup());
+    return this.run(Operation.CleanUp, () => this.repository.cleanup());
   }
 
   async finishCheckout() {
-    return await this.run(Operation.SwitchBranch, () =>
+    return this.run(Operation.SwitchBranch, () =>
       this.repository.finishCheckout()
     );
   }
@@ -715,13 +713,13 @@ export class Repository {
     directory: string,
     recursive: boolean = false
   ) {
-    return await this.run(Operation.Ignore, () =>
+    return this.run(Operation.Ignore, () =>
       this.repository.addToIgnore(expressions, directory, recursive)
     );
   }
 
   async rename(oldFile: string, newFile: string) {
-    return await this.run(Operation.Rename, () =>
+    return this.run(Operation.Rename, () =>
       this.repository.rename(oldFile, newFile)
     );
   }
@@ -729,7 +727,7 @@ export class Repository {
   async promptAuth(): Promise<boolean | undefined> {
     // Prevent multiple prompts for auth
     if (this.lastPromptAuth) {
-      return await this.lastPromptAuth;
+      return this.lastPromptAuth;
     }
 
     this.lastPromptAuth = commands.executeCommand("svn.promptAuth");

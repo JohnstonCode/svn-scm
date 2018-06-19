@@ -126,14 +126,14 @@ export async function selectBranch(
   }
 
   if (choice instanceof ParentFolderItem) {
-    return await selectBranch(repository, allowNew, choice.path);
+    return selectBranch(repository, allowNew, choice.path);
   }
   if (choice instanceof FolderItem) {
     if (choice.branch) {
       return choice.branch;
     }
 
-    return await selectBranch(repository, allowNew, choice.path);
+    return selectBranch(repository, allowNew, choice.path);
   }
 
   if (choice instanceof NewFolderItem) {

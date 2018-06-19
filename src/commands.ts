@@ -440,7 +440,7 @@ export class SvnCommands implements IDisposable {
       path: path.join(basedir, `(HEAD) ${basename}`) // change document title
     });
 
-    return await commands.executeCommand<void>("vscode.open", uri, {
+    return commands.executeCommand<void>("vscode.open", uri, {
       preview: true
     });
   }
@@ -546,10 +546,10 @@ export class SvnCommands implements IDisposable {
     }
 
     if (!left) {
-      return await commands.executeCommand<void>("vscode.open", right, opts);
+      return commands.executeCommand<void>("vscode.open", right, opts);
     }
 
-    return await commands.executeCommand<void>(
+    return commands.executeCommand<void>(
       "vscode.diff",
       left,
       right,
@@ -1078,7 +1078,7 @@ export class SvnCommands implements IDisposable {
 
     const uris = selection.map(resource => resource.resourceUri);
 
-    return await this.addToIgnore(uris);
+    return this.addToIgnore(uris);
   }
 
   @command("svn.addToIgnoreExplorer")
@@ -1087,7 +1087,7 @@ export class SvnCommands implements IDisposable {
       return;
     }
 
-    return await this.addToIgnore(allUris);
+    return this.addToIgnore(allUris);
   }
 
   async addToIgnore(uris: Uri[]): Promise<void> {
@@ -1115,7 +1115,7 @@ export class SvnCommands implements IDisposable {
 
     const oldName = mainUri.fsPath;
 
-    return await this.rename(repository, oldName);
+    return this.rename(repository, oldName);
   }
 
   @command("svn.rename", { repository: true })
