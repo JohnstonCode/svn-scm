@@ -29,7 +29,7 @@ export class Repository {
     options.username = this.username;
     options.password = this.password;
 
-    return await this.svn.exec(this.workspaceRoot, args, options);
+    return this.svn.exec(this.workspaceRoot, args, options);
   }
 
   removeAbsolutePath(file: string) {

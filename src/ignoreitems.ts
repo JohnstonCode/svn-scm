@@ -54,11 +54,7 @@ export async function inputIgnoreList(repository: Repository, uris: Uri[]) {
       return;
     }
 
-    return await repository.addToIgnore(
-      [pick.expression],
-      dirName,
-      pick.recursive
-    );
+    return repository.addToIgnore([pick.expression], dirName, pick.recursive);
   }
 
   const count = uris.length;
