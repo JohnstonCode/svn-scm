@@ -1,3 +1,9 @@
+# **v1.29.3**
+
+## Bug Fixes
+
+* @JohnstonCode Fixed #275 Clicking Cancel in commit dialog still attempts to commit
+
 # **v1.29.2**
 
 ## Bug Fixes
