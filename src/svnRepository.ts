@@ -187,7 +187,9 @@ export class Repository {
       return info.repository.root;
     }
 
-    return info.url.replace(branch.path, "").replace(/\/$/, "");
+    let regex = new RegExp(branch.path + "$");
+
+    return info.url.replace(regex, "").replace(/\/$/, "");
   }
 
   async getBranches() {
