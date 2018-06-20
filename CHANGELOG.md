@@ -1,3 +1,13 @@
+# **v1.29.5**
+
+## Bug Fixes
+
+* @JohnstonCode Fixed #255 Hostname getting removed when same as folder
+
+## Changes
+
+* @JohnstonCode #277 Removed unnecessary awaits
+
 # **v1.29.4**
 
 ## Bug Fixes
