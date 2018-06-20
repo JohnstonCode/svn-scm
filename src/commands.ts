@@ -266,8 +266,7 @@ export class SvnCommands implements IDisposable {
         } catch (error) {
           console.log(error);
           window.showErrorMessage(
-            `Unable to remove file 
-          "${paths.join(",")}" from changelist`
+            `Unable to remove file "${paths.join(",")}" from changelist`
           );
         }
       } else {
@@ -276,8 +275,9 @@ export class SvnCommands implements IDisposable {
         } catch (error) {
           console.log(error);
           window.showErrorMessage(
-            `Unable to add file 
-          "${paths.join(",")}" to changelist "${changelistName}"`
+            `Unable to add file "${paths.join(
+              ","
+            )}" to changelist "${changelistName}"`
           );
         }
       }
@@ -410,7 +410,7 @@ export class SvnCommands implements IDisposable {
 
   @command("svn.openHEADFile")
   async openHEADFile(arg?: Resource | Uri): Promise<void> {
-    let resource: Resource | undefined = undefined;
+    let resource: Resource | undefined;
 
     if (arg instanceof Resource) {
       resource = arg;
@@ -468,7 +468,7 @@ export class SvnCommands implements IDisposable {
   ): Promise<void> {
     const preserveFocus = arg instanceof Resource;
     const preserveSelection = arg instanceof Uri || !arg;
-    let resources: Resource[] | undefined = undefined;
+    let resources: Resource[] | undefined;
 
     if (arg instanceof Uri) {
       const resource = this.getSCMResource(arg);
@@ -476,7 +476,7 @@ export class SvnCommands implements IDisposable {
         resources = [resource];
       }
     } else {
-      let resource: Resource | undefined = undefined;
+      let resource: Resource | undefined;
 
       if (arg instanceof Resource) {
         resource = arg;
