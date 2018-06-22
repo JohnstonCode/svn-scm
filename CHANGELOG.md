@@ -1,3 +1,9 @@
+# **v1.29.6**
+
+## Bug Fixes
+
+* @JohnstonCode Fixed #283 Added missing placeholder text for SCM input
+
 # **v1.29.5**
 
 ## Bug Fixes
