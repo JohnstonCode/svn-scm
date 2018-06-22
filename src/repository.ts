@@ -259,6 +259,8 @@ export class Repository {
     );
 
     this.sourceControl.count = 0;
+    this.sourceControl.inputBox.placeholder =
+      "Message (press Ctrl+Enter to commit)";
     this.sourceControl.acceptInputCommand = {
       command: "svn.commitWithMessage",
       title: "commit",

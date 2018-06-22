@@ -5,7 +5,7 @@
   "version": "1.29.5",
   "publisher": "johnstoncode",
   "engines": {
-    "vscode": "^1.18.0"
+    "vscode": "^1.19.0"
   },
   "enableProposedApi": false,
   "icon": "images/subversion.png",
