@@ -43,7 +43,7 @@
     "@types/node": "^10.0.3",
     "@types/xml2js": "^0.4.2",
     "decache": "^4.3.0",
-    "eslint": "^4.12.1",
+    "eslint": "^5.0.0",
     "glob": "^7.1.2",
     "husky": "^0.14.3",
     "istanbul": "^0.4.5",
