@@ -1,6 +1,6 @@
 import * as xml2js from "xml2js";
-import { camelcase } from "./util";
 import { IEntry, IFileStatus, IWcStatus } from "./common/types";
+import { camelcase } from "./util";
 
 function processEntry(
   entry: IEntry | IEntry[],
