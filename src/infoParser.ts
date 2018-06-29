@@ -1,26 +1,6 @@
 import * as xml2js from "xml2js";
+import { ISvnInfo } from "./common/types";
 import { camelcase } from "./util";
-
-export interface ISvnInfo {
-  kind: string;
-  path: string;
-  revision: string;
-  url: string;
-  relativeUrl: string;
-  repository: {
-    root: string;
-    uuid: string;
-  };
-  wcInfo: {
-    wcrootAbspath: string;
-    uuid: string;
-  };
-  commit: {
-    revision: string;
-    author: string;
-    date: string;
-  };
-}
 
 export async function parseInfoXml(content: string): Promise<ISvnInfo> {
   return new Promise<ISvnInfo>((resolve, reject) => {

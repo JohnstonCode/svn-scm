@@ -1,11 +1,6 @@
 import * as xml2js from "xml2js";
-import { IEntry, IFileStatus } from "./common/types";
-import { camelcase } from "./util";
-
-interface IWcStatus {
-  locked: boolean;
-  switched: boolean;
-}
+import { xml2jsParseSettings } from "./common/constants";
+import { IEntry, IFileStatus, IWcStatus } from "./common/types";
 
 function processEntry(
   entry: IEntry | IEntry[],
@@ -74,24 +69,14 @@ function xmlToStatus(xml: any) {
 
 export async function parseStatusXml(content: string): Promise<IFileStatus[]> {
   return new Promise<IFileStatus[]>((resolve, reject) => {
-    xml2js.parseString(
-      content,
-      {
-        mergeAttrs: true,
-        explicitRoot: false,
-        explicitArray: false,
-        attrNameProcessors: [camelcase],
-        tagNameProcessors: [camelcase]
-      },
-      (err, result) => {
-        if (err) {
-          reject();
-        }
-
-        const statusList: IFileStatus[] = xmlToStatus(result);
-
-        resolve(statusList);
+    xml2js.parseString(content, xml2jsParseSettings, (err, result) => {
+      if (err) {
+        reject();
       }
-    );
+
+      const statusList: IFileStatus[] = xmlToStatus(result);
+
+      resolve(statusList);
+    });
   });
 }
