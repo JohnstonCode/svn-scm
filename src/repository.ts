@@ -46,6 +46,7 @@ import {
 function shouldShowProgress(operation: Operation): boolean {
   switch (operation) {
     case Operation.CurrentBranch:
+    case Operation.NewCommits:
     case Operation.Show:
       return false;
     default:
@@ -58,14 +59,13 @@ export class Repository {
   public statusBar: SvnStatusBar;
   public changes: ISvnResourceGroup;
   public unversioned: ISvnResourceGroup;
-  public remoteChanged?: ISvnResourceGroup;
   public changelists: Map<string, ISvnResourceGroup> = new Map();
   public conflicts: ISvnResourceGroup;
   public statusIgnored: IFileStatus[] = [];
   public statusExternal: IFileStatus[] = [];
   private disposables: Disposable[] = [];
   public currentBranch = "";
-  public remoteChangedFiles: number = 0;
+  public newCommit: number = 0;
   public isIncomplete: boolean = false;
   public needCleanUp: boolean = false;
 
@@ -83,9 +83,9 @@ export class Repository {
   public readonly onDidChangeStatus: Event<void> = this._onDidChangeStatus
     .event;
 
-  private _onDidChangeRemoteChangedFiles = new EventEmitter<void>();
-  public readonly onDidChangeRemoteChangedFile: Event<void> = this
-    ._onDidChangeRemoteChangedFiles.event;
+  private _onDidChangeNewCommit = new EventEmitter<void>();
+  public readonly onDidChangeNewCommit: Event<void> = this._onDidChangeNewCommit
+    .event;
 
   private _onRunOperation = new EventEmitter<Operation>();
   public readonly onRunOperation: Event<Operation> = this._onRunOperation.event;
@@ -121,10 +121,6 @@ export class Repository {
     this.changelists.forEach((group, changelist) => {
       group.resourceStates = [];
     });
-
-    if (this.remoteChanged) {
-      this.remoteChanged.dispose();
-    }
 
     this.isIncomplete = false;
     this.needCleanUp = false;
@@ -235,13 +231,12 @@ export class Repository {
     this.disposables.push(this.conflicts);
 
     const updateFreqNew = configuration.get<number>(
-      "remoteChanges.checkFrequency",
-      300
+      "newCommits.checkFrequency"
     );
     if (updateFreqNew) {
       const interval = setInterval(() => {
-        this.updateRemoteChangedFiles();
-      }, 1000 * updateFreqNew);
+        this.updateNewCommits();
+      }, 1000 * 60 * updateFreqNew);
 
       this.disposables.push(
         toDisposable(() => {
@@ -251,10 +246,7 @@ export class Repository {
     }
 
     this.status();
-
-    if (updateFreqNew) {
-      this.updateRemoteChangedFiles();
-    }
+    this.updateNewCommits();
 
     this.disposables.push(
       workspace.onDidSaveTextDocument(document => {
@@ -264,8 +256,14 @@ export class Repository {
   }
 
   @debounce(1000)
-  public async updateRemoteChangedFiles() {
-    this.run(Operation.StatusRemote);
+  public async updateNewCommits() {
+    this.run(Operation.NewCommits, async () => {
+      const newCommits = await this.repository.countNewCommit();
+      if (newCommits !== this.newCommit) {
+        this.newCommit = newCommits;
+        this._onDidChangeNewCommit.fire();
+      }
+    });
   }
 
   private onFSChange(uri: Uri): void {
@@ -315,13 +313,12 @@ export class Repository {
   }
 
   @throttle
-  public async updateModelState(checkRemoteChanges: boolean = false) {
+  public async updateModelState() {
     const changes: any[] = [];
     const unversioned: any[] = [];
     const external: any[] = [];
     const conflicts: any[] = [];
     const changelists: Map<string, Resource[]> = new Map();
-    const remoteChanged: any[] = [];
 
     this.statusExternal = [];
     this.statusIgnored = [];
@@ -334,11 +331,8 @@ export class Repository {
     );
 
     const statuses =
-      (await this.repository.getStatus({
-        includeIgnored: true,
-        includeExternals: combineExternal,
-        checkRemoteChanges
-      })) || [];
+      (await this.repository.getStatus(true, combineExternal)) || [];
+
     const fileConfig = workspace.getConfiguration("files", Uri.file(this.root));
 
     const filesToExclude = fileConfig.get<any>("exclude");
@@ -405,17 +399,6 @@ export class Repository {
         ? Uri.file(path.join(this.workspaceRoot, status.rename))
         : undefined;
 
-      if (status.reposStatus) {
-        remoteChanged.push(
-          new Resource(
-            uri,
-            status.reposStatus.item,
-            undefined,
-            status.reposStatus.props
-          )
-        );
-      }
-
       const resource = new Resource(
         uri,
         status.status,
@@ -423,13 +406,7 @@ export class Repository {
         status.props
       );
 
-      if (
-        status.status === Status.NORMAL &&
-        (status.props === Status.NORMAL || status.props === Status.NONE)
-      ) {
-        // Ignore non changed itens
-        continue;
-      } else if (status.status === Status.IGNORED) {
+      if (status.status === Status.IGNORED) {
         this.statusIgnored.push(status);
       } else if (status.status === Status.CONFLICTED) {
         conflicts.push(resource);
@@ -509,26 +486,6 @@ export class Repository {
       (a, b) => a + b.resourceStates.length,
       0
     );
-
-    if (checkRemoteChanges) {
-      /**
-       * Destroy and create for keep at last position
-       */
-      if (this.remoteChanged) {
-        this.remoteChanged.dispose();
-      }
-      this.remoteChanged = this.sourceControl.createResourceGroup(
-        "remotechanged",
-        "Remote Changed"
-      ) as ISvnResourceGroup;
-      this.remoteChanged.hideWhenEmpty = true;
-      this.remoteChanged.resourceStates = remoteChanged;
-
-      if (remoteChanged.length !== this.remoteChangedFiles) {
-        this.remoteChangedFiles = remoteChanged.length;
-        this._onDidChangeRemoteChangedFiles.fire();
-      }
-    }
 
     this._onDidChangeStatus.fire();
 
@@ -622,14 +579,14 @@ export class Repository {
   public async branch(name: string) {
     return this.run(Operation.NewBranch, async () => {
       await this.repository.branch(name);
-      this.updateRemoteChangedFiles();
+      this.updateNewCommits();
     });
   }
 
   public async switchBranch(name: string) {
     await this.run(Operation.SwitchBranch, async () => {
       await this.repository.switchBranch(name);
-      this.updateRemoteChangedFiles();
+      this.updateNewCommits();
     });
   }
 
@@ -638,7 +595,7 @@ export class Repository {
   ): Promise<string> {
     return this.run<string>(Operation.Update, async () => {
       const response = await this.repository.update(ignoreExternals);
-      this.updateRemoteChangedFiles();
+      this.updateNewCommits();
       return response;
     });
   }
@@ -749,10 +706,8 @@ export class Repository {
       try {
         const result = await this.retryRun(runOperation);
 
-        const checkRemote = operation === Operation.StatusRemote;
-
         if (!isReadOnly(operation)) {
-          await this.updateModelState(checkRemote);
+          await this.updateModelState();
         }
 
         return result;
