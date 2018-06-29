@@ -144,7 +144,6 @@ export function isReadOnly(operation: Operation): boolean {
   switch (operation) {
     case Operation.CurrentBranch:
     case Operation.Log:
-    case Operation.NewCommits:
     case Operation.Show:
       return true;
     default:
