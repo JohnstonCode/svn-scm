@@ -22,13 +22,14 @@
   "activationEvents": ["*"],
   "main": "./out/extension",
   "scripts": {
-    "vscode:prepublish": "tsc -p ./",
+    "vscode:prepublish": "npm run lint && tsc -p ./",
     "compile": "tsc -watch -p ./",
     "postinstall": "node ./node_modules/vscode/bin/install",
     "test": "node ./node_modules/vscode/bin/test",
     "prettier": "prettier --no-config --list-different 'src/**/*.ts'",
     "tools:genReadme": "node ./out/tools/generateConfigSectionForReadme.js",
-    "precommit": "pretty-quick --staged"
+    "precommit": "pretty-quick --staged",
+    "lint": "tslint -p ./"
   },
   "dependencies": {
     "iconv-lite": "^0.4.23",
@@ -43,7 +44,6 @@
     "@types/node": "^10.0.3",
     "@types/xml2js": "^0.4.2",
     "decache": "^4.3.0",
-    "eslint": "^4.12.1",
     "glob": "^7.1.2",
     "husky": "^0.14.3",
     "istanbul": "^0.4.5",
@@ -51,6 +51,7 @@
     "prettier": "^1.12.1",
     "pretty-quick": "^1.4.1",
     "remap-istanbul": "^0.11.1",
+    "tslint": "^5.10.0",
     "typescript": "^2.8.3",
     "vscode": "^1.1.17"
   },
