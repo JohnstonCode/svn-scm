@@ -1,5 +1,5 @@
 import * as xml2js from "xml2js";
-import { Repository } from "./repository";
+import { xml2jsParseSettings } from "./common/constants";
 import { camelcase } from "./util";
 
 export enum SvnKindType {
@@ -20,29 +20,19 @@ export interface ISvnListItem {
 
 export async function parseSvnList(content: string): Promise<ISvnListItem[]> {
   return new Promise<ISvnListItem[]>((resolve, reject) => {
-    xml2js.parseString(
-      content,
-      {
-        mergeAttrs: true,
-        explicitRoot: false,
-        explicitArray: false,
-        attrNameProcessors: [camelcase],
-        tagNameProcessors: [camelcase]
-      },
-      (err, result) => {
-        if (err) {
-          reject();
-        }
-
-        if (result.list && result.list.entry) {
-          if (!Array.isArray(result.list.entry)) {
-            result.list.entry = [result.list.entry];
-          }
-          resolve(result.list.entry);
-        } else {
-          resolve([]);
-        }
+    xml2js.parseString(content, xml2jsParseSettings, (err, result) => {
+      if (err) {
+        reject();
       }
-    );
+
+      if (result.list && result.list.entry) {
+        if (!Array.isArray(result.list.entry)) {
+          result.list.entry = [result.list.entry];
+        }
+        resolve(result.list.entry);
+      } else {
+        resolve([]);
+      }
+    });
   });
 }
