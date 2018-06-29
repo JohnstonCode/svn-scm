@@ -1,23 +1,23 @@
 import {
-  ExtensionContext,
-  Disposable,
-  workspace,
-  window,
   commands,
+  Disposable,
+  ExtensionContext,
   OutputChannel,
-  Uri
+  Uri,
+  window
 } from "vscode";
-import { Svn } from "./svn";
-import { SvnFinder } from "./svnFinder";
-import { SvnContentProvider } from "./svnContentProvider";
 import { SvnCommands } from "./commands";
-import { Model } from "./model";
-import {
-  toDisposable,
-  hasSupportToDecorationProvider,
-  hasSupportToRegisterDiffCommand
-} from "./util";
 import { configuration } from "./helpers/configuration";
+import { Model } from "./model";
+import { Svn } from "./svn";
+import { SvnContentProvider } from "./svnContentProvider";
+import { SvnFinder } from "./svnFinder";
+import {
+  hasSupportToDecorationProvider,
+  hasSupportToRegisterDiffCommand,
+  toDisposable
+} from "./util";
+import SvnDecorations from "./decorations/svnDecorations";
 
 async function init(
   context: ExtensionContext,
@@ -38,10 +38,8 @@ async function init(
 
   // First, check the vscode has support to DecorationProvider
   if (hasSupportToDecorationProvider()) {
-    import("./decorationProvider").then(provider => {
-      const decoration = new provider.SvnDecorations(model);
-      disposables.push(decoration);
-    });
+    const decoration = new SvnDecorations(model);
+    disposables.push(decoration);
   }
   const onRepository = () =>
     commands.executeCommand(
@@ -126,5 +124,6 @@ export async function activate(context: ExtensionContext) {
 }
 
 // this method is called when your extension is deactivated
+/* tslint:disable:no-empty */
 function deactivate() {}
 exports.deactivate = deactivate;

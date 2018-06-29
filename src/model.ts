@@ -1,56 +1,48 @@
+import * as fs from "fs";
+import { Minimatch } from "minimatch";
+import * as path from "path";
 import {
-  workspace,
+  commands,
+  Disposable,
+  Event,
+  EventEmitter,
   Uri,
   window,
-  Disposable,
-  WorkspaceFoldersChangeEvent,
-  EventEmitter,
-  Event,
-  commands
+  workspace,
+  WorkspaceFoldersChangeEvent
 } from "vscode";
-import * as fs from "fs";
-import * as path from "path";
-import { Repository, RepositoryState } from "./repository";
-import { Svn, Status } from "./svn";
 import {
-  dispose,
+  IModelChangeEvent,
+  IOpenRepository,
+  RepositoryState,
+  Status
+} from "./common/types";
+import { debounce, sequentialize } from "./decorators";
+import { configuration } from "./helpers/configuration";
+import { Repository } from "./repository";
+import { Svn } from "./svn";
+import {
   anyEvent,
+  dispose,
   filterEvent,
   IDisposable,
   isDescendant
 } from "./util";
-import { sequentialize, debounce } from "./decorators";
-import { configuration } from "./helpers/configuration";
-import { Minimatch } from "minimatch";
-
-export interface ModelChangeEvent {
-  repository: Repository;
-  uri: Uri;
-}
-
-export interface OriginalResourceChangeEvent {
-  repository: Repository;
-  uri: Uri;
-}
-
-interface OpenRepository extends Disposable {
-  repository: Repository;
-}
 
 export class Model implements IDisposable {
   private _onDidOpenRepository = new EventEmitter<Repository>();
-  readonly onDidOpenRepository: Event<Repository> = this._onDidOpenRepository
-    .event;
+  public readonly onDidOpenRepository: Event<Repository> = this
+    ._onDidOpenRepository.event;
 
   private _onDidCloseRepository = new EventEmitter<Repository>();
-  readonly onDidCloseRepository: Event<Repository> = this._onDidCloseRepository
-    .event;
+  public readonly onDidCloseRepository: Event<Repository> = this
+    ._onDidCloseRepository.event;
 
-  private _onDidChangeRepository = new EventEmitter<ModelChangeEvent>();
-  readonly onDidChangeRepository: Event<ModelChangeEvent> = this
+  private _onDidChangeRepository = new EventEmitter<IModelChangeEvent>();
+  public readonly onDidChangeRepository: Event<IModelChangeEvent> = this
     ._onDidChangeRepository.event;
 
-  public openRepositories: OpenRepository[] = [];
+  public openRepositories: IOpenRepository[] = [];
   private disposables: Disposable[] = [];
   private enabled = false;
   private possibleSvnRepositoryPaths = new Set<string>();
@@ -247,7 +239,7 @@ export class Model implements IDisposable {
           !(workspace.workspaceFolders || []).some(f =>
             repository!.repository.workspaceRoot.startsWith(f.uri.fsPath)
           )
-      ) as OpenRepository[];
+      ) as IOpenRepository[];
 
     possibleRepositoryFolders.forEach(p =>
       this.tryOpenRepository(p.uri.fsPath)
@@ -263,7 +255,7 @@ export class Model implements IDisposable {
   }
 
   @sequentialize
-  async tryOpenRepository(path: string, level = 0): Promise<void> {
+  public async tryOpenRepository(path: string, level = 0): Promise<void> {
     if (this.getRepository(path)) {
       return;
     }
@@ -272,10 +264,10 @@ export class Model implements IDisposable {
 
     // If open only a subpath.
     if (!isSvnFolder && level === 0) {
-      let pathParts = path.split(/[\\/]/);
+      const pathParts = path.split(/[\\/]/);
       while (pathParts.length > 0) {
         pathParts.pop();
-        let topPath = pathParts.join("/") + "/.svn";
+        const topPath = pathParts.join("/") + "/.svn";
         isSvnFolder = fs.existsSync(topPath);
         if (isSvnFolder) {
           break;
@@ -290,7 +282,9 @@ export class Model implements IDisposable {
         const repository = new Repository(this.svn.open(repositoryRoot, path));
 
         this.open(repository);
-      } catch (err) {}
+      } catch (err) {
+        console.error(err);
+      }
       return;
     }
 
@@ -312,14 +306,14 @@ export class Model implements IDisposable {
     return;
   }
 
-  getRepository(hint: any) {
+  public getRepository(hint: any) {
     const liveRepository = this.getOpenRepository(hint);
     if (liveRepository && liveRepository.repository) {
       return liveRepository.repository;
     }
   }
 
-  getOpenRepository(hint: any): OpenRepository | undefined {
+  public getOpenRepository(hint: any): IOpenRepository | undefined {
     if (!hint) {
       return undefined;
     }
@@ -403,7 +397,7 @@ export class Model implements IDisposable {
     this._onDidOpenRepository.fire(repository);
   }
 
-  close(repository: Repository): void {
+  public close(repository: Repository): void {
     const openRepository = this.getOpenRepository(repository);
 
     if (!openRepository) {
@@ -413,7 +407,7 @@ export class Model implements IDisposable {
     openRepository.dispose();
   }
 
-  async pickRepository() {
+  public async pickRepository() {
     if (this.openRepositories.length === 0) {
       throw new Error("There are no available repositories");
     }
@@ -421,7 +415,7 @@ export class Model implements IDisposable {
     const picks: any[] = this.repositories.map(repository => {
       return {
         label: path.basename(repository.root),
-        repository: repository
+        repository
       };
     });
     const placeHolder = "Choose a repository";
@@ -430,7 +424,7 @@ export class Model implements IDisposable {
     return pick && pick.repository;
   }
 
-  dispose(): void {
+  public dispose(): void {
     this.disable();
     this.configurationChangeDisposable.dispose();
   }

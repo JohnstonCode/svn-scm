@@ -1,6 +1,6 @@
 import * as xml2js from "xml2js";
-import { camelcase } from "./util";
 import { Repository } from "./repository";
+import { camelcase } from "./util";
 
 export enum SvnKindType {
   FILE = "file",

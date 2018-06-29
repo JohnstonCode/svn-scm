@@ -1,5 +1,5 @@
-import * as path from "path";
 import * as cp from "child_process";
+import * as path from "path";
 import { cpErrorHandler } from "./svn";
 
 export interface ISvn {
@@ -17,8 +17,10 @@ export function parseVersion(raw: string): string {
 }
 
 export class SvnFinder {
-  findSvn(hint?: string): Promise<ISvn> {
-    const first = hint ? this.findSpecificSvn(hint) : Promise.reject<ISvn>(null);
+  public findSvn(hint?: string): Promise<ISvn> {
+    const first = hint
+      ? this.findSpecificSvn(hint)
+      : Promise.reject<ISvn>(null);
 
     return first
       .then(void 0, () => {
@@ -36,16 +38,16 @@ export class SvnFinder {
       );
   }
 
-  findSvnWin32(): Promise<ISvn> {
-    return this.findSystemSvnWin32(process.env["ProgramW6432"])
+  public findSvnWin32(): Promise<ISvn> {
+    return this.findSystemSvnWin32(process.env.ProgramW6432)
       .then(void 0, () =>
         this.findSystemSvnWin32(process.env["ProgramFiles(x86)"])
       )
-      .then(void 0, () => this.findSystemSvnWin32(process.env["ProgramFiles"]))
+      .then(void 0, () => this.findSystemSvnWin32(process.env.ProgramFiles))
       .then(void 0, () => this.findSpecificSvn("svn"));
   }
 
-  findSystemSvnWin32(base?: string): Promise<ISvn> {
+  public findSystemSvnWin32(base?: string): Promise<ISvn> {
     if (!base) {
       return Promise.reject<ISvn>("Not found");
     }
@@ -55,7 +57,7 @@ export class SvnFinder {
     );
   }
 
-  findSvnDarwin(): Promise<ISvn> {
+  public findSvnDarwin(): Promise<ISvn> {
     return new Promise<ISvn>((c, e) => {
       cp.exec("which svn", (err, svnPathBuffer) => {
         if (err) {
@@ -94,7 +96,7 @@ export class SvnFinder {
     });
   }
 
-  findSpecificSvn(path: string): Promise<ISvn> {
+  public findSpecificSvn(path: string): Promise<ISvn> {
     return new Promise<ISvn>((c, e) => {
       const buffers: Buffer[] = [];
       const child = cp.spawn(path, ["--version"]);

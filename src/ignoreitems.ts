@@ -1,26 +1,18 @@
-import {
-  QuickPickItem,
-  SourceControlResourceGroup,
-  window,
-  workspace,
-  Uri
-} from "vscode";
-import { Repository } from "./repository";
-import { configuration } from "./helpers/configuration";
 import * as path from "path";
-import { Status } from "./svn";
+import { QuickPickItem, Uri, window } from "vscode";
+import { Repository } from "./repository";
 
 export class IgnoreSingleItem implements QuickPickItem {
   constructor(public expression: string, public recursive: boolean = false) {}
 
   get label(): string {
-    const r_text = this.recursive ? " (Recursive)" : "";
-    return `${this.expression}${r_text}`;
+    const text = this.recursive ? " (Recursive)" : "";
+    return `${this.expression}${text}`;
   }
 
   get description(): string {
-    const r_text = this.recursive ? " (Recursive)" : "";
-    return `Add '${this.expression}' to 'svn:ignore'${r_text}`;
+    const text = this.recursive ? " (Recursive)" : "";
+    return `Add '${this.expression}' to 'svn:ignore'${text}`;
   }
 }
 
@@ -101,7 +93,9 @@ export async function inputIgnoreList(repository: Repository, uris: Uri[]) {
   }
 
   for (const dir in byDir) {
-    const files = [...new Set(byDir[dir])]; // Unique list
-    await repository.addToIgnore(files, dir, isRecursive);
+    if (byDir.hasOwnProperty(dir)) {
+      const files = [...new Set(byDir[dir])]; // Unique list
+      await repository.addToIgnore(files, dir, isRecursive);
+    }
   }
 }

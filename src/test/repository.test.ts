@@ -1,3 +1,5 @@
+/* tslint:disable */
+
 //
 // Note: This example test is leveraging the Mocha test framework.
 // Please refer to their documentation on https://mochajs.org/ for help.
@@ -10,13 +12,10 @@ import * as assert from "assert";
 // as well as import your extension to test it
 import * as fs from "fs";
 import * as path from "path";
-import * as vscode from "vscode";
-import * as testUtil from "./testUtil";
-import { Uri, commands, workspace, window } from "vscode";
-import { Svn } from "../svn";
+import { commands, Uri, window, workspace } from "vscode";
 import { Model } from "../model";
-import { SvnFinder, ISvn } from "../svnFinder";
 import { Repository } from "../repository";
+import * as testUtil from "./testUtil";
 
 // Defines a Mocha test suite to group tests of similar kind together
 suite("Repository Tests", () => {
@@ -79,7 +78,9 @@ suite("Repository Tests", () => {
     const repository: Repository | undefined = model.getRepository(
       checkoutDir.fsPath
     );
-    if (!repository) return;
+    if (!repository) {
+      return;
+    }
 
     const name = await repository.getCurrentBranch();
     assert.equal(name, "trunk");
@@ -90,7 +91,9 @@ suite("Repository Tests", () => {
     const repository: Repository | undefined = model.getRepository(
       checkoutDir.fsPath
     );
-    if (!repository) return;
+    if (!repository) {
+      return;
+    }
 
     assert.equal(repository.changes.resourceStates.length, 0);
 
@@ -125,7 +128,9 @@ suite("Repository Tests", () => {
     const newRepository: Repository | undefined = model.getRepository(
       newCheckoutDir.fsPath
     );
-    if (!newRepository) return;
+    if (!newRepository) {
+      return;
+    }
     assert.ok(newRepository);
 
     await newRepository.branch("branches/test");

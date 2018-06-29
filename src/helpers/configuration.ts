@@ -1,12 +1,12 @@
 "use strict";
 
 import {
-  workspace,
-  Uri,
-  WorkspaceConfiguration,
-  EventEmitter,
   ConfigurationChangeEvent,
-  Event
+  Event,
+  EventEmitter,
+  Uri,
+  workspace,
+  WorkspaceConfiguration
 } from "vscode";
 
 const SVN = "svn";
@@ -34,15 +34,15 @@ class Configuration {
     this._onDidChange.fire(event);
   }
 
-  get<T>(section: string, defaultValue?: T): T {
+  public get<T>(section: string, defaultValue?: T): T {
     return this.configuration.get<T>(section, defaultValue!);
   }
 
-  update(section: string, value: any): void {
+  public update(section: string, value: any): void {
     this.configuration.update(section, value);
   }
 
-  inspect(section: string) {
+  public inspect(section: string) {
     return this.configuration.inspect(section);
   }
 }

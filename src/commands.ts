@@ -1,68 +1,59 @@
+import * as fs from "fs";
+import * as path from "path";
 import {
   commands,
-  scm,
-  window,
-  Uri,
-  TextDocumentShowOptions,
-  QuickPickItem,
-  workspace,
-  SourceControlResourceGroup,
-  ViewColumn,
-  SourceControlResourceState,
-  ProgressLocation,
+  Disposable,
   LineChange,
-  WorkspaceEdit,
-  Range,
   Position,
+  Range,
+  SourceControlResourceState,
+  TextDocumentShowOptions,
   TextEditor,
-  Disposable
+  Uri,
+  ViewColumn,
+  window,
+  workspace,
+  WorkspaceEdit
 } from "vscode";
+import {
+  getPatchChangelist,
+  inputCommitChangelist,
+  inputSwitchChangelist
+} from "./changelistItems";
+import {
+  ICommand,
+  ICommandOptions,
+  Status,
+  SvnUriAction
+} from "./common/types";
+import { getConflictPickOptions } from "./conflictItems";
+import { selectBranch } from "./helpers/branch";
+import { configuration } from "./helpers/configuration";
+import { inputIgnoreList } from "./ignoreitems";
+import { applyLineChanges } from "./lineChanges";
 import { inputCommitMessage } from "./messages";
-import { Svn, Status, SvnErrorCodes } from "./svn";
 import { Model } from "./model";
 import { Repository } from "./repository";
 import { Resource } from "./resource";
-import { toSvnUri, fromSvnUri, SvnUriAction } from "./uri";
-import * as fs from "fs";
-import * as path from "path";
-import { start } from "repl";
-import { getConflictPickOptions } from "./conflictItems";
-import { applyLineChanges } from "./lineChanges";
+import { fromSvnUri, toSvnUri } from "./uri";
 import {
-  IDisposable,
+  fixPathSeparator,
   hasSupportToRegisterDiffCommand,
-  fixPathSeparator
+  IDisposable
 } from "./util";
-import {
-  inputSwitchChangelist,
-  inputCommitChangelist,
-  getPatchChangelist
-} from "./changelistItems";
-import { configuration } from "./helpers/configuration";
-import { selectBranch } from "./branches";
-import { inputIgnoreList } from "./ignoreitems";
 
-interface CommandOptions {
-  repository?: boolean;
-  diff?: boolean;
-}
+const svnCommands: ICommand[] = [];
 
-interface Command {
-  commandId: string;
-  key: string;
-  method: Function;
-  options: CommandOptions;
-}
-
-const Commands: Command[] = [];
-
-function command(commandId: string, options: CommandOptions = {}): Function {
+function command(
+  commandId: string,
+  options: ICommandOptions = {}
+): (target: any, key: string, descriptor: any) => void {
   return (target: any, key: string, descriptor: any) => {
     if (!(typeof descriptor.value === "function")) {
       throw new Error("not supported");
     }
 
-    Commands.push({ commandId, key, method: descriptor.value, options });
+    svnCommands.push({ commandId, key, method: descriptor.value, options });
   };
 }
 
@@ -70,7 +61,7 @@ export class SvnCommands implements IDisposable {
   private disposables: Disposable[];
 
   constructor(private model: Model) {
-    this.disposables = Commands.map(({ commandId, method, options }) => {
+    this.disposables = svnCommands.map(({ commandId, method, options }) => {
       const command = this.createCommand(method, options);
       if (options.diff && hasSupportToRegisterDiffCommand()) {
         return commands.registerDiffInformationCommand(commandId, command);
@@ -82,7 +73,7 @@ export class SvnCommands implements IDisposable {
 
   private createCommand(
     method: Function,
-    options: CommandOptions
+    options: ICommandOptions
   ): (...args: any[]) => any {
     const result = (...args: any[]) => {
       let result;
@@ -119,17 +110,17 @@ export class SvnCommands implements IDisposable {
   }
 
   @command("svn._getModel")
-  getModel() {
+  public getModel() {
     return this.model;
   }
 
   @command("svn.fileOpen")
-  async fileOpen(resourceUri: Uri) {
+  public async fileOpen(resourceUri: Uri) {
     await commands.executeCommand("vscode.open", resourceUri);
   }
 
   @command("svn.promptAuth", { repository: true })
-  async promptAuth(repository: Repository): Promise<boolean> {
+  public async promptAuth(repository: Repository): Promise<boolean> {
     const username = await window.showInputBox({
       placeHolder: "Svn repository username",
       prompt: "Please enter your username",
@@ -157,7 +148,7 @@ export class SvnCommands implements IDisposable {
   }
 
   @command("svn.commitWithMessage", { repository: true })
-  async commitWithMessage(repository: Repository) {
+  public async commitWithMessage(repository: Repository) {
     const choice = await inputCommitChangelist(repository);
     if (!choice) {
       return;
@@ -192,7 +183,7 @@ export class SvnCommands implements IDisposable {
   }
 
   @command("svn.add")
-  async addFile(
+  public async addFile(
     ...resourceStates: SourceControlResourceState[]
   ): Promise<void> {
     const selection = this.getResourceStates(resourceStates);
@@ -220,7 +211,7 @@ export class SvnCommands implements IDisposable {
   }
 
   @command("svn.changelist")
-  async changelist(
+  public async changelist(
     ...resourceStates: SourceControlResourceState[]
   ): Promise<void> {
     const selection = this.getResourceStates(resourceStates);
@@ -285,7 +276,9 @@ export class SvnCommands implements IDisposable {
   }
 
   @command("svn.commit")
-  async commit(...resources: SourceControlResourceState[]): Promise<void> {
+  public async commit(
+    ...resources: SourceControlResourceState[]
+  ): Promise<void> {
     if (resources.length === 0 || !(resources[0].resourceUri instanceof Uri)) {
       const resource = this.getSCMResource();
 
@@ -334,22 +327,22 @@ export class SvnCommands implements IDisposable {
   }
 
   @command("svn.refresh", { repository: true })
-  async refresh(repository: Repository) {
+  public async refresh(repository: Repository) {
     await repository.status();
   }
 
   @command("svn.openResourceBase")
-  async openResourceBase(resource: Resource): Promise<void> {
+  public async openResourceBase(resource: Resource): Promise<void> {
     await this._openResource(resource, "BASE", undefined, true, false);
   }
 
   @command("svn.openResourceHead")
-  async openResourceHead(resource: Resource): Promise<void> {
+  public async openResourceHead(resource: Resource): Promise<void> {
     await this._openResource(resource, "HEAD", undefined, true, false);
   }
 
   @command("svn.openFile")
-  async openFile(
+  public async openFile(
     arg?: Resource | Uri,
     ...resourceStates: SourceControlResourceState[]
   ): Promise<void> {
@@ -392,7 +385,7 @@ export class SvnCommands implements IDisposable {
 
       const opts: TextDocumentShowOptions = {
         preserveFocus,
-        preview: preview,
+        preview,
         viewColumn: ViewColumn.Active
       };
 
@@ -409,7 +402,7 @@ export class SvnCommands implements IDisposable {
   }
 
   @command("svn.openHEADFile")
-  async openHEADFile(arg?: Resource | Uri): Promise<void> {
+  public async openHEADFile(arg?: Resource | Uri): Promise<void> {
     let resource: Resource | undefined;
 
     if (arg instanceof Resource) {
@@ -446,7 +439,7 @@ export class SvnCommands implements IDisposable {
   }
 
   @command("svn.openChangeBase")
-  async openChangeBase(
+  public async openChangeBase(
     arg?: Resource | Uri,
     ...resourceStates: SourceControlResourceState[]
   ): Promise<void> {
@@ -454,14 +447,14 @@ export class SvnCommands implements IDisposable {
   }
 
   @command("svn.openChangeHead")
-  async openChangeHead(
+  public async openChangeHead(
     arg?: Resource | Uri,
     ...resourceStates: SourceControlResourceState[]
   ): Promise<void> {
     return this.openChange(arg, "HEAD", resourceStates);
   }
 
-  async openChange(
+  public async openChange(
     arg?: Resource | Uri,
     against?: string,
     resourceStates?: SourceControlResourceState[]
@@ -570,7 +563,7 @@ export class SvnCommands implements IDisposable {
 
     // Show file if has conflicts marks
     if (
-      resource.type == Status.CONFLICTED &&
+      resource.type === Status.CONFLICTED &&
       fs.existsSync(resource.resourceUri.fsPath)
     ) {
       const text = fs.readFileSync(resource.resourceUri.fsPath, {
@@ -636,7 +629,7 @@ export class SvnCommands implements IDisposable {
   }
 
   @command("svn.switchBranch", { repository: true })
-  async switchBranch(repository: Repository) {
+  public async switchBranch(repository: Repository) {
     const branch = await selectBranch(repository, true);
 
     if (!branch) {
@@ -660,7 +653,9 @@ export class SvnCommands implements IDisposable {
   }
 
   @command("svn.revert")
-  async revert(...resourceStates: SourceControlResourceState[]): Promise<void> {
+  public async revert(
+    ...resourceStates: SourceControlResourceState[]
+  ): Promise<void> {
     const selection = this.getResourceStates(resourceStates);
 
     if (selection.length === 0) {
@@ -696,7 +691,7 @@ export class SvnCommands implements IDisposable {
   }
 
   @command("svn.update", { repository: true })
-  async update(repository: Repository) {
+  public async update(repository: Repository) {
     try {
       const ignoreExternals = configuration.get<boolean>(
         "update.ignoreExternals",
@@ -750,13 +745,15 @@ export class SvnCommands implements IDisposable {
   }
 
   @command("svn.patchAll", { repository: true })
-  async patchAll(repository: Repository): Promise<void> {
+  public async patchAll(repository: Repository): Promise<void> {
     const content = await repository.patch([]);
     await this.showDiffPath(repository, content);
   }
 
   @command("svn.patch")
-  async patch(...resourceStates: SourceControlResourceState[]): Promise<void> {
+  public async patch(
+    ...resourceStates: SourceControlResourceState[]
+  ): Promise<void> {
     const selection = this.getResourceStates(resourceStates);
 
     if (selection.length === 0) {
@@ -777,7 +774,7 @@ export class SvnCommands implements IDisposable {
   }
 
   @command("svn.patchChangeList", { repository: true })
-  async patchChangeList(repository: Repository): Promise<void> {
+  public async patchChangeList(repository: Repository): Promise<void> {
     const changelistName = await getPatchChangelist(repository);
 
     if (!changelistName) {
@@ -789,7 +786,9 @@ export class SvnCommands implements IDisposable {
   }
 
   @command("svn.remove")
-  async remove(...resourceStates: SourceControlResourceState[]): Promise<void> {
+  public async remove(
+    ...resourceStates: SourceControlResourceState[]
+  ): Promise<void> {
     const selection = this.getResourceStates(resourceStates);
 
     if (selection.length === 0) {
@@ -832,7 +831,7 @@ export class SvnCommands implements IDisposable {
   }
 
   @command("svn.resolveAll", { repository: true })
-  async resolveAll(repository: Repository) {
+  public async resolveAll(repository: Repository) {
     const conflicts = repository.conflicts.resourceStates;
 
     if (!conflicts.length) {
@@ -864,7 +863,7 @@ export class SvnCommands implements IDisposable {
   }
 
   @command("svn.resolve")
-  async resolve(
+  public async resolve(
     ...resourceStates: SourceControlResourceState[]
   ): Promise<void> {
     const selection = this.getResourceStates(resourceStates);
@@ -896,7 +895,7 @@ export class SvnCommands implements IDisposable {
   }
 
   @command("svn.resolved")
-  async resolved(uri: Uri): Promise<void> {
+  public async resolved(uri: Uri): Promise<void> {
     if (!uri) {
       return;
     }
@@ -930,7 +929,7 @@ export class SvnCommands implements IDisposable {
   }
 
   @command("svn.log", { repository: true })
-  async log(repository: Repository) {
+  public async log(repository: Repository) {
     try {
       const resource = toSvnUri(
         Uri.file(repository.workspaceRoot),
@@ -990,7 +989,7 @@ export class SvnCommands implements IDisposable {
   }
 
   @command("svn.revertChange")
-  async revertChange(
+  public async revertChange(
     uri: Uri,
     changes: LineChange[],
     index: number
@@ -1010,7 +1009,7 @@ export class SvnCommands implements IDisposable {
   }
 
   @command("svn.revertSelectedRanges", { diff: true })
-  async revertSelectedRanges(changes: LineChange[]): Promise<void> {
+  public async revertSelectedRanges(changes: LineChange[]): Promise<void> {
     const textEditor = window.activeTextEditor;
 
     if (!textEditor) {
@@ -1052,22 +1051,22 @@ export class SvnCommands implements IDisposable {
   }
 
   @command("svn.close", { repository: true })
-  async close(repository: Repository): Promise<void> {
+  public async close(repository: Repository): Promise<void> {
     this.model.close(repository);
   }
 
   @command("svn.cleanup", { repository: true })
-  async cleanup(repository: Repository) {
+  public async cleanup(repository: Repository) {
     await repository.cleanup();
   }
 
   @command("svn.finishCheckout", { repository: true })
-  async finishCheckout(repository: Repository) {
+  public async finishCheckout(repository: Repository) {
     await repository.finishCheckout();
   }
 
   @command("svn.addToIgnoreSCM")
-  async addFileToIgnore(
+  public async addFileToIgnore(
     ...resourceStates: SourceControlResourceState[]
   ): Promise<void> {
     const selection = this.getResourceStates(resourceStates);
@@ -1082,7 +1081,10 @@ export class SvnCommands implements IDisposable {
   }
 
   @command("svn.addToIgnoreExplorer")
-  async addToIgnoreExplorer(mainUri?: Uri, allUris?: Uri[]): Promise<void> {
+  public async addToIgnoreExplorer(
+    mainUri?: Uri,
+    allUris?: Uri[]
+  ): Promise<void> {
     if (!allUris || allUris.length === 0) {
       return;
     }
@@ -1090,7 +1092,7 @@ export class SvnCommands implements IDisposable {
     return this.addToIgnore(allUris);
   }
 
-  async addToIgnore(uris: Uri[]): Promise<void> {
+  public async addToIgnore(uris: Uri[]): Promise<void> {
     await this.runByRepository(uris, async (repository, resources) => {
       if (!repository) {
         return;
@@ -1108,7 +1110,11 @@ export class SvnCommands implements IDisposable {
   }
 
   @command("svn.renameExplorer", { repository: true })
-  async renameExplorer(repository: Repository, mainUri?: Uri, allUris?: Uri[]) {
+  public async renameExplorer(
+    repository: Repository,
+    mainUri?: Uri,
+    allUris?: Uri[]
+  ) {
     if (!mainUri) {
       return;
     }
@@ -1119,7 +1125,11 @@ export class SvnCommands implements IDisposable {
   }
 
   @command("svn.rename", { repository: true })
-  async rename(repository: Repository, oldFile: string, newName?: string) {
+  public async rename(
+    repository: Repository,
+    oldFile: string,
+    newName?: string
+  ) {
     oldFile = fixPathSeparator(oldFile);
 
     if (!newName) {
@@ -1218,7 +1228,7 @@ export class SvnCommands implements IDisposable {
 
         return result;
       },
-      [] as { repository: Repository; resources: Uri[] }[]
+      [] as Array<{ repository: Repository; resources: Uri[] }>
     );
 
     const promises = groups.map(({ repository, resources }) =>
@@ -1228,7 +1238,7 @@ export class SvnCommands implements IDisposable {
     return Promise.all(promises);
   }
 
-  dispose(): void {
+  public dispose(): void {
     this.disposables.forEach(d => d.dispose());
   }
 }

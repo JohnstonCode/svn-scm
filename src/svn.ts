@@ -1,43 +1,16 @@
-import { EventEmitter } from "events";
-import { window, workspace, Uri } from "vscode";
 import * as cp from "child_process";
+import { EventEmitter } from "events";
 import * as iconv from "iconv-lite";
 import * as jschardet from "jschardet";
-import * as path from "path";
-import { Repository } from "./svnRepository";
-import { parseInfoXml } from "./infoParser";
-import { SpawnOptions } from "child_process";
-import { IDisposable, toDisposable, dispose } from "./util";
+import { ICpOptions, IExecutionResult, ISvnOptions } from "./common/types";
 import { configuration } from "./helpers/configuration";
+import { parseInfoXml } from "./infoParser";
+import SvnError from "./svnError";
+import { Repository } from "./svnRepository";
+import { dispose, IDisposable, toDisposable } from "./util";
+import isUtf8 = require("is-utf8");
 
-const isUtf8 = require("is-utf8");
-
-// List: https://github.com/apache/subversion/blob/1.6.x/subversion/svn/schema/status.rnc#L33
-export enum Status {
-  ADDED = "added",
-  CONFLICTED = "conflicted",
-  DELETED = "deleted",
-  EXTERNAL = "external",
-  IGNORED = "ignored",
-  INCOMPLETE = "incomplete",
-  MERGED = "merged",
-  MISSING = "missing",
-  MODIFIED = "modified",
-  NONE = "none",
-  NORMAL = "normal",
-  OBSTRUCTED = "obstructed",
-  REPLACED = "replaced",
-  UNVERSIONED = "unversioned"
-}
-
-export enum PropStatus {
-  CONFLICTED = "conflicted",
-  MODIFIED = "modified",
-  NONE = "none",
-  NORMAL = "normal"
-}
-
-export const SvnErrorCodes: { [key: string]: string } = {
+export const svnErrorCodes: { [key: string]: string } = {
   AuthorizationFailed: "E170001",
   RepositoryIsLocked: "E155004",
   NotASvnRepository: "E155007",
@@ -45,49 +18,21 @@ export const SvnErrorCodes: { [key: string]: string } = {
 };
 
 function getSvnErrorCode(stderr: string): string | undefined {
-  for (const name in SvnErrorCodes) {
-    const code = SvnErrorCodes[name];
-    const regex = new RegExp(`svn: ${code}`);
-    if (regex.test(stderr)) {
-      return code;
+  for (const name in svnErrorCodes) {
+    if (svnErrorCodes.hasOwnProperty(name)) {
+      const code = svnErrorCodes[name];
+      const regex = new RegExp(`svn: ${code}`);
+      if (regex.test(stderr)) {
+        return code;
+      }
     }
   }
 
   if (/No more credentials or we tried too many times/.test(stderr)) {
-    return SvnErrorCodes.AuthorizationFailed;
+    return svnErrorCodes.AuthorizationFailed;
   }
 
   return void 0;
-}
-
-export interface CpOptions extends SpawnOptions {
-  cwd?: string;
-  encoding?: string;
-  log?: boolean;
-  username?: string;
-  password?: string;
-}
-
-export interface ISvnErrorData {
-  error?: Error;
-  message?: string;
-  stdout?: string;
-  stderr?: string;
-  stderrFormated?: string;
-  exitCode?: number;
-  svnErrorCode?: string;
-  svnCommand?: string;
-}
-
-export interface ISvnOptions {
-  svnPath: string;
-  version: string;
-}
-
-export interface IExecutionResult {
-  exitCode: number;
-  stdout: string;
-  stderr: string;
 }
 
 export function cpErrorHandler(
@@ -104,57 +49,6 @@ export function cpErrorHandler(
 
     cb(err);
   };
-}
-
-export class SvnError {
-  error?: Error;
-  message: string;
-  stdout?: string;
-  stderr?: string;
-  stderrFormated?: string;
-  exitCode?: number;
-  svnErrorCode?: string;
-  svnCommand?: string;
-
-  constructor(data: ISvnErrorData) {
-    if (data.error) {
-      this.error = data.error;
-      this.message = data.error.message;
-    } else {
-      this.error = void 0;
-    }
-
-    this.message = data.message || "SVN error";
-    this.stdout = data.stdout;
-    this.stderr = data.stderr;
-    this.stderrFormated = data.stderrFormated;
-    this.exitCode = data.exitCode;
-    this.svnErrorCode = data.svnErrorCode;
-    this.svnCommand = data.svnCommand;
-  }
-
-  toString(): string {
-    let result =
-      this.message +
-      " " +
-      JSON.stringify(
-        {
-          exitCode: this.exitCode,
-          svnErrorCode: this.svnErrorCode,
-          svnCommand: this.svnCommand,
-          stdout: this.stdout,
-          stderr: this.stderr
-        },
-        null,
-        2
-      );
-
-    if (this.error) {
-      result += (<any>this.error).stack;
-    }
-
-    return result;
-  }
 }
 
 export class Svn {
@@ -176,10 +70,10 @@ export class Svn {
     this._onOutput.emit("log", output);
   }
 
-  async exec(
+  public async exec(
     cwd: string,
     args: any[],
-    options: CpOptions = {}
+    options: ICpOptions = {}
   ): Promise<IExecutionResult> {
     if (cwd) {
       this.lastCwd = cwd;
@@ -200,7 +94,7 @@ export class Svn {
       args.push("--password", options.password);
     }
 
-    let process = cp.spawn(this.svnPath, args, options);
+    const process = cp.spawn(this.svnPath, args, options);
 
     const disposables: IDisposable[] = [];
 
@@ -247,16 +141,16 @@ export class Svn {
 
     // SVN with '--xml' always return 'UTF-8', and jschardet detects this encoding: 'TIS-620'
     if (!args.includes("--xml")) {
-      const default_encoding = configuration.get<string>("default.encoding");
-      if (default_encoding) {
-        if (!iconv.encodingExists(default_encoding)) {
+      const defaultEncoding = configuration.get<string>("default.encoding");
+      if (defaultEncoding) {
+        if (!iconv.encodingExists(defaultEncoding)) {
           this.logOutput(
             "svn.default.encoding: Invalid Parameter: '" +
-              default_encoding +
+              defaultEncoding +
               "'.\n"
           );
         } else if (!isUtf8(stdout)) {
-          encoding = default_encoding;
+          encoding = defaultEncoding;
         }
       } else {
         jschardet.MacCyrillicModel.mTypicalPositiveRatio += 0.001;
@@ -282,10 +176,10 @@ export class Svn {
       return Promise.reject<IExecutionResult>(
         new SvnError({
           message: "Failed to execute svn",
-          stdout: stdout,
-          stderr: stderr,
+          stdout,
+          stderr,
           stderrFormated: stderr.replace(/^svn: E\d+: +/gm, ""),
-          exitCode: exitCode,
+          exitCode,
           svnErrorCode: getSvnErrorCode(stderr),
           svnCommand: args[0]
         })
@@ -295,7 +189,7 @@ export class Svn {
     return { exitCode, stdout, stderr };
   }
 
-  async getRepositoryRoot(path: string) {
+  public async getRepositoryRoot(path: string) {
     try {
       const result = await this.exec(path, ["info", "--xml"]);
 
@@ -313,7 +207,7 @@ export class Svn {
     }
   }
 
-  open(repositoryRoot: string, workspaceRoot: string): Repository {
+  public open(repositoryRoot: string, workspaceRoot: string): Repository {
     return new Repository(this, repositoryRoot, workspaceRoot);
   }
 }

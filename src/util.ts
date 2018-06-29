@@ -1,5 +1,6 @@
-import { Event, window, commands } from "vscode";
 import { sep } from "path";
+import { Event } from "vscode";
+import { Operation } from "./common/types";
 
 export interface IDisposable {
   dispose(): void;
@@ -8,7 +9,7 @@ export interface IDisposable {
 export function done<T>(promise: Promise<T>): Promise<void> {
   return promise.then<void>(() => void 0);
 }
-export function anyEvent<T>(...events: Event<T>[]): Event<T> {
+export function anyEvent<T>(...events: Array<Event<T>>): Event<T> {
   return (listener: any, thisArgs = null, disposables?: any) => {
     const result = combinedDisposable(
       events.map(event => event((i: any) => listener.call(thisArgs, i)))
@@ -98,41 +99,34 @@ export function isDescendant(parent: string, descendant: string): boolean {
 
 export function camelcase(name: string) {
   return name
-    .replace(/(?:^\w|[A-Z]|\b\w)/g, function(letter, index) {
+    .replace(/(?:^\w|[A-Z]|\b\w)/g, (letter, index) => {
       return index === 0 ? letter.toLowerCase() : letter.toUpperCase();
     })
     .replace(/[\s\-]+/g, "");
 }
 
-let hasDecorationProvider = false;
+const hasDecorationProvider = false;
 export function hasSupportToDecorationProvider() {
   return hasDecorationProvider;
 }
 
-try {
-  const fake = {
-    onDidChangeDecorations: (value: any): any => toDisposable(() => {}),
-    provideDecoration: (uri: any, token: any): any => {}
-  };
-  const disposable = window.registerDecorationProvider(fake);
-  hasDecorationProvider = true;
-  // disposable.dispose(); // Not dispose to prevent: Cannot read property 'provideDecoration' of undefined
-} catch (error) {}
-
-let hasRegisterDiffCommand = false;
+const hasRegisterDiffCommand = false;
 export function hasSupportToRegisterDiffCommand() {
   return hasRegisterDiffCommand;
 }
 
-try {
-  const disposable = commands.registerDiffInformationCommand(
-    "svn.testDiff",
-    () => {}
-  );
-  hasRegisterDiffCommand = true;
-  disposable.dispose();
-} catch (error) {}
-
 export function timeout(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+export function isReadOnly(operation: Operation): boolean {
+  switch (operation) {
+    case Operation.CurrentBranch:
+    case Operation.Log:
+    case Operation.NewCommits:
+    case Operation.Show:
+      return true;
+    default:
+      return false;
+  }
 }

@@ -1,14 +1,20 @@
-import { workspace, Uri } from "vscode";
-import { Svn, CpOptions, IExecutionResult, Status } from "./svn";
-import { IFileStatus, parseStatusXml } from "./statusParser";
-import { parseInfoXml, ISvnInfo } from "./infoParser";
-import { sequentialize } from "./decorators";
-import * as path from "path";
 import * as fs from "fs";
-import { fixPathSeparator } from "./util";
+import * as path from "path";
+import {
+  ICpOptions,
+  IExecutionResult,
+  IFileStatus,
+  ISvnInfo,
+  Status
+} from "./common/types";
+import { sequentialize } from "./decorators";
+import { getBranchName } from "./helpers/branch";
 import { configuration } from "./helpers/configuration";
+import { parseInfoXml } from "./infoParser";
 import { parseSvnList } from "./listParser";
-import { getBranchName } from "./branches";
+import { parseStatusXml } from "./statusParser";
+import { Svn } from "./svn";
+import { fixPathSeparator } from "./util";
 
 export class Repository {
   private _info: { [index: string]: ISvnInfo } = {};
@@ -22,9 +28,9 @@ export class Repository {
     public workspaceRoot: string
   ) {}
 
-  async exec(
+  public async exec(
     args: string[],
-    options: CpOptions = {}
+    options: ICpOptions = {}
   ): Promise<IExecutionResult> {
     options.username = this.username;
     options.password = this.password;
@@ -32,7 +38,7 @@ export class Repository {
     return this.svn.exec(this.workspaceRoot, args, options);
   }
 
-  removeAbsolutePath(file: string) {
+  public removeAbsolutePath(file: string) {
     file = fixPathSeparator(file);
 
     file = path.relative(this.workspaceRoot, file);
@@ -45,11 +51,11 @@ export class Repository {
     return file;
   }
 
-  async getStatus(
+  public async getStatus(
     includeIgnored: boolean = false,
     includeExternals: boolean = true
   ): Promise<IFileStatus[]> {
-    let args = ["stat", "--xml"];
+    const args = ["stat", "--xml"];
 
     if (includeIgnored) {
       args.push("--no-ignore");
@@ -67,19 +73,21 @@ export class Repository {
         try {
           const info = await this.getInfo(s.path);
           s.repositoryUuid = info.repository.uuid;
-        } catch (error) {}
+        } catch (error) {
+          console.error(error);
+        }
       }
     }
 
     return status;
   }
 
-  resetInfo(file: string = "") {
+  public resetInfo(file: string = "") {
     delete this._info[file];
   }
 
   @sequentialize
-  async getInfo(file: string = ""): Promise<ISvnInfo> {
+  public async getInfo(file: string = ""): Promise<ISvnInfo> {
     if (this._info[file]) {
       return this._info[file];
     }
@@ -103,10 +111,10 @@ export class Repository {
     return this._info[file];
   }
 
-  async show(
+  public async show(
     file: string,
     revision?: string,
-    options: CpOptions = {}
+    options: ICpOptions = {}
   ): Promise<string> {
     file = this.removeAbsolutePath(file);
     const args = ["cat", file];
@@ -120,7 +128,7 @@ export class Repository {
     return result.stdout;
   }
 
-  async commitFiles(message: string, files: string[]) {
+  public async commitFiles(message: string, files: string[]) {
     files = files.map(file => this.removeAbsolutePath(file));
 
     const args = ["commit", ...files];
@@ -140,22 +148,22 @@ export class Repository {
     return result.stdout;
   }
 
-  addFiles(files: string[]) {
+  public addFiles(files: string[]) {
     files = files.map(file => this.removeAbsolutePath(file));
     return this.exec(["add", ...files]);
   }
 
-  addChangelist(files: string[], changelist: string) {
+  public addChangelist(files: string[], changelist: string) {
     files = files.map(file => this.removeAbsolutePath(file));
     return this.exec(["changelist", changelist, ...files]);
   }
 
-  removeChangelist(files: string[]) {
+  public removeChangelist(files: string[]) {
     files = files.map(file => this.removeAbsolutePath(file));
     return this.exec(["changelist", "--remove", ...files]);
   }
 
-  async getCurrentBranch(): Promise<string> {
+  public async getCurrentBranch(): Promise<string> {
     const info = await this.getInfo();
 
     const branch = getBranchName(info.url);
@@ -172,13 +180,13 @@ export class Repository {
     return "";
   }
 
-  async getRepositoryUuid(): Promise<string> {
+  public async getRepositoryUuid(): Promise<string> {
     const info = await this.getInfo();
 
     return info.repository.uuid;
   }
 
-  async getRepoUrl() {
+  public async getRepoUrl() {
     const info = await this.getInfo();
 
     const branch = getBranchName(info.url);
@@ -187,27 +195,27 @@ export class Repository {
       return info.repository.root;
     }
 
-    let regex = new RegExp(branch.path + "$");
+    const regex = new RegExp(branch.path + "$");
 
     return info.url.replace(regex, "").replace(/\/$/, "");
   }
 
-  async getBranches() {
+  public async getBranches() {
     const trunkLayout = configuration.get<string>("layout.trunk");
     const branchesLayout = configuration.get<string>("layout.branches");
     const tagsLayout = configuration.get<string>("layout.tags");
 
     const repoUrl = await this.getRepoUrl();
 
-    let branches: string[] = [];
+    const branches: string[] = [];
 
-    let promises = [];
+    const promises = [];
 
     if (trunkLayout) {
       promises.push(
         new Promise<string[]>(async resolve => {
           try {
-            let trunkExists = await this.exec([
+            const trunkExists = await this.exec([
               "ls",
               repoUrl + "/" + trunkLayout,
               "--depth",
@@ -222,7 +230,7 @@ export class Repository {
       );
     }
 
-    let trees: string[] = [];
+    const trees: string[] = [];
 
     if (branchesLayout) {
       trees.push(branchesLayout);
@@ -263,7 +271,7 @@ export class Repository {
     return branches;
   }
 
-  async branch(name: string) {
+  public async branch(name: string) {
     const repoUrl = await this.getRepoUrl();
     const newBranch = repoUrl + "/" + name;
     const info = await this.getInfo();
@@ -281,7 +289,7 @@ export class Repository {
     return true;
   }
 
-  async switchBranch(ref: string) {
+  public async switchBranch(ref: string) {
     const repoUrl = await this.getRepoUrl();
 
     const branchUrl = repoUrl + "/" + ref;
@@ -297,13 +305,13 @@ export class Repository {
     return true;
   }
 
-  async revert(files: string[]) {
+  public async revert(files: string[]) {
     files = files.map(file => this.removeAbsolutePath(file));
     const result = await this.exec(["revert", ...files]);
     return result.stdout;
   }
 
-  async update(ignoreExternals: boolean = true): Promise<string> {
+  public async update(ignoreExternals: boolean = true): Promise<string> {
     const args = ["update"];
 
     if (ignoreExternals) {
@@ -325,20 +333,20 @@ export class Repository {
     return result.stdout;
   }
 
-  async patch(files: string[]) {
+  public async patch(files: string[]) {
     files = files.map(file => this.removeAbsolutePath(file));
     const result = await this.exec(["diff", ...files]);
     const message = result.stdout;
     return message;
   }
 
-  async patchChangelist(changelistName: string) {
+  public async patchChangelist(changelistName: string) {
     const result = await this.exec(["diff", "--changelist", changelistName]);
     const message = result.stdout;
     return message;
   }
 
-  async removeFiles(files: any[], keepLocal: boolean) {
+  public async removeFiles(files: any[], keepLocal: boolean) {
     files = files.map(file => this.removeAbsolutePath(file));
     const args = ["remove"];
 
@@ -353,7 +361,7 @@ export class Repository {
     return result.stdout;
   }
 
-  async resolve(files: string[], action: string) {
+  public async resolve(files: string[], action: string) {
     files = files.map(file => this.removeAbsolutePath(file));
 
     const result = await this.exec(["resolve", "--accept", action, ...files]);
@@ -361,7 +369,7 @@ export class Repository {
     return result.stdout;
   }
 
-  async log() {
+  public async log() {
     const logLength = configuration.get<string>("log.length") || "50";
     const result = await this.exec([
       "log",
@@ -374,7 +382,7 @@ export class Repository {
     return result.stdout;
   }
 
-  async countNewCommit(revision: string = "BASE:HEAD") {
+  public async countNewCommit(revision: string = "BASE:HEAD") {
     const result = await this.exec(["log", "-r", revision, "-q", "--xml"]);
 
     const matches = result.stdout.match(/<logentry/g);
@@ -387,13 +395,13 @@ export class Repository {
     return 0;
   }
 
-  async cleanup() {
+  public async cleanup() {
     const result = await this.exec(["cleanup"]);
 
     return result.stdout;
   }
 
-  async finishCheckout() {
+  public async finishCheckout() {
     const info = await this.getInfo();
 
     const result = await this.exec(["switch", info.url]);
@@ -401,7 +409,7 @@ export class Repository {
     return result.stdout;
   }
 
-  async list(folder?: string) {
+  public async list(folder?: string) {
     let url = await this.getRepoUrl();
 
     if (folder) {
@@ -413,7 +421,7 @@ export class Repository {
     return parseSvnList(result.stdout);
   }
 
-  async getCurrentIgnore(directory: string) {
+  public async getCurrentIgnore(directory: string) {
     directory = this.removeAbsolutePath(directory);
 
     let currentIgnore = "";
@@ -428,14 +436,16 @@ export class Repository {
       const currentIgnoreResult = await this.exec(args);
 
       currentIgnore = currentIgnoreResult.stdout.trim();
-    } catch (error) {}
+    } catch (error) {
+      console.error(error);
+    }
 
     const ignores = currentIgnore.split(/[\r\n]+/);
 
     return ignores;
   }
 
-  async addToIgnore(
+  public async addToIgnore(
     expressions: string[],
     directory: string,
     recursive: boolean = false
@@ -466,7 +476,7 @@ export class Repository {
     return result.stdout;
   }
 
-  async rename(oldName: string, newName: string): Promise<string> {
+  public async rename(oldName: string, newName: string): Promise<string> {
     oldName = this.removeAbsolutePath(oldName);
     newName = this.removeAbsolutePath(newName);
     const args = ["rename", oldName, newName];

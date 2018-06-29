@@ -1,3 +1,5 @@
+/* tslint:disable */
+
 //
 // Note: This example test is leveraging the Mocha test framework.
 // Please refer to their documentation on https://mochajs.org/ for help.
@@ -10,24 +12,11 @@ import * as assert from "assert";
 // as well as import your extension to test it
 import * as fs from "fs";
 import * as path from "path";
-import * as vscode from "vscode";
-import * as testUtil from "./testUtil";
-import {
-  Uri,
-  commands,
-  workspace,
-  window,
-  InputBoxOptions,
-  CancellationToken,
-  QuickPickOptions,
-  QuickPickItem
-} from "vscode";
-import { Svn } from "../svn";
+import { commands, Uri } from "vscode";
+import { ISvnResourceGroup } from "../common/types";
 import { Model } from "../model";
-import { SvnFinder, ISvn } from "../svnFinder";
 import { Repository } from "../repository";
-import { timeout } from "../util";
-import { SvnResourceGroup } from "../resource";
+import * as testUtil from "./testUtil";
 
 // Defines a Mocha test suite to group tests of similar kind together
 suite("Commands Tests", () => {
@@ -144,7 +133,7 @@ suite("Commands Tests", () => {
 
     const group = repository.changelists.get(
       "changelist-test"
-    ) as SvnResourceGroup;
+    ) as ISvnResourceGroup;
     const resource = group.resourceStates[0];
 
     testUtil.overrideNextShowQuickPick(3);

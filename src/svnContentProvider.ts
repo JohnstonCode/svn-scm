@@ -1,31 +1,28 @@
 import {
-  workspace,
-  Uri,
-  TextDocumentContentProvider,
-  EventEmitter,
-  Event,
   Disposable,
-  window
+  Event,
+  EventEmitter,
+  TextDocumentContentProvider,
+  Uri,
+  window,
+  workspace
 } from "vscode";
-import { Model, ModelChangeEvent, OriginalResourceChangeEvent } from "./model";
-import { toSvnUri, fromSvnUri, SvnUriAction } from "./uri";
-import { throttle, debounce } from "./decorators";
 import {
-  filterEvent,
+  ICache,
+  ICacheRow,
+  IModelChangeEvent,
+  SvnUriAction
+} from "./common/types";
+import { debounce, throttle } from "./decorators";
+import { Model } from "./model";
+import { fromSvnUri } from "./uri";
+import {
   eventToPromise,
+  filterEvent,
+  IDisposable,
   isDescendant,
-  toDisposable,
-  IDisposable
+  toDisposable
 } from "./util";
-
-interface CacheRow {
-  uri: Uri;
-  timestamp: number;
-}
-
-interface Cache {
-  [uri: string]: CacheRow;
-}
 
 const THREE_MINUTES = 1000 * 60 * 3;
 const FIVE_MINUTES = 1000 * 60 * 5;
@@ -38,7 +35,7 @@ export class SvnContentProvider
   }
 
   private changedRepositoryRoots = new Set<string>();
-  private cache: Cache = Object.create(null);
+  private cache: ICache = Object.create(null);
   private disposables: Disposable[] = [];
 
   constructor(private model: Model) {
@@ -51,7 +48,7 @@ export class SvnContentProvider
     this.disposables.push(toDisposable(() => clearInterval(interval)));
   }
 
-  private onDidChangeRepository({ repository }: ModelChangeEvent): void {
+  private onDidChangeRepository({ repository }: IModelChangeEvent): void {
     this.changedRepositoryRoots.add(repository.root);
     this.eventuallyFireChangeEvents();
   }
@@ -86,7 +83,7 @@ export class SvnContentProvider
     this.changedRepositoryRoots.clear();
   }
 
-  async provideTextDocumentContent(uri: Uri): Promise<string> {
+  public async provideTextDocumentContent(uri: Uri): Promise<string> {
     try {
       const { fsPath, action, extra } = fromSvnUri(uri);
 
@@ -98,7 +95,7 @@ export class SvnContentProvider
 
       const cacheKey = uri.toString();
       const timestamp = new Date().getTime();
-      const cacheValue: CacheRow = { uri, timestamp };
+      const cacheValue: ICacheRow = { uri, timestamp };
 
       this.cache[cacheKey] = cacheValue;
 
@@ -112,7 +109,9 @@ export class SvnContentProvider
       if (action === SvnUriAction.PATCH) {
         return await repository.patch([fsPath]);
       }
-    } catch (error) {}
+    } catch (error) {
+      console.error(error);
+    }
     return "";
   }
 
@@ -135,7 +134,7 @@ export class SvnContentProvider
     this.cache = cache;
   }
 
-  dispose(): void {
+  public dispose(): void {
     this.disposables.forEach(d => d.dispose());
   }
 }
