@@ -65,7 +65,7 @@ export class SvnStatusBar {
       tooltip = "Run update to complete";
       command = "svn.finishCheckout";
     } else if (this.repository.remoteChangedFiles > 0) {
-      title = `${this.repository.remoteChangedFiles} remote changed files`;
+      title = `${this.repository.remoteChangedFiles} remote changes`;
     }
 
     result.push({
