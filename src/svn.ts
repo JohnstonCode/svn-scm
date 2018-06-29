@@ -1,6 +1,7 @@
 import * as cp from "child_process";
 import { EventEmitter } from "events";
 import * as iconv from "iconv-lite";
+import isUtf8 = require("is-utf8");
 import * as jschardet from "jschardet";
 import { ICpOptions, IExecutionResult, ISvnOptions } from "./common/types";
 import { configuration } from "./helpers/configuration";
@@ -8,7 +9,6 @@ import { parseInfoXml } from "./infoParser";
 import SvnError from "./svnError";
 import { Repository } from "./svnRepository";
 import { dispose, IDisposable, toDisposable } from "./util";
-import isUtf8 = require("is-utf8");
 
 export const svnErrorCodes: { [key: string]: string } = {
   AuthorizationFailed: "E170001",
@@ -116,7 +116,7 @@ export class Svn {
       disposables.push(toDisposable(() => ee.removeListener(name, fn)));
     };
 
-    let [exitCode, stdout, stderr] = await Promise.all<any>([
+    const [exitCode, stdout, stderr] = await Promise.all<any>([
       new Promise<number>((resolve, reject) => {
         once(process, "error", reject);
         once(process, "exit", resolve);
@@ -166,7 +166,7 @@ export class Svn {
       }
     }
 
-    stdout = iconv.decode(stdout, encoding);
+    const decodedStdout = iconv.decode(stdout, encoding);
 
     if (options.log !== false && stderr.length > 0) {
       this.logOutput(`${stderr}\n`);
@@ -176,7 +176,7 @@ export class Svn {
       return Promise.reject<IExecutionResult>(
         new SvnError({
           message: "Failed to execute svn",
-          stdout,
+          stdout: decodedStdout,
           stderr,
           stderrFormated: stderr.replace(/^svn: E\d+: +/gm, ""),
           exitCode,

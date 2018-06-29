@@ -7,6 +7,7 @@ import {
   window
 } from "vscode";
 import { SvnCommands } from "./commands";
+import SvnDecorations from "./decorations/svnDecorations";
 import { configuration } from "./helpers/configuration";
 import { Model } from "./model";
 import { Svn } from "./svn";
@@ -17,7 +18,6 @@ import {
   hasSupportToRegisterDiffCommand,
   toDisposable
 } from "./util";
-import SvnDecorations from "./decorations/svnDecorations";
 
 async function init(
   context: ExtensionContext,
