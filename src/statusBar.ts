@@ -64,8 +64,8 @@ export class SvnStatusBar {
       title = "Incomplete (Need finish checkout)";
       tooltip = "Run update to complete";
       command = "svn.finishCheckout";
-    } else if (this.repository.newCommit > 0) {
-      title = `${this.repository.newCommit} new commits`;
+    } else if (this.repository.remoteChangedFiles > 0) {
+      title = `${this.repository.remoteChangedFiles} remote changed files`;
     }
 
     result.push({

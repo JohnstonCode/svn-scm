@@ -1,43 +1,10 @@
 import * as xml2js from "xml2js";
+import { IEntry, IFileStatus } from "./common/types";
 import { camelcase } from "./util";
 
 interface IWcStatus {
   locked: boolean;
   switched: boolean;
-}
-
-export interface IFileStatus {
-  status: string;
-  props: string;
-  path: string;
-  changelist?: string;
-  rename?: string;
-  wcStatus: IWcStatus;
-  commit?: {
-    revision: string;
-    author: string;
-    date: string;
-  };
-  repositoryUuid?: string;
-  [key: number]: IFileStatus;
-}
-
-export interface IEntry {
-  path: string;
-  wcStatus: {
-    item: string;
-    revision: string;
-    props: string;
-    movedTo?: string;
-    movedFrom?: string;
-    wcLocked?: string;
-    switched?: string;
-    commit: {
-      revision: string;
-      author: string;
-      date: string;
-    };
-  };
 }
 
 function processEntry(
@@ -65,7 +32,8 @@ function processEntry(
     path: entry.path,
     status: entry.wcStatus.item,
     props: entry.wcStatus.props,
-    wcStatus
+    wcStatus,
+    reposStatus: entry.reposStatus
   };
 
   if (entry.wcStatus.movedTo && r.status === "deleted") {
