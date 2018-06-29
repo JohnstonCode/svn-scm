@@ -1,5 +1,5 @@
 import { sep } from "path";
-import { Event } from "vscode";
+import { commands, Event, window } from "vscode";
 import { Operation } from "./common/types";
 
 export interface IDisposable {
@@ -105,15 +105,36 @@ export function camelcase(name: string) {
     .replace(/[\s\-]+/g, "");
 }
 
-const hasDecorationProvider = false;
+/* tslint:disable:no-empty */
+
+let hasDecorationProvider = true;
 export function hasSupportToDecorationProvider() {
   return hasDecorationProvider;
 }
 
-const hasRegisterDiffCommand = false;
+try {
+  const fake = {
+    onDidChangeDecorations: (value: any): any => toDisposable(() => {}),
+    provideDecoration: (uri: any, token: any): any => {}
+  };
+  const disposable = window.registerDecorationProvider(fake);
+  hasDecorationProvider = true;
+  // disposable.dispose(); // Not dispose to prevent: Cannot read property 'provideDecoration' of undefined
+} catch (error) {}
+
+let hasRegisterDiffCommand = false;
 export function hasSupportToRegisterDiffCommand() {
   return hasRegisterDiffCommand;
 }
+
+try {
+  const disposable = commands.registerDiffInformationCommand(
+    "svn.testDiff",
+    () => {}
+  );
+  hasRegisterDiffCommand = true;
+  disposable.dispose();
+} catch (error) {}
 
 export function timeout(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
