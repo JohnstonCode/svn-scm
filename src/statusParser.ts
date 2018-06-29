@@ -27,8 +27,7 @@ function processEntry(
     path: entry.path,
     status: entry.wcStatus.item,
     props: entry.wcStatus.props,
-    wcStatus,
-    reposStatus: entry.reposStatus
+    wcStatus
   };
 
   if (entry.wcStatus.movedTo && r.status === "deleted") {

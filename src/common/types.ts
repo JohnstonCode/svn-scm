@@ -91,6 +91,7 @@ export enum Operation {
   Ignore = "Ignore",
   Log = "Log",
   NewBranch = "NewBranch",
+  NewCommits = "NewCommits",
   Patch = "Patch",
   Remove = "Remove",
   RemoveChangelist = "RemoveChangelist",
@@ -100,7 +101,6 @@ export enum Operation {
   Revert = "Revert",
   Show = "Show",
   Status = "Status",
-  StatusRemote = "StatusRemote",
   SwitchBranch = "SwitchBranch",
   Update = "Update"
 }
@@ -127,10 +127,6 @@ export interface IFileStatus {
     date: string;
   };
   repositoryUuid?: string;
-  reposStatus?: {
-    props: string;
-    item: string;
-  };
   [key: number]: IFileStatus;
 }
 
@@ -149,10 +145,6 @@ export interface IEntry {
       author: string;
       date: string;
     };
-  };
-  reposStatus?: {
-    props: string;
-    item: string;
   };
 }
 

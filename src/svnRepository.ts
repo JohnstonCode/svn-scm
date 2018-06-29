@@ -51,31 +51,17 @@ export class Repository {
     return file;
   }
 
-  public async getStatus(params: {
-    includeIgnored?: boolean;
-    includeExternals?: boolean;
-    checkRemoteChanges?: boolean;
-  }): Promise<IFileStatus[]> {
-    params = Object.assign(
-      {},
-      {
-        includeIgnored: false,
-        includeExternals: true,
-        checkRemoteChanges: false
-      },
-      params
-    );
-
+  public async getStatus(
+    includeIgnored: boolean = false,
+    includeExternals: boolean = true
+  ): Promise<IFileStatus[]> {
     const args = ["stat", "--xml"];
 
-    if (params.includeIgnored) {
+    if (includeIgnored) {
       args.push("--no-ignore");
     }
-    if (!params.includeExternals) {
+    if (!includeExternals) {
       args.push("--ignore-externals");
-    }
-    if (params.checkRemoteChanges) {
-      args.push("--show-updates");
     }
 
     const result = await this.exec(args);
