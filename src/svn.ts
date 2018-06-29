@@ -186,7 +186,7 @@ export class Svn {
       );
     }
 
-    return { exitCode, stdout, stderr };
+    return { exitCode, stdout: decodedStdout, stderr };
   }
 
   public async getRepositoryRoot(path: string) {
