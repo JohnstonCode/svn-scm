@@ -28,7 +28,7 @@
     "test": "node ./node_modules/vscode/bin/test",
     "prettier": "prettier --no-config --list-different 'src/**/*.ts'",
     "tools:genReadme": "node ./out/tools/generateConfigSectionForReadme.js",
-    "precommit": "pretty-quick --staged",
+    "precommit": "pretty-quick --staged && npm run lint",
     "lint": "tslint -p ./"
   },
   "dependencies": {
