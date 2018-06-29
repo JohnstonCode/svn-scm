@@ -1,22 +1,6 @@
 import * as xml2js from "xml2js";
 import { xml2jsParseSettings } from "./common/constants";
-import { camelcase } from "./util";
-
-export enum SvnKindType {
-  FILE = "file",
-  DIR = "dir"
-}
-
-export interface ISvnListItem {
-  kind: SvnKindType;
-  name: string;
-  size: string;
-  commit: {
-    revision: string;
-    author: string;
-    date: string;
-  };
-}
+import { ISvnListItem } from "./common/types";
 
 export async function parseSvnList(content: string): Promise<ISvnListItem[]> {
   return new Promise<ISvnListItem[]>((resolve, reject) => {

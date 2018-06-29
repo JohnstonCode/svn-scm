@@ -1,3 +1,5 @@
+import { camelcase } from "../util";
+
 export const xml2jsParseSettings = {
   mergeAttrs: true,
   explicitRoot: false,
