@@ -379,7 +379,7 @@ export class SvnCommands implements IDisposable {
     const preview = uris.length === 1 ? true : false;
     const activeTextEditor = window.activeTextEditor;
     for (const uri of uris) {
-      if (fs.statSync(uri.fsPath).isDirectory()) {
+      if (fs.existsSync(uri.fsPath) && fs.statSync(uri.fsPath).isDirectory()) {
         continue;
       }
 
@@ -505,9 +505,13 @@ export class SvnCommands implements IDisposable {
     preserveFocus?: boolean,
     preserveSelection?: boolean
   ): Promise<void> {
-    const left = this.getLeftResource(resource, against);
-    const right = this.getRightResource(resource, against);
+    let left = this.getLeftResource(resource, against);
+    let right = this.getRightResource(resource, against);
     const title = this.getTitle(resource, against);
+
+    if (resource.remote && left) {
+      [left, right] = [right, left];
+    }
 
     if (!right) {
       // TODO
@@ -555,6 +559,15 @@ export class SvnCommands implements IDisposable {
     resource: Resource,
     against: string = ""
   ): Uri | undefined {
+    if (resource.remote) {
+      if (resource.type !== Status.DELETED) {
+        return toSvnUri(resource.resourceUri, SvnUriAction.SHOW, {
+          ref: against
+        });
+      }
+      return;
+    }
+
     if (resource.type === Status.ADDED && resource.renameResourceUri) {
       return toSvnUri(resource.renameResourceUri, SvnUriAction.SHOW, {
         ref: against
@@ -590,6 +603,12 @@ export class SvnCommands implements IDisposable {
     resource: Resource,
     against: string = ""
   ): Uri | undefined {
+    if (resource.remote) {
+      if (resource.type !== Status.ADDED) {
+        return resource.resourceUri;
+      }
+      return;
+    }
     switch (resource.type) {
       case Status.ADDED:
       case Status.CONFLICTED:

@@ -418,7 +418,7 @@
         {
           "command": "svn.patch",
           "when":
-            "config.svn.enabled && scmProvider == svn && scmResourceGroup != unversioned && scmResourceGroup != external && scmResourceGroup != conflicts",
+            "config.svn.enabled && scmProvider == svn && scmResourceGroup != unversioned && scmResourceGroup != external && scmResourceGroup != conflicts && scmResourceGroup != remotechanged",
           "group": "navigation"
         },
         {
@@ -436,31 +436,31 @@
         {
           "command": "svn.changelist",
           "when":
-            "config.svn.enabled && scmProvider == svn && scmResourceGroup != unversioned && scmResourceGroup != external && scmResourceGroup != conflicts",
+            "config.svn.enabled && scmProvider == svn && scmResourceGroup != unversioned && scmResourceGroup != external && scmResourceGroup != conflicts && scmResourceGroup != remotechanged",
           "group": "inline"
         },
         {
           "command": "svn.changelist",
           "when":
-            "config.svn.enabled && scmProvider == svn && scmResourceGroup != unversioned && scmResourceGroup != external && scmResourceGroup != conflicts",
+            "config.svn.enabled && scmProvider == svn && scmResourceGroup != unversioned && scmResourceGroup != external && scmResourceGroup != conflicts && scmResourceGroup != remotechanged",
           "group": "1_modification"
         },
         {
           "command": "svn.commit",
           "when":
-            "config.svn.enabled && scmProvider == svn && scmResourceGroup != unversioned && scmResourceGroup != external && scmResourceGroup != conflicts",
+            "config.svn.enabled && scmProvider == svn && scmResourceGroup != unversioned && scmResourceGroup != external && scmResourceGroup != conflicts && scmResourceGroup != remotechanged",
           "group": "1_modification"
         },
         {
           "command": "svn.revert",
           "when":
-            "config.svn.enabled && scmProvider == svn && scmResourceGroup != unversioned && scmResourceGroup != external && scmResourceGroup != conflicts",
+            "config.svn.enabled && scmProvider == svn && scmResourceGroup != unversioned && scmResourceGroup != external && scmResourceGroup != conflicts && scmResourceGroup != remotechanged",
           "group": "2_modification"
         },
         {
           "command": "svn.remove",
           "when":
-            "config.svn.enabled && scmProvider == svn && scmResourceGroup != unversioned && scmResourceGroup != external && scmResourceGroup != conflicts",
+            "config.svn.enabled && scmProvider == svn && scmResourceGroup != unversioned && scmResourceGroup != external && scmResourceGroup != conflicts && scmResourceGroup != remotechanged",
           "group": "2_modification"
         },
         {
@@ -668,10 +668,10 @@
           "description": "Show the update message when update is run",
           "default": true
         },
-        "svn.newCommits.checkFrequency": {
+        "svn.remoteChanges.checkFrequency": {
           "type": "number",
           "description":
-            "Set the interval in seconds to check new commits on remote repository and show in statusbar. 0 to disable",
+            "Set the interval in seconds to check changed files on remote repository and show in statusbar. 0 to disable",
           "default": 300
         }
       }
