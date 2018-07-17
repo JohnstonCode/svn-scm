@@ -51,17 +51,31 @@ export class Repository {
     return file;
   }
 
-  public async getStatus(
-    includeIgnored: boolean = false,
-    includeExternals: boolean = true
-  ): Promise<IFileStatus[]> {
+  public async getStatus(params: {
+    includeIgnored?: boolean;
+    includeExternals?: boolean;
+    checkRemoteChanges?: boolean;
+  }): Promise<IFileStatus[]> {
+    params = Object.assign(
+      {},
+      {
+        includeIgnored: false,
+        includeExternals: true,
+        checkRemoteChanges: false
+      },
+      params
+    );
+
     const args = ["stat", "--xml"];
 
-    if (includeIgnored) {
+    if (params.includeIgnored) {
       args.push("--no-ignore");
     }
-    if (!includeExternals) {
+    if (!params.includeExternals) {
       args.push("--ignore-externals");
+    }
+    if (params.checkRemoteChanges) {
+      args.push("--show-updates");
     }
 
     const result = await this.exec(args);
@@ -117,10 +131,20 @@ export class Repository {
     options: ICpOptions = {}
   ): Promise<string> {
     file = this.removeAbsolutePath(file);
-    const args = ["cat", file];
+    const args = ["cat"];
 
     if (revision) {
-      args.push("-r", revision);
+      if (!["BASE", "COMMITTED", "PREV"].includes(revision.toUpperCase())) {
+        const info = await this.getInfo();
+
+        args.push(info.url + "/" + file.replace(/\\/g, "/"));
+        args.push("-r", revision);
+      } else {
+        args.push(file);
+        args.push("-r", revision);
+      }
+    } else {
+      args.push(file);
     }
 
     const result = await this.exec(args);

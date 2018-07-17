@@ -48,7 +48,8 @@ export class Resource implements SourceControlResourceState {
     private _resourceUri: Uri,
     private _type: string,
     private _renameResourceUri?: Uri,
-    private _props?: string
+    private _props?: string,
+    private _remote: boolean = false
   ) {}
 
   @memoize
@@ -65,6 +66,10 @@ export class Resource implements SourceControlResourceState {
   }
   get props(): string | undefined {
     return this._props;
+  }
+
+  get remote(): boolean {
+    return this._remote;
   }
 
   get decorations(): SourceControlResourceDecorations {
@@ -100,7 +105,7 @@ export class Resource implements SourceControlResourceState {
   get command(): Command {
     const diffHead = configuration.get<boolean>("diff.withHead", true);
 
-    if (diffHead) {
+    if (this.remote || diffHead) {
       return {
         command: "svn.openResourceHead",
         title: "Open Diff With Head",
