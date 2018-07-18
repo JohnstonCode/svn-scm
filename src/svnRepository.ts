@@ -162,6 +162,9 @@ export class Repository {
     }
     args.push("-m", message);
 
+    // Prevents commit the files inside the folder
+    args.push("--depth", "empty");
+
     const result = await this.exec(args);
 
     const matches = result.stdout.match(/Committed revision (.*)\./i);
