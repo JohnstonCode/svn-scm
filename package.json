@@ -56,6 +56,14 @@
     "vscode": "^1.1.17"
   },
   "contributes": {
+    "views": {
+      "explorer": [
+        {
+          "id": "incommingChanges",
+          "name": "Incoming Changes"
+        }
+      ]
+    },
     "commands": [
       {
         "command": "svn.add",

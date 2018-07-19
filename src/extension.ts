@@ -4,7 +4,8 @@ import {
   ExtensionContext,
   OutputChannel,
   Uri,
-  window
+  window,
+  workspace
 } from "vscode";
 import { SvnCommands } from "./commands";
 import SvnDecorations from "./decorations/svnDecorations";
@@ -18,6 +19,7 @@ import {
   hasSupportToRegisterDiffCommand,
   toDisposable
 } from "./util";
+import { DepNodeProvider } from "./treeView/incommingChangesDataProvider";
 
 async function init(
   context: ExtensionContext,
@@ -35,6 +37,11 @@ async function init(
   const contentProvider = new SvnContentProvider(model);
   const svnCommands = new SvnCommands(model);
   disposables.push(model, contentProvider, svnCommands);
+
+  const rootPath = workspace.rootPath;
+  const incommingChangesProvider = new DepNodeProvider(rootPath);
+
+  window.registerTreeDataProvider("incommingChanges", incommingChangesProvider);
 
   // First, check the vscode has support to DecorationProvider
   if (hasSupportToDecorationProvider()) {
