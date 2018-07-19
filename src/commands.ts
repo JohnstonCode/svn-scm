@@ -169,6 +169,17 @@ export class SvnCommands implements IDisposable {
         if (state.type === Status.ADDED && state.renameResourceUri) {
           filePaths.push(state.renameResourceUri.fsPath);
         }
+
+        let dir = path.dirname(state.resourceUri.fsPath);
+        let parent = repository.getResourceFromFile(dir);
+
+        while (parent) {
+          if (parent.type === Status.ADDED) {
+            filePaths.push(dir);
+          }
+          dir = path.dirname(dir);
+          parent = repository.getResourceFromFile(dir);
+        }
       }
     });
 
@@ -306,6 +317,19 @@ export class SvnCommands implements IDisposable {
       }
 
       const paths = resources.map(resource => resource.fsPath);
+
+      for (const resource of resources) {
+        let dir = path.dirname(resource.fsPath);
+        let parent = repository.getResourceFromFile(dir);
+
+        while (parent) {
+          if (parent.type === Status.ADDED) {
+            paths.push(dir);
+          }
+          dir = path.dirname(dir);
+          parent = repository.getResourceFromFile(dir);
+        }
+      }
 
       try {
         const message = await inputCommitMessage(repository.inputBox.value);
