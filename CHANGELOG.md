@@ -1,3 +1,14 @@
+# **v1.30.0**
+
+## What's New
+
+* @edgardmessias Added incoming changes resource group
+* @edgardmessias extension now uses the file.encoding by default
+
+## Bug Fixes
+
+* @edgardmessias Fixed commit new files/folders from changelist
+
 # **v1.29.6**
 
 ## Bug Fixes
