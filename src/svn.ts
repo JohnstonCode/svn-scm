@@ -3,7 +3,7 @@ import { EventEmitter } from "events";
 import * as iconv from "iconv-lite";
 import isUtf8 = require("is-utf8");
 import * as jschardet from "jschardet";
-import { workspace } from "vscode";
+import { workspace, Uri } from "vscode";
 import { ICpOptions, IExecutionResult, ISvnOptions } from "./common/types";
 import { configuration } from "./helpers/configuration";
 import { parseInfoXml } from "./infoParser";
@@ -139,7 +139,7 @@ export class Svn {
     dispose(disposables);
 
     let encoding = workspace
-      .getConfiguration("files")
+      .getConfiguration("files", Uri.file(cwd))
       .get<string>("encoding", "utf8");
 
     // SVN with '--xml' always return 'UTF-8', and jschardet detects this encoding: 'TIS-620'

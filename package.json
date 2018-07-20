@@ -29,7 +29,8 @@
     "prettier": "prettier --no-config --list-different 'src/**/*.ts'",
     "tools:genReadme": "node ./out/tools/generateConfigSectionForReadme.js",
     "precommit": "pretty-quick --staged && npm run lint",
-    "lint": "tslint -p ./"
+    "lint": "tslint -p ./",
+    "lint:fix": "tslint -p --fix ./"
   },
   "dependencies": {
     "iconv-lite": "^0.4.23",
@@ -59,8 +60,8 @@
     "views": {
       "explorer": [
         {
-          "id": "incommingChanges",
-          "name": "Incoming Changes"
+          "id": "svn",
+          "name": "SVN"
         }
       ]
     },
