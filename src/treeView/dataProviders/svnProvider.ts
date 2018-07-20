@@ -1,8 +1,8 @@
 import {
   TreeDataProvider,
-  window,
   TreeItem,
-  TreeItemCollapsibleState
+  TreeItemCollapsibleState,
+  window
 } from "vscode";
 import { Model } from "../../model";
 import RepositoryNode from "../nodes/repositoryNode";

@@ -14,12 +14,12 @@ import { Model } from "./model";
 import { Svn } from "./svn";
 import { SvnContentProvider } from "./svnContentProvider";
 import { SvnFinder } from "./svnFinder";
+import SvnProvider from "./treeView/dataProviders/svnProvider";
 import {
   hasSupportToDecorationProvider,
   hasSupportToRegisterDiffCommand,
   toDisposable
 } from "./util";
-import SvnProvider from "./treeView/dataProviders/svnProvider";
 
 async function init(
   context: ExtensionContext,

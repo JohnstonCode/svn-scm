@@ -1,7 +1,7 @@
 import * as path from "path";
-import { TreeItem, TreeDataProvider, TreeItemCollapsibleState } from "vscode";
-import BaseNode from "./baseNode";
+import { TreeDataProvider, TreeItem, TreeItemCollapsibleState } from "vscode";
 import { getIconUri } from "../../uri";
+import BaseNode from "./baseNode";
 
 export default class RepositoryNode implements TreeDataProvider<BaseNode> {
   constructor(private _label: string) {}
