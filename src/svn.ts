@@ -95,6 +95,9 @@ export class Svn {
       args.push("--password", options.password);
     }
 
+    let encoding = options.encoding || "utf8";
+    delete options.encoding;
+
     const process = cp.spawn(this.svnPath, args, options);
 
     const disposables: IDisposable[] = [];
@@ -137,10 +140,6 @@ export class Svn {
     ]);
 
     dispose(disposables);
-
-    let encoding = workspace
-      .getConfiguration("files")
-      .get<string>("encoding", "utf8");
 
     // SVN with '--xml' always return 'UTF-8', and jschardet detects this encoding: 'TIS-620'
     if (args.includes("--xml")) {
