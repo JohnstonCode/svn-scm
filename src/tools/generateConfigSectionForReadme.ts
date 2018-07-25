@@ -6,7 +6,7 @@ import { cwd } from "process";
 
 const packageJsonPath: string = join(cwd(), "package.json");
 const packageJson = JSON.parse(
-  readFileSync(packageJsonPath, { encoding: "utf8" })
+  readFileSync(packageJsonPath, { encoding: "utf8" });
 );
 const properties = packageJson.contributes.configuration.properties;
 
