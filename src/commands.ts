@@ -1193,6 +1193,46 @@ export class SvnCommands implements IDisposable {
     await repository.rename(oldFile, newName);
   }
 
+  @command("svn.upgrade")
+  public async upgrade(folderPath: string): Promise<void> {
+    if (!folderPath) {
+      return;
+    }
+
+    if (configuration.get("ignoreWorkingCopyIsTooOld", false)) {
+      return;
+    }
+
+    folderPath = fixPathSeparator(folderPath);
+
+    const yes = "Yes";
+    const no = "No";
+    const neverShowAgain = "Don't Show Again";
+    const choice = await window.showWarningMessage(
+      "You want upgrade the working copy (svn upgrade)?",
+      yes,
+      no,
+      neverShowAgain
+    );
+
+    if (choice === yes) {
+      const upgraded = await this.model.upgradeWorkingCopy(folderPath);
+
+      if (upgraded) {
+        window.showInformationMessage(`Working copy "${folderPath}" upgraded`);
+        this.model.tryOpenRepository(folderPath);
+      } else {
+        window.showErrorMessage(
+          `Error on upgrading working copy "${folderPath}". See log for more detail`
+        );
+      }
+    } else if (choice === neverShowAgain) {
+      return configuration.update("ignoreWorkingCopyIsTooOld", true);
+    }
+
+    return;
+  }
+
   private getSCMResource(uri?: Uri): Resource | undefined {
     uri = uri
       ? uri
