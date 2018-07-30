@@ -18,7 +18,7 @@ export class IgnoreSingleItem implements QuickPickItem {
 
 export async function inputIgnoreList(repository: Repository, uris: Uri[]) {
   if (uris.length === 0) {
-    return;
+    return false;
   }
 
   const regexExtension = new RegExp("\\.[^\\.]+(\\.map)?$", "i");
@@ -43,7 +43,7 @@ export async function inputIgnoreList(repository: Repository, uris: Uri[]) {
     const pick = await window.showQuickPick(picks);
 
     if (!pick) {
-      return;
+      return false;
     }
 
     return repository.addToIgnore([pick.expression], dirName, pick.recursive);
@@ -67,7 +67,7 @@ export async function inputIgnoreList(repository: Repository, uris: Uri[]) {
   const pick = await window.showQuickPick(picks);
 
   if (!pick) {
-    return;
+    return false;
   }
 
   const isByFile = pick.startsWith(ignoreByFileName);
@@ -98,4 +98,6 @@ export async function inputIgnoreList(repository: Repository, uris: Uri[]) {
       await repository.addToIgnore(files, dir, isRecursive);
     }
   }
+
+  return true;
 }

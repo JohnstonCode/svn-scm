@@ -1142,9 +1142,11 @@ export class SvnCommands implements IDisposable {
       }
 
       try {
-        await inputIgnoreList(repository, resources);
+        const ignored = await inputIgnoreList(repository, resources);
 
-        window.showInformationMessage(`File(s) is now being ignored`);
+        if (ignored) {
+          window.showInformationMessage(`File(s) is now being ignored`);
+        }
       } catch (error) {
         console.log(error);
         window.showErrorMessage("Unable to set property ignore");
