@@ -708,6 +708,7 @@ export class SvnCommands implements IDisposable {
     const yes = "Yes I'm sure";
     const answer = await window.showWarningMessage(
       "Are you sure? This will wipe all local changes.",
+      { modal: true },
       yes
     );
 
@@ -841,6 +842,7 @@ export class SvnCommands implements IDisposable {
     let keepLocal: boolean;
     const answer = await window.showWarningMessage(
       "Would you like to keep a local copy of the files?.",
+      { modal: true },
       "Yes",
       "No"
     );
@@ -949,6 +951,7 @@ export class SvnCommands implements IDisposable {
       const basename = path.basename(uri.fsPath);
       const pick = await window.showWarningMessage(
         `Mark the conflict as resolved for "${basename}"?`,
+        { modal: true },
         "Yes",
         "No"
       );
