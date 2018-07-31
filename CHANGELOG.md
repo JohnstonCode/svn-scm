@@ -1,3 +1,17 @@
+# **v1.31.0**
+
+## What's New
+
+* @edgardmessias Added Svn upgrade check
+
+## Changes
+
+* @edgardmessias Modals are now shown for critical actions
+
+## Bug Fixes
+
+* @edgardmessias Don't show message if ignore is cancelled
+
 # **v1.30.0**
 
 ## What's New
