@@ -15,7 +15,8 @@ export const svnErrorCodes: { [key: string]: string } = {
   AuthorizationFailed: "E170001",
   RepositoryIsLocked: "E155004",
   NotASvnRepository: "E155007",
-  NotShareCommonAncestry: "E195012"
+  NotShareCommonAncestry: "E195012",
+  WorkingCopyIsTooOld: "E155036"
 };
 
 function getSvnErrorCode(stderr: string): string | undefined {
@@ -206,6 +207,9 @@ export class Svn {
       // SVN 1.6 not has "wcroot-abspath"
       return path;
     } catch (error) {
+      if (error instanceof SvnError) {
+        throw error;
+      }
       console.error(error);
       throw new Error("Unable to find repository root path");
     }

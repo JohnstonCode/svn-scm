@@ -20,7 +20,8 @@ import {
 import { debounce, sequentialize } from "./decorators";
 import { configuration } from "./helpers/configuration";
 import { Repository } from "./repository";
-import { Svn } from "./svn";
+import { Svn, svnErrorCodes } from "./svn";
+import SvnError from "./svnError";
 import {
   anyEvent,
   dispose,
@@ -283,6 +284,12 @@ export class Model implements IDisposable {
 
         this.open(repository);
       } catch (err) {
+        if (err instanceof SvnError) {
+          if (err.svnErrorCode === svnErrorCodes.WorkingCopyIsTooOld) {
+            await commands.executeCommand("svn.upgrade", path);
+            return;
+          }
+        }
         console.error(err);
       }
       return;
@@ -422,6 +429,16 @@ export class Model implements IDisposable {
     const pick = await window.showQuickPick(picks, { placeHolder });
 
     return pick && pick.repository;
+  }
+
+  public async upgradeWorkingCopy(folderPath: string): Promise<boolean> {
+    try {
+      const result = await this.svn.exec(folderPath, ["upgrade"]);
+      return result.exitCode === 0;
+    } catch (e) {
+      console.log(e);
+    }
+    return false;
   }
 
   public dispose(): void {

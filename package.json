@@ -546,6 +546,11 @@
           "description": "Ignores the warning when SVN is missing",
           "default": false
         },
+        "svn.ignoreWorkingCopyIsTooOld": {
+          "type": "boolean",
+          "description": "Ignores the warning when working copy is too old",
+          "default": false
+        },
         "svn.diff.withHead": {
           "type": "boolean",
           "description":
