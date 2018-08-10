@@ -1,8 +1,8 @@
 import { TreeItem, TreeItemCollapsibleState } from "vscode";
-import BaseNode from "./baseNode";
-import { getIconUri } from "../../uri";
-import IncommingChangeNode from "./incomingChangeNode";
 import { Repository } from "../../repository";
+import { getIconUri } from "../../uri";
+import BaseNode from "./baseNode";
+import IncommingChangeNode from "./incomingChangeNode";
 import NoIncomingChangesNode from "./noIncomingChangesNode";
 
 export default class IncomingChangesNode implements BaseNode {

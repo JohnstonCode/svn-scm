@@ -1,9 +1,9 @@
 import * as path from "path";
 import { TreeItem, TreeItemCollapsibleState, window } from "vscode";
+import { Repository } from "../../repository";
 import { getIconUri } from "../../uri";
 import BaseNode from "./baseNode";
 import IncomingChangesNode from "./incomingChangesNode";
-import { Repository } from "../../repository";
 
 export default class RepositoryNode implements BaseNode {
   constructor(private repository: Repository) {}

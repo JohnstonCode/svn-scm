@@ -1,7 +1,7 @@
-import { TreeItem, TreeItemCollapsibleState, Uri } from "vscode";
-import BaseNode from "./baseNode";
 import * as path from "path";
+import { TreeItem, TreeItemCollapsibleState, Uri } from "vscode";
 import { getIconUri } from "../../uri";
+import BaseNode from "./baseNode";
 
 export default class IncomingChangeNode implements BaseNode {
   constructor(private uri: Uri, private type: string, private props: string) {}

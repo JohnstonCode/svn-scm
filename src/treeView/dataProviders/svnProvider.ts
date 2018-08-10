@@ -1,14 +1,14 @@
 import {
-  TreeDataProvider,
-  TreeItem,
-  window,
+  commands,
   Event,
   EventEmitter,
-  commands
+  TreeDataProvider,
+  TreeItem,
+  window
 } from "vscode";
 import { Model } from "../../model";
-import RepositoryNode from "../nodes/repositoryNode";
 import BaseNode from "../nodes/baseNode";
+import RepositoryNode from "../nodes/repositoryNode";
 
 export default class SvnProvider implements TreeDataProvider<BaseNode> {
   private _onDidChangeTreeData: EventEmitter<
