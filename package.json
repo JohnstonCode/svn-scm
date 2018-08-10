@@ -235,6 +235,14 @@
         "command": "svn.renameExplorer",
         "title": "Rename with SVN",
         "category": "SVN"
+      },
+      {
+        "command": "svn.treeview.refreshProvider",
+        "title": "Refresh",
+        "icon": {
+          "light": "icons/light/refresh.svg",
+          "dark": "icons/dark/refresh.svg"
+        }
       }
     ],
     "menus": {
@@ -337,6 +345,13 @@
         {
           "command": "svn.renameExplorer",
           "when": "false"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "svn.treeview.refreshProvider",
+          "when": "view == svn",
+          "group": "navigation"
         }
       ],
       "scm/title": [

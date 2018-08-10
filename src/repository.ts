@@ -68,6 +68,7 @@ export class Repository {
   public remoteChangedFiles: number = 0;
   public isIncomplete: boolean = false;
   public needCleanUp: boolean = false;
+  public remoteChanges: any[] = [];
 
   private lastPromptAuth?: Thenable<boolean | undefined>;
 
@@ -406,6 +407,12 @@ export class Repository {
         : undefined;
 
       if (status.reposStatus) {
+        const changes = {
+          uri,
+          type: status.reposStatus.item,
+          props: status.reposStatus.props
+        };
+        this.remoteChanges.push(changes);
         remoteChanged.push(
           new Resource(
             uri,

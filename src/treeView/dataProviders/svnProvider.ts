@@ -1,35 +1,50 @@
 import {
   TreeDataProvider,
   TreeItem,
-  TreeItemCollapsibleState,
-  window
+  window,
+  Event,
+  EventEmitter,
+  commands
 } from "vscode";
 import { Model } from "../../model";
 import RepositoryNode from "../nodes/repositoryNode";
+import BaseNode from "../nodes/baseNode";
 
-export default class SvnProvider implements TreeDataProvider<RepositoryNode> {
-  constructor(private model: Model) {}
+export default class SvnProvider implements TreeDataProvider<BaseNode> {
+  private _onDidChangeTreeData: EventEmitter<
+    BaseNode | undefined
+  > = new EventEmitter<BaseNode | undefined>();
+  public onDidChangeTreeData: Event<BaseNode | undefined> = this
+    ._onDidChangeTreeData.event;
+
+  constructor(private model: Model) {
+    commands.registerCommand("svn.treeview.refreshProvider", () =>
+      this.refresh()
+    );
+  }
+
+  public refresh(): void {
+    this._onDidChangeTreeData.fire();
+  }
 
   public getTreeItem(element: RepositoryNode): TreeItem {
     return element.getTreeItem();
   }
 
-  public getChildren(element?: RepositoryNode): Thenable<RepositoryNode[]> {
+  public async getChildren(element?: BaseNode): Promise<BaseNode[]> {
     if (!this.model || this.model.openRepositories.length === 0) {
       window.showInformationMessage("No Svn repositories open");
       return Promise.resolve([]);
     }
 
-    return new Promise(resolve => {
-      if (element) {
-        resolve([]);
-      }
+    if (element) {
+      return element.getChildren();
+    }
 
-      const repositories = this.model.openRepositories.map(repository => {
-        return new RepositoryNode(repository.repository.workspaceRoot);
-      });
-
-      resolve(repositories);
+    const repositories = this.model.openRepositories.map(repository => {
+      return new RepositoryNode(repository.repository);
     });
+
+    return repositories;
   }
 }

@@ -1,13 +1,15 @@
 import * as path from "path";
-import { TreeDataProvider, TreeItem, TreeItemCollapsibleState } from "vscode";
+import { TreeItem, TreeItemCollapsibleState, window } from "vscode";
 import { getIconUri } from "../../uri";
 import BaseNode from "./baseNode";
+import IncomingChangesNode from "./incomingChangesNode";
+import { Repository } from "../../repository";
 
-export default class RepositoryNode implements TreeDataProvider<BaseNode> {
-  constructor(private _label: string) {}
+export default class RepositoryNode implements BaseNode {
+  constructor(private repository: Repository) {}
 
   get label() {
-    return path.basename(this._label);
+    return path.basename(this.repository.workspaceRoot);
   }
 
   public getTreeItem(): TreeItem {
@@ -20,7 +22,7 @@ export default class RepositoryNode implements TreeDataProvider<BaseNode> {
     return item;
   }
 
-  public getChildren(): Thenable<BaseNode[]> {
-    return Promise.resolve([]);
+  public async getChildren(): Promise<BaseNode[]> {
+    return [new IncomingChangesNode(this.repository)];
   }
 }
