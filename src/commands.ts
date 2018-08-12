@@ -35,6 +35,7 @@ import { inputCommitMessage } from "./messages";
 import { Model } from "./model";
 import { Repository } from "./repository";
 import { Resource } from "./resource";
+import IncommingChangeNode from "./treeView/nodes/incomingChangeNode";
 import { fromSvnUri, toSvnUri } from "./uri";
 import {
   fixPathSeparator,
@@ -426,13 +427,17 @@ export class SvnCommands implements IDisposable {
   }
 
   @command("svn.openHEADFile")
-  public async openHEADFile(arg?: Resource | Uri): Promise<void> {
+  public async openHEADFile(
+    arg?: Resource | Uri | IncommingChangeNode
+  ): Promise<void> {
     let resource: Resource | undefined;
 
     if (arg instanceof Resource) {
       resource = arg;
     } else if (arg instanceof Uri) {
       resource = this.getSCMResource(arg);
+    } else if (arg instanceof IncommingChangeNode) {
+      resource = new Resource(arg.uri, arg.type, undefined, arg.props, true);
     } else {
       resource = this.getSCMResource();
     }

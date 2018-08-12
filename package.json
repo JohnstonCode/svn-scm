@@ -354,6 +354,16 @@
           "group": "navigation"
         }
       ],
+      "view/item/context": [
+        {
+          "command": "svn.openHEADFile",
+          "when": "viewItem == incomingChange:file:modified"
+        },
+        {
+          "command": "svn.openHEADFile",
+          "when": "viewItem == incomingChange:file:added"
+        }
+      ],
       "scm/title": [
         {
           "command": "svn.commitWithMessage",

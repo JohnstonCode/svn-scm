@@ -22,13 +22,18 @@ export default class IncomingChangesNode implements BaseNode {
   }
 
   public async getChildren(): Promise<BaseNode[]> {
-    const changes = this.repository.remoteChanges.map(remoteChange => {
-      return new IncommingChangeNode(
-        remoteChange.uri,
-        remoteChange.type,
-        remoteChange.props
-      );
-    });
+    if (!this.repository.remoteChanged) {
+      return [];
+    }
+
+    const changes = this.repository.remoteChanged.resourceStates.map(
+      remoteChange => {
+        return new IncommingChangeNode(
+          remoteChange.resourceUri,
+          remoteChange.type
+        );
+      }
+    );
 
     if (changes.length === 0) {
       return [new NoIncomingChangesNode()];
