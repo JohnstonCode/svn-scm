@@ -360,6 +360,24 @@ export class Repository {
     return result.stdout;
   }
 
+  public async pullIncomingChange(path: string): Promise<string> {
+    const args = ["update", path];
+
+    const result = await this.exec(args);
+
+    this.resetInfo();
+
+    const message = result.stdout
+      .trim()
+      .split(/\r?\n/)
+      .pop();
+
+    if (message) {
+      return message;
+    }
+    return result.stdout;
+  }
+
   public async patch(files: string[]) {
     files = files.map(file => this.removeAbsolutePath(file));
     const result = await this.exec(["diff", ...files]);

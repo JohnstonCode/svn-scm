@@ -30,7 +30,8 @@ export default class IncomingChangesNode implements BaseNode {
       remoteChange => {
         return new IncommingChangeNode(
           remoteChange.resourceUri,
-          remoteChange.type
+          remoteChange.type,
+          this.repository
         );
       }
     );

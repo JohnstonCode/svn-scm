@@ -36,6 +36,7 @@ import { Model } from "./model";
 import { Repository } from "./repository";
 import { Resource } from "./resource";
 import IncommingChangeNode from "./treeView/nodes/incomingChangeNode";
+import IncomingChangeNode from "./treeView/nodes/incomingChangeNode";
 import { fromSvnUri, toSvnUri } from "./uri";
 import {
   fixPathSeparator,
@@ -761,6 +762,29 @@ export class SvnCommands implements IDisposable {
       );
 
       const result = await repository.updateRevision(ignoreExternals);
+
+      if (showUpdateMessage) {
+        window.showInformationMessage(result);
+      }
+    } catch (error) {
+      console.error(error);
+      window.showErrorMessage("Unable to update");
+    }
+  }
+
+  @command("svn.treeview.pullIncomingChange")
+  public async pullIncomingChange(
+    incomingChange: IncomingChangeNode
+  ): Promise<void> {
+    try {
+      const showUpdateMessage = configuration.get<boolean>(
+        "showUpdateMessage",
+        true
+      );
+
+      const result = await incomingChange.repository.pullIncomingChange(
+        incomingChange.uri.fsPath
+      );
 
       if (showUpdateMessage) {
         window.showInformationMessage(result);

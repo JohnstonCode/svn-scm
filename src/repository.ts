@@ -644,6 +644,14 @@ export class Repository {
     });
   }
 
+  public async pullIncomingChange(path: string) {
+    return this.run<string>(Operation.Update, async () => {
+      const response = await this.repository.pullIncomingChange(path);
+      this.updateRemoteChangedFiles();
+      return response;
+    });
+  }
+
   public async resolve(files: string[], action: string) {
     return this.run(Operation.Resolve, () =>
       this.repository.resolve(files, action)

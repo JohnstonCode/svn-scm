@@ -243,6 +243,11 @@
           "light": "icons/light/refresh.svg",
           "dark": "icons/dark/refresh.svg"
         }
+      },
+      {
+        "command": "svn.treeview.pullIncomingChange",
+        "title": "Pull incoming change",
+        "category": "SVN"
       }
     ],
     "menus": {
@@ -357,15 +362,15 @@
       "view/item/context": [
         {
           "command": "svn.openHEADFile",
-          "when": "viewItem != incomingChange:file:deleted"
+          "when": "viewItem =~ /incomingChange:(added|modified)/"
         },
         {
           "command": "svn.openFile",
-          "when": "viewItem == incomingChange:file:modified"
+          "when": "viewItem =~ /incomingChange:(modified|deleted)/"
         },
         {
-          "command": "svn.openFile",
-          "when": "viewItem == incomingChange:file:deleted"
+          "command": "svn.treeview.pullIncomingChange",
+          "when": "viewItem =~ /incomingChange:*/"
         }
       ],
       "scm/title": [
