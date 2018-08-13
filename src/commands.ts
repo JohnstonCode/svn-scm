@@ -368,7 +368,7 @@ export class SvnCommands implements IDisposable {
 
   @command("svn.openFile")
   public async openFile(
-    arg?: Resource | Uri,
+    arg?: Resource | Uri | IncommingChangeNode,
     ...resourceStates: SourceControlResourceState[]
   ): Promise<void> {
     const preserveFocus = arg instanceof Resource;
@@ -381,6 +381,16 @@ export class SvnCommands implements IDisposable {
       } else if (arg.scheme === "file") {
         uris = [arg];
       }
+    } else if (arg instanceof IncommingChangeNode) {
+      const resource = new Resource(
+        arg.uri,
+        arg.type,
+        undefined,
+        arg.props,
+        true
+      );
+
+      uris = [resource.resourceUri];
     } else {
       let resource = arg;
 

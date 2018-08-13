@@ -42,9 +42,13 @@ export default class SvnProvider implements TreeDataProvider<BaseNode> {
     }
 
     const repositories = this.model.openRepositories.map(repository => {
-      return new RepositoryNode(repository.repository);
+      return new RepositoryNode(repository.repository, this);
     });
 
     return repositories;
+  }
+
+  public update(node: BaseNode): void {
+    this._onDidChangeTreeData.fire(node);
   }
 }

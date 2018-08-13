@@ -357,11 +357,15 @@
       "view/item/context": [
         {
           "command": "svn.openHEADFile",
+          "when": "viewItem != incomingChange:file:deleted"
+        },
+        {
+          "command": "svn.openFile",
           "when": "viewItem == incomingChange:file:modified"
         },
         {
-          "command": "svn.openHEADFile",
-          "when": "viewItem == incomingChange:file:added"
+          "command": "svn.openFile",
+          "when": "viewItem == incomingChange:file:deleted"
         }
       ],
       "scm/title": [
