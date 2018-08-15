@@ -377,6 +377,10 @@
         {
           "command": "svn.treeview.pullIncomingChange",
           "when": "viewItem =~ /incomingChange:*/"
+        },
+        {
+          "command": "svn.openChangeHead",
+          "when": "viewItem == incomingChange:modified"
         }
       ],
       "scm/title": [
