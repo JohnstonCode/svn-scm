@@ -59,19 +59,6 @@
     "semantic-release": "^15.9.8",
     "semantic-release-vsce": "^2.1.2"
   },
-  "release": {
-    "verifyConditions": ["semantic-release-vsce", "@semantic-release/github"],
-    "publish": [
-      {
-        "path": "semantic-release-vsce",
-        "packageVsix": "svn-scm.vsix"
-      },
-      {
-        "path": "@semantic-release/github",
-        "assets": "svn-scm.vsix"
-      }
-    ]
-  },
   "contributes": {
     "commands": [
       {
