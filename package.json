@@ -40,6 +40,7 @@
     "precommit": "pretty-quick --staged && npm run lint",
     "lint": "tslint -p ./",
     "semantic-release": "semantic-release",
+    "build": "tsc -p ."
   },
   "dependencies": {
     "iconv-lite": "^0.4.23",
