@@ -38,7 +38,8 @@
     "prettier": "prettier --no-config --list-different 'src/**/*.ts'",
     "tools:genReadme": "node ./out/tools/generateConfigSectionForReadme.js",
     "precommit": "pretty-quick --staged && npm run lint",
-    "lint": "tslint -p ./"
+    "lint": "tslint -p ./",
+    "semantic-release": "semantic-release",
   },
   "dependencies": {
     "iconv-lite": "^0.4.23",
@@ -63,6 +64,24 @@
     "tslint": "^5.11.0",
     "typescript": "^3.0",
     "vscode": "^1.1.18"
+    "semantic-release": "^15.9.8",
+    "semantic-release-vsce": "^2.1.2",
+  },
+  "release": {
+    "verifyConditions": [
+      "semantic-release-vsce",
+      "@semantic-release/github"
+    ],
+    "publish": [
+      {
+        "path": "semantic-release-vsce",
+        "packageVsix": "svn-scm.vsix"
+      },
+      {
+        "path": "@semantic-release/github",
+        "assets": "svn-scm.vsix"
+      }
+    ]
   },
   "contributes": {
     "commands": [
