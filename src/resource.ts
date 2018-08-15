@@ -185,6 +185,8 @@ export class Resource implements SourceControlResourceState {
         return "R";
       case Status.UNVERSIONED:
         return "U";
+      case Status.MISSING:
+        return "!";
       default:
         return undefined;
     }
@@ -196,6 +198,7 @@ export class Resource implements SourceControlResourceState {
       case Status.REPLACED:
         return new ThemeColor("gitDecoration.modifiedResourceForeground");
       case Status.DELETED:
+      case Status.MISSING:
         return new ThemeColor("gitDecoration.deletedResourceForeground");
       case Status.ADDED:
       case Status.UNVERSIONED:
@@ -219,6 +222,7 @@ export class Resource implements SourceControlResourceState {
       case Status.DELETED:
       case Status.ADDED:
       case Status.REPLACED:
+      case Status.MISSING:
         return 4;
       default:
         return 1;
