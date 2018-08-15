@@ -18,7 +18,7 @@
     "url": "https://github.com/JohnstonCode/svn-scm/issues"
   },
   "categories": ["Other", "SCM Providers"],
-  "keywords": ["multi-root ready", "scm", "svn"],
+  "keywords": ["multi-root ready", "scm", "svn", "subversion"],
   "activationEvents": ["*"],
   "main": "./out/extension",
   "scripts": {
