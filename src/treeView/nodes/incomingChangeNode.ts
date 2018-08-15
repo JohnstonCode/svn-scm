@@ -17,7 +17,7 @@ export default class IncomingChangeNode implements BaseNode {
   }
 
   get label() {
-    return path.basename(this.uri.path);
+    return path.relative(this.repository.workspaceRoot, this.uri.fsPath);
   }
 
   get contextValue() {
