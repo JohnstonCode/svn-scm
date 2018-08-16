@@ -2,10 +2,10 @@
   "name": "svn-scm",
   "displayName": "SVN",
   "description": "Integrated Subversion source control",
-  "version": "1.30.0",
+  "version": "1.31.3",
   "publisher": "johnstoncode",
   "engines": {
-    "vscode": "^1.19.0"
+    "vscode": "^1.20.0"
   },
   "enableProposedApi": false,
   "icon": "images/subversion.png",
@@ -17,9 +17,19 @@
   "bugs": {
     "url": "https://github.com/JohnstonCode/svn-scm/issues"
   },
-  "categories": ["Other", "SCM Providers"],
-  "keywords": ["multi-root ready", "scm", "svn"],
-  "activationEvents": ["*"],
+  "categories": [
+    "Other",
+    "SCM Providers"
+  ],
+  "keywords": [
+    "multi-root ready",
+    "scm",
+    "svn",
+    "subversion"
+  ],
+  "activationEvents": [
+    "*"
+  ],
   "main": "./out/extension",
   "scripts": {
     "vscode:prepublish": "npm run lint && tsc -p ./",
@@ -30,7 +40,9 @@
     "tools:genReadme": "node ./out/tools/generateConfigSectionForReadme.js",
     "precommit": "pretty-quick --staged && npm run lint",
     "lint": "tslint -p ./",
-    "lint:fix": "tslint --fix -p ./"
+    "lint:fix": "tslint --fix -p ./",
+    "semantic-release": "semantic-release",
+    "build": "tsc -p ."
   },
   "dependencies": {
     "iconv-lite": "^0.4.23",
@@ -41,20 +53,22 @@
   },
   "devDependencies": {
     "@types/glob": "^5.0.33",
-    "@types/mocha": "^5.2.0",
-    "@types/node": "^10.0.3",
-    "@types/xml2js": "^0.4.2",
+    "@types/mocha": "^5.2.5",
+    "@types/node": "^10.5.7",
+    "@types/xml2js": "^0.4.3",
     "decache": "^4.3.0",
     "glob": "^7.1.2",
     "husky": "^0.14.3",
     "istanbul": "^0.4.5",
-    "mocha": "^5.1.1",
-    "prettier": "^1.12.1",
-    "pretty-quick": "^1.4.1",
+    "mocha": "^5.2.0",
+    "prettier": "^1.14.0",
+    "pretty-quick": "^1.6.0",
     "remap-istanbul": "^0.11.1",
-    "tslint": "^5.10.0",
-    "typescript": "^2.8.3",
-    "vscode": "^1.1.17"
+    "tslint": "^5.11.0",
+    "typescript": "^3.0",
+    "vscode": "^1.1.18",
+    "semantic-release": "^15.9.8",
+    "semantic-release-vsce": "^2.1.2"
   },
   "contributes": {
     "views": {
@@ -270,13 +284,11 @@
         },
         {
           "command": "svn.openChangeBase",
-          "when":
-            "config.svn.enabled && svnOpenRepositoryCount != 0 && svnActiveEditorHasChanges"
+          "when": "config.svn.enabled && svnOpenRepositoryCount != 0 && svnActiveEditorHasChanges"
         },
         {
           "command": "svn.openChangeHead",
-          "when":
-            "config.svn.enabled && svnOpenRepositoryCount != 0 && svnActiveEditorHasChanges"
+          "when": "config.svn.enabled && svnOpenRepositoryCount != 0 && svnActiveEditorHasChanges"
         },
         {
           "command": "svn.openFile",
@@ -332,8 +344,7 @@
         },
         {
           "command": "svn.revertSelectedRanges",
-          "when":
-            "config.svn.enabled && svnOpenRepositoryCount != 0 && svnHasSupportToRegisterDiffCommand == 1"
+          "when": "config.svn.enabled && svnOpenRepositoryCount != 0 && svnHasSupportToRegisterDiffCommand == 1"
         },
         {
           "command": "svn.close",
@@ -424,92 +435,77 @@
       "scm/resourceState/context": [
         {
           "command": "svn.add",
-          "when":
-            "config.svn.enabled && scmProvider == svn && scmResourceGroup == unversioned",
+          "when": "config.svn.enabled && scmProvider == svn && scmResourceGroup == unversioned",
           "group": "inline"
         },
         {
           "command": "svn.add",
-          "when":
-            "config.svn.enabled && scmProvider == svn && scmResourceGroup == unversioned",
+          "when": "config.svn.enabled && scmProvider == svn && scmResourceGroup == unversioned",
           "group": "1_modification"
         },
         {
           "command": "svn.openFile",
-          "when":
-            "config.svn.enabled && scmProvider == svn && scmResourceGroup != external",
+          "when": "config.svn.enabled && scmProvider == svn && scmResourceGroup != external",
           "group": "navigation"
         },
         {
           "command": "svn.openHEADFile",
-          "when":
-            "config.svn.enabled && scmProvider == svn && scmResourceGroup != unversioned && scmResourceGroup != external",
+          "when": "config.svn.enabled && scmProvider == svn && scmResourceGroup != unversioned && scmResourceGroup != external",
           "group": "navigation"
         },
         {
           "command": "svn.openChangeBase",
-          "when":
-            "config.svn.enabled && scmProvider == svn && scmResourceGroup != unversioned && scmResourceGroup != external",
+          "when": "config.svn.enabled && scmProvider == svn && scmResourceGroup != unversioned && scmResourceGroup != external",
           "group": "navigation"
         },
         {
           "command": "svn.openChangeHead",
-          "when":
-            "config.svn.enabled && scmProvider == svn && scmResourceGroup != unversioned && scmResourceGroup != external",
+          "when": "config.svn.enabled && scmProvider == svn && scmResourceGroup != unversioned && scmResourceGroup != external",
           "group": "navigation"
         },
         {
           "command": "svn.patch",
-          "when":
-            "config.svn.enabled && scmProvider == svn && scmResourceGroup != unversioned && scmResourceGroup != external && scmResourceGroup != conflicts && scmResourceGroup != remotechanged",
+          "when": "config.svn.enabled && scmProvider == svn && scmResourceGroup != unversioned && scmResourceGroup != external && scmResourceGroup != conflicts && scmResourceGroup != remotechanged",
           "group": "navigation"
         },
         {
           "command": "svn.resolve",
-          "when":
-            "config.svn.enabled && scmProvider == svn && scmResourceGroup == conflicts",
+          "when": "config.svn.enabled && scmProvider == svn && scmResourceGroup == conflicts",
           "group": "inline"
         },
         {
           "command": "svn.resolve",
-          "when":
-            "config.svn.enabled && scmProvider == svn && scmResourceGroup == conflicts",
+          "when": "config.svn.enabled && scmProvider == svn && scmResourceGroup == conflicts",
           "group": "1_modification"
         },
         {
           "command": "svn.changelist",
-          "when":
-            "config.svn.enabled && scmProvider == svn && scmResourceGroup != unversioned && scmResourceGroup != external && scmResourceGroup != conflicts && scmResourceGroup != remotechanged",
+          "when": "config.svn.enabled && scmProvider == svn && scmResourceGroup != unversioned && scmResourceGroup != external && scmResourceGroup != conflicts && scmResourceGroup != remotechanged",
           "group": "inline"
         },
         {
           "command": "svn.changelist",
-          "when":
-            "config.svn.enabled && scmProvider == svn && scmResourceGroup != unversioned && scmResourceGroup != external && scmResourceGroup != conflicts && scmResourceGroup != remotechanged",
+          "when": "config.svn.enabled && scmProvider == svn && scmResourceGroup != unversioned && scmResourceGroup != external && scmResourceGroup != conflicts && scmResourceGroup != remotechanged",
           "group": "1_modification"
         },
         {
           "command": "svn.commit",
-          "when":
-            "config.svn.enabled && scmProvider == svn && scmResourceGroup != unversioned && scmResourceGroup != external && scmResourceGroup != conflicts && scmResourceGroup != remotechanged",
+          "when": "config.svn.enabled && scmProvider == svn && scmResourceGroup != unversioned && scmResourceGroup != external && scmResourceGroup != conflicts && scmResourceGroup != remotechanged",
           "group": "1_modification"
         },
         {
           "command": "svn.revert",
-          "when":
-            "config.svn.enabled && scmProvider == svn && scmResourceGroup != unversioned && scmResourceGroup != external && scmResourceGroup != conflicts && scmResourceGroup != remotechanged",
+          "when": "config.svn.enabled && scmProvider == svn && scmResourceGroup != unversioned && scmResourceGroup != external && scmResourceGroup != conflicts && scmResourceGroup != remotechanged",
           "group": "2_modification"
         },
         {
           "command": "svn.remove",
-          "when":
-            "config.svn.enabled && scmProvider == svn && scmResourceGroup != unversioned && scmResourceGroup != external && scmResourceGroup != conflicts && scmResourceGroup != remotechanged",
+          "when": "config.svn.enabled && scmProvider == svn && scmResourceGroup != unversioned && scmResourceGroup != external && scmResourceGroup != conflicts && scmResourceGroup != remotechanged",
           "group": "2_modification"
         },
         {
           "command": "svn.addToIgnoreSCM",
-          "when":
-            "config.svn.enabled && scmProvider == svn && scmResourceGroup == unversioned",
+          "when": "config.svn.enabled && scmProvider == svn && scmResourceGroup == unversioned",
           "group": "1_modification"
         }
       ],
@@ -523,26 +519,22 @@
         {
           "command": "svn.openFile",
           "group": "navigation",
-          "when":
-            "config.svn.enabled && svnOpenRepositoryCount != 0 && isInDiffEditor && resourceScheme != extension && resourceScheme != merge-conflicts.conflicts-diff"
+          "when": "config.svn.enabled && svnOpenRepositoryCount != 0 && isInDiffEditor && resourceScheme != extension && resourceScheme != merge-conflicts.conflicts-diff"
         },
         {
           "command": "svn.openChangeBase",
           "group": "navigation",
-          "when":
-            "config.svn.enabled && svnOpenRepositoryCount != 0 && svnActiveEditorHasChanges && !isInDiffEditor && resourceScheme == file"
+          "when": "config.svn.enabled && svnOpenRepositoryCount != 0 && svnActiveEditorHasChanges && !isInDiffEditor && resourceScheme == file"
         },
         {
           "command": "svn.openChangeHead",
           "group": "navigation",
-          "when":
-            "config.svn.enabled && svnOpenRepositoryCount != 0 && svnActiveEditorHasChanges && !isInDiffEditor && resourceScheme == file"
+          "when": "config.svn.enabled && svnOpenRepositoryCount != 0 && svnActiveEditorHasChanges && !isInDiffEditor && resourceScheme == file"
         },
         {
           "command": "svn.revertSelectedRanges",
           "group": "2_svn@3",
-          "when":
-            "config.svn.enabled && svnOpenRepositoryCount != 0 && isInDiffEditor && resourceScheme != merge-conflicts.conflicts-diff && && svnHasSupportToRegisterDiffCommand == 1"
+          "when": "config.svn.enabled && svnOpenRepositoryCount != 0 && isInDiffEditor && resourceScheme != merge-conflicts.conflicts-diff && && svnHasSupportToRegisterDiffCommand == 1"
         }
       ],
       "explorer/context": [
@@ -554,8 +546,7 @@
         {
           "command": "svn.renameExplorer",
           "group": "7_modification",
-          "when":
-            "config.svn.enabled && svnOpenRepositoryCount != 0 && explorerViewletVisible && filesExplorerFocus && !explorerResourceIsRoot && !inputFocus"
+          "when": "config.svn.enabled && svnOpenRepositoryCount != 0 && explorerViewletVisible && filesExplorerFocus && !explorerResourceIsRoot && !inputFocus"
         }
       ]
     },
@@ -574,12 +565,14 @@
         },
         "svn.decorations.enabled": {
           "type": "boolean",
-          "description":
-            "Controls if SVN contributes colors and badges to the explorer and the open (VSCode >= 1.18 with proposed-api)",
+          "description": "Controls if SVN contributes colors and badges to the explorer and the open (VSCode >= 1.18 with proposed-api)",
           "default": true
         },
         "svn.path": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "description": "Path to the svn executable",
           "default": null,
           "isExecutable": true
@@ -589,49 +582,66 @@
           "description": "Ignores the warning when SVN is missing",
           "default": false
         },
+        "svn.ignoreWorkingCopyIsTooOld": {
+          "type": "boolean",
+          "description": "Ignores the warning when working copy is too old",
+          "default": false
+        },
         "svn.diff.withHead": {
           "type": "boolean",
-          "description":
-            "Show diff changes using latest revision in the repository. Set false to use latest revision in local folder",
+          "description": "Show diff changes using latest revision in the repository. Set false to use latest revision in local folder",
           "default": true
         },
         "svn.layout.trunkRegex": {
-          "type": ["string", "null"],
-          "description":
-            "Regex to detect path for 'trunk' in SVN URL, 'null' to disable. (Ex.: '(trunk)', '(main)')",
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Regex to detect path for 'trunk' in SVN URL, 'null' to disable. (Ex.: '(trunk)', '(main)')",
           "default": "(trunk)(/.*)?"
         },
         "svn.layout.trunkRegexName": {
-          "type": ["number"],
+          "type": [
+            "number"
+          ],
           "description": "Regex group position for name of trunk",
           "default": 1
         },
         "svn.layout.branchesRegex": {
-          "type": ["string", "null"],
-          "description":
-            "Regex to detect path for 'branches' in SVN URL, 'null' to disable. Subpath use 'branches/[^/]+/([^/]+)(/.*)?' (Ex.: 'branches/...', 'versions/...')",
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Regex to detect path for 'branches' in SVN URL, 'null' to disable. Subpath use 'branches/[^/]+/([^/]+)(/.*)?' (Ex.: 'branches/...', 'versions/...')",
           "default": "branches/([^/]+)(/.*)?"
         },
         "svn.layout.branchesRegexName": {
-          "type": ["number"],
+          "type": [
+            "number"
+          ],
           "description": "Regex group position for name of branch",
           "default": 1
         },
         "svn.layout.tagsRegex": {
-          "type": ["string", "null"],
-          "description":
-            "Regex to detect path for 'tags' in SVN URL, 'null' to disable. Subpath use 'tags/[^/]+/([^/]+)(/.*)?'. (Ex.: 'tags/...', 'stamps/...')",
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Regex to detect path for 'tags' in SVN URL, 'null' to disable. Subpath use 'tags/[^/]+/([^/]+)(/.*)?'. (Ex.: 'tags/...', 'stamps/...')",
           "default": "tags/([^/]+)(/.*)?"
         },
         "svn.layout.tagRegexName": {
-          "type": ["number"],
+          "type": [
+            "number"
+          ],
           "description": "Regex group position for name of tag",
           "default": 1
         },
         "svn.layout.showFullName": {
-          "type": ["boolean"],
-          "description":
-            "Set true to show 'branches/<name>' and false to show only '<name>'",
+          "type": [
+            "boolean"
+          ],
+          "description": "Set true to show 'branches/<name>' and false to show only '<name>'",
           "default": true
         },
         "svn.multipleFolders.enabled": {
@@ -648,24 +658,29 @@
         "svn.multipleFolders.ignore": {
           "type": "array",
           "description": "Folders to ignore using SVN",
-          "default": ["**/.git", "**/.hg", "**/vendor", "**/node_modules"]
+          "default": [
+            "**/.git",
+            "**/.hg",
+            "**/vendor",
+            "**/node_modules"
+          ]
         },
         "svn.sourceControl.ignoreOnCommit": {
           "type": "array",
           "description": "Changelists to ignore on commit",
-          "default": ["ignore-on-commit"]
+          "default": [
+            "ignore-on-commit"
+          ]
         },
         "svn.detectExternals": {
           "type": "boolean",
           "default": true,
-          "description":
-            "Controls whether to automatically detect svn externals."
+          "description": "Controls whether to automatically detect svn externals."
         },
         "svn.sourceControl.combineExternalIfSameServer": {
           "type": "boolean",
           "default": false,
-          "description":
-            "Combine the svn external in the main if is from the same server."
+          "description": "Combine the svn external in the main if is from the same server."
         },
         "svn.sourceControl.countUnversioned": {
           "type": "boolean",
@@ -674,8 +689,7 @@
         },
         "svn.sourceControl.countIgnoreOnCommit": {
           "type": "boolean",
-          "description":
-            "Allow to count ignored files to commit in status count",
+          "description": "Allow to count ignored files to commit in status count",
           "default": false
         },
         "svn.log.length": {
@@ -696,14 +710,15 @@
         },
         "svn.update.ignoreExternals": {
           "type": "boolean",
-          "description":
-            "Set to ignore externals definitions on update (add --ignore-externals)",
+          "description": "Set to ignore externals definitions on update (add --ignore-externals)",
           "default": true
         },
         "svn.default.encoding": {
-          "type": ["string", "null"],
-          "description":
-            "Encoding of svn output if the output is not utf-8. When this parameter is null, the encoding is automatically detected. Example: 'windows-1252'.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Encoding of svn output if the output is not utf-8. When this parameter is null, the encoding is automatically detected. Example: 'windows-1252'.",
           "default": null
         },
         "svn.showUpdateMessage": {
@@ -713,8 +728,7 @@
         },
         "svn.remoteChanges.checkFrequency": {
           "type": "number",
-          "description":
-            "Set the interval in seconds to check changed files on remote repository and show in statusbar. 0 to disable",
+          "description": "Set the interval in seconds to check changed files on remote repository and show in statusbar. 0 to disable",
           "default": 300
         }
       }

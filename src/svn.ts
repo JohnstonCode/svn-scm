@@ -15,7 +15,8 @@ export const svnErrorCodes: { [key: string]: string } = {
   AuthorizationFailed: "E170001",
   RepositoryIsLocked: "E155004",
   NotASvnRepository: "E155007",
-  NotShareCommonAncestry: "E195012"
+  NotShareCommonAncestry: "E195012",
+  WorkingCopyIsTooOld: "E155036"
 };
 
 function getSvnErrorCode(stderr: string): string | undefined {
@@ -95,6 +96,9 @@ export class Svn {
       args.push("--password", options.password);
     }
 
+    let encoding = options.encoding || "utf8";
+    delete options.encoding;
+
     const process = cp.spawn(this.svnPath, args, options);
 
     const disposables: IDisposable[] = [];
@@ -137,10 +141,6 @@ export class Svn {
     ]);
 
     dispose(disposables);
-
-    let encoding = workspace
-      .getConfiguration("files", Uri.file(cwd))
-      .get<string>("encoding", "utf8");
 
     // SVN with '--xml' always return 'UTF-8', and jschardet detects this encoding: 'TIS-620'
     if (args.includes("--xml")) {
@@ -207,6 +207,9 @@ export class Svn {
       // SVN 1.6 not has "wcroot-abspath"
       return path;
     } catch (error) {
+      if (error instanceof SvnError) {
+        throw error;
+      }
       console.error(error);
       throw new Error("Unable to find repository root path");
     }

@@ -1,5 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
+import { Uri, workspace } from "vscode";
 import {
   ICpOptions,
   IExecutionResult,
@@ -130,6 +131,7 @@ export class Repository {
     revision?: string,
     options: ICpOptions = {}
   ): Promise<string> {
+    const uri = Uri.file(file);
     file = this.removeAbsolutePath(file);
     const args = ["cat"];
 
@@ -147,7 +149,11 @@ export class Repository {
       args.push(file);
     }
 
-    const result = await this.exec(args);
+    const encoding = workspace
+      .getConfiguration("files", uri)
+      .get<string>("encoding", "utf8");
+
+    const result = await this.exec(args, { encoding });
 
     return result.stdout;
   }

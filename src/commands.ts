@@ -724,6 +724,7 @@ export class SvnCommands implements IDisposable {
     const yes = "Yes I'm sure";
     const answer = await window.showWarningMessage(
       "Are you sure? This will wipe all local changes.",
+      { modal: true },
       yes
     );
 
@@ -880,6 +881,7 @@ export class SvnCommands implements IDisposable {
     let keepLocal: boolean;
     const answer = await window.showWarningMessage(
       "Would you like to keep a local copy of the files?.",
+      { modal: true },
       "Yes",
       "No"
     );
@@ -988,6 +990,7 @@ export class SvnCommands implements IDisposable {
       const basename = path.basename(uri.fsPath);
       const pick = await window.showWarningMessage(
         `Mark the conflict as resolved for "${basename}"?`,
+        { modal: true },
         "Yes",
         "No"
       );
@@ -1181,9 +1184,11 @@ export class SvnCommands implements IDisposable {
       }
 
       try {
-        await inputIgnoreList(repository, resources);
+        const ignored = await inputIgnoreList(repository, resources);
 
-        window.showInformationMessage(`File(s) is now being ignored`);
+        if (ignored) {
+          window.showInformationMessage(`File(s) is now being ignored`);
+        }
       } catch (error) {
         console.log(error);
         window.showErrorMessage("Unable to set property ignore");
@@ -1230,6 +1235,46 @@ export class SvnCommands implements IDisposable {
     newName = path.join(basepath, newName);
 
     await repository.rename(oldFile, newName);
+  }
+
+  @command("svn.upgrade")
+  public async upgrade(folderPath: string): Promise<void> {
+    if (!folderPath) {
+      return;
+    }
+
+    if (configuration.get("ignoreWorkingCopyIsTooOld", false)) {
+      return;
+    }
+
+    folderPath = fixPathSeparator(folderPath);
+
+    const yes = "Yes";
+    const no = "No";
+    const neverShowAgain = "Don't Show Again";
+    const choice = await window.showWarningMessage(
+      "You want upgrade the working copy (svn upgrade)?",
+      yes,
+      no,
+      neverShowAgain
+    );
+
+    if (choice === yes) {
+      const upgraded = await this.model.upgradeWorkingCopy(folderPath);
+
+      if (upgraded) {
+        window.showInformationMessage(`Working copy "${folderPath}" upgraded`);
+        this.model.tryOpenRepository(folderPath);
+      } else {
+        window.showErrorMessage(
+          `Error on upgrading working copy "${folderPath}". See log for more detail`
+        );
+      }
+    } else if (choice === neverShowAgain) {
+      return configuration.update("ignoreWorkingCopyIsTooOld", true);
+    }
+
+    return;
   }
 
   private getSCMResource(uri?: Uri): Resource | undefined {

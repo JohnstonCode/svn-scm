@@ -520,7 +520,7 @@ export class Repository {
       }
       this.remoteChanged = this.sourceControl.createResourceGroup(
         "remotechanged",
-        "Remote Changed"
+        "Remote Changes"
       ) as ISvnResourceGroup;
       this.remoteChanged.hideWhenEmpty = true;
       this.remoteChanged.resourceStates = remoteChanged;
