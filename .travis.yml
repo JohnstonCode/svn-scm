@@ -53,6 +53,10 @@ jobs:
     - stage: release
       language: node_js
       node_js: "8"
+      before_install: skip
+      install:
+        - npm ci
       script:
         - npm run build
         - npm run semantic-release
+      after_success: skip

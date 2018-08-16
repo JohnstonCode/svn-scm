@@ -1,10 +1,11 @@
 {
   "verifyConditions": ["semantic-release-vsce", "@semantic-release/github"],
+  "prepare": {
+    "path": "semantic-release-vsce",
+    "packageVsix": "svn-scm.vsix"
+  },
   "publish": [
-    {
-      "path": "semantic-release-vsce",
-      "packageVsix": "svn-scm.vsix"
-    },
+    "semantic-release-vsce",
     {
       "path": "@semantic-release/github",
       "assets": "svn-scm.vsix"
