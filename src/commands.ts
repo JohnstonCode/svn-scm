@@ -488,14 +488,14 @@ export class SvnCommands implements IDisposable {
 
   @command("svn.openChangeHead")
   public async openChangeHead(
-    arg?: Resource | Uri,
+    arg?: Resource | Uri | IncommingChangeNode,
     ...resourceStates: SourceControlResourceState[]
   ): Promise<void> {
     return this.openChange(arg, "HEAD", resourceStates);
   }
 
   public async openChange(
-    arg?: Resource | Uri,
+    arg?: Resource | Uri | IncommingChangeNode,
     against?: string,
     resourceStates?: SourceControlResourceState[]
   ): Promise<void> {
@@ -508,6 +508,16 @@ export class SvnCommands implements IDisposable {
       if (resource !== undefined) {
         resources = [resource];
       }
+    } else if (arg instanceof IncommingChangeNode) {
+      const resource = new Resource(
+        arg.uri,
+        arg.type,
+        undefined,
+        arg.props,
+        true
+      );
+
+      resources = [resource];
     } else {
       let resource: Resource | undefined;
 
