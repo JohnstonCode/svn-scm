@@ -9,6 +9,5 @@
       "path": "@semantic-release/github",
       "assets": "svn-scm.vsix"
     }
-  ],
-  "prepare": []
+  ]
 }
