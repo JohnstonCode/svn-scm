@@ -21,7 +21,7 @@ install:
   - node --version
   - npm --version
   - npm install
-  
+
 build_script:
   - vsce package -o svn-scm.vsix
   # For coverage

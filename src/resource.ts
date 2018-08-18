@@ -1,18 +1,16 @@
-import {
-  Uri,
-  workspace,
-  SourceControlResourceState,
-  SourceControlResourceDecorations,
-  Command,
-  SourceControlResourceGroup,
-  DecorationData,
-  ThemeColor
-} from "vscode";
 import * as path from "path";
-import { Status, PropStatus } from "./svn";
+import {
+  Command,
+  DecorationData,
+  SourceControlResourceDecorations,
+  SourceControlResourceState,
+  ThemeColor,
+  Uri
+} from "vscode";
+import { PropStatus, Status } from "./common/types";
 import { memoize } from "./decorators";
-import { hasSupportToDecorationProvider } from "./util";
 import { configuration } from "./helpers/configuration";
+import { hasSupportToDecorationProvider } from "./util";
 
 const iconsRootPath = path.join(__dirname, "..", "icons");
 
@@ -20,12 +18,8 @@ function getIconUri(iconName: string, theme: string): Uri {
   return Uri.file(path.join(iconsRootPath, theme, `${iconName}.svg`));
 }
 
-export interface SvnResourceGroup extends SourceControlResourceGroup {
-  resourceStates: Resource[];
-}
-
 export class Resource implements SourceControlResourceState {
-  private static Icons: any = {
+  private static icons: any = {
     light: {
       Added: getIconUri("status-added", "light"),
       Conflicted: getIconUri("status-conflicted", "light"),
@@ -52,9 +46,10 @@ export class Resource implements SourceControlResourceState {
 
   constructor(
     private _resourceUri: Uri,
-    private _type: String,
+    private _type: string,
     private _renameResourceUri?: Uri,
-    private _props?: String
+    private _props?: string,
+    private _remote: boolean = false
   ) {}
 
   @memoize
@@ -63,14 +58,18 @@ export class Resource implements SourceControlResourceState {
   }
 
   @memoize
-  get type(): String {
+  get type(): string {
     return this._type;
   }
   get renameResourceUri(): Uri | undefined {
     return this._renameResourceUri;
   }
-  get props(): String | undefined {
+  get props(): string | undefined {
     return this._props;
+  }
+
+  get remote(): boolean {
+    return this._remote;
   }
 
   get decorations(): SourceControlResourceDecorations {
@@ -106,7 +105,7 @@ export class Resource implements SourceControlResourceState {
   get command(): Command {
     const diffHead = configuration.get<boolean>("diff.withHead", true);
 
-    if (diffHead) {
+    if (this.remote || diffHead) {
       return {
         command: "svn.openResourceHead",
         title: "Open Diff With Head",
@@ -123,13 +122,13 @@ export class Resource implements SourceControlResourceState {
 
   private getIconPath(theme: string): Uri | undefined {
     if (this.type === Status.ADDED && this.renameResourceUri) {
-      return Resource.Icons[theme]["Renamed"];
+      return Resource.icons[theme].Renamed;
     }
 
     const type = this.type.charAt(0).toUpperCase() + this.type.slice(1);
 
-    if (typeof Resource.Icons[theme][type] !== "undefined") {
-      return Resource.Icons[theme][type];
+    if (typeof Resource.icons[theme][type] !== "undefined") {
+      return Resource.icons[theme][type];
     }
 
     return void 0;
@@ -186,6 +185,8 @@ export class Resource implements SourceControlResourceState {
         return "R";
       case Status.UNVERSIONED:
         return "U";
+      case Status.MISSING:
+        return "!";
       default:
         return undefined;
     }
@@ -197,6 +198,7 @@ export class Resource implements SourceControlResourceState {
       case Status.REPLACED:
         return new ThemeColor("gitDecoration.modifiedResourceForeground");
       case Status.DELETED:
+      case Status.MISSING:
         return new ThemeColor("gitDecoration.deletedResourceForeground");
       case Status.ADDED:
       case Status.UNVERSIONED:
@@ -220,6 +222,7 @@ export class Resource implements SourceControlResourceState {
       case Status.DELETED:
       case Status.ADDED:
       case Status.REPLACED:
+      case Status.MISSING:
         return 4;
       default:
         return 1;

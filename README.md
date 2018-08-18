@@ -6,6 +6,7 @@
 
 [![Build Status](https://travis-ci.org/JohnstonCode/svn-scm.svg?branch=master)](https://travis-ci.org/JohnstonCode/svn-scm)
 [![Build Status](https://ci.appveyor.com/api/projects/status/github/JohnstonCode/svn-scm?branch=master&svg=true)](https://ci.appveyor.com/project/JohnstonCode/svn-scm)
+[![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
 
 [![Dependencies Status](https://david-dm.org/JohnstonCode/svn-scm/status.svg)](https://david-dm.org/JohnstonCode/svn-scm)
 [![DevDependencies Status](https://david-dm.org/JohnstonCode/svn-scm/dev-status.svg)](https://david-dm.org/JohnstonCode/svn-scm?type=dev)
@@ -14,10 +15,7 @@
 [![codecov](https://codecov.io/gh/JohnstonCode/svn-scm/branch/master/graph/badge.svg)](https://codecov.io/gh/JohnstonCode/svn-scm)
 [![Known Vulnerabilities](https://snyk.io/test/github/JohnstonCode/svn-scm/badge.svg)](https://snyk.io/test/github/JohnstonCode/svn-scm)
 
-[![bitHound Overall Score](https://www.bithound.io/github/JohnstonCode/svn-scm/badges/score.svg)](https://www.bithound.io/github/JohnstonCode/svn-scm)
-[![bitHound Dependencies](https://www.bithound.io/github/JohnstonCode/svn-scm/badges/dependencies.svg)](https://www.bithound.io/github/JohnstonCode/svn-scm/master/dependencies/npm)
-[![bitHound Dev Dependencies](https://www.bithound.io/github/JohnstonCode/svn-scm/badges/devDependencies.svg)](https://www.bithound.io/github/JohnstonCode/svn-scm/master/dependencies/npm)
-[![bitHound Code](https://www.bithound.io/github/JohnstonCode/svn-scm/badges/code.svg)](https://www.bithound.io/github/JohnstonCode/svn-scm)
+[![CodeFactor](https://www.codefactor.io/repository/github/johnstoncode/svn-scm/badge)](https://www.codefactor.io/repository/github/johnstoncode/svn-scm)
 
 [![Average time to resolve an issue](https://isitmaintained.com/badge/resolution/JohnstonCode/svn-scm.svg)](https://isitmaintained.com/project/JohnstonCode/svn-scm "Average time to resolve an issue")
 [![Percentage of issues still open](https://isitmaintained.com/badge/open/JohnstonCode/svn-scm.svg)](https://isitmaintained.com/project/JohnstonCode/svn-scm "Percentage of issues still open")
@@ -114,3 +112,4 @@ Example:
 |`svn.update.ignoreExternals`|Set to ignore externals definitions on update (add --ignore-externals)|`true`|
 |`svn.default.encoding`|Encoding of svn output if the output is not utf-8. When this parameter is null, the encoding is automatically detected. Example: 'windows-1252'.|`null`|
 |`svn.showUpdateMessage`|Show the update message when update is run|`true`|
+|`svn.remoteChanges.checkFrequency`|Set the interval in seconds to check changed files on remote repository and show in statusbar. 0 to disable|`300`|

@@ -17,7 +17,7 @@ export async function inputCommitMessage(
     });
   }
 
-  if (!message) {
+  if (message === "") {
     const allowEmpty = await window.showWarningMessage(
       "Do you really want to commit an empty message?",
       { modal: true },

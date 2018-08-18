@@ -1,51 +1,13 @@
 import * as xml2js from "xml2js";
-import { camelcase } from "./util";
-
-interface IWcStatus {
-  locked: boolean;
-  switched: boolean;
-}
-
-export interface IFileStatus {
-  status: string;
-  props: string;
-  path: string;
-  changelist?: string;
-  rename?: string;
-  wcStatus: IWcStatus;
-  commit?: {
-    revision: string;
-    author: string;
-    date: string;
-  };
-  repositoryUuid?: string;
-  [key: number]: IFileStatus;
-}
-
-export interface IEntry {
-  path: string;
-  wcStatus: {
-    item: string;
-    revision: string;
-    props: string;
-    movedTo?: string;
-    movedFrom?: string;
-    wcLocked?: string;
-    switched?: string;
-    commit: {
-      revision: string;
-      author: string;
-      date: string;
-    };
-  };
-}
+import { xml2jsParseSettings } from "./common/constants";
+import { IEntry, IFileStatus, IWcStatus } from "./common/types";
 
 function processEntry(
   entry: IEntry | IEntry[],
   changelist?: string
 ): IFileStatus[] {
   if (Array.isArray(entry)) {
-    let list: IFileStatus[] = [];
+    const list: IFileStatus[] = [];
     entry.forEach((e: any) => {
       const r = processEntry(e, changelist);
       if (r) {
@@ -60,12 +22,13 @@ function processEntry(
     switched: !!entry.wcStatus.switched && entry.wcStatus.switched === "true"
   };
 
-  let r: IFileStatus = {
-    changelist: changelist,
+  const r: IFileStatus = {
+    changelist,
     path: entry.path,
     status: entry.wcStatus.item,
     props: entry.wcStatus.props,
-    wcStatus: wcStatus
+    wcStatus,
+    reposStatus: entry.reposStatus
   };
 
   if (entry.wcStatus.movedTo && r.status === "deleted") {
@@ -106,24 +69,14 @@ function xmlToStatus(xml: any) {
 
 export async function parseStatusXml(content: string): Promise<IFileStatus[]> {
   return new Promise<IFileStatus[]>((resolve, reject) => {
-    xml2js.parseString(
-      content,
-      {
-        mergeAttrs: true,
-        explicitRoot: false,
-        explicitArray: false,
-        attrNameProcessors: [camelcase],
-        tagNameProcessors: [camelcase]
-      },
-      (err, result) => {
-        if (err) {
-          reject();
-        }
-
-        const statusList: IFileStatus[] = xmlToStatus(result);
-
-        resolve(statusList);
+    xml2js.parseString(content, xml2jsParseSettings, (err, result) => {
+      if (err) {
+        reject();
       }
-    );
+
+      const statusList: IFileStatus[] = xmlToStatus(result);
+
+      resolve(statusList);
+    });
   });
 }

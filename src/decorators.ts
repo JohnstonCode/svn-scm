@@ -86,7 +86,7 @@ function _sequentialize<T>(fn: Function, key: string): Function {
   return function(...args: any[]) {
     const currentPromise =
       (this[currentKey] as Promise<any>) || Promise.resolve(null);
-    const run = async () => await fn.apply(this, args);
+    const run = async () => fn.apply(this, args);
     this[currentKey] = currentPromise.then(run, run);
     return this[currentKey];
   };

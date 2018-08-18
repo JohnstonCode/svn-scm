@@ -1,14 +1,16 @@
+/* tslint:disable */
+
 import * as cp from "child_process";
-import * as path from "path";
+import { ChildProcess, SpawnOptions } from "child_process";
 import * as fs from "fs";
 import * as os from "os";
-import { Uri, extensions, window } from "vscode";
-import { SpawnOptions, ChildProcess } from "child_process";
-import { timeout } from "../util";
 import { type } from "os";
+import * as path from "path";
+import { extensions, Uri, window } from "vscode";
+import { timeout } from "../util";
 
 const tempDir = os.tmpdir();
-let tempDirList: string[] = [];
+const tempDirList: string[] = [];
 
 export function getSvnUrl(uri: Uri) {
   const url = uri.toString();
@@ -21,7 +23,7 @@ export function spawn(
   args?: string[],
   options?: SpawnOptions
 ): ChildProcess {
-  let proc = cp.spawn(command, args, options);
+  const proc = cp.spawn(command, args, options);
 
   // let fullCommand = "command: " + command;
 
@@ -62,7 +64,7 @@ export function createRepoServer() {
       destroyPath(fullpath);
     }
 
-    let proc = spawn("svnadmin", ["create", dirname], { cwd: tempDir });
+    const proc = spawn("svnadmin", ["create", dirname], { cwd: tempDir });
 
     proc.once("exit", exitCode => {
       if (exitCode === 0) {
@@ -80,8 +82,8 @@ export function importToRepoServer(
   cwd?: string
 ) {
   return new Promise<void>((resolve, reject) => {
-    let proc = spawn("svn", ["import", path, url, "-m", message], {
-      cwd: cwd
+    const proc = spawn("svn", ["import", path, url, "-m", message], {
+      cwd
     });
 
     proc.once("exit", exitCode => {
@@ -115,7 +117,7 @@ export function createRepoCheckout(url: string) {
   return new Promise<Uri>((resolve, reject) => {
     const fullpath = newTempDir("svn_checkout_");
 
-    let proc = spawn("svn", ["checkout", url, fullpath], { cwd: tempDir });
+    const proc = spawn("svn", ["checkout", url, fullpath], { cwd: tempDir });
 
     proc.once("exit", exitCode => {
       if (exitCode === 0) {
@@ -139,7 +141,7 @@ export async function destroyPath(fullPath: string) {
   }
 
   const files = fs.readdirSync(fullPath);
-  for (let file of files) {
+  for (const file of files) {
     destroyPath(path.join(fullPath, file));
   }
 

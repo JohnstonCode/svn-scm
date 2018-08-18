@@ -1,11 +1,9 @@
+/* tslint:disable:max-line-length */
+
 import { QuickPickItem } from "vscode";
+import { IConflictOption } from "./common/types";
 
-interface ConflictOption {
-  label: string;
-  description: string;
-}
-
-const ConflictOptions = [
+const conflictOptions = [
   {
     label: "base",
     description:
@@ -39,7 +37,7 @@ const ConflictOptions = [
 ];
 
 class ConflictItem implements QuickPickItem {
-  constructor(private option: ConflictOption) {}
+  constructor(private option: IConflictOption) {}
 
   get label(): string {
     return this.option.label;
@@ -51,5 +49,5 @@ class ConflictItem implements QuickPickItem {
 }
 
 export function getConflictPickOptions() {
-  return ConflictOptions.map(option => new ConflictItem(option));
+  return conflictOptions.map(option => new ConflictItem(option));
 }

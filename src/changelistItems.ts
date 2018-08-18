@@ -1,62 +1,10 @@
-import {
-  QuickPickItem,
-  SourceControlResourceGroup,
-  window,
-  workspace
-} from "vscode";
-import { Repository } from "./repository";
+import { QuickPickItem, window } from "vscode";
 import { configuration } from "./helpers/configuration";
-
-export class ChangeListItem implements QuickPickItem {
-  constructor(protected group: SourceControlResourceGroup) {}
-
-  get label(): string {
-    return this.group.id.replace(/^changelist-/, "");
-  }
-
-  get description(): string {
-    return this.group.label;
-  }
-  get resourceGroup(): SourceControlResourceGroup {
-    return this.group;
-  }
-}
-
-export class NewChangeListItem implements QuickPickItem {
-  constructor() {}
-
-  get label(): string {
-    return "$(plus) New changelist";
-  }
-
-  get description(): string {
-    return "Create a new change list";
-  }
-}
-
-export class IgnoredChangeListItem implements QuickPickItem {
-  constructor(protected _id: string) {}
-
-  get label(): string {
-    return this._id;
-  }
-
-  get description(): string {
-    return "Ignored on commit";
-  }
-}
-
-export class RemoveChangeListItem implements QuickPickItem {
-  constructor() {}
-
-  get label(): string {
-    return "$(dash) Remove changelist";
-  }
-
-  get description(): string {
-    return "Remove changelist of file(s)";
-  }
-}
+import ChangeListItem from "./quickPickItems/changeListItem";
+import IgnoredChangeListItem from "./quickPickItems/ignoredChangeListItem";
+import NewChangeListItem from "./quickPickItems/newChangeListItem";
+import RemoveChangeListItem from "./quickPickItems/removeChangeListItem";
+import { Repository } from "./repository";
 
 export function getChangelistPickOptions(
   repository: Repository,
@@ -75,7 +23,7 @@ export function getChangelistPickOptions(
     "sourceControl.ignoreOnCommit"
   );
   for (const ignoreOnCommit of ignoreOnCommitList) {
-    if(!picks.some(p => p.label === ignoreOnCommit)){
+    if (!picks.some(p => p.label === ignoreOnCommit)) {
       picks.push(new IgnoredChangeListItem(ignoreOnCommit));
     }
   }
@@ -184,7 +132,7 @@ export async function getPatchChangelist(repository: Repository) {
   const picks: QuickPickItem[] = patchChangelistOptions(repository);
 
   if (!picks.length) {
-    window.showErrorMessage('No changelists to pick from');
+    window.showErrorMessage("No changelists to pick from");
     return;
   }
 

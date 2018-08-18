@@ -1,37 +1,29 @@
 import { Uri } from "vscode";
+import {
+  ISvnUriExtraParams,
+  ISvnUriParams,
+  SvnUriAction
+} from "./common/types";
 
-export enum SvnUriAction {
-  LOG = "LOG",
-  PATCH = "PATCH",
-  SHOW = "SHOW"
-}
-
-export interface SvnUriExtraParams {
-  ref?: string;
-  limit?: string;
-  [key: string]: any;
-}
-
-export interface SvnUriParams {
-  action: SvnUriAction;
-  fsPath: string;
-  extra: SvnUriExtraParams;
-}
-
-export function fromSvnUri(uri: Uri): SvnUriParams {
+export function fromSvnUri(uri: Uri): ISvnUriParams {
   return JSON.parse(uri.query);
 }
 
-export function toSvnUri(uri: Uri, action: SvnUriAction, extra: SvnUriExtraParams = {}): Uri {
-  const params: SvnUriParams = {
-    action: action,
+export function toSvnUri(
+  uri: Uri,
+  action: SvnUriAction,
+  extra: ISvnUriExtraParams = {},
+  replaceFileExtension = false
+): Uri {
+  const params: ISvnUriParams = {
+    action,
     fsPath: uri.fsPath,
-    extra: extra
+    extra
   };
 
   return uri.with({
     scheme: "svn",
-    path: uri.path,
+    path: replaceFileExtension ? uri.path + ".svn" : uri.path,
     query: JSON.stringify(params)
   });
 }
