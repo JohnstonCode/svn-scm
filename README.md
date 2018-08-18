@@ -107,6 +107,7 @@ Example:
 |`svn.sourceControl.combineExternalIfSameServer`|Combine the svn external in the main if is from the same server.|`false`|
 |`svn.sourceControl.countUnversioned`|Allow to count unversioned files in status count|`true`|
 |`svn.sourceControl.countIgnoreOnCommit`|Allow to count ignored files to commit in status count|`false`|
+|`svn.sourceControl.hideUnversioned`|Hide unversioned files in Source Control UI|`false`|
 |`svn.log.length`|Number of commit messages to log|`50`|
 |`svn.showOutput`|Show the output window when the extension starts|`false`|
 |`svn.conflicts.autoResolve`|Set file to status resolved after fix conflictss|`false`|

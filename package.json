@@ -634,6 +634,11 @@
             "Allow to count ignored files to commit in status count",
           "default": false
         },
+        "svn.sourceControl.hideUnversioned": {
+          "type": "boolean",
+          "description": "Hide unversioned files in Source Control UI",
+          "default": false
+        },
         "svn.log.length": {
           "type": "number",
           "minimum": 1,
