@@ -40,6 +40,7 @@
     "tools:genReadme": "node ./out/tools/generateConfigSectionForReadme.js",
     "precommit": "pretty-quick --staged && npm run lint",
     "lint": "tslint -p ./",
+    "lint:fix": "tslint --fix -p ./",
     "semantic-release": "semantic-release",
     "build": "tsc -p ."
   },
@@ -70,6 +71,14 @@
     "semantic-release-vsce": "^2.1.2"
   },
   "contributes": {
+    "views": {
+      "explorer": [
+        {
+          "id": "svn",
+          "name": "SVN"
+        }
+      ]
+    },
     "commands": [
       {
         "command": "svn.add",
@@ -240,6 +249,19 @@
         "command": "svn.renameExplorer",
         "title": "Rename with SVN",
         "category": "SVN"
+      },
+      {
+        "command": "svn.treeview.refreshProvider",
+        "title": "Refresh",
+        "icon": {
+          "light": "icons/light/refresh.svg",
+          "dark": "icons/dark/refresh.svg"
+        }
+      },
+      {
+        "command": "svn.treeview.pullIncomingChange",
+        "title": "Pull incoming change",
+        "category": "SVN"
       }
     ],
     "menus": {
@@ -339,6 +361,31 @@
         {
           "command": "svn.renameExplorer",
           "when": "false"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "svn.treeview.refreshProvider",
+          "when": "view == svn",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "svn.openHEADFile",
+          "when": "viewItem =~ /incomingChange:(added|modified)/"
+        },
+        {
+          "command": "svn.openFile",
+          "when": "viewItem =~ /incomingChange:(modified|deleted)/"
+        },
+        {
+          "command": "svn.treeview.pullIncomingChange",
+          "when": "viewItem =~ /incomingChange:*/"
+        },
+        {
+          "command": "svn.openChangeHead",
+          "when": "viewItem == incomingChange:modified"
         }
       ],
       "scm/title": [

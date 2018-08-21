@@ -58,7 +58,7 @@ export class Repository {
   public statusBar: SvnStatusBar;
   public changes: ISvnResourceGroup;
   public unversioned: ISvnResourceGroup;
-  public remoteChanged?: ISvnResourceGroup;
+  public remoteChanges?: Resource[];
   public changelists: Map<string, ISvnResourceGroup> = new Map();
   public conflicts: ISvnResourceGroup;
   public statusIgnored: IFileStatus[] = [];
@@ -122,8 +122,8 @@ export class Repository {
       group.resourceStates = [];
     });
 
-    if (this.remoteChanged) {
-      this.remoteChanged.dispose();
+    if (this.remoteChanges) {
+      this.remoteChanges = [];
     }
 
     this.isIncomplete = false;
@@ -321,7 +321,7 @@ export class Repository {
     const external: any[] = [];
     const conflicts: any[] = [];
     const changelists: Map<string, Resource[]> = new Map();
-    const remoteChanged: any[] = [];
+    const remoteChanges: any[] = [];
 
     this.statusExternal = [];
     this.statusIgnored = [];
@@ -406,7 +406,7 @@ export class Repository {
         : undefined;
 
       if (status.reposStatus) {
-        remoteChanged.push(
+        remoteChanges.push(
           new Resource(
             uri,
             status.reposStatus.item,
@@ -515,18 +515,14 @@ export class Repository {
       /**
        * Destroy and create for keep at last position
        */
-      if (this.remoteChanged) {
-        this.remoteChanged.dispose();
+      if (this.remoteChanges) {
+        this.remoteChanges = [];
       }
-      this.remoteChanged = this.sourceControl.createResourceGroup(
-        "remotechanged",
-        "Remote Changes"
-      ) as ISvnResourceGroup;
-      this.remoteChanged.hideWhenEmpty = true;
-      this.remoteChanged.resourceStates = remoteChanged;
 
-      if (remoteChanged.length !== this.remoteChangedFiles) {
-        this.remoteChangedFiles = remoteChanged.length;
+      this.remoteChanges = remoteChanges;
+
+      if (remoteChanges.length !== this.remoteChangedFiles) {
+        this.remoteChangedFiles = remoteChanges.length;
         this._onDidChangeRemoteChangedFiles.fire();
       }
     }
@@ -639,6 +635,14 @@ export class Repository {
   ): Promise<string> {
     return this.run<string>(Operation.Update, async () => {
       const response = await this.repository.update(ignoreExternals);
+      this.updateRemoteChangedFiles();
+      return response;
+    });
+  }
+
+  public async pullIncomingChange(path: string) {
+    return this.run<string>(Operation.Update, async () => {
+      const response = await this.repository.pullIncomingChange(path);
       this.updateRemoteChangedFiles();
       return response;
     });
