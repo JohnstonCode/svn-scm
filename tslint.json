@@ -36,5 +36,8 @@
       ]
     }
   },
-  "rulesDirectory": []
+  "rulesDirectory": [],
+  "linterOptions": {
+    "exclude": ["./src/tools"]
+  }
 }
