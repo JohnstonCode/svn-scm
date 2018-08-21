@@ -1,3 +1,4 @@
+import * as path from "path";
 import { Uri } from "vscode";
 import {
   ISvnUriExtraParams,
@@ -26,4 +27,9 @@ export function toSvnUri(
     path: replaceFileExtension ? uri.path + ".svn" : uri.path,
     query: JSON.stringify(params)
   });
+}
+
+export function getIconUri(iconName: string, theme: string): Uri {
+  const iconsRootPath = path.join(__dirname, "..", "icons");
+  return Uri.file(path.join(iconsRootPath, theme, `${iconName}.svg`));
 }

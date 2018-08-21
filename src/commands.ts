@@ -35,6 +35,8 @@ import { inputCommitMessage } from "./messages";
 import { Model } from "./model";
 import { Repository } from "./repository";
 import { Resource } from "./resource";
+import IncommingChangeNode from "./treeView/nodes/incomingChangeNode";
+import IncomingChangeNode from "./treeView/nodes/incomingChangeNode";
 import { fromSvnUri, toSvnUri } from "./uri";
 import {
   fixPathSeparator,
@@ -367,7 +369,7 @@ export class SvnCommands implements IDisposable {
 
   @command("svn.openFile")
   public async openFile(
-    arg?: Resource | Uri,
+    arg?: Resource | Uri | IncommingChangeNode,
     ...resourceStates: SourceControlResourceState[]
   ): Promise<void> {
     const preserveFocus = arg instanceof Resource;
@@ -380,6 +382,16 @@ export class SvnCommands implements IDisposable {
       } else if (arg.scheme === "file") {
         uris = [arg];
       }
+    } else if (arg instanceof IncommingChangeNode) {
+      const resource = new Resource(
+        arg.uri,
+        arg.type,
+        undefined,
+        arg.props,
+        true
+      );
+
+      uris = [resource.resourceUri];
     } else {
       let resource = arg;
 
@@ -426,13 +438,17 @@ export class SvnCommands implements IDisposable {
   }
 
   @command("svn.openHEADFile")
-  public async openHEADFile(arg?: Resource | Uri): Promise<void> {
+  public async openHEADFile(
+    arg?: Resource | Uri | IncommingChangeNode
+  ): Promise<void> {
     let resource: Resource | undefined;
 
     if (arg instanceof Resource) {
       resource = arg;
     } else if (arg instanceof Uri) {
       resource = this.getSCMResource(arg);
+    } else if (arg instanceof IncommingChangeNode) {
+      resource = new Resource(arg.uri, arg.type, undefined, arg.props, true);
     } else {
       resource = this.getSCMResource();
     }
@@ -472,14 +488,14 @@ export class SvnCommands implements IDisposable {
 
   @command("svn.openChangeHead")
   public async openChangeHead(
-    arg?: Resource | Uri,
+    arg?: Resource | Uri | IncommingChangeNode,
     ...resourceStates: SourceControlResourceState[]
   ): Promise<void> {
     return this.openChange(arg, "HEAD", resourceStates);
   }
 
   public async openChange(
-    arg?: Resource | Uri,
+    arg?: Resource | Uri | IncommingChangeNode,
     against?: string,
     resourceStates?: SourceControlResourceState[]
   ): Promise<void> {
@@ -492,6 +508,16 @@ export class SvnCommands implements IDisposable {
       if (resource !== undefined) {
         resources = [resource];
       }
+    } else if (arg instanceof IncommingChangeNode) {
+      const resource = new Resource(
+        arg.uri,
+        arg.type,
+        undefined,
+        arg.props,
+        true
+      );
+
+      resources = [resource];
     } else {
       let resource: Resource | undefined;
 
@@ -747,6 +773,29 @@ export class SvnCommands implements IDisposable {
       );
 
       const result = await repository.updateRevision(ignoreExternals);
+
+      if (showUpdateMessage) {
+        window.showInformationMessage(result);
+      }
+    } catch (error) {
+      console.error(error);
+      window.showErrorMessage("Unable to update");
+    }
+  }
+
+  @command("svn.treeview.pullIncomingChange")
+  public async pullIncomingChange(
+    incomingChange: IncomingChangeNode
+  ): Promise<void> {
+    try {
+      const showUpdateMessage = configuration.get<boolean>(
+        "showUpdateMessage",
+        true
+      );
+
+      const result = await incomingChange.repository.pullIncomingChange(
+        incomingChange.uri.fsPath
+      );
 
       if (showUpdateMessage) {
         window.showInformationMessage(result);
