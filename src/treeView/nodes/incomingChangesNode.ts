@@ -26,13 +26,15 @@ export default class IncomingChangesNode implements BaseNode {
       return [];
     }
 
-    const changes = this.repository.remoteChanges.map(remoteChange => {
-      return new IncommingChangeNode(
-        remoteChange.resourceUri,
-        remoteChange.type,
-        this.repository
-      );
-    });
+    const changes = this.repository.remoteChanges.resourceStates.map(
+      remoteChange => {
+        return new IncommingChangeNode(
+          remoteChange.resourceUri,
+          remoteChange.type,
+          this.repository
+        );
+      }
+    );
 
     if (changes.length === 0) {
       return [new NoIncomingChangesNode()];

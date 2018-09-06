@@ -58,7 +58,7 @@ export class Repository {
   public statusBar: SvnStatusBar;
   public changes: ISvnResourceGroup;
   public unversioned: ISvnResourceGroup;
-  public remoteChanges?: Resource[];
+  public remoteChanges?: ISvnResourceGroup;
   public changelists: Map<string, ISvnResourceGroup> = new Map();
   public conflicts: ISvnResourceGroup;
   public statusIgnored: IFileStatus[] = [];
@@ -123,7 +123,7 @@ export class Repository {
     });
 
     if (this.remoteChanges) {
-      this.remoteChanges = [];
+      this.remoteChanges.dispose();
     }
 
     this.isIncomplete = false;
@@ -516,10 +516,16 @@ export class Repository {
        * Destroy and create for keep at last position
        */
       if (this.remoteChanges) {
-        this.remoteChanges = [];
+        this.remoteChanges.dispose();
       }
 
-      this.remoteChanges = remoteChanges;
+      this.remoteChanges = this.sourceControl.createResourceGroup(
+        "remotechanges",
+        "Remote Changes"
+      ) as ISvnResourceGroup;
+
+      this.remoteChanges.hideWhenEmpty = true;
+      this.remoteChanges.resourceStates = remoteChanges;
 
       if (remoteChanges.length !== this.remoteChangedFiles) {
         this.remoteChangedFiles = remoteChanges.length;
