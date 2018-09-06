@@ -782,28 +782,50 @@ export class SvnCommands implements IDisposable {
       window.showErrorMessage("Unable to update");
     }
   }
-
+  // TODO: clean this up
   @command("svn.treeview.pullIncomingChange")
-  public async pullIncomingChange(
-    incomingChange: IncomingChangeNode
-  ): Promise<void> {
-    try {
-      const showUpdateMessage = configuration.get<boolean>(
-        "showUpdateMessage",
-        true
-      );
+  public async pullIncomingChange(...changes: any[]): Promise<void> {
+    const showUpdateMessage = configuration.get<boolean>(
+      "showUpdateMessage",
+      true
+    );
 
-      const result = await incomingChange.repository.pullIncomingChange(
-        incomingChange.uri.fsPath
-      );
+    if (changes[0] instanceof IncomingChangeNode) {
+      try {
+        const incomingChange = changes[0];
 
-      if (showUpdateMessage) {
-        window.showInformationMessage(result);
+        const result = await incomingChange.repository.pullIncomingChange(
+          incomingChange.uri.fsPath
+        );
+
+        if (showUpdateMessage) {
+          window.showInformationMessage(result);
+        }
+      } catch (error) {
+        console.error(error);
+        window.showErrorMessage("Unable to update");
       }
-    } catch (error) {
-      console.error(error);
-      window.showErrorMessage("Unable to update");
+
+      return;
     }
+
+    const uris = changes.map(change => change.resourceUri);
+
+    await this.runByRepository(uris, async (repository, resources) => {
+      if (!repository) {
+        return;
+      }
+
+      const files = resources.map(resource => resource.fsPath);
+
+      files.forEach(async path => {
+        const result = await repository.pullIncomingChange(path);
+
+        if (showUpdateMessage) {
+          window.showInformationMessage(result);
+        }
+      });
+    });
   }
 
   private async showDiffPath(repository: Repository, content: string) {

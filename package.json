@@ -260,7 +260,7 @@
       },
       {
         "command": "svn.treeview.pullIncomingChange",
-        "title": "Pull incoming change",
+        "title": "Pull selected changes",
         "category": "SVN"
       }
     ],
@@ -511,6 +511,11 @@
           "command": "svn.addToIgnoreSCM",
           "when": "config.svn.enabled && scmProvider == svn && scmResourceGroup == unversioned",
           "group": "1_modification"
+        },
+        {
+          "command": "svn.treeview.pullIncomingChange",
+          "when": "config.svn.enabled && scmProvider == svn && scmResourceGroup == remotechanges",
+          "group": "3_modification"
         }
       ],
       "scm/change/title": [
