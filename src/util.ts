@@ -107,7 +107,7 @@ export function camelcase(name: string) {
 
 /* tslint:disable:no-empty */
 
-let hasDecorationProvider = true;
+let hasDecorationProvider = false;
 export function hasSupportToDecorationProvider() {
   return hasDecorationProvider;
 }
