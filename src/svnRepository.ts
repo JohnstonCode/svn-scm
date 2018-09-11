@@ -1,5 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
+import * as tmp from "tmp";
 import { Uri, workspace } from "vscode";
 import {
   ICpOptions,
@@ -166,12 +167,39 @@ export class Repository {
     if (fs.existsSync(path.join(this.workspaceRoot, message))) {
       args.push("--force-log");
     }
-    args.push("-m", message);
+
+    let tmpFile: tmp.SynchrounousResult | undefined;
+
+    /**
+     * For message with line break or non:
+     * \x00-\x7F -> ASCII
+     * \x80-\xFF -> Latin
+     * Use a file for commit message
+     */
+    if (/\n|[^\x00-\x7F\x80-\xFF]/.test(message)) {
+      tmp.setGracefulCleanup();
+
+      tmpFile = tmp.fileSync({
+        prefix: "svn-commit-message-"
+      });
+
+      fs.writeFileSync(tmpFile.name, message, "UTF-8");
+
+      args.push("-F", tmpFile.name);
+      args.push("--encoding", "UTF-8");
+    } else {
+      args.push("-m", message);
+    }
 
     // Prevents commit the files inside the folder
     args.push("--depth", "empty");
 
     const result = await this.exec(args);
+
+    // Remove temporary file if exists
+    if (tmpFile) {
+      tmpFile.removeCallback();
+    }
 
     const matches = result.stdout.match(/Committed revision (.*)\./i);
     if (matches && matches[0]) {

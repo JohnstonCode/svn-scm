@@ -6,11 +6,13 @@ import * as fs from "fs";
 import * as os from "os";
 import { type } from "os";
 import * as path from "path";
+import * as tmp from "tmp";
 import { extensions, Uri, window } from "vscode";
 import { timeout } from "../util";
 
-const tempDir = os.tmpdir();
-const tempDirList: string[] = [];
+tmp.setGracefulCleanup();
+
+const tempDirList: tmp.SynchrounousResult[] = [];
 
 export function getSvnUrl(uri: Uri) {
   const url = uri.toString();
@@ -48,11 +50,14 @@ export function spawn(
 }
 
 export function newTempDir(prefix: string) {
-  const fullpath = fs.mkdtempSync(path.join(tempDir, prefix));
+  const dir = tmp.dirSync({
+    prefix,
+    unsafeCleanup: true
+  });
 
-  tempDirList.push(fullpath);
+  tempDirList.push(dir);
 
-  return fullpath;
+  return dir.name;
 }
 
 export function createRepoServer() {
@@ -64,7 +69,9 @@ export function createRepoServer() {
       destroyPath(fullpath);
     }
 
-    const proc = spawn("svnadmin", ["create", dirname], { cwd: tempDir });
+    const proc = spawn("svnadmin", ["create", dirname], {
+      cwd: path.dirname(fullpath)
+    });
 
     proc.once("exit", exitCode => {
       if (exitCode === 0) {
@@ -117,7 +124,9 @@ export function createRepoCheckout(url: string) {
   return new Promise<Uri>((resolve, reject) => {
     const fullpath = newTempDir("svn_checkout_");
 
-    const proc = spawn("svn", ["checkout", url, fullpath], { cwd: tempDir });
+    const proc = spawn("svn", ["checkout", url, fullpath], {
+      cwd: path.dirname(fullpath)
+    });
 
     proc.once("exit", exitCode => {
       if (exitCode === 0) {
@@ -159,9 +168,11 @@ export async function destroyPath(fullPath: string) {
 }
 
 export function destroyAllTempPaths() {
-  let path;
-  while ((path = tempDirList.shift())) {
-    destroyPath(path);
+  let dir;
+  while ((dir = tempDirList.shift())) {
+    try {
+      dir.removeCallback();
+    } catch (error) {}
   }
 }
 
