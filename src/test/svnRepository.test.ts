@@ -18,7 +18,7 @@ suite("Svn Repository Tests", () => {
     svn = null;
   });
 
-  test("Test removeAbsolutePath", async () => {
+  test("Test getStatus", async () => {
     svn = new Svn(options);
     const repository = new Repository(svn, "/tmp", "/tpm");
     repository.exec = async (args: string[], options?: ICpOptions) => {
@@ -34,5 +34,26 @@ suite("Svn Repository Tests", () => {
     assert.equal(status[0].path, "test.php");
     assert.equal(status[1].path, "newfiletester.php");
     assert.equal(status[2].path, "added.php");
+  });
+
+  test("Test rename", async () => {
+    svn = new Svn(options);
+    const repository = new Repository(svn, "/tmp", "/tpm");
+    repository.exec = async (args: string[], options?: ICpOptions) => {
+      assert.equal(args[0].includes("rename"), true);
+      assert.equal(args[1].includes("test.php"), true);
+      assert.equal(args[2].includes("tester.php"), true);
+
+      return {
+        exitCode: 1,
+        stderr: "",
+        stdout: `
+        A         test.php
+        D         tester.php
+        `
+      };
+    };
+
+    await repository.rename("test.php", "tester.php");
   });
 });
