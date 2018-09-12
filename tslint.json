@@ -38,6 +38,6 @@
   },
   "rulesDirectory": [],
   "linterOptions": {
-    "exclude": ["./src/tools"]
+    "exclude": ["./src/tools", "./src/test/**/*"]
   }
 }
