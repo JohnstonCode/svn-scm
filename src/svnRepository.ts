@@ -45,6 +45,10 @@ export class Repository {
 
     file = path.relative(this.workspaceRoot, file);
 
+    if (file === "") {
+      file = ".";
+    }
+
     // Fix Peg Revision Algorithm (http://svnbook.red-bean.com/en/1.8/svn.advanced.pegrevs.html)
     if (/@/.test(file)) {
       file += "@";

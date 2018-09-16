@@ -376,7 +376,6 @@ export class Repository {
       if (status.path === ".") {
         this.isIncomplete = status.status === Status.INCOMPLETE;
         this.needCleanUp = status.wcStatus.locked;
-        continue;
       }
 
       // If exists a switched item, the repository is incomplete
