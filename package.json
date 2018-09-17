@@ -741,6 +741,11 @@
           "type": "number",
           "description": "Set the interval in seconds to check changed files on remote repository and show in statusbar. 0 to disable",
           "default": 300
+        },
+        "svn.sourceControl.hideUnversioned": {
+          "type": "boolean",
+          "description": "Hide unversioned files in Source Control UI",
+          "default": false
         }
       }
     }

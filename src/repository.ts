@@ -372,6 +372,10 @@ export class Repository {
       );
     });
 
+    const hideUnversioned = configuration.get<boolean>(
+      "sourceControl.hideUnversioned"
+    );
+
     for (const status of statusesRepository) {
       if (status.path === ".") {
         this.isIncomplete = status.status === Status.INCOMPLETE;
@@ -435,6 +439,10 @@ export class Repository {
       } else if (status.status === Status.CONFLICTED) {
         conflicts.push(resource);
       } else if (status.status === Status.UNVERSIONED) {
+        if (hideUnversioned) {
+          continue;
+        }
+
         const matches = status.path.match(
           /(.+?)\.(mine|working|merge-\w+\.r\d+|r\d+)$/
         );
