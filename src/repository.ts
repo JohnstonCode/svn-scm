@@ -68,6 +68,7 @@ export class Repository {
   public remoteChangedFiles: number = 0;
   public isIncomplete: boolean = false;
   public needCleanUp: boolean = false;
+  private remoteChangedUpdateInterval?: NodeJS.Timer;
 
   private lastPromptAuth?: Thenable<boolean | undefined>;
 
@@ -129,6 +130,7 @@ export class Repository {
     this.isIncomplete = false;
     this.needCleanUp = false;
   }
+
   get root(): string {
     return this.repository.root;
   }
@@ -234,27 +236,33 @@ export class Repository {
     this.disposables.push(this.unversioned);
     this.disposables.push(this.conflicts);
 
-    const updateFreqNew = configuration.get<number>(
-      "remoteChanges.checkFrequency",
-      300
+    // Dispose the setInterval of Remote Changes
+    this.disposables.push(
+      toDisposable(() => {
+        if (this.remoteChangedUpdateInterval) {
+          clearInterval(this.remoteChangedUpdateInterval);
+        }
+      })
     );
-    if (updateFreqNew) {
-      const interval = setInterval(() => {
-        this.updateRemoteChangedFiles();
-      }, 1000 * updateFreqNew);
 
-      this.disposables.push(
-        toDisposable(() => {
-          clearInterval(interval);
-        })
-      );
-    }
+    this.createRemoteChangedInterval();
+
+    this.updateRemoteChangedFiles();
+
+    // On change config, dispose current interval and create a new.
+    configuration.onDidChange(e => {
+      if (e.affectsConfiguration("svn.remoteChanges.checkFrequency")) {
+        if (this.remoteChangedUpdateInterval) {
+          clearInterval(this.remoteChangedUpdateInterval);
+        }
+
+        this.createRemoteChangedInterval();
+
+        this.updateRemoteChangedFiles();
+      }
+    });
 
     this.status();
-
-    if (updateFreqNew) {
-      this.updateRemoteChangedFiles();
-    }
 
     this.disposables.push(
       workspace.onDidSaveTextDocument(document => {
@@ -263,9 +271,37 @@ export class Repository {
     );
   }
 
+  private createRemoteChangedInterval() {
+    const updateFreq = configuration.get<number>(
+      "remoteChanges.checkFrequency",
+      300
+    );
+
+    if (!updateFreq) {
+      return;
+    }
+
+    this.remoteChangedUpdateInterval = setInterval(() => {
+      this.updateRemoteChangedFiles();
+    }, 1000 * updateFreq);
+  }
+
   @debounce(1000)
   public async updateRemoteChangedFiles() {
-    this.run(Operation.StatusRemote);
+    const updateFreq = configuration.get<number>(
+      "remoteChanges.checkFrequency",
+      300
+    );
+
+    if (updateFreq) {
+      this.run(Operation.StatusRemote);
+    } else {
+      // Remove list of remote changes
+      if (this.remoteChanges) {
+        this.remoteChanges.dispose();
+        this.remoteChanges = undefined;
+      }
+    }
   }
 
   private onFSChange(uri: Uri): void {
@@ -339,6 +375,7 @@ export class Repository {
         includeExternals: combineExternal,
         checkRemoteChanges
       })) || [];
+
     const fileConfig = workspace.getConfiguration("files", Uri.file(this.root));
 
     const filesToExclude = fileConfig.get<any>("exclude");
