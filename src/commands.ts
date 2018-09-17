@@ -707,7 +707,17 @@ export class SvnCommands implements IDisposable {
 
     try {
       if (branch.isNew) {
-        await repository.branch(branch.path);
+        const commitMessage = await window.showInputBox({
+          value: `Created new branch ${branch.name}`,
+          prompt: `Commit message for create branch ${branch.name}`
+        });
+
+        // If press ESC on commit message
+        if (commitMessage === undefined) {
+          return;
+        }
+
+        await repository.newBranch(branch.path, commitMessage);
       } else {
         await repository.switchBranch(branch.path);
       }

@@ -171,6 +171,7 @@ suite("Commands Tests", () => {
     testUtil.overrideNextShowQuickPick(0);
     testUtil.overrideNextShowQuickPick(1);
     testUtil.overrideNextShowInputBox("test");
+    testUtil.overrideNextShowInputBox("Created new branch test");
     await commands.executeCommand("svn.switchBranch");
 
     const repository = model.getRepository(checkoutDir) as Repository;

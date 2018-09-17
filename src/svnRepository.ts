@@ -336,7 +336,10 @@ export class Repository {
     return branches;
   }
 
-  public async branch(name: string) {
+  public async newBranch(
+    name: string,
+    commitMessage: string = "Created new branch"
+  ) {
     const repoUrl = await this.getRepoUrl();
     const newBranch = repoUrl + "/" + name;
     const info = await this.getInfo();
@@ -346,7 +349,7 @@ export class Repository {
       currentBranch,
       newBranch,
       "-m",
-      `Created new branch ${name}`
+      commitMessage
     ]);
 
     await this.switchBranch(name);

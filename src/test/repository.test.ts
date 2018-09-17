@@ -133,7 +133,7 @@ suite("Repository Tests", () => {
     }
     assert.ok(newRepository);
 
-    await newRepository.branch("branches/test");
+    await newRepository.newBranch("branches/test");
     const currentBranch = await newRepository.getCurrentBranch();
 
     assert.equal(currentBranch, "branches/test");

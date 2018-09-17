@@ -629,9 +629,12 @@ export class Repository {
     });
   }
 
-  public async branch(name: string) {
+  public async newBranch(
+    name: string,
+    commitMessage: string = "Created new branch"
+  ) {
     return this.run(Operation.NewBranch, async () => {
-      await this.repository.branch(name);
+      await this.repository.newBranch(name, commitMessage);
       this.updateRemoteChangedFiles();
     });
   }
