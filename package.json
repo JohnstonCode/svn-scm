@@ -53,7 +53,7 @@
     "xml2js": "^0.4.19"
   },
   "devDependencies": {
-    "@types/glob": "^5.0.33",
+    "@types/glob": "^7.1.0",
     "@types/mocha": "^5.2.5",
     "@types/node": "^10.5.7",
     "@types/tmp": "0.0.33",
