@@ -517,12 +517,12 @@ export class Repository {
 
     const counts = [this.changes, this.conflicts];
 
-    const countIgnoreOnCommit = configuration.get<boolean>(
-      "sourceControl.countIgnoreOnCommit",
-      false
-    );
     const ignoreOnCommitList = configuration.get<string[]>(
       "sourceControl.ignoreOnCommit"
+    );
+
+    const ignoreOnStatusCountList = configuration.get<string[]>(
+      "sourceControl.ignoreOnStatusCount"
     );
 
     changelists.forEach((resources, changelist) => {
@@ -541,7 +541,7 @@ export class Repository {
 
       group.resourceStates = resources;
 
-      if (countIgnoreOnCommit && ignoreOnCommitList.includes(changelist)) {
+      if (!ignoreOnStatusCountList.includes(changelist)) {
         counts.push(group);
       }
     });

@@ -89,6 +89,7 @@ Example:
 |`svn.decorations.enabled`|Controls if SVN contributes colors and badges to the explorer and the open (VSCode \>= 1.18 with proposed-api)|`true`|
 |`svn.path`|Path to the svn executable|`null`|
 |`svn.ignoreMissingSvnWarning`|Ignores the warning when SVN is missing|`false`|
+|`svn.ignoreWorkingCopyIsTooOld`|Ignores the warning when working copy is too old|`false`|
 |`svn.diff.withHead`|Show diff changes using latest revision in the repository. Set false to use latest revision in local folder|`true`|
 |`svn.layout.trunkRegex`|Regex to detect path for 'trunk' in SVN URL, 'null' to disable. (Ex.: '(trunk)', '(main)')|`"(trunk)(/.*)?"`|
 |`svn.layout.trunkRegexName`|Regex group position for name of trunk|`1`|
@@ -101,11 +102,10 @@ Example:
 |`svn.multipleFolders.depth`|Maximum depth to find subfolders using SVN|`4`|
 |`svn.multipleFolders.ignore`|Folders to ignore using SVN|`["**/.git","**/.hg","**/vendor","**/node_modules"]`|
 |`svn.sourceControl.ignoreOnCommit`|Changelists to ignore on commit|`["ignore-on-commit"]`|
+|`svn.sourceControl.ignoreOnStatusCount`|Changelists to ignore on status count|`["ignore-on-commit"]`|
 |`svn.detectExternals`|Controls whether to automatically detect svn externals.|`true`|
 |`svn.sourceControl.combineExternalIfSameServer`|Combine the svn external in the main if is from the same server.|`false`|
 |`svn.sourceControl.countUnversioned`|Allow to count unversioned files in status count|`true`|
-|`svn.sourceControl.countIgnoreOnCommit`|Allow to count ignored files to commit in status count|`false`|
-|`svn.sourceControl.hideUnversioned`|Hide unversioned files in Source Control UI|`false`|
 |`svn.log.length`|Number of commit messages to log|`50`|
 |`svn.showOutput`|Show the output window when the extension starts|`false`|
 |`svn.conflicts.autoResolve`|Set file to status resolved after fix conflictss|`false`|
@@ -113,3 +113,4 @@ Example:
 |`svn.default.encoding`|Encoding of svn output if the output is not utf-8. When this parameter is null, the encoding is automatically detected. Example: 'windows-1252'.|`null`|
 |`svn.showUpdateMessage`|Show the update message when update is run|`true`|
 |`svn.remoteChanges.checkFrequency`|Set the interval in seconds to check changed files on remote repository and show in statusbar. 0 to disable|`300`|
+|`svn.sourceControl.hideUnversioned`|Hide unversioned files in Source Control UI|`false`|

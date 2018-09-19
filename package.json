@@ -683,6 +683,13 @@
             "ignore-on-commit"
           ]
         },
+        "svn.sourceControl.ignoreOnStatusCount": {
+          "type": "array",
+          "description": "Changelists to ignore on status count",
+          "default": [
+            "ignore-on-commit"
+          ]
+        },
         "svn.detectExternals": {
           "type": "boolean",
           "default": true,
@@ -697,11 +704,6 @@
           "type": "boolean",
           "description": "Allow to count unversioned files in status count",
           "default": true
-        },
-        "svn.sourceControl.countIgnoreOnCommit": {
-          "type": "boolean",
-          "description": "Allow to count ignored files to commit in status count",
-          "default": false
         },
         "svn.log.length": {
           "type": "number",
