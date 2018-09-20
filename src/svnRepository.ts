@@ -432,7 +432,7 @@ export class Repository {
     return message;
   }
 
-  public async removeFiles(files: any[], keepLocal: boolean) {
+  public async removeFiles(files: string[], keepLocal: boolean) {
     files = files.map(file => this.removeAbsolutePath(file));
     const args = ["remove"];
 
