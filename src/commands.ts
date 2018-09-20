@@ -1319,6 +1319,42 @@ export class SvnCommands implements IDisposable {
     return;
   }
 
+  @command("svn.promptRemove", { repository: true })
+  public async promptRemove(repository: Repository, ...uris: Uri[]) {
+    const files = uris.map(uri => uri.fsPath);
+
+    const relativeList = files
+      .map(file => repository.repository.removeAbsolutePath(file))
+      .sort();
+
+    const ignoreText = "Add to ignored list";
+
+    const resp = await window.showInformationMessage(
+      `The file(s) "${relativeList.join(
+        ", "
+      )}" are removed from disk.\nWould you like remove from SVN?`,
+      { modal: true },
+      "Yes",
+      ignoreText,
+      "No"
+    );
+
+    if (resp === "Yes") {
+      await repository.removeFiles(files, false);
+    } else if (resp === ignoreText) {
+      let ignoreList = configuration.get<string[]>(
+        "delete.ignoredRulesForDeletedFiles",
+        []
+      );
+
+      ignoreList.push(...relativeList);
+
+      ignoreList = [...new Set(ignoreList)]; // Remove duplicates
+
+      configuration.update("delete.ignoredRulesForDeletedFiles", ignoreList);
+    }
+  }
+
   private getSCMResource(uri?: Uri): Resource | undefined {
     uri = uri
       ? uri
