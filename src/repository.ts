@@ -233,8 +233,10 @@ export class Repository {
     this.conflicts.hideWhenEmpty = true;
 
     this.disposables.push(this.changes);
-    this.disposables.push(this.unversioned);
     this.disposables.push(this.conflicts);
+
+    // The this.unversioned can recreated by update state model
+    this.disposables.push(toDisposable(() => this.unversioned.dispose()));
 
     // Dispose the setInterval of Remote Changes
     this.disposables.push(
@@ -508,8 +510,9 @@ export class Repository {
     }
 
     this.changes.resourceStates = changes;
-    this.unversioned.resourceStates = unversioned;
     this.conflicts.resourceStates = conflicts;
+
+    const prevChangelistsSize = this.changelists.size;
 
     this.changelists.forEach((group, changelist) => {
       group.resourceStates = [];
@@ -546,6 +549,20 @@ export class Repository {
       }
     });
 
+    // Recreate unversioned group to move after changelists
+    if (prevChangelistsSize !== this.changelists.size) {
+      this.unversioned.dispose();
+
+      this.unversioned = this.sourceControl.createResourceGroup(
+        "unversioned",
+        "Unversioned"
+      ) as ISvnResourceGroup;
+
+      this.unversioned.hideWhenEmpty = true;
+    }
+
+    this.unversioned.resourceStates = unversioned;
+
     if (configuration.get<boolean>("sourceControl.countUnversioned", false)) {
       counts.push(this.unversioned);
     }
@@ -555,11 +572,14 @@ export class Repository {
       0
     );
 
-    if (checkRemoteChanges) {
+    // Recreate remoteChanges group to move after unversioned
+    if (!this.remoteChanges || prevChangelistsSize !== this.changelists.size) {
       /**
        * Destroy and create for keep at last position
        */
+      let tempResourceStates: Resource[] = [];
       if (this.remoteChanges) {
+        tempResourceStates = this.remoteChanges.resourceStates;
         this.remoteChanges.dispose();
       }
 
@@ -569,6 +589,11 @@ export class Repository {
       ) as ISvnResourceGroup;
 
       this.remoteChanges.hideWhenEmpty = true;
+      this.remoteChanges.resourceStates = tempResourceStates;
+    }
+
+    // Update remote changes group
+    if (checkRemoteChanges) {
       this.remoteChanges.resourceStates = remoteChanges;
 
       if (remoteChanges.length !== this.remoteChangedFiles) {
