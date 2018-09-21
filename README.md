@@ -20,6 +20,8 @@
 [![Average time to resolve an issue](https://isitmaintained.com/badge/resolution/JohnstonCode/svn-scm.svg)](https://isitmaintained.com/project/JohnstonCode/svn-scm "Average time to resolve an issue")
 [![Percentage of issues still open](https://isitmaintained.com/badge/open/JohnstonCode/svn-scm.svg)](https://isitmaintained.com/project/JohnstonCode/svn-scm "Percentage of issues still open")
 
+[![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/svn-scm/Lobby)
+
 # Prerequisites
 
 > **Note**: This extension leverages your machine's SVN installation,\
@@ -110,6 +112,8 @@ Example:
 |`svn.showOutput`|Show the output window when the extension starts|`false`|
 |`svn.conflicts.autoResolve`|Set file to status resolved after fix conflictss|`false`|
 |`svn.update.ignoreExternals`|Set to ignore externals definitions on update (add --ignore-externals)|`true`|
+|`svn.delete.actionForDeletedFiles`|When a file is deleted, what SVN should do? `none` - Do nothing, `prompt` - Ask the action, `remove` - automatically remove from SVN|`"prompt"`|
+|`svn.delete.ignoredRulesForDeletedFiles`|Ignored files/rules for `svn.delete.actionForDeletedFiles`(Ex.: file.txt or \*\*/\*.txt)|`[]`|
 |`svn.default.encoding`|Encoding of svn output if the output is not utf-8. When this parameter is null, the encoding is automatically detected. Example: 'windows-1252'.|`null`|
 |`svn.showUpdateMessage`|Show the update message when update is run|`true`|
 |`svn.remoteChanges.checkFrequency`|Set the interval in seconds to check changed files on remote repository and show in statusbar. 0 to disable|`300`|

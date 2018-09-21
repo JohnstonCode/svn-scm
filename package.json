@@ -726,6 +726,24 @@
           "description": "Set to ignore externals definitions on update (add --ignore-externals)",
           "default": true
         },
+        "svn.delete.actionForDeletedFiles": {
+          "type": "string",
+          "enum": [
+            "none",
+            "prompt",
+            "remove"
+          ],
+          "description": "When a file is deleted, what SVN should do? `none` - Do nothing, `prompt` - Ask the action, `remove` - automatically remove from SVN",
+          "default": "prompt"
+        },
+        "svn.delete.ignoredRulesForDeletedFiles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Ignored files/rules for `svn.delete.actionForDeletedFiles`(Ex.: file.txt or **/*.txt)",
+          "default": []
+        },
         "svn.default.encoding": {
           "type": [
             "string",

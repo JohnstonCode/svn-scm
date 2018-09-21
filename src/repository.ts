@@ -69,6 +69,7 @@ export class Repository {
   public isIncomplete: boolean = false;
   public needCleanUp: boolean = false;
   private remoteChangedUpdateInterval?: NodeJS.Timer;
+  private deletedUris: Uri[] = [];
 
   private lastPromptAuth?: Thenable<boolean | undefined>;
 
@@ -247,6 +248,17 @@ export class Repository {
       })
     );
 
+    // For each deleted file, append to list
+    const onFsDelete = filterEvent(
+      fsWatcher.onDidDelete,
+      uri => !/[\\\/]\.svn[\\\/]/.test(uri.path)
+    );
+
+    onFsDelete(uri => this.deletedUris.push(uri), this, this.disposables);
+
+    // Only check deleted files after the status list is fully updated
+    this.onDidChangeStatus(this.actionForDeletedFiles, this, this.disposables);
+
     this.createRemoteChangedInterval();
 
     this.updateRemoteChangedFiles();
@@ -286,6 +298,70 @@ export class Repository {
     this.remoteChangedUpdateInterval = setInterval(() => {
       this.updateRemoteChangedFiles();
     }, 1000 * updateFreq);
+  }
+
+  /**
+   * Check all recently deleted files and compare with svn status "missing"
+   */
+  @debounce(1000)
+  private async actionForDeletedFiles() {
+    if (!this.deletedUris.length) {
+      return;
+    }
+
+    const allUris = this.deletedUris;
+    this.deletedUris = [];
+
+    const actionForDeletedFiles = configuration.get<string>(
+      "delete.actionForDeletedFiles",
+      "prompt"
+    );
+
+    if (actionForDeletedFiles === "none") {
+      return;
+    }
+
+    const resources = allUris
+      .map(uri => this.getResourceFromFile(uri))
+      .filter(
+        resource => resource && resource.type === Status.MISSING
+      ) as Resource[];
+
+    let uris = resources.map(resource => resource.resourceUri);
+
+    if (!uris.length) {
+      return;
+    }
+
+    const ignoredRulesForDeletedFiles = configuration.get<string[]>(
+      "delete.ignoredRulesForDeletedFiles",
+      []
+    );
+    const rules = ignoredRulesForDeletedFiles.map(
+      ignored => new Minimatch(ignored)
+    );
+
+    if (rules.length) {
+      uris = uris.filter(uri => {
+        // Check first for relative URL (Better for workspace configuration)
+        const relativePath = this.repository.removeAbsolutePath(uri.fsPath);
+
+        // If some match, remove from list
+        return !rules.some(
+          rule => rule.match(relativePath) || rule.match(uri.fsPath)
+        );
+      });
+    }
+
+    if (!uris.length) {
+      return;
+    }
+
+    if (actionForDeletedFiles === "remove") {
+      return await this.removeFiles(uris.map(uri => uri.fsPath), false);
+    } else if (actionForDeletedFiles === "prompt") {
+      return await commands.executeCommand("svn.promptRemove", ...uris);
+    }
   }
 
   @debounce(1000)
@@ -752,7 +828,7 @@ export class Repository {
     );
   }
 
-  public async removeFiles(files: any[], keepLocal: boolean) {
+  public async removeFiles(files: string[], keepLocal: boolean) {
     return this.run(Operation.Remove, () =>
       this.repository.removeFiles(files, keepLocal)
     );
