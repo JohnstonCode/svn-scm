@@ -1,0 +1,492 @@
+import * as fs from "fs";
+import * as path from "path";
+import {
+  commands,
+  Disposable,
+  LineChange,
+  Position,
+  Range,
+  SourceControlResourceState,
+  TextDocumentShowOptions,
+  TextEditor,
+  Uri,
+  ViewColumn,
+  window,
+  workspace,
+  WorkspaceEdit
+} from "vscode";
+import { ICommandOptions, Status, SvnUriAction } from "../common/types";
+import { inputIgnoreList } from "../ignoreitems";
+import { applyLineChanges } from "../lineChanges";
+import { Model } from "../model";
+import { Repository } from "../repository";
+import { Resource } from "../resource";
+import IncomingChangeNode from "../treeView/nodes/incomingChangeNode";
+import { fromSvnUri, toSvnUri } from "../uri";
+import { hasSupportToRegisterDiffCommand } from "../util";
+
+export abstract class Command implements Disposable {
+  private _disposable?: Disposable;
+
+  constructor(
+    commandName: string,
+    options: ICommandOptions = {},
+    protected model?: Model
+  ) {
+    if (options.repository && model) {
+      const command = this.createRepositoryCommand(model, this.execute);
+
+      this._disposable = commands.registerCommand(commandName, command);
+
+      return;
+    }
+
+    if (options.diff && hasSupportToRegisterDiffCommand() && model) {
+      const command = this.createRepositoryCommand(model, this.execute);
+      this._disposable = commands.registerDiffInformationCommand(
+        commandName,
+        command
+      );
+      return;
+    }
+
+    if (!options.repository) {
+      this._disposable = commands.registerCommand(
+        commandName,
+        (...args: any[]) => this.execute(...args)
+      );
+
+      return;
+    }
+  }
+
+  public abstract execute(...args: any[]): any;
+
+  public dispose() {
+    this._disposable && this._disposable.dispose(); // tslint:disable-line
+  }
+
+  private createRepositoryCommand(
+    model: Model,
+    method: Function
+  ): (...args: any[]) => any {
+    const result = (...args: any[]) => {
+      let result;
+
+      const repository = model.getRepository(args[0]);
+      let repositoryPromise;
+
+      if (repository) {
+        repositoryPromise = Promise.resolve(repository);
+      } else if (model.repositories.length === 1) {
+        repositoryPromise = Promise.resolve(model.repositories[0]);
+      } else {
+        repositoryPromise = model.pickRepository();
+      }
+
+      result = repositoryPromise.then(repository => {
+        if (!repository) {
+          return Promise.resolve();
+        }
+
+        return Promise.resolve(method.apply(this, [repository, ...args]));
+      });
+
+      return result.catch(err => {
+        console.error(err);
+      });
+    };
+
+    return result;
+  }
+
+  protected getResourceStates(
+    resourceStates: SourceControlResourceState[]
+  ): Resource[] {
+    if (
+      resourceStates.length === 0 ||
+      !(resourceStates[0].resourceUri instanceof Uri)
+    ) {
+      const resource = this.getSCMResource();
+
+      if (!resource) {
+        return [];
+      }
+
+      resourceStates = [resource];
+    }
+
+    return resourceStates.filter(s => s instanceof Resource) as Resource[];
+  }
+
+  protected runByRepository<T>(
+    resource: Uri,
+    fn: (repository: Repository, resource: Uri) => Promise<T>
+  ): Promise<T[]>;
+  protected runByRepository<T>(
+    resources: Uri[],
+    fn: (repository: Repository, resources: Uri[]) => Promise<T>
+  ): Promise<T[]>;
+  protected async runByRepository<T>(
+    arg: Uri | Uri[],
+    fn: (repository: Repository, resources: any) => Promise<T>
+  ): Promise<T[]> {
+    const resources = arg instanceof Uri ? [arg] : arg;
+    const isSingleResource = arg instanceof Uri;
+
+    const groups = resources.reduce(
+      (result, resource) => {
+        if (!this.model) {
+          throw new Error("Model is undefined!");
+        }
+
+        const repository = this.model.getRepository(resource);
+
+        if (!repository) {
+          console.warn("Could not find Svn repository for ", resource);
+          return result;
+        }
+
+        const tuple = result.filter(p => p.repository === repository)[0];
+
+        if (tuple) {
+          tuple.resources.push(resource);
+        } else {
+          result.push({ repository, resources: [resource] });
+        }
+
+        return result;
+      },
+      [] as Array<{ repository: Repository; resources: Uri[] }>
+    );
+
+    const promises = groups.map(({ repository, resources }) =>
+      fn(repository as Repository, isSingleResource ? resources[0] : resources)
+    );
+
+    return Promise.all(promises);
+  }
+
+  protected getSCMResource(uri?: Uri): Resource | undefined {
+    uri = uri
+      ? uri
+      : window.activeTextEditor && window.activeTextEditor.document.uri;
+
+    if (!uri) {
+      return undefined;
+    }
+
+    if (uri.scheme === "svn") {
+      const { fsPath } = fromSvnUri(uri);
+      uri = Uri.file(fsPath);
+    }
+
+    if (uri.scheme === "file") {
+      if (!this.model) {
+        throw new Error("Model is undefined!");
+      }
+      const repository = this.model.getRepository(uri);
+
+      if (!repository) {
+        return undefined;
+      }
+
+      return repository.getResourceFromFile(uri);
+    }
+  }
+
+  protected async _openResource(
+    resource: Resource,
+    against?: string,
+    preview?: boolean,
+    preserveFocus?: boolean,
+    preserveSelection?: boolean
+  ): Promise<void> {
+    let left = this.getLeftResource(resource, against);
+    let right = this.getRightResource(resource, against);
+    const title = this.getTitle(resource, against);
+
+    if (resource.remote && left) {
+      [left, right] = [right, left];
+    }
+
+    if (!right) {
+      // TODO
+      console.error("oh no");
+      return;
+    }
+
+    if (
+      fs.existsSync(right.fsPath) &&
+      fs.statSync(right.fsPath).isDirectory()
+    ) {
+      return;
+    }
+
+    const opts: TextDocumentShowOptions = {
+      preserveFocus,
+      preview,
+      viewColumn: ViewColumn.Active
+    };
+
+    const activeTextEditor = window.activeTextEditor;
+
+    if (
+      preserveSelection &&
+      activeTextEditor &&
+      activeTextEditor.document.uri.toString() === right.toString()
+    ) {
+      opts.selection = activeTextEditor.selection;
+    }
+
+    if (!left) {
+      return commands.executeCommand<void>("vscode.open", right, opts);
+    }
+
+    return commands.executeCommand<void>(
+      "vscode.diff",
+      left,
+      right,
+      title,
+      opts
+    );
+  }
+
+  protected getLeftResource(
+    resource: Resource,
+    against: string = ""
+  ): Uri | undefined {
+    if (resource.remote) {
+      if (resource.type !== Status.DELETED) {
+        return toSvnUri(resource.resourceUri, SvnUriAction.SHOW, {
+          ref: against
+        });
+      }
+      return;
+    }
+
+    if (resource.type === Status.ADDED && resource.renameResourceUri) {
+      return toSvnUri(resource.renameResourceUri, SvnUriAction.SHOW, {
+        ref: against
+      });
+    }
+
+    // Show file if has conflicts marks
+    if (
+      resource.type === Status.CONFLICTED &&
+      fs.existsSync(resource.resourceUri.fsPath)
+    ) {
+      const text = fs.readFileSync(resource.resourceUri.fsPath, {
+        encoding: "utf8"
+      });
+
+      // Check for lines begin with "<<<<<<", "=======", ">>>>>>>"
+      if (/^<{7}[^]+^={7}[^]+^>{7}/m.test(text)) {
+        return undefined;
+      }
+    }
+
+    switch (resource.type) {
+      case Status.CONFLICTED:
+      case Status.MODIFIED:
+      case Status.REPLACED:
+        return toSvnUri(resource.resourceUri, SvnUriAction.SHOW, {
+          ref: against
+        });
+    }
+  }
+
+  protected getRightResource(
+    resource: Resource,
+    against: string = ""
+  ): Uri | undefined {
+    if (resource.remote) {
+      if (resource.type !== Status.ADDED) {
+        return resource.resourceUri;
+      }
+      return;
+    }
+    switch (resource.type) {
+      case Status.ADDED:
+      case Status.CONFLICTED:
+      case Status.IGNORED:
+      case Status.MODIFIED:
+      case Status.UNVERSIONED:
+      case Status.REPLACED:
+        return resource.resourceUri;
+      case Status.DELETED:
+      case Status.MISSING:
+        return toSvnUri(resource.resourceUri, SvnUriAction.SHOW, {
+          ref: against
+        });
+    }
+  }
+
+  private getTitle(resource: Resource, against?: string): string {
+    if (resource.type === Status.ADDED && resource.renameResourceUri) {
+      const basename = path.basename(resource.renameResourceUri.fsPath);
+
+      const newname = path.relative(
+        path.dirname(resource.renameResourceUri.fsPath),
+        resource.resourceUri.fsPath
+      );
+      if (against) {
+        return `${basename} -> ${newname} (${against})`;
+      }
+      return `${basename} -> ${newname}`;
+    }
+    const basename = path.basename(resource.resourceUri.fsPath);
+
+    if (against) {
+      return `${basename} (${against})`;
+    }
+
+    return "";
+  }
+
+  protected async openChange(
+    arg?: Resource | Uri | IncomingChangeNode,
+    against?: string,
+    resourceStates?: SourceControlResourceState[]
+  ): Promise<void> {
+    const preserveFocus = arg instanceof Resource;
+    const preserveSelection = arg instanceof Uri || !arg;
+    let resources: Resource[] | undefined;
+
+    if (arg instanceof Uri) {
+      const resource = this.getSCMResource(arg);
+      if (resource !== undefined) {
+        resources = [resource];
+      }
+    } else if (arg instanceof IncomingChangeNode) {
+      const resource = new Resource(
+        arg.uri,
+        arg.type,
+        undefined,
+        arg.props,
+        true
+      );
+
+      resources = [resource];
+    } else {
+      let resource: Resource | undefined;
+
+      if (arg instanceof Resource) {
+        resource = arg;
+      } else {
+        resource = this.getSCMResource();
+      }
+
+      if (resource) {
+        resources = [...(resourceStates as Resource[]), resource];
+      }
+    }
+
+    if (!resources) {
+      return;
+    }
+
+    const preview = resources.length === 1 ? undefined : false;
+    for (const resource of resources) {
+      await this._openResource(
+        resource,
+        against,
+        preview,
+        preserveFocus,
+        preserveSelection
+      );
+    }
+  }
+
+  protected async showDiffPath(repository: Repository, content: string) {
+    try {
+      const tempFile = path.join(repository.root, ".svn", "tmp", "svn.patch");
+
+      if (fs.existsSync(tempFile)) {
+        fs.unlinkSync(tempFile);
+      }
+
+      const uri = Uri.file(tempFile).with({
+        scheme: "untitled"
+      });
+
+      const document = await workspace.openTextDocument(uri);
+      const textEditor = await window.showTextDocument(document);
+
+      await textEditor.edit(e => {
+        // if is opened, clear content
+        e.delete(
+          new Range(
+            new Position(0, 0),
+            new Position(Number.MAX_SAFE_INTEGER, 0)
+          )
+        );
+        e.insert(new Position(0, 0), content);
+      });
+    } catch (error) {
+      console.error(error);
+      window.showErrorMessage("Unable to patch");
+    }
+  }
+
+  protected async _revertChanges(
+    textEditor: TextEditor,
+    changes: LineChange[]
+  ): Promise<void> {
+    const modifiedDocument = textEditor.document;
+    const modifiedUri = modifiedDocument.uri;
+
+    if (modifiedUri.scheme !== "file") {
+      return;
+    }
+
+    const originalUri = toSvnUri(modifiedUri, SvnUriAction.SHOW, {
+      ref: "BASE"
+    });
+    const originalDocument = await workspace.openTextDocument(originalUri);
+    const basename = path.basename(modifiedUri.fsPath);
+    const message = `Are you sure you want to revert the selected changes in ${basename}?`;
+    const yes = "Revert Changes";
+    const pick = await window.showWarningMessage(message, { modal: true }, yes);
+
+    if (pick !== yes) {
+      return;
+    }
+
+    const result = applyLineChanges(
+      originalDocument,
+      modifiedDocument,
+      changes
+    );
+    const edit = new WorkspaceEdit();
+    edit.replace(
+      modifiedUri,
+      new Range(
+        new Position(0, 0),
+        modifiedDocument.lineAt(modifiedDocument.lineCount - 1).range.end
+      ),
+      result
+    );
+    workspace.applyEdit(edit);
+    await modifiedDocument.save();
+  }
+
+  protected async addToIgnore(uris: Uri[]): Promise<void> {
+    await this.runByRepository(uris, async (repository, resources) => {
+      if (!repository) {
+        return;
+      }
+
+      try {
+        const ignored = await inputIgnoreList(repository, resources);
+
+        if (ignored) {
+          window.showInformationMessage(`File(s) is now being ignored`);
+        }
+      } catch (error) {
+        console.log(error);
+        window.showErrorMessage("Unable to set property ignore");
+      }
+    });
+  }
+}
