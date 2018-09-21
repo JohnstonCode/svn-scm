@@ -1,10 +1,12 @@
 import * as fs from "fs";
+import * as os from "os";
 import * as path from "path";
 import {
   commands,
   Disposable,
   LineChange,
   Position,
+  ProgressLocation,
   Range,
   SourceControlResourceState,
   TextDocumentShowOptions,
@@ -21,13 +23,15 @@ import {
   inputSwitchChangelist
 } from "./changelistItems";
 import {
+  IAuth,
   ICommand,
   ICommandOptions,
+  ICpOptions,
   Status,
   SvnUriAction
 } from "./common/types";
 import { getConflictPickOptions } from "./conflictItems";
-import { selectBranch } from "./helpers/branch";
+import { getBranchName, selectBranch } from "./helpers/branch";
 import { configuration } from "./helpers/configuration";
 import { inputIgnoreList } from "./ignoreitems";
 import { applyLineChanges } from "./lineChanges";
@@ -35,6 +39,7 @@ import { inputCommitMessage } from "./messages";
 import { Model } from "./model";
 import { Repository } from "./repository";
 import { Resource } from "./resource";
+import { Svn, svnErrorCodes } from "./svn";
 import IncommingChangeNode from "./treeView/nodes/incomingChangeNode";
 import IncomingChangeNode from "./treeView/nodes/incomingChangeNode";
 import { fromSvnUri, toSvnUri } from "./uri";
@@ -62,7 +67,7 @@ function command(
 export class SvnCommands implements IDisposable {
   private disposables: Disposable[];
 
-  constructor(private model: Model) {
+  constructor(private model: Model, private svn: Svn) {
     this.disposables = svnCommands.map(({ commandId, method, options }) => {
       const command = this.createCommand(method, options);
       if (options.diff && hasSupportToRegisterDiffCommand()) {
@@ -121,32 +126,170 @@ export class SvnCommands implements IDisposable {
     await commands.executeCommand("vscode.open", resourceUri);
   }
 
-  @command("svn.promptAuth", { repository: true })
-  public async promptAuth(repository: Repository): Promise<boolean> {
+  @command("svn.promptAuth")
+  public async promptAuth(
+    prevUsername?: string,
+    prevPassword?: string
+  ): Promise<IAuth | undefined> {
     const username = await window.showInputBox({
       placeHolder: "Svn repository username",
       prompt: "Please enter your username",
-      value: repository.username
+      value: prevUsername
     });
 
     if (username === undefined) {
-      return false;
+      return;
     }
 
     const password = await window.showInputBox({
       placeHolder: "Svn repository password",
       prompt: "Please enter your password",
+      value: prevPassword,
       password: true
     });
 
-    if (username === undefined) {
-      return false;
+    if (password === undefined) {
+      return;
     }
 
-    repository.username = username;
-    repository.password = password;
+    const auth: IAuth = {
+      username,
+      password
+    };
 
-    return true;
+    return auth;
+  }
+
+  @command("svn.checkout")
+  public async checkout(url?: string): Promise<void> {
+    if (!url) {
+      url = await window.showInputBox({
+        prompt: "Repository URL",
+        ignoreFocusOut: true
+      });
+    }
+
+    if (!url) {
+      return;
+    }
+
+    let defaultCheckoutDirectory =
+      configuration.get<string>("defaultCheckoutDirectory") || os.homedir();
+    defaultCheckoutDirectory = defaultCheckoutDirectory.replace(
+      /^~/,
+      os.homedir()
+    );
+
+    const uris = await window.showOpenDialog({
+      canSelectFiles: false,
+      canSelectFolders: true,
+      canSelectMany: false,
+      defaultUri: Uri.file(defaultCheckoutDirectory),
+      openLabel: "Select Repository Location"
+    });
+
+    if (!uris || uris.length === 0) {
+      return;
+    }
+
+    const uri = uris[0];
+    const parentPath = uri.fsPath;
+
+    let folderName: string | undefined;
+
+    // Get folder name from branch
+    const branch = getBranchName(url);
+    if (branch) {
+      const baseUrl = url.replace(/\//g, "/").replace(branch.path, "");
+      folderName = path.basename(baseUrl);
+    }
+
+    folderName = await window.showInputBox({
+      prompt: "Folder name",
+      value: folderName,
+      ignoreFocusOut: true
+    });
+
+    if (!folderName) {
+      return;
+    }
+
+    const repositoryPath = path.join(parentPath, folderName);
+
+    // Use Notification location if supported
+    let location = ProgressLocation.Window;
+    if ((ProgressLocation as any).Notification) {
+      location = (ProgressLocation as any).Notification;
+    }
+
+    const progressOptions = {
+      location,
+      title: `Checkout svn repository '${url}'...`,
+      cancellable: true
+    };
+
+    let attempt = 0;
+
+    const opt: ICpOptions = {};
+
+    while (true) {
+      attempt++;
+      try {
+        await window.withProgress(progressOptions, async () => {
+          const args = ["checkout", url, repositoryPath];
+          await this.svn.exec(parentPath, args, opt);
+        });
+        break;
+      } catch (err) {
+        if (
+          err.svnErrorCode === svnErrorCodes.AuthorizationFailed &&
+          attempt <= 3
+        ) {
+          const auth = (await commands.executeCommand(
+            "svn.promptAuth",
+            opt.username
+          )) as IAuth;
+          if (auth) {
+            opt.username = auth.username;
+            opt.password = auth.password;
+            continue;
+          }
+        }
+        throw err;
+      }
+    }
+
+    const choices = [];
+    let message = "Would you like to open the checked out repository?";
+    const open = "Open Repository";
+    choices.push(open);
+
+    const addToWorkspace = "Add to Workspace";
+    if (
+      workspace.workspaceFolders &&
+      (workspace as any).updateWorkspaceFolders // For VSCode >= 1.21
+    ) {
+      message =
+        "Would you like to open the checked out repository, or add it to the current workspace?";
+      choices.push(addToWorkspace);
+    }
+
+    const result = await window.showInformationMessage(message, ...choices);
+
+    const openFolder = result === open;
+
+    if (openFolder) {
+      commands.executeCommand("vscode.openFolder", Uri.file(repositoryPath));
+    } else if (result === addToWorkspace) {
+      // For VSCode >= 1.21
+      (workspace as any).updateWorkspaceFolders(
+        workspace.workspaceFolders!.length,
+        0,
+        {
+          uri: Uri.file(repositoryPath)
+        }
+      );
+    }
   }
 
   @command("svn.commitWithMessage", { repository: true })

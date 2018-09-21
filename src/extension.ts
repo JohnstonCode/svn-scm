@@ -35,7 +35,7 @@ async function init(
   const svn = new Svn({ svnPath: info.path, version: info.version });
   const model = new Model(svn);
   const contentProvider = new SvnContentProvider(model);
-  const svnCommands = new SvnCommands(model);
+  const svnCommands = new SvnCommands(model, svn);
   disposables.push(model, contentProvider, svnCommands);
 
   const svnProvider = new SvnProvider(model);

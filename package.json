@@ -83,6 +83,11 @@
     },
     "commands": [
       {
+        "command": "svn.checkout",
+        "title": "Checkout",
+        "category": "SVN"
+      },
+      {
         "command": "svn.add",
         "title": "Add",
         "category": "SVN",
@@ -268,6 +273,10 @@
     ],
     "menus": {
       "commandPalette": [
+        {
+          "command": "svn.checkout",
+          "when": "config.svn.enabled"
+        },
         {
           "command": "svn.add",
           "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
@@ -587,6 +596,11 @@
           "description": "Path to the svn executable",
           "default": null,
           "isExecutable": true
+        },
+        "svn.defaultCheckoutDirectory": {
+          "type": "string",
+          "default": null,
+          "description": "The default location to checkout a svn repository."
         },
         "svn.ignoreMissingSvnWarning": {
           "type": "boolean",

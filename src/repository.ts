@@ -16,6 +16,7 @@ import {
   workspace
 } from "vscode";
 import {
+  IAuth,
   IFileStatus,
   IOperations,
   ISvnResourceGroup,
@@ -71,7 +72,7 @@ export class Repository {
   private remoteChangedUpdateInterval?: NodeJS.Timer;
   private deletedUris: Uri[] = [];
 
-  private lastPromptAuth?: Thenable<boolean | undefined>;
+  private lastPromptAuth?: Thenable<IAuth | undefined>;
 
   private _onDidChangeRepository = new EventEmitter<Uri>();
   public readonly onDidChangeRepository: Event<Uri> = this
@@ -839,7 +840,7 @@ export class Repository {
     );
   }
 
-  public async promptAuth(): Promise<boolean | undefined> {
+  public async promptAuth(): Promise<IAuth | undefined> {
     // Prevent multiple prompts for auth
     if (this.lastPromptAuth) {
       return this.lastPromptAuth;
@@ -847,6 +848,12 @@ export class Repository {
 
     this.lastPromptAuth = commands.executeCommand("svn.promptAuth");
     const result = await this.lastPromptAuth;
+
+    if (result) {
+      this.username = result.username;
+      this.password = result.password;
+    }
+
     this.lastPromptAuth = undefined;
     return result;
   }
