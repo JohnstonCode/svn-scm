@@ -60,7 +60,7 @@
     "@types/xml2js": "^0.4.3",
     "decache": "^4.3.0",
     "glob": "^7.1.2",
-    "husky": "^0.14.3",
+    "husky": "^1.0.0",
     "istanbul": "^0.4.5",
     "mocha": "^5.2.0",
     "prettier": "^1.14.0",
