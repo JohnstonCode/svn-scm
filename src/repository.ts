@@ -544,7 +544,7 @@ export class Repository {
       );
 
       if (
-        status.status === Status.NORMAL &&
+        (status.status === Status.NORMAL || status.status === Status.NONE) &&
         (status.props === Status.NORMAL || status.props === Status.NONE)
       ) {
         // Ignore non changed itens
