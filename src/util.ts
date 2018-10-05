@@ -76,6 +76,17 @@ export function fixPathSeparator(file: string) {
   return file;
 }
 
+export function normalizePath(file: string) {
+  file = fixPathSeparator(file);
+
+  // IF Windows
+  if (sep === "\\") {
+    file = file.toLowerCase();
+  }
+
+  return file;
+}
+
 export function isDescendant(parent: string, descendant: string): boolean {
   parent = parent.replace(/[\\\/]/g, sep);
   descendant = descendant.replace(/[\\\/]/g, sep);
