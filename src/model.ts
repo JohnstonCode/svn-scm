@@ -27,7 +27,8 @@ import {
   dispose,
   filterEvent,
   IDisposable,
-  isDescendant
+  isDescendant,
+  normalizePath
 } from "./util";
 
 export class Model implements IDisposable {
@@ -277,6 +278,19 @@ export class Model implements IDisposable {
     }
 
     if (isSvnFolder) {
+      // Config based on folder path
+      const resourceConfig = workspace.getConfiguration("svn", Uri.file(path));
+
+      const ignoredRepos = new Set(
+        (resourceConfig.get<string[]>("ignoreRepositories") || []).map(p =>
+          normalizePath(p)
+        )
+      );
+
+      if (ignoredRepos.has(normalizePath(path))) {
+        return;
+      }
+
       try {
         const repositoryRoot = await this.svn.getRepositoryRoot(path);
 
