@@ -13,16 +13,14 @@ environment:
 
 cache:
   - node_modules
-  - '%LOCALAPPDATA%\Yarn\cache'
-  - '%APPDATA%\npm-cache'
 
 artifacts:
   - path: svn-scm.vsix
     name: SVN-SCM
 
 install:
-  - ps: Install-Product node 8.9.1
-  - npm install -g npm vsce
+  #  - ps: Install-Product node 8.9.1
+  - npm install -g vsce
   - node --version
   - npm --version
   - npm install
