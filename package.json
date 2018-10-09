@@ -602,6 +602,15 @@
           "default": null,
           "description": "The default location to checkout a svn repository."
         },
+        "svn.ignoreRepositories": {
+          "type": [
+            "array",
+            null
+          ],
+          "default": null,
+          "scope": "resource",
+          "description": "List of SVN repositories to ignore."
+        },
         "svn.ignoreMissingSvnWarning": {
           "type": "boolean",
           "description": "Ignores the warning when SVN is missing",

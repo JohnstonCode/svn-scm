@@ -90,6 +90,8 @@ Example:
 |`svn.autorefresh`|Whether auto refreshing is enabled|`true`|
 |`svn.decorations.enabled`|Controls if SVN contributes colors and badges to the explorer and the open (VSCode \>= 1.18 with proposed-api)|`true`|
 |`svn.path`|Path to the svn executable|`null`|
+|`svn.defaultCheckoutDirectory`|The default location to checkout a svn repository.|`null`|
+|`svn.ignoreRepositories`|List of SVN repositories to ignore.|`null`|
 |`svn.ignoreMissingSvnWarning`|Ignores the warning when SVN is missing|`false`|
 |`svn.ignoreWorkingCopyIsTooOld`|Ignores the warning when working copy is too old|`false`|
 |`svn.diff.withHead`|Show diff changes using latest revision in the repository. Set false to use latest revision in local folder|`true`|
