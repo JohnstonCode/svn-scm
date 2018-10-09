@@ -498,6 +498,7 @@ export class SvnCommands implements IDisposable {
   @command("svn.refresh", { repository: true })
   public async refresh(repository: Repository) {
     await repository.status();
+    await repository.updateRemoteChangedFiles();
   }
 
   @command("svn.openResourceBase")
