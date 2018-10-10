@@ -33,7 +33,11 @@ export abstract class Command implements Disposable {
     options: ICommandOptions = {},
     protected model?: Model
   ) {
-    if (options.repository && model) {
+    if (options.repository) {
+      if (!model) {
+        throw new Error("Model is undefined!");
+      }
+
       const command = this.createRepositoryCommand(model, this.execute);
 
       this._disposable = commands.registerCommand(commandName, command);

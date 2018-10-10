@@ -41,12 +41,12 @@ export function registerCommands(model: Model, disposables: Disposable[]) {
   disposables.push(new CommitWithMessage(model));
   disposables.push(new Add(model));
   disposables.push(new ChangeList(model));
-  disposables.push(new Refresh());
+  disposables.push(new Refresh(model));
   disposables.push(new Commit());
   disposables.push(new OpenResourceBase());
   disposables.push(new OpenResourceHead());
   disposables.push(new OpenChangeBase());
-  disposables.push(new SwitchBranch());
+  disposables.push(new SwitchBranch(model));
   disposables.push(new Revert(model));
   disposables.push(new Update(model));
   disposables.push(new PullIncommingChange(model));

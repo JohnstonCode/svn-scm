@@ -5,7 +5,7 @@ import { Command } from "./command";
 
 export class PromptAuth extends Command {
   constructor(protected model: Model) {
-    super("svn.promptAuth", { repository: true });
+    super("svn.promptAuth", { repository: true }, model);
   }
 
   public async execute(repository: Repository) {
