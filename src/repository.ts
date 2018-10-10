@@ -16,6 +16,7 @@ import {
   workspace
 } from "vscode";
 import {
+  IAuth,
   IFileStatus,
   IOperations,
   ISvnResourceGroup,
@@ -69,8 +70,9 @@ export class Repository {
   public isIncomplete: boolean = false;
   public needCleanUp: boolean = false;
   private remoteChangedUpdateInterval?: NodeJS.Timer;
+  private deletedUris: Uri[] = [];
 
-  private lastPromptAuth?: Thenable<boolean | undefined>;
+  private lastPromptAuth?: Thenable<IAuth | undefined>;
 
   private _onDidChangeRepository = new EventEmitter<Uri>();
   public readonly onDidChangeRepository: Event<Uri> = this
@@ -233,8 +235,10 @@ export class Repository {
     this.conflicts.hideWhenEmpty = true;
 
     this.disposables.push(this.changes);
-    this.disposables.push(this.unversioned);
     this.disposables.push(this.conflicts);
+
+    // The this.unversioned can recreated by update state model
+    this.disposables.push(toDisposable(() => this.unversioned.dispose()));
 
     // Dispose the setInterval of Remote Changes
     this.disposables.push(
@@ -244,6 +248,17 @@ export class Repository {
         }
       })
     );
+
+    // For each deleted file, append to list
+    const onFsDelete = filterEvent(
+      fsWatcher.onDidDelete,
+      uri => !/[\\\/]\.svn[\\\/]/.test(uri.path)
+    );
+
+    onFsDelete(uri => this.deletedUris.push(uri), this, this.disposables);
+
+    // Only check deleted files after the status list is fully updated
+    this.onDidChangeStatus(this.actionForDeletedFiles, this, this.disposables);
 
     this.createRemoteChangedInterval();
 
@@ -284,6 +299,70 @@ export class Repository {
     this.remoteChangedUpdateInterval = setInterval(() => {
       this.updateRemoteChangedFiles();
     }, 1000 * updateFreq);
+  }
+
+  /**
+   * Check all recently deleted files and compare with svn status "missing"
+   */
+  @debounce(1000)
+  private async actionForDeletedFiles() {
+    if (!this.deletedUris.length) {
+      return;
+    }
+
+    const allUris = this.deletedUris;
+    this.deletedUris = [];
+
+    const actionForDeletedFiles = configuration.get<string>(
+      "delete.actionForDeletedFiles",
+      "prompt"
+    );
+
+    if (actionForDeletedFiles === "none") {
+      return;
+    }
+
+    const resources = allUris
+      .map(uri => this.getResourceFromFile(uri))
+      .filter(
+        resource => resource && resource.type === Status.MISSING
+      ) as Resource[];
+
+    let uris = resources.map(resource => resource.resourceUri);
+
+    if (!uris.length) {
+      return;
+    }
+
+    const ignoredRulesForDeletedFiles = configuration.get<string[]>(
+      "delete.ignoredRulesForDeletedFiles",
+      []
+    );
+    const rules = ignoredRulesForDeletedFiles.map(
+      ignored => new Minimatch(ignored)
+    );
+
+    if (rules.length) {
+      uris = uris.filter(uri => {
+        // Check first for relative URL (Better for workspace configuration)
+        const relativePath = this.repository.removeAbsolutePath(uri.fsPath);
+
+        // If some match, remove from list
+        return !rules.some(
+          rule => rule.match(relativePath) || rule.match(uri.fsPath)
+        );
+      });
+    }
+
+    if (!uris.length) {
+      return;
+    }
+
+    if (actionForDeletedFiles === "remove") {
+      return await this.removeFiles(uris.map(uri => uri.fsPath), false);
+    } else if (actionForDeletedFiles === "prompt") {
+      return await commands.executeCommand("svn.promptRemove", ...uris);
+    }
   }
 
   @debounce(1000)
@@ -465,7 +544,7 @@ export class Repository {
       );
 
       if (
-        status.status === Status.NORMAL &&
+        (status.status === Status.NORMAL || status.status === Status.NONE) &&
         (status.props === Status.NORMAL || status.props === Status.NONE)
       ) {
         // Ignore non changed itens
@@ -508,8 +587,9 @@ export class Repository {
     }
 
     this.changes.resourceStates = changes;
-    this.unversioned.resourceStates = unversioned;
     this.conflicts.resourceStates = conflicts;
+
+    const prevChangelistsSize = this.changelists.size;
 
     this.changelists.forEach((group, changelist) => {
       group.resourceStates = [];
@@ -546,6 +626,20 @@ export class Repository {
       }
     });
 
+    // Recreate unversioned group to move after changelists
+    if (prevChangelistsSize !== this.changelists.size) {
+      this.unversioned.dispose();
+
+      this.unversioned = this.sourceControl.createResourceGroup(
+        "unversioned",
+        "Unversioned"
+      ) as ISvnResourceGroup;
+
+      this.unversioned.hideWhenEmpty = true;
+    }
+
+    this.unversioned.resourceStates = unversioned;
+
     if (configuration.get<boolean>("sourceControl.countUnversioned", false)) {
       counts.push(this.unversioned);
     }
@@ -555,11 +649,14 @@ export class Repository {
       0
     );
 
-    if (checkRemoteChanges) {
+    // Recreate remoteChanges group to move after unversioned
+    if (!this.remoteChanges || prevChangelistsSize !== this.changelists.size) {
       /**
        * Destroy and create for keep at last position
        */
+      let tempResourceStates: Resource[] = [];
       if (this.remoteChanges) {
+        tempResourceStates = this.remoteChanges.resourceStates;
         this.remoteChanges.dispose();
       }
 
@@ -569,6 +666,11 @@ export class Repository {
       ) as ISvnResourceGroup;
 
       this.remoteChanges.hideWhenEmpty = true;
+      this.remoteChanges.resourceStates = tempResourceStates;
+    }
+
+    // Update remote changes group
+    if (checkRemoteChanges) {
       this.remoteChanges.resourceStates = remoteChanges;
 
       if (remoteChanges.length !== this.remoteChangedFiles) {
@@ -727,7 +829,7 @@ export class Repository {
     );
   }
 
-  public async removeFiles(files: any[], keepLocal: boolean) {
+  public async removeFiles(files: string[], keepLocal: boolean) {
     return this.run(Operation.Remove, () =>
       this.repository.removeFiles(files, keepLocal)
     );
@@ -763,7 +865,7 @@ export class Repository {
     );
   }
 
-  public async promptAuth(): Promise<boolean | undefined> {
+  public async promptAuth(): Promise<IAuth | undefined> {
     // Prevent multiple prompts for auth
     if (this.lastPromptAuth) {
       return this.lastPromptAuth;
@@ -771,6 +873,12 @@ export class Repository {
 
     this.lastPromptAuth = commands.executeCommand("svn.promptAuth");
     const result = await this.lastPromptAuth;
+
+    if (result) {
+      this.username = result.username;
+      this.password = result.password;
+    }
+
     this.lastPromptAuth = undefined;
     return result;
   }

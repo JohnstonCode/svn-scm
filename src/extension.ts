@@ -1,3 +1,4 @@
+import * as path from "path";
 import {
   commands,
   Disposable,
@@ -84,41 +85,74 @@ async function _activate(context: ExtensionContext, disposables: Disposable[]) {
     outputChannel.show();
   }
 
-  try {
-    await init(context, outputChannel, disposables);
-  } catch (err) {
-    if (!/Svn installation not found/.test(err.message || "")) {
-      throw err;
-    }
+  const tryInit = async () => {
+    try {
+      await init(context, outputChannel, disposables);
+    } catch (err) {
+      if (!/Svn installation not found/.test(err.message || "")) {
+        throw err;
+      }
 
-    const shouldIgnore =
-      configuration.get<boolean>("ignoreMissingSvnWarning") === true;
+      const shouldIgnore =
+        configuration.get<boolean>("ignoreMissingSvnWarning") === true;
 
-    if (shouldIgnore) {
-      return;
-    }
+      if (shouldIgnore) {
+        return;
+      }
 
-    console.warn(err.message);
-    outputChannel.appendLine(err.message);
-    outputChannel.show();
+      console.warn(err.message);
+      outputChannel.appendLine(err.message);
+      outputChannel.show();
 
-    const download = "Download SVN";
-    const neverShowAgain = "Don't Show Again";
-    const choice = await window.showWarningMessage(
-      "SVN not found. Install it or configure it using the 'svn.path' setting.",
-      download,
-      neverShowAgain
-    );
-
-    if (choice === download) {
-      commands.executeCommand(
-        "vscode.open",
-        Uri.parse("https://subversion.apache.org/packages.html")
+      const findSvnExecutable = "Find SVN executable";
+      const download = "Download SVN";
+      const neverShowAgain = "Don't Show Again";
+      const choice = await window.showWarningMessage(
+        "SVN not found. Install it or configure it using the 'svn.path' setting.",
+        findSvnExecutable,
+        download,
+        neverShowAgain
       );
-    } else if (choice === neverShowAgain) {
-      await configuration.update("ignoreMissingSvnWarning", true);
+
+      if (choice === findSvnExecutable) {
+        let filters: { [name: string]: string[] } | undefined;
+
+        // For windows, limit to executable files
+        if (path.sep === "\\") {
+          filters = {
+            svn: ["exe", "bat"]
+          };
+        }
+
+        const executable = await window.showOpenDialog({
+          canSelectFiles: true,
+          canSelectFolders: false,
+          canSelectMany: false,
+          filters
+        });
+
+        if (executable && executable[0]) {
+          const file = executable[0].fsPath;
+
+          outputChannel.appendLine(`Updated "svn.path" with "${file}"`);
+
+          await configuration.update("path", file);
+
+          // Try Re-init after select the executable
+          await tryInit();
+        }
+      } else if (choice === download) {
+        commands.executeCommand(
+          "vscode.open",
+          Uri.parse("https://subversion.apache.org/packages.html")
+        );
+      } else if (choice === neverShowAgain) {
+        await configuration.update("ignoreMissingSvnWarning", true);
+      }
     }
-  }
+  };
+
+  await tryInit();
 }
 
 export async function activate(context: ExtensionContext) {

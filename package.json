@@ -60,7 +60,7 @@
     "@types/xml2js": "^0.4.3",
     "decache": "^4.3.0",
     "glob": "^7.1.2",
-    "husky": "^0.14.3",
+    "husky": "^1.0.0",
     "istanbul": "^0.4.5",
     "mocha": "^5.2.0",
     "prettier": "^1.14.0",
@@ -82,6 +82,11 @@
       ]
     },
     "commands": [
+      {
+        "command": "svn.checkout",
+        "title": "Checkout",
+        "category": "SVN"
+      },
       {
         "command": "svn.add",
         "title": "Add",
@@ -268,6 +273,10 @@
     ],
     "menus": {
       "commandPalette": [
+        {
+          "command": "svn.checkout",
+          "when": "config.svn.enabled"
+        },
         {
           "command": "svn.add",
           "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
@@ -588,6 +597,20 @@
           "default": null,
           "isExecutable": true
         },
+        "svn.defaultCheckoutDirectory": {
+          "type": "string",
+          "default": null,
+          "description": "The default location to checkout a svn repository."
+        },
+        "svn.ignoreRepositories": {
+          "type": [
+            "array",
+            null
+          ],
+          "default": null,
+          "scope": "resource",
+          "description": "List of SVN repositories to ignore."
+        },
         "svn.ignoreMissingSvnWarning": {
           "type": "boolean",
           "description": "Ignores the warning when SVN is missing",
@@ -725,6 +748,24 @@
           "type": "boolean",
           "description": "Set to ignore externals definitions on update (add --ignore-externals)",
           "default": true
+        },
+        "svn.delete.actionForDeletedFiles": {
+          "type": "string",
+          "enum": [
+            "none",
+            "prompt",
+            "remove"
+          ],
+          "description": "When a file is deleted, what SVN should do? `none` - Do nothing, `prompt` - Ask the action, `remove` - automatically remove from SVN",
+          "default": "prompt"
+        },
+        "svn.delete.ignoredRulesForDeletedFiles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Ignored files/rules for `svn.delete.actionForDeletedFiles`(Ex.: file.txt or **/*.txt)",
+          "default": []
         },
         "svn.default.encoding": {
           "type": [

@@ -250,3 +250,8 @@ export interface IOperations {
   isIdle(): boolean;
   isRunning(operation: Operation): boolean;
 }
+
+export interface IAuth {
+  username: string;
+  password: string;
+}

@@ -33,6 +33,7 @@ export class SvnFinder {
             return this.findSpecificSvn("svn");
         }
       })
+      .then(svn => this.checkSvnCommand(svn))
       .then(null, () =>
         Promise.reject(new Error("Svn installation not found."))
       );
@@ -115,6 +116,22 @@ export class SvnFinder {
                     .trim()
                 )
               })
+      );
+    });
+  }
+
+  public checkSvnCommand(svn: ISvn): Promise<ISvn> {
+    return new Promise<ISvn>((c, e) => {
+      const buffers: Buffer[] = [];
+      const child = cp.spawn(svn.path, ["help", "checkout"]);
+      child.stdout.on("data", (b: Buffer) => buffers.push(b));
+      child.on("error", cpErrorHandler(e));
+      child.on(
+        "exit",
+        code =>
+          code || Buffer.concat(buffers).toString("utf8").length < 100
+            ? e(new Error("Not found"))
+            : c(svn)
       );
     });
   }

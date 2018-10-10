@@ -38,8 +38,8 @@ class Configuration {
     return this.configuration.get<T>(section, defaultValue!);
   }
 
-  public update(section: string, value: any): void {
-    this.configuration.update(section, value);
+  public update(section: string, value: any): Thenable<void> {
+    return this.configuration.update(section, value);
   }
 
   public inspect(section: string) {
