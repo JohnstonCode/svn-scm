@@ -4,7 +4,7 @@ import { Command } from "./command";
 
 export class OpenChangeHead extends Command {
   constructor() {
-    super("svn.openChangeHead");
+    super("svn.openChangeHead", {});
   }
 
   public async execute(

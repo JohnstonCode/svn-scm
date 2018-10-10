@@ -1,11 +1,10 @@
 import { getPatchChangelist } from "../changelistItems";
-import { Model } from "../model";
 import { Repository } from "../repository";
 import { Command } from "./command";
 
 export class PatchChangeList extends Command {
-  constructor(protected model: Model) {
-    super("svn.patchChangeList", { repository: true }, model);
+  constructor() {
+    super("svn.patchChangeList", { repository: true });
   }
 
   public async execute(repository: Repository) {

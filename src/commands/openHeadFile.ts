@@ -15,11 +15,11 @@ export class OpenHeadFile extends Command {
     if (arg instanceof Resource) {
       resource = arg;
     } else if (arg instanceof Uri) {
-      resource = this.getSCMResource(arg);
+      resource = await this.getSCMResource(arg);
     } else if (arg instanceof IncomingChangeNode) {
       resource = new Resource(arg.uri, arg.type, undefined, arg.props, true);
     } else {
-      resource = this.getSCMResource();
+      resource = await this.getSCMResource();
     }
 
     if (!resource) {

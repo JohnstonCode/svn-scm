@@ -1,14 +1,13 @@
 import { SourceControlResourceState, window } from "vscode";
-import { Model } from "../model";
 import { Command } from "./command";
 
 export class Revert extends Command {
-  constructor(protected model: Model) {
-    super("svn.revert", {}, model);
+  constructor() {
+    super("svn.revert");
   }
 
   public async execute(...resourceStates: SourceControlResourceState[]) {
-    const selection = this.getResourceStates(resourceStates);
+    const selection = await this.getResourceStates(resourceStates);
 
     if (selection.length === 0) {
       return;

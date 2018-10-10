@@ -1,10 +1,9 @@
 import { LineChange, Range, window } from "vscode";
-import { Model } from "../model";
 import { Command } from "./command";
 
 export class RevertSelectedRanges extends Command {
-  constructor(protected model: Model) {
-    super("svn.revertSelectedRanges", { diff: true }, model);
+  constructor() {
+    super("svn.revertSelectedRanges", { diff: true });
   }
 
   public async execute(changes: LineChange[]) {

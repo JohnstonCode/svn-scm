@@ -1,12 +1,12 @@
-import { window } from "vscode";
+import { commands, window } from "vscode";
 import { configuration } from "../helpers/configuration";
 import { Model } from "../model";
 import { fixPathSeparator } from "../util";
 import { Command } from "./command";
 
 export class Upgrade extends Command {
-  constructor(protected model: Model) {
-    super("svn.upgrade", {}, model);
+  constructor() {
+    super("svn.upgrade");
   }
 
   public async execute(folderPath: string) {
@@ -29,13 +29,14 @@ export class Upgrade extends Command {
       no,
       neverShowAgain
     );
+    const model = (await commands.executeCommand("svn.getModel", "")) as Model;
 
     if (choice === yes) {
-      const upgraded = await this.model.upgradeWorkingCopy(folderPath);
+      const upgraded = await model.upgradeWorkingCopy(folderPath);
 
       if (upgraded) {
         window.showInformationMessage(`Working copy "${folderPath}" upgraded`);
-        this.model.tryOpenRepository(folderPath);
+        model.tryOpenRepository(folderPath);
       } else {
         window.showErrorMessage(
           `Error on upgrading working copy "${folderPath}". See log for more detail`

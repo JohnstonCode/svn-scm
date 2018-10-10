@@ -1,12 +1,11 @@
 import { window } from "vscode";
 import { configuration } from "../helpers/configuration";
-import { Model } from "../model";
 import { Repository } from "../repository";
 import { Command } from "./command";
 
 export class Update extends Command {
-  constructor(protected model: Model) {
-    super("svn.update", { repository: true }, model);
+  constructor() {
+    super("svn.update", { repository: true });
   }
 
   public async execute(repository: Repository) {

@@ -1,14 +1,13 @@
 import * as path from "path";
 import { commands, Uri, window } from "vscode";
 import { SvnUriAction } from "../common/types";
-import { Model } from "../model";
 import { Repository } from "../repository";
 import { toSvnUri } from "../uri";
 import { Command } from "./command";
 
 export class Log extends Command {
-  constructor(protected model: Model) {
-    super("svn.log", { repository: true }, model);
+  constructor() {
+    super("svn.log", { repository: true });
   }
 
   public async execute(repository: Repository) {

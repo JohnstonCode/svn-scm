@@ -1,10 +1,9 @@
-import { Model } from "../model";
 import { Repository } from "../repository";
 import { Command } from "./command";
 
 export class PatchAll extends Command {
-  constructor(protected model: Model) {
-    super("svn.patchAll", { repository: true }, model);
+  constructor() {
+    super("svn.patchAll", { repository: true });
   }
 
   public async execute(repository: Repository) {

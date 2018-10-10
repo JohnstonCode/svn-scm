@@ -1,12 +1,11 @@
 import { window } from "vscode";
 import { configuration } from "../helpers/configuration";
-import { Model } from "../model";
 import IncomingChangeNode from "../treeView/nodes/incomingChangeNode";
 import { Command } from "./command";
 
 export class PullIncommingChange extends Command {
-  constructor(protected model: Model) {
-    super("svn.treeview.pullIncomingChange", {}, model);
+  constructor() {
+    super("svn.treeview.pullIncomingChange");
   }
 
   // TODO: clean this up

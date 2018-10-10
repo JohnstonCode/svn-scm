@@ -1,13 +1,12 @@
 import * as path from "path";
 import { Uri, window } from "vscode";
-import { Model } from "../model";
 import { Repository } from "../repository";
 import { fixPathSeparator } from "../util";
 import { Command } from "./command";
 
 export class RenameExplorer extends Command {
-  constructor(protected model: Model) {
-    super("svn.renameExplorer", { repository: true }, model);
+  constructor() {
+    super("svn.renameExplorer", { repository: true });
   }
 
   public async execute(repository: Repository, mainUri?: Uri, allUris?: Uri[]) {

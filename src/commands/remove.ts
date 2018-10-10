@@ -1,14 +1,13 @@
 import { SourceControlResourceState, window } from "vscode";
-import { Model } from "../model";
 import { Command } from "./command";
 
 export class Remove extends Command {
-  constructor(protected model: Model) {
-    super("svn.remove", {}, model);
+  constructor() {
+    super("svn.remove");
   }
 
   public async execute(...resourceStates: SourceControlResourceState[]) {
-    const selection = this.getResourceStates(resourceStates);
+    const selection = await this.getResourceStates(resourceStates);
 
     if (selection.length === 0) {
       return;

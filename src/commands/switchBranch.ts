@@ -1,12 +1,11 @@
 import { window } from "vscode";
 import { selectBranch } from "../helpers/branch";
-import { Model } from "../model";
 import { Repository } from "../repository";
 import { Command } from "./command";
 
 export class SwitchBranch extends Command {
-  constructor(protected model: Model) {
-    super("svn.switchBranch", { repository: true }, model);
+  constructor() {
+    super("svn.switchBranch", { repository: true });
   }
 
   public async execute(repository: Repository) {

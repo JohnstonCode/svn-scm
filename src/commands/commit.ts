@@ -12,7 +12,7 @@ export class Commit extends Command {
 
   public async execute(...resources: SourceControlResourceState[]) {
     if (resources.length === 0 || !(resources[0].resourceUri instanceof Uri)) {
-      const resource = this.getSCMResource();
+      const resource = await this.getSCMResource();
 
       if (!resource) {
         return;

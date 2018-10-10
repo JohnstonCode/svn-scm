@@ -1,13 +1,16 @@
+import { commands } from "vscode";
 import { Model } from "../model";
 import { Repository } from "../repository";
 import { Command } from "./command";
 
 export class Close extends Command {
-  constructor(protected model: Model) {
-    super("svn.close", { repository: true }, model);
+  constructor() {
+    super("svn.close", { repository: true });
   }
 
   public async execute(repository: Repository) {
-    this.model.close(repository);
+    const model = (await commands.executeCommand("svn.getModel", "")) as Model;
+
+    model.close(repository);
   }
 }

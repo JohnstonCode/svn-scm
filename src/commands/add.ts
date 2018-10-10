@@ -1,14 +1,13 @@
-import { commands, SourceControlResourceState, Uri, window } from "vscode";
-import { Model } from "../model";
+import { SourceControlResourceState, window } from "vscode";
 import { Command } from "./command";
 
 export class Add extends Command {
-  constructor(protected model: Model) {
+  constructor() {
     super("svn.add");
   }
 
   public async execute(...resourceStates: SourceControlResourceState[]) {
-    const selection = this.getResourceStates(resourceStates);
+    const selection = await this.getResourceStates(resourceStates);
 
     if (selection.length === 0) {
       return;

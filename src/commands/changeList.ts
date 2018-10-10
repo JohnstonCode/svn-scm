@@ -1,15 +1,14 @@
 import { SourceControlResourceState, window } from "vscode";
 import { inputSwitchChangelist } from "../changelistItems";
-import { Model } from "../model";
 import { Command } from "./command";
 
 export class ChangeList extends Command {
-  constructor(protected model: Model) {
-    super("svn.changelist", {}, model);
+  constructor() {
+    super("svn.changelist");
   }
 
   public async execute(...resourceStates: SourceControlResourceState[]) {
-    const selection = this.getResourceStates(resourceStates);
+    const selection = await this.getResourceStates(resourceStates);
 
     if (selection.length === 0) {
       return;

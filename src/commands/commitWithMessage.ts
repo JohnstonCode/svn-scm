@@ -3,14 +3,13 @@ import { window } from "vscode";
 import { inputCommitChangelist } from "../changelistItems";
 import { Status } from "../common/types";
 import { inputCommitMessage } from "../messages";
-import { Model } from "../model";
 import { Repository } from "../repository";
 import { Resource } from "../resource";
 import { Command } from "./command";
 
 export class CommitWithMessage extends Command {
-  constructor(protected model: Model) {
-    super("svn.commitWithMessage", { repository: true }, model);
+  constructor() {
+    super("svn.commitWithMessage", { repository: true });
   }
 
   public async execute(repository: Repository) {

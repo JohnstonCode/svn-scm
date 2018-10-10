@@ -1,10 +1,9 @@
 import { Uri } from "vscode";
-import { Model } from "../model";
 import { Command } from "./command";
 
 export class AddToIgnoreExplorer extends Command {
-  constructor(protected model: Model) {
-    super("svn.addToIgnoreExplorer", { repository: true }, model);
+  constructor() {
+    super("svn.addToIgnoreExplorer", { repository: true });
   }
 
   public async execute(mainUri?: Uri, allUris?: Uri[]) {

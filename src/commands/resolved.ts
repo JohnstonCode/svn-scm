@@ -1,12 +1,11 @@
 import * as path from "path";
 import { Uri, window } from "vscode";
 import { configuration } from "../helpers/configuration";
-import { Model } from "../model";
 import { Command } from "./command";
 
 export class Resolved extends Command {
-  constructor(protected model: Model) {
-    super("svn.resolved", {}, model);
+  constructor() {
+    super("svn.resolved");
   }
 
   public async execute(uri: Uri) {

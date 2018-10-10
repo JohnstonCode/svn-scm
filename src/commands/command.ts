@@ -28,25 +28,17 @@ import { hasSupportToRegisterDiffCommand } from "../util";
 export abstract class Command implements Disposable {
   private _disposable?: Disposable;
 
-  constructor(
-    commandName: string,
-    options: ICommandOptions = {},
-    protected model?: Model
-  ) {
+  constructor(commandName: string, options: ICommandOptions = {}) {
     if (options.repository) {
-      if (!model) {
-        throw new Error("Model is undefined!");
-      }
-
-      const command = this.createRepositoryCommand(model, this.execute);
+      const command = this.createRepositoryCommand(this.execute);
 
       this._disposable = commands.registerCommand(commandName, command);
 
       return;
     }
 
-    if (options.diff && hasSupportToRegisterDiffCommand() && model) {
-      const command = this.createRepositoryCommand(model, this.execute);
+    if (options.diff && hasSupportToRegisterDiffCommand()) {
+      const command = this.createRepositoryCommand(this.execute);
       this._disposable = commands.registerDiffInformationCommand(
         commandName,
         command
@@ -70,11 +62,12 @@ export abstract class Command implements Disposable {
     this._disposable && this._disposable.dispose(); // tslint:disable-line
   }
 
-  private createRepositoryCommand(
-    model: Model,
-    method: Function
-  ): (...args: any[]) => any {
-    const result = (...args: any[]) => {
+  private createRepositoryCommand(method: Function): (...args: any[]) => any {
+    const result = async (...args: any[]) => {
+      const model = (await commands.executeCommand(
+        "svn.getModel",
+        ""
+      )) as Model;
       let result;
 
       const repository = model.getRepository(args[0]);
@@ -104,14 +97,14 @@ export abstract class Command implements Disposable {
     return result;
   }
 
-  protected getResourceStates(
+  protected async getResourceStates(
     resourceStates: SourceControlResourceState[]
-  ): Resource[] {
+  ): Promise<Resource[]> {
     if (
       resourceStates.length === 0 ||
       !(resourceStates[0].resourceUri instanceof Uri)
     ) {
-      const resource = this.getSCMResource();
+      const resource = await this.getSCMResource();
 
       if (!resource) {
         return [];
@@ -139,12 +132,13 @@ export abstract class Command implements Disposable {
     const isSingleResource = arg instanceof Uri;
 
     const groups = resources.reduce(
-      (result, resource) => {
-        if (!this.model) {
-          throw new Error("Model is undefined!");
-        }
+      async (result, resource) => {
+        const model = (await commands.executeCommand(
+          "svn.getModel",
+          ""
+        )) as Model;
 
-        const repository = this.model.getRepository(resource);
+        const repository = model.getRepository(resource);
 
         if (!repository) {
           console.warn("Could not find Svn repository for ", resource);
@@ -171,7 +165,7 @@ export abstract class Command implements Disposable {
     return Promise.all(promises);
   }
 
-  protected getSCMResource(uri?: Uri): Resource | undefined {
+  protected async getSCMResource(uri?: Uri): Promise<Resource | undefined> {
     uri = uri
       ? uri
       : window.activeTextEditor && window.activeTextEditor.document.uri;
@@ -186,10 +180,11 @@ export abstract class Command implements Disposable {
     }
 
     if (uri.scheme === "file") {
-      if (!this.model) {
-        throw new Error("Model is undefined!");
-      }
-      const repository = this.model.getRepository(uri);
+      const model = (await commands.executeCommand(
+        "svn.getModel",
+        ""
+      )) as Model;
+      const repository = model.getRepository(uri);
 
       if (!repository) {
         return undefined;
@@ -358,7 +353,7 @@ export abstract class Command implements Disposable {
     let resources: Resource[] | undefined;
 
     if (arg instanceof Uri) {
-      const resource = this.getSCMResource(arg);
+      const resource = await this.getSCMResource(arg);
       if (resource !== undefined) {
         resources = [resource];
       }
@@ -378,7 +373,7 @@ export abstract class Command implements Disposable {
       if (arg instanceof Resource) {
         resource = arg;
       } else {
-        resource = this.getSCMResource();
+        resource = await this.getSCMResource();
       }
 
       if (resource) {

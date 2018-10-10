@@ -4,7 +4,7 @@ import { Command } from "./command";
 
 export class OpenChangeBase extends Command {
   constructor() {
-    super("svn.openChangeBase");
+    super("svn.openChangeBase", {});
   }
 
   public async execute(

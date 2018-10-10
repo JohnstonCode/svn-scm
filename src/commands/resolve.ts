@@ -1,15 +1,14 @@
 import { SourceControlResourceState, window } from "vscode";
 import { getConflictPickOptions } from "../conflictItems";
-import { Model } from "../model";
 import { Command } from "./command";
 
 export class Resolve extends Command {
-  constructor(protected model: Model) {
-    super("svn.resolve", {}, model);
+  constructor() {
+    super("svn.resolve");
   }
 
   public async execute(...resourceStates: SourceControlResourceState[]) {
-    const selection = this.getResourceStates(resourceStates);
+    const selection = await this.getResourceStates(resourceStates);
 
     if (selection.length === 0) {
       return;

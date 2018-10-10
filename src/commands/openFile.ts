@@ -7,14 +7,13 @@ import {
   window,
   workspace
 } from "vscode";
-import { Model } from "../model";
 import { Resource } from "../resource";
 import IncomingChangeNode from "../treeView/nodes/incomingChangeNode";
 import { fromSvnUri } from "../uri";
 import { Command } from "./command";
 
 export class OpenFile extends Command {
-  constructor(model: Model) {
+  constructor() {
     super("svn.openFile");
   }
 

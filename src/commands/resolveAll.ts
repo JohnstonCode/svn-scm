@@ -1,12 +1,11 @@
 import { window } from "vscode";
 import { getConflictPickOptions } from "../conflictItems";
-import { Model } from "../model";
 import { Repository } from "../repository";
 import { Command } from "./command";
 
 export class ResolveAll extends Command {
-  constructor(protected model: Model) {
-    super("svn.resolveAll", { repository: true }, model);
+  constructor() {
+    super("svn.resolveAll", { repository: true });
   }
 
   public async execute(repository: Repository) {

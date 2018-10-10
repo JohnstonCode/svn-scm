@@ -1,11 +1,10 @@
 import { window } from "vscode";
-import { Model } from "../model";
 import { Repository } from "../repository";
 import { Command } from "./command";
 
 export class PromptAuth extends Command {
-  constructor(protected model: Model) {
-    super("svn.promptAuth", { repository: true }, model);
+  constructor() {
+    super("svn.promptAuth", { repository: true });
   }
 
   public async execute(repository: Repository) {
