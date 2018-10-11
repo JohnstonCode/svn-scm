@@ -6,6 +6,7 @@ import {
   Disposable,
   Event,
   EventEmitter,
+  SourceControlResourceGroup,
   Uri,
   window,
   workspace,
@@ -341,6 +342,12 @@ export class Model implements IDisposable {
 
     if (hint instanceof Repository) {
       return this.openRepositories.find(r => r.repository === hint);
+    }
+
+    if ((hint as any).repository instanceof Repository) {
+      return this.openRepositories.find(
+        r => r.repository === (hint as any).repository
+      );
     }
 
     if (typeof hint === "string") {
