@@ -778,9 +778,9 @@ export class Repository {
     });
   }
 
-  public async switchBranch(name: string) {
+  public async switchBranch(name: string, force: boolean = false) {
     await this.run(Operation.SwitchBranch, async () => {
-      await this.repository.switchBranch(name);
+      await this.repository.switchBranch(name, force);
       this.updateRemoteChangedFiles();
     });
   }

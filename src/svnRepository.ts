@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import * as tmp from "tmp";
-import { Uri, window, workspace } from "vscode";
+import { Uri, workspace } from "vscode";
 import {
   ICpOptions,
   IExecutionResult,
@@ -357,28 +357,15 @@ export class Repository {
     return true;
   }
 
-  public async switchBranch(ref: string) {
+  public async switchBranch(ref: string, force: boolean = false) {
     const repoUrl = await this.getRepoUrl();
-
     const branchUrl = repoUrl + "/" + ref;
 
-    try {
-      await this.exec(["switch", branchUrl]);
-    } catch (error) {
-      const answer = await window.showErrorMessage(
-        "Failed to switch branch: " +
-          error.stderrFormated +
-          " Do you want to retry with '--ignore-ancestry' option?",
-        "Yes",
-        "No"
-      );
-      if (answer === "Yes") {
-        await this.exec(["switch", branchUrl, "--ignore-ancestry"]);
-      }
-    }
+    await this.exec(
+      ["switch", branchUrl].concat(force ? ["--ignore-ancestry"] : [])
+    );
 
     this.resetInfo();
-
     return true;
   }
 
