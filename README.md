@@ -120,3 +120,4 @@ Example:
 |`svn.showUpdateMessage`|Show the update message when update is run|`true`|
 |`svn.remoteChanges.checkFrequency`|Set the interval in seconds to check changed files on remote repository and show in statusbar. 0 to disable|`300`|
 |`svn.sourceControl.hideUnversioned`|Hide unversioned files in Source Control UI|`false`|
+|`svn.refresh.remoteChanges`|Refresh remote changes on refresh command|`false`|
