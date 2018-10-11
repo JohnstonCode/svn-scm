@@ -508,6 +508,11 @@ export class SvnCommands implements IDisposable {
     }
   }
 
+  @command("svn.refreshRemoteChanges", { repository: true })
+  public async refreshRemoteChanges(repository: Repository) {
+    await repository.updateRemoteChangedFiles();
+  }
+
   @command("svn.openResourceBase")
   public async openResourceBase(resource: Resource): Promise<void> {
     await this._openResource(resource, "BASE", undefined, true, false);
