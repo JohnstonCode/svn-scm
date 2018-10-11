@@ -789,6 +789,11 @@
           "type": "boolean",
           "description": "Hide unversioned files in Source Control UI",
           "default": false
+        },
+        "svn.refresh.remoteChanges": {
+          "type": "boolean",
+          "description": "Refresh remote changes on refresh command",
+          "default": false
         }
       }
     }
