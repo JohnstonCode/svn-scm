@@ -165,6 +165,15 @@
         }
       },
       {
+        "command": "svn.refreshRemoteChanges",
+        "title": "Refresh Remote Changes",
+        "category": "SVN",
+        "icon": {
+          "light": "icons/light/refresh.svg",
+          "dark": "icons/dark/refresh.svg"
+        }
+      },
+      {
         "command": "svn.switchBranch",
         "title": "Switch Branch",
         "category": "SVN"
@@ -446,7 +455,18 @@
           "when": "scmProvider == svn"
         }
       ],
-      "scm/resourceGroup/context": [],
+      "scm/resourceGroup/context": [
+        {
+          "command": "svn.refreshRemoteChanges",
+          "when": "config.svn.enabled && scmProvider == svn && scmResourceGroup == remotechanges",
+          "group": "inline"
+        },
+        {
+          "command": "svn.refreshRemoteChanges",
+          "when": "config.svn.enabled && scmProvider == svn && scmResourceGroup == remotechanges",
+          "group": "navigation"
+        }
+      ],
       "scm/resourceState/context": [
         {
           "command": "svn.add",
