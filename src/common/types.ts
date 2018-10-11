@@ -107,6 +107,7 @@ export enum Operation {
 
 export interface ISvnResourceGroup extends SourceControlResourceGroup {
   resourceStates: Resource[];
+  repository?: Repository;
 }
 
 export interface IWcStatus {
