@@ -43,6 +43,7 @@ import { Svn, svnErrorCodes } from "./svn";
 import IncomingChangeNode from "./treeView/nodes/incomingChangeNode";
 import { fromSvnUri, toSvnUri } from "./uri";
 import {
+  deleteDirectory,
   fixPathSeparator,
   hasSupportToRegisterDiffCommand,
   IDisposable
@@ -1508,6 +1509,44 @@ export class SvnCommands implements IDisposable {
       ignoreList = [...new Set(ignoreList)]; // Remove duplicates
 
       configuration.update("delete.ignoredRulesForDeletedFiles", ignoreList);
+    }
+  }
+
+  @command("svn.deleteUnversioned")
+  public async deleteUnversioned(
+    ...resourceStates: SourceControlResourceState[]
+  ): Promise<void> {
+    const selection = this.getResourceStates(resourceStates);
+
+    if (selection.length === 0) {
+      return;
+    }
+
+    const uris = selection.map(resource => resource.resourceUri);
+
+    const answer = await window.showWarningMessage(
+      "Would you like delete the files?.",
+      { modal: true },
+      "Yes",
+      "No"
+    );
+
+    if (answer === "Yes") {
+      for (const uri of uris) {
+        const fsPath = uri.fsPath;
+
+        if (!fs.existsSync(fsPath)) {
+          continue;
+        }
+
+        const stat = fs.lstatSync(fsPath);
+
+        if (stat.isDirectory()) {
+          deleteDirectory(fsPath);
+        } else {
+          fs.unlinkSync(fsPath);
+        }
+      }
     }
   }
 

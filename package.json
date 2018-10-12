@@ -280,6 +280,11 @@
         "command": "svn.treeview.pullIncomingChange",
         "title": "Pull selected changes",
         "category": "SVN"
+      },
+      {
+        "command": "svn.deleteUnversioned",
+        "title": "Delete selected files",
+        "category": "SVN"
       }
     ],
     "menus": {
@@ -382,6 +387,10 @@
         },
         {
           "command": "svn.renameExplorer",
+          "when": "false"
+        },
+        {
+          "command": "svn.deleteUnversioned",
           "when": "false"
         }
       ],
@@ -538,6 +547,11 @@
         {
           "command": "svn.remove",
           "when": "config.svn.enabled && scmProvider == svn && scmResourceGroup != unversioned && scmResourceGroup != external && scmResourceGroup != conflicts && scmResourceGroup != remotechanged",
+          "group": "2_modification"
+        },
+        {
+          "command": "svn.deleteUnversioned",
+          "when": "config.svn.enabled && scmProvider == svn && scmResourceGroup == unversioned",
           "group": "2_modification"
         },
         {
