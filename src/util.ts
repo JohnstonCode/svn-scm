@@ -1,4 +1,5 @@
-import { sep } from "path";
+import * as fs from "fs";
+import * as path from "path";
 import { commands, Event, window } from "vscode";
 import { Operation } from "./common/types";
 
@@ -68,10 +69,10 @@ export function eventToPromise<T>(event: Event<T>): Promise<T> {
   return new Promise<T>(c => onceEvent(event)(c));
 }
 
-const regexNormalizePath = new RegExp(sep === "/" ? "\\\\" : "/", "g");
+const regexNormalizePath = new RegExp(path.sep === "/" ? "\\\\" : "/", "g");
 const regexNormalizeWindows = new RegExp("^\\\\(\\w:)", "g");
 export function fixPathSeparator(file: string) {
-  file = file.replace(regexNormalizePath, sep);
+  file = file.replace(regexNormalizePath, path.sep);
   file = file.replace(regexNormalizeWindows, "$1"); // "\t:\test" => "t:\test"
   return file;
 }
@@ -80,7 +81,7 @@ export function normalizePath(file: string) {
   file = fixPathSeparator(file);
 
   // IF Windows
-  if (sep === "\\") {
+  if (path.sep === "\\") {
     file = file.toLowerCase();
   }
 
@@ -88,11 +89,11 @@ export function normalizePath(file: string) {
 }
 
 export function isDescendant(parent: string, descendant: string): boolean {
-  parent = parent.replace(/[\\\/]/g, sep);
-  descendant = descendant.replace(/[\\\/]/g, sep);
+  parent = parent.replace(/[\\\/]/g, path.sep);
+  descendant = descendant.replace(/[\\\/]/g, path.sep);
 
   // IF Windows
-  if (sep === "\\") {
+  if (path.sep === "\\") {
     parent = parent.replace(/^\\/, "").toLowerCase();
     descendant = descendant.replace(/^\\/, "").toLowerCase();
   }
@@ -101,8 +102,8 @@ export function isDescendant(parent: string, descendant: string): boolean {
     return true;
   }
 
-  if (parent.charAt(parent.length - 1) !== sep) {
-    parent += sep;
+  if (parent.charAt(parent.length - 1) !== path.sep) {
+    parent += path.sep;
   }
 
   return descendant.startsWith(parent);
@@ -159,5 +160,24 @@ export function isReadOnly(operation: Operation): boolean {
       return true;
     default:
       return false;
+  }
+}
+
+/**
+ * Remove directory recursively
+ * @param {string} dirPath
+ * @see https://stackoverflow.com/a/42505874/3027390
+ */
+export function deleteDirectory(dirPath: string) {
+  if (fs.existsSync(dirPath) && fs.lstatSync(dirPath).isDirectory()) {
+    fs.readdirSync(dirPath).forEach((entry: string) => {
+      const entryPath = path.join(dirPath, entry);
+      if (fs.lstatSync(entryPath).isDirectory()) {
+        deleteDirectory(entryPath);
+      } else {
+        fs.unlinkSync(entryPath);
+      }
+    });
+    fs.rmdirSync(dirPath);
   }
 }
