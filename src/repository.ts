@@ -665,6 +665,7 @@ export class Repository {
         "Remote Changes"
       ) as ISvnResourceGroup;
 
+      this.remoteChanges.repository = this;
       this.remoteChanges.hideWhenEmpty = true;
       this.remoteChanges.resourceStates = tempResourceStates;
     }
