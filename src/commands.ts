@@ -40,10 +40,10 @@ import { Model } from "./model";
 import { Repository } from "./repository";
 import { Resource } from "./resource";
 import { Svn, svnErrorCodes } from "./svn";
-import IncommingChangeNode from "./treeView/nodes/incomingChangeNode";
 import IncomingChangeNode from "./treeView/nodes/incomingChangeNode";
 import { fromSvnUri, toSvnUri } from "./uri";
 import {
+  deleteDirectory,
   fixPathSeparator,
   hasSupportToRegisterDiffCommand,
   IDisposable
@@ -497,7 +497,21 @@ export class SvnCommands implements IDisposable {
 
   @command("svn.refresh", { repository: true })
   public async refresh(repository: Repository) {
+    const refreshRemoteChanges = configuration.get<boolean>(
+      "refresh.remoteChanges",
+      false
+    );
+
     await repository.status();
+
+    if (refreshRemoteChanges) {
+      await repository.updateRemoteChangedFiles();
+    }
+  }
+
+  @command("svn.refreshRemoteChanges", { repository: true })
+  public async refreshRemoteChanges(repository: Repository) {
+    await repository.updateRemoteChangedFiles();
   }
 
   @command("svn.openResourceBase")
@@ -512,7 +526,7 @@ export class SvnCommands implements IDisposable {
 
   @command("svn.openFile")
   public async openFile(
-    arg?: Resource | Uri | IncommingChangeNode,
+    arg?: Resource | Uri | IncomingChangeNode,
     ...resourceStates: SourceControlResourceState[]
   ): Promise<void> {
     const preserveFocus = arg instanceof Resource;
@@ -525,7 +539,7 @@ export class SvnCommands implements IDisposable {
       } else if (arg.scheme === "file") {
         uris = [arg];
       }
-    } else if (arg instanceof IncommingChangeNode) {
+    } else if (arg instanceof IncomingChangeNode) {
       const resource = new Resource(
         arg.uri,
         arg.type,
@@ -582,7 +596,7 @@ export class SvnCommands implements IDisposable {
 
   @command("svn.openHEADFile")
   public async openHEADFile(
-    arg?: Resource | Uri | IncommingChangeNode
+    arg?: Resource | Uri | IncomingChangeNode
   ): Promise<void> {
     let resource: Resource | undefined;
 
@@ -590,7 +604,7 @@ export class SvnCommands implements IDisposable {
       resource = arg;
     } else if (arg instanceof Uri) {
       resource = this.getSCMResource(arg);
-    } else if (arg instanceof IncommingChangeNode) {
+    } else if (arg instanceof IncomingChangeNode) {
       resource = new Resource(arg.uri, arg.type, undefined, arg.props, true);
     } else {
       resource = this.getSCMResource();
@@ -631,7 +645,7 @@ export class SvnCommands implements IDisposable {
 
   @command("svn.openChangeHead")
   public async openChangeHead(
-    arg?: Resource | Uri | IncommingChangeNode,
+    arg?: Resource | Uri | IncomingChangeNode,
     ...resourceStates: SourceControlResourceState[]
   ): Promise<void> {
     return this.openChange(arg, "HEAD", resourceStates);
@@ -646,7 +660,7 @@ export class SvnCommands implements IDisposable {
   }
 
   public async openChange(
-    arg?: Resource | Uri | IncommingChangeNode,
+    arg?: Resource | Uri | IncomingChangeNode,
     against?: string,
     resourceStates?: SourceControlResourceState[]
   ): Promise<void> {
@@ -659,7 +673,7 @@ export class SvnCommands implements IDisposable {
       if (resource !== undefined) {
         resources = [resource];
       }
-    } else if (arg instanceof IncommingChangeNode) {
+    } else if (arg instanceof IncomingChangeNode) {
       const resource = new Resource(
         arg.uri,
         arg.type,
@@ -870,7 +884,27 @@ export class SvnCommands implements IDisposable {
 
         await repository.newBranch(branch.path, commitMessage);
       } else {
-        await repository.switchBranch(branch.path);
+        try {
+          await repository.switchBranch(branch.path);
+        } catch (error) {
+          if (
+            typeof error === "object" &&
+            error.hasOwnProperty("stderrFormated") &&
+            error.stderrFormated.includes("ignore-ancestry")
+          ) {
+            const answer = await window.showErrorMessage(
+              "Seems like these branches don't have a common ancestor. " +
+                " Do you want to retry with '--ignore-ancestry' option?",
+              "Yes",
+              "No"
+            );
+            if (answer === "Yes") {
+              await repository.switchBranch(branch.path, true);
+            }
+          } else {
+            throw error;
+          }
+        }
       }
     } catch (error) {
       console.log(error);
@@ -1503,6 +1537,44 @@ export class SvnCommands implements IDisposable {
       ignoreList = [...new Set(ignoreList)]; // Remove duplicates
 
       configuration.update("delete.ignoredRulesForDeletedFiles", ignoreList);
+    }
+  }
+
+  @command("svn.deleteUnversioned")
+  public async deleteUnversioned(
+    ...resourceStates: SourceControlResourceState[]
+  ): Promise<void> {
+    const selection = this.getResourceStates(resourceStates);
+
+    if (selection.length === 0) {
+      return;
+    }
+
+    const uris = selection.map(resource => resource.resourceUri);
+
+    const answer = await window.showWarningMessage(
+      "Would you like delete the files?.",
+      { modal: true },
+      "Yes",
+      "No"
+    );
+
+    if (answer === "Yes") {
+      for (const uri of uris) {
+        const fsPath = uri.fsPath;
+
+        if (!fs.existsSync(fsPath)) {
+          continue;
+        }
+
+        const stat = fs.lstatSync(fsPath);
+
+        if (stat.isDirectory()) {
+          deleteDirectory(fsPath);
+        } else {
+          fs.unlinkSync(fsPath);
+        }
+      }
     }
   }
 

@@ -53,9 +53,11 @@
     "xml2js": "^0.4.19"
   },
   "devDependencies": {
+    "@semantic-release/changelog": "^3.0.0",
+    "@semantic-release/git": "^7.0.4",
     "@types/glob": "^7.1.0",
     "@types/mocha": "^5.2.5",
-    "@types/node": "^10.5.7",
+    "@types/node": "^10.11.7",
     "@types/tmp": "0.0.33",
     "@types/xml2js": "^0.4.3",
     "decache": "^4.3.0",
@@ -170,6 +172,15 @@
         }
       },
       {
+        "command": "svn.refreshRemoteChanges",
+        "title": "Refresh Remote Changes",
+        "category": "SVN",
+        "icon": {
+          "light": "icons/light/refresh.svg",
+          "dark": "icons/dark/refresh.svg"
+        }
+      },
+      {
         "command": "svn.switchBranch",
         "title": "Switch Branch",
         "category": "SVN"
@@ -274,6 +285,11 @@
         "command": "svn.treeview.pullIncomingChange",
         "title": "Pull selected changes",
         "category": "SVN"
+      },
+      {
+        "command": "svn.deleteUnversioned",
+        "title": "Delete selected files",
+        "category": "SVN"
       }
     ],
     "menus": {
@@ -377,6 +393,10 @@
         {
           "command": "svn.renameExplorer",
           "when": "false"
+        },
+        {
+          "command": "svn.deleteUnversioned",
+          "when": "false"
         }
       ],
       "view/title": [
@@ -451,7 +471,18 @@
           "when": "scmProvider == svn"
         }
       ],
-      "scm/resourceGroup/context": [],
+      "scm/resourceGroup/context": [
+        {
+          "command": "svn.refreshRemoteChanges",
+          "when": "config.svn.enabled && scmProvider == svn && scmResourceGroup == remotechanges",
+          "group": "inline"
+        },
+        {
+          "command": "svn.refreshRemoteChanges",
+          "when": "config.svn.enabled && scmProvider == svn && scmResourceGroup == remotechanges",
+          "group": "navigation"
+        }
+      ],
       "scm/resourceState/context": [
         {
           "command": "svn.add",
@@ -521,6 +552,11 @@
         {
           "command": "svn.remove",
           "when": "config.svn.enabled && scmProvider == svn && scmResourceGroup != unversioned && scmResourceGroup != external && scmResourceGroup != conflicts && scmResourceGroup != remotechanged",
+          "group": "2_modification"
+        },
+        {
+          "command": "svn.deleteUnversioned",
+          "when": "config.svn.enabled && scmProvider == svn && scmResourceGroup == unversioned",
           "group": "2_modification"
         },
         {
@@ -793,6 +829,11 @@
         "svn.sourceControl.hideUnversioned": {
           "type": "boolean",
           "description": "Hide unversioned files in Source Control UI",
+          "default": false
+        },
+        "svn.refresh.remoteChanges": {
+          "type": "boolean",
+          "description": "Refresh remote changes on refresh command",
           "default": false
         }
       }

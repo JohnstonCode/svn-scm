@@ -357,19 +357,15 @@ export class Repository {
     return true;
   }
 
-  public async switchBranch(ref: string) {
+  public async switchBranch(ref: string, force: boolean = false) {
     const repoUrl = await this.getRepoUrl();
-
     const branchUrl = repoUrl + "/" + ref;
 
-    try {
-      await this.exec(["switch", branchUrl]);
-    } catch (error) {
-      await this.exec(["switch", branchUrl, "--ignore-ancestry"]);
-    }
+    await this.exec(
+      ["switch", branchUrl].concat(force ? ["--ignore-ancestry"] : [])
+    );
 
     this.resetInfo();
-
     return true;
   }
 
