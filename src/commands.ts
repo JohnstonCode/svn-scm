@@ -651,6 +651,14 @@ export class SvnCommands implements IDisposable {
     return this.openChange(arg, "HEAD", resourceStates);
   }
 
+  @command("svn.openChangePrev")
+  public async openChangePrev(
+    arg?: Resource | Uri | IncomingChangeNode,
+    ...resourceStates: SourceControlResourceState[]
+  ): Promise<void> {
+    return this.openChange(arg, "PREV", resourceStates);
+  }
+
   public async openChange(
     arg?: Resource | Uri | IncomingChangeNode,
     against?: string,

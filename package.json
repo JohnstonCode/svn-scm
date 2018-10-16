@@ -144,6 +144,11 @@
         }
       },
       {
+        "command": "svn.openChangePrev",
+        "title": "Open Changes with PREV",
+        "category": "SVN"
+      },
+      {
         "command": "svn.openFile",
         "title": "Open File",
         "category": "SVN",
