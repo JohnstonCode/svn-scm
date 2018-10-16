@@ -131,32 +131,26 @@ export abstract class Command implements Disposable {
     const resources = arg instanceof Uri ? [arg] : arg;
     const isSingleResource = arg instanceof Uri;
 
-    const groups = resources.reduce(
-      async (result, resource) => {
-        const model = (await commands.executeCommand(
-          "svn.getModel",
-          ""
-        )) as Model;
+    const model = (await commands.executeCommand("svn.getModel", "")) as Model;
 
-        const repository = model.getRepository(resource);
+    const groups: Array<{ repository: Repository; resources: Uri[] }> = [];
 
-        if (!repository) {
-          console.warn("Could not find Svn repository for ", resource);
-          return result;
-        }
+    for (const resource of resources) {
+      const repository = model.getRepository(resource);
 
-        const tuple = result.filter(p => p.repository === repository)[0];
+      if (!repository) {
+        console.warn("Could not find Svn repository for ", resource);
+        continue;
+      }
 
-        if (tuple) {
-          tuple.resources.push(resource);
-        } else {
-          result.push({ repository, resources: [resource] });
-        }
+      const tuple = groups.filter(p => p.repository === repository)[0];
 
-        return result;
-      },
-      [] as Array<{ repository: Repository; resources: Uri[] }>
-    );
+      if (tuple) {
+        tuple.resources.push(resource);
+      } else {
+        groups.push({ repository, resources: [resource] });
+      }
+    }
 
     const promises = groups.map(({ repository, resources }) =>
       fn(repository as Repository, isSingleResource ? resources[0] : resources)
