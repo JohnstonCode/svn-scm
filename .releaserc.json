@@ -34,5 +34,17 @@
         "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
       }
     ]
+  ],
+  "verifyConditions": [
+    "@semantic-release/github",
+    "@semantic-release/git",
+    "@semantic-release/changelog",
+    "semantic-release-vsce"
+  ],
+  "prepare": [
+    "@semantic-release/npm",
+    "@semantic-release/changelog",
+    "semantic-release-vsce",
+    "@semantic-release/git"
   ]
 }
