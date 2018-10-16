@@ -45,7 +45,10 @@
     "@semantic-release/npm",
     "@semantic-release/changelog",
     "@semantic-release/git",
-    "semantic-release-vsce"
+    {
+      "path": "semantic-release-vsce",
+      "packageVsix": "svn-scm.vsix"
+    }
   ],
   "publish": ["semantic-release-vsce", "@semantic-release/github"]
 }
