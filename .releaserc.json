@@ -44,8 +44,8 @@
   "prepare": [
     "@semantic-release/npm",
     "@semantic-release/changelog",
-    "semantic-release-vsce",
-    "@semantic-release/git"
+    "@semantic-release/git",
+    "semantic-release-vsce"
   ],
   "publish": ["semantic-release-vsce", "@semantic-release/github"]
 }
