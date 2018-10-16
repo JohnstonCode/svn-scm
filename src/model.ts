@@ -6,6 +6,7 @@ import {
   Disposable,
   Event,
   EventEmitter,
+  SourceControlResourceGroup,
   Uri,
   window,
   workspace,
@@ -57,7 +58,11 @@ export class Model implements IDisposable {
     return this.openRepositories.map(r => r.repository);
   }
 
-  constructor(private svn: Svn) {
+  get svn(): Svn {
+    return this._svn;
+  }
+
+  constructor(private _svn: Svn) {
     this.enabled = configuration.get<boolean>("enabled") === true;
 
     this.configurationChangeDisposable = workspace.onDidChangeConfiguration(
@@ -341,6 +346,12 @@ export class Model implements IDisposable {
 
     if (hint instanceof Repository) {
       return this.openRepositories.find(r => r.repository === hint);
+    }
+
+    if ((hint as any).repository instanceof Repository) {
+      return this.openRepositories.find(
+        r => r.repository === (hint as any).repository
+      );
     }
 
     if (typeof hint === "string") {

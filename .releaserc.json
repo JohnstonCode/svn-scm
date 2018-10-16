@@ -1,14 +1,26 @@
 {
-  "verifyConditions": ["semantic-release-vsce", "@semantic-release/github"],
-  "prepare": {
-    "path": "semantic-release-vsce",
-    "packageVsix": "svn-scm.vsix"
-  },
+  "verifyConditions": [
+    "@semantic-release/github",
+    "@semantic-release/git",
+    "@semantic-release/changelog",
+    "semantic-release-vsce"
+  ],
+  "prepare": [
+    "@semantic-release/npm",
+    "@semantic-release/changelog",
+    {
+      "path": "@semantic-release/git",
+      "assets": ["CHANGELOG.md", "package.json", "package-lock.json"],
+      "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
+    },
+    "semantic-release-vsce"
+  ],
   "publish": [
     "semantic-release-vsce",
     {
       "path": "@semantic-release/github",
       "assets": "svn-scm.vsix"
     }
-  ]
+  ],
+  "packageVsix": "svn-scm.vsix"
 }

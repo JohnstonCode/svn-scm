@@ -2,7 +2,7 @@ import { TreeItem, TreeItemCollapsibleState } from "vscode";
 import { Repository } from "../../repository";
 import { getIconUri } from "../../uri";
 import BaseNode from "./baseNode";
-import IncommingChangeNode from "./incomingChangeNode";
+import IncomingChangeNode from "./incomingChangeNode";
 import NoIncomingChangesNode from "./noIncomingChangesNode";
 
 export default class IncomingChangesNode implements BaseNode {
@@ -28,7 +28,7 @@ export default class IncomingChangesNode implements BaseNode {
 
     const changes = this.repository.remoteChanges.resourceStates.map(
       remoteChange => {
-        return new IncommingChangeNode(
+        return new IncomingChangeNode(
           remoteChange.resourceUri,
           remoteChange.type,
           this.repository

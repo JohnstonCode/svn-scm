@@ -29,7 +29,27 @@ export class SwitchBranch extends Command {
 
         await repository.newBranch(branch.path, commitMessage);
       } else {
-        await repository.switchBranch(branch.path);
+        try {
+          await repository.switchBranch(branch.path);
+        } catch (error) {
+          if (
+            typeof error === "object" &&
+            error.hasOwnProperty("stderrFormated") &&
+            error.stderrFormated.includes("ignore-ancestry")
+          ) {
+            const answer = await window.showErrorMessage(
+              "Seems like these branches don't have a common ancestor. " +
+                " Do you want to retry with '--ignore-ancestry' option?",
+              "Yes",
+              "No"
+            );
+            if (answer === "Yes") {
+              await repository.switchBranch(branch.path, true);
+            }
+          } else {
+            throw error;
+          }
+        }
       }
     } catch (error) {
       console.log(error);

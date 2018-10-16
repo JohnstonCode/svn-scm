@@ -665,6 +665,7 @@ export class Repository {
         "Remote Changes"
       ) as ISvnResourceGroup;
 
+      this.remoteChanges.repository = this;
       this.remoteChanges.hideWhenEmpty = true;
       this.remoteChanges.resourceStates = tempResourceStates;
     }
@@ -778,9 +779,9 @@ export class Repository {
     });
   }
 
-  public async switchBranch(name: string) {
+  public async switchBranch(name: string, force: boolean = false) {
     await this.run(Operation.SwitchBranch, async () => {
-      await this.repository.switchBranch(name);
+      await this.repository.switchBranch(name, force);
       this.updateRemoteChangedFiles();
     });
   }
