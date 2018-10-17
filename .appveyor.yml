@@ -1,3 +1,6 @@
+build: false
+shallow_clone: true
+
 environment:
   ELECTRON_NO_ATTACH_CONSOLE: 1
   VSCODE_BUILD_VERBOSE: true
@@ -7,26 +10,17 @@ environment:
     - CODE_VERSION: "*" # Last Stable Version
     - CODE_VERSION: "insiders" # Insider Version
 
-# platform:
-#   - x86
-#   - x64
-
 cache:
-  - node_modules
-
-artifacts:
-  - path: svn-scm.vsix
-    name: SVN-SCM
+  - node_modules -> package-lock.json
+  - '%APPDATA%\npm-cache\_cacache\index-v5' # Only indexes
 
 install:
-  #  - ps: Install-Product node 8.9.1
-  - npm install -g vsce
   - node --version
   - npm --version
-  - npm install
+  - npm install --no-audit
 
-build_script:
-  - vsce package -o svn-scm.vsix
+before_test:
+  - npm run build
   # For coverage
   - ps: (get-content package.json) | %{$_ -replace '"\*"',''} | set-content package.json
 
