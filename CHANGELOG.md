@@ -1,3 +1,10 @@
+## [1.44.1](https://github.com/JohnstonCode/svn-scm/compare/v1.44.0...v1.44.1) (2018-10-17)
+
+
+### Bug Fixes
+
+* Fix Svn not found on vs code reload ([a167caf](https://github.com/JohnstonCode/svn-scm/commit/a167caf))
+
 # [1.44.0](https://github.com/JohnstonCode/svn-scm/compare/v1.43.0...v1.44.0) (2018-10-16)
 
 
