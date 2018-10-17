@@ -43,7 +43,8 @@
     "lint": "tslint -p ./",
     "lint:fix": "tslint --fix -p ./",
     "semantic-release": "semantic-release",
-    "build": "tsc -p ."
+    "build": "tsc -p .",
+    "commit": "npx git-cz"
   },
   "dependencies": {
     "iconv-lite": "^0.4.23",
@@ -61,6 +62,8 @@
     "@types/node": "^10.11.7",
     "@types/tmp": "0.0.33",
     "@types/xml2js": "^0.4.3",
+    "commitizen": "^3.0.2",
+    "cz-conventional-changelog": "^2.1.0",
     "decache": "^4.3.0",
     "glob": "^7.1.2",
     "husky": "^1.0.0",
@@ -74,6 +77,11 @@
     "tslint": "^5.11.0",
     "typescript": "^3.0",
     "vscode": "^1.1.18"
+  },
+  "config": {
+    "commitizen": {
+      "path": "cz-conventional-changelog"
+    }
   },
   "contributes": {
     "views": {
