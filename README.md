@@ -58,6 +58,10 @@ If you use [TortoiseSVN](https://tortoisesvn.net/), make sure the option
 * Commit changes/changelists
 * See commit messages
 
+## Blame
+
+Please use a dedicated extension like [blamer-vs](https://marketplace.visualstudio.com/items?itemName=beaugust.blamer-vs)
+
 ## Experimental
 
 ### * SVN Status in File Explorer (See #34)
