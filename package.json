@@ -51,6 +51,7 @@
     "is-utf8": "^0.2.1",
     "jschardet": "^1.6.0",
     "minimatch": "^3.0.4",
+    "semver": "^5.6.0",
     "tmp": "0.0.33",
     "xml2js": "^0.4.19"
   },
@@ -60,6 +61,7 @@
     "@types/glob": "^7.1.0",
     "@types/mocha": "^5.2.5",
     "@types/node": "^10.11.7",
+    "@types/semver": "^5.5.0",
     "@types/tmp": "0.0.33",
     "@types/xml2js": "^0.4.3",
     "commitizen": "^3.0.2",
