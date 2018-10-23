@@ -34,7 +34,7 @@ suite("Commands Tests", () => {
     );
 
     model = (await commands.executeCommand(
-      "svn._getModel",
+      "svn.getModel",
       checkoutDir
     )) as Model;
 
