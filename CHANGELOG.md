@@ -1,3 +1,10 @@
+## [1.44.2](https://github.com/JohnstonCode/svn-scm/compare/v1.44.1...v1.44.2) (2018-10-23)
+
+
+### Bug Fixes
+
+* Improved svn detection (close [#389](https://github.com/JohnstonCode/svn-scm/issues/389)) ([#391](https://github.com/JohnstonCode/svn-scm/issues/391)) ([dabb916](https://github.com/JohnstonCode/svn-scm/commit/dabb916))
+
 ## [1.44.1](https://github.com/JohnstonCode/svn-scm/compare/v1.44.0...v1.44.1) (2018-10-17)
 
 
