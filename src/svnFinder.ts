@@ -1,19 +1,11 @@
 import * as cp from "child_process";
 import * as path from "path";
+import * as semver from "semver";
 import { cpErrorHandler } from "./svn";
 
 export interface ISvn {
   path: string;
   version: string;
-}
-
-export function parseVersion(raw: string): string {
-  const match = raw.match(/(\d+\.\d+\.\d+ \(r\d+\))/);
-
-  if (match && match[0]) {
-    return match[0];
-  }
-  return raw.split(/[\r\n]+/)[0];
 }
 
 export class SvnFinder {
@@ -33,7 +25,7 @@ export class SvnFinder {
             return this.findSpecificSvn("svn");
         }
       })
-      .then(svn => this.checkSvnCommand(svn))
+      .then(svn => this.checkSvnVersion(svn))
       .then(null, () =>
         Promise.reject(new Error("Svn installation not found."))
       );
@@ -69,12 +61,12 @@ export class SvnFinder {
 
         function getVersion(path: string) {
           // make sure svn executes
-          cp.exec("svn --version", (err, stdout) => {
+          cp.exec("svn --version --quiet", (err, stdout) => {
             if (err) {
               return e("svn not found");
             }
 
-            return c({ path, version: parseVersion(stdout.trim()) });
+            return c({ path, version: stdout.trim() });
           });
         }
 
@@ -100,7 +92,7 @@ export class SvnFinder {
   public findSpecificSvn(path: string): Promise<ISvn> {
     return new Promise<ISvn>((c, e) => {
       const buffers: Buffer[] = [];
-      const child = cp.spawn(path, ["--version"]);
+      const child = cp.spawn(path, ["--version", "--quiet"]);
       child.stdout.on("data", (b: Buffer) => buffers.push(b));
       child.on("error", cpErrorHandler(e));
       child.on(
@@ -110,29 +102,23 @@ export class SvnFinder {
             ? e(new Error("Not found"))
             : c({
                 path,
-                version: parseVersion(
-                  Buffer.concat(buffers)
-                    .toString("utf8")
-                    .trim()
-                )
+                version: Buffer.concat(buffers)
+                  .toString("utf8")
+                  .trim()
               })
       );
     });
   }
 
-  public checkSvnCommand(svn: ISvn): Promise<ISvn> {
+  public checkSvnVersion(svn: ISvn): Promise<ISvn> {
     return new Promise<ISvn>((c, e) => {
-      const buffers: Buffer[] = [];
-      const child = cp.spawn(svn.path, ["help", "checkout"]);
-      child.stdout.on("data", (b: Buffer) => buffers.push(b));
-      child.on("error", cpErrorHandler(e));
-      child.on(
-        "close",
-        code =>
-          code || Buffer.concat(buffers).toString("utf8").length < 100
-            ? e(new Error("Not found"))
-            : c(svn)
-      );
+      if (!semver.valid(svn.version)) {
+        e(new Error("Invalid svn version"));
+      } else if (!semver.gte(svn.version, "1.6.0")) {
+        e(new Error("Required svn version must be >= 1.6"));
+      } else {
+        c(svn);
+      }
     });
   }
 }
