@@ -58,7 +58,11 @@ export class Model implements IDisposable {
     return this.openRepositories.map(r => r.repository);
   }
 
-  constructor(private svn: Svn) {
+  get svn(): Svn {
+    return this._svn;
+  }
+
+  constructor(private _svn: Svn) {
     this.enabled = configuration.get<boolean>("enabled") === true;
 
     this.configurationChangeDisposable = workspace.onDidChangeConfiguration(
