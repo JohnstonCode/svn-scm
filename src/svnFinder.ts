@@ -104,7 +104,7 @@ export class SvnFinder {
       child.stdout.on("data", (b: Buffer) => buffers.push(b));
       child.on("error", cpErrorHandler(e));
       child.on(
-        "exit",
+        "close",
         code =>
           code
             ? e(new Error("Not found"))
@@ -127,7 +127,7 @@ export class SvnFinder {
       child.stdout.on("data", (b: Buffer) => buffers.push(b));
       child.on("error", cpErrorHandler(e));
       child.on(
-        "exit",
+        "close",
         code =>
           code || Buffer.concat(buffers).toString("utf8").length < 100
             ? e(new Error("Not found"))
