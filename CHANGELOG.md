@@ -1,3 +1,10 @@
+## [1.44.3](https://github.com/JohnstonCode/svn-scm/compare/v1.44.2...v1.44.3) (2018-10-25)
+
+
+### Bug Fixes
+
+* Removed revert confirmation alert (close [#395](https://github.com/JohnstonCode/svn-scm/issues/395)) ([#396](https://github.com/JohnstonCode/svn-scm/issues/396)) ([4dce3c9](https://github.com/JohnstonCode/svn-scm/commit/4dce3c9))
+
 ## [1.44.2](https://github.com/JohnstonCode/svn-scm/compare/v1.44.1...v1.44.2) (2018-10-23)
 
 
