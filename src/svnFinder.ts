@@ -112,9 +112,11 @@ export class SvnFinder {
 
   public checkSvnVersion(svn: ISvn): Promise<ISvn> {
     return new Promise<ISvn>((c, e) => {
-      if (!semver.valid(svn.version)) {
+      // fix compatibility with SlickSVN (like 1.6.17-SlikSvn-tag-1.6.17@1130898-X64)
+      const version = svn.version.replace(/^(\d+\.\d+\.\d+).*/, "$1");
+      if (!semver.valid(version)) {
         e(new Error("Invalid svn version"));
-      } else if (!semver.gte(svn.version, "1.6.0")) {
+      } else if (!semver.gte(version, "1.6.0")) {
         e(new Error("Required svn version must be >= 1.6"));
       } else {
         c(svn);
