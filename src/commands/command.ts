@@ -38,10 +38,9 @@ export abstract class Command implements Disposable {
     }
 
     if (options.diff && hasSupportToRegisterDiffCommand()) {
-      const command = this.createRepositoryCommand(this.execute);
       this._disposable = commands.registerDiffInformationCommand(
         commandName,
-        command
+        (...args: any[]) => this.execute(...args)
       );
       return;
     }
@@ -437,14 +436,6 @@ export abstract class Command implements Disposable {
       ref: "BASE"
     });
     const originalDocument = await workspace.openTextDocument(originalUri);
-    const basename = path.basename(modifiedUri.fsPath);
-    const message = `Are you sure you want to revert the selected changes in ${basename}?`;
-    const yes = "Revert Changes";
-    const pick = await window.showWarningMessage(message, { modal: true }, yes);
-
-    if (pick !== yes) {
-      return;
-    }
 
     const result = applyLineChanges(
       originalDocument,
