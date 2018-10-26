@@ -1,3 +1,10 @@
+## [1.44.4](https://github.com/JohnstonCode/svn-scm/compare/v1.44.3...v1.44.4) (2018-10-26)
+
+
+### Bug Fixes
+
+* Fixed compatibility with SlikSVN ([#397](https://github.com/JohnstonCode/svn-scm/issues/397)) ([21b4f6d](https://github.com/JohnstonCode/svn-scm/commit/21b4f6d))
+
 ## [1.44.3](https://github.com/JohnstonCode/svn-scm/compare/v1.44.2...v1.44.3) (2018-10-25)
 
 
