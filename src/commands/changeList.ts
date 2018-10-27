@@ -11,6 +11,9 @@ export class ChangeList extends Command {
     const selection = await this.getResourceStates(resourceStates);
 
     if (selection.length === 0) {
+      window.showErrorMessage(
+        `Unable to add file to changelist. File is not unver version control`
+      );
       return;
     }
 
@@ -31,7 +34,6 @@ export class ChangeList extends Command {
             });
           })
         ) {
-          console.log("canRemove true");
           canRemove = true;
           return false;
         }
