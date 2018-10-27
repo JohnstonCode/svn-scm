@@ -12,7 +12,7 @@ export class ChangeList extends Command {
 
     if (selection.length === 0) {
       window.showErrorMessage(
-        `Unable to add file to changelist. File is not unver version control`
+        `Unable to add file to changelist. File is not under version control`
       );
       return;
     }
