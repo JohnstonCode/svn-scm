@@ -1,3 +1,10 @@
+# [1.45.0](https://github.com/JohnstonCode/svn-scm/compare/v1.44.4...v1.45.0) (2018-10-30)
+
+
+### Features
+
+* Added set change list to explorer context ([#399](https://github.com/JohnstonCode/svn-scm/issues/399)) ([9a90fa7](https://github.com/JohnstonCode/svn-scm/commit/9a90fa7)), closes [#252](https://github.com/JohnstonCode/svn-scm/issues/252)
+
 ## [1.44.4](https://github.com/JohnstonCode/svn-scm/compare/v1.44.3...v1.44.4) (2018-10-26)
 
 

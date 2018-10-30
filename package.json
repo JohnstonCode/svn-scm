@@ -2,7 +2,7 @@
   "name": "svn-scm",
   "displayName": "SVN",
   "description": "Integrated Subversion source control",
-  "version": "1.44.4",
+  "version": "1.45.0",
   "publisher": "johnstoncode",
   "engines": {
     "vscode": "^1.20.0"
@@ -619,6 +619,11 @@
           "command": "svn.renameExplorer",
           "group": "7_modification",
           "when": "config.svn.enabled && svnOpenRepositoryCount != 0 && explorerViewletVisible && filesExplorerFocus && !explorerResourceIsRoot && !inputFocus"
+        },
+        {
+          "command": "svn.changelist",
+          "group": "9_svn",
+          "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
         }
       ]
     },
