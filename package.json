@@ -86,11 +86,26 @@
     }
   },
   "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "svnHistory",
+          "title": "SVN History",
+          "icon": "images/subversion-logo.svg"
+        }
+      ]
+    },
     "views": {
       "explorer": [
         {
           "id": "svn",
           "name": "SVN"
+        }
+      ],
+      "svnHistory": [
+        {
+          "id": "svnHistoryActivity",
+          "name": "SVN History"
         }
       ]
     },
