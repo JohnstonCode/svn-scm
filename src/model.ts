@@ -71,7 +71,7 @@ export class Model implements IDisposable {
     );
 
     if (this.enabled) {
-      this.enable();
+      this.enable(true);
     }
   }
 
@@ -93,7 +93,7 @@ export class Model implements IDisposable {
     }
   }
 
-  private enable(): void {
+  private enable(firstCall: boolean = false): void {
     const multipleFolders = configuration.get<boolean>(
       "multipleFolders.enabled",
       false
@@ -138,8 +138,9 @@ export class Model implements IDisposable {
       this,
       this.disposables
     );
-
-    this.scanWorkspaceFolders();
+    if (!firstCall) {
+      this.scanWorkspaceFolders();
+    }
   }
 
   private onPossibleSvnRepositoryChange(uri: Uri): void {
@@ -254,10 +255,10 @@ export class Model implements IDisposable {
     openRepositoriesToDispose.forEach(r => r.repository.dispose());
   }
 
-  private async scanWorkspaceFolders() {
+  public async scanWorkspaceFolders() {
     for (const folder of workspace.workspaceFolders || []) {
       const root = folder.uri.fsPath;
-      this.tryOpenRepository(root);
+      await this.tryOpenRepository(root);
     }
   }
 

@@ -34,6 +34,7 @@ async function init(
   const info = await svnFinder.findSvn(pathHint);
   const svn = new Svn({ svnPath: info.path, version: info.version });
   const model = new Model(svn);
+  await model.scanWorkspaceFolders();
   const contentProvider = new SvnContentProvider(model);
 
   registerCommands(model, disposables);
