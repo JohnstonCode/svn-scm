@@ -576,6 +576,7 @@ export class Repository {
         if (!status.changelist) {
           changes.push(resource);
         } else {
+          console.log(status.changelist);
           let changelist = changelists.get(status.changelist);
           if (!changelist) {
             changelist = [];
@@ -818,6 +819,10 @@ export class Repository {
 
   public async revert(files: string[]) {
     return this.run(Operation.Revert, () => this.repository.revert(files));
+  }
+
+  public async info(path: string) {
+    return this.run(Operation.Info, () => this.repository.getInfo(path));
   }
 
   public async patch(files: string[]) {

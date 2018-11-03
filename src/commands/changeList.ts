@@ -1,5 +1,7 @@
-import { SourceControlResourceState, window } from "vscode";
+import { commands, SourceControlResourceState, Uri, window } from "vscode";
 import { inputSwitchChangelist } from "../changelistItems";
+import { Model } from "../model";
+import { Resource } from "../resource";
 import { Command } from "./command";
 
 export class ChangeList extends Command {
@@ -7,67 +9,100 @@ export class ChangeList extends Command {
     super("svn.changelist");
   }
 
-  public async execute(...resourceStates: SourceControlResourceState[]) {
-    const selection = await this.getResourceStates(resourceStates);
+  public async execute(...args: any[]) {
+    let uris: Uri[];
 
-    if (selection.length === 0) {
+    if (args[0] instanceof Resource) {
+      uris = (args as Resource[]).map(resource => resource.resourceUri);
+    } else if (args[0] instanceof Uri) {
+      uris = args[1] as Uri[];
+    } else {
+      console.error("Unhandled type for changelist command");
+      return;
+    }
+
+    const model = (await commands.executeCommand("svn.getModel", "")) as Model;
+
+    const promiseArray = uris.map(
+      async uri => await model.getRepositoryFromUri(uri)
+    );
+    let repositories = await Promise.all(promiseArray);
+    repositories = repositories.filter(repository => repository);
+
+    if (repositories.length === 0) {
       window.showErrorMessage(
-        `Unable to add file to changelist. File is not under version control`
+        "Files are not under version control and cannot be added to a change list"
       );
       return;
     }
 
-    const uris = selection.map(resource => resource.resourceUri);
+    const uniqueRepositories = Array.from(new Set(repositories));
 
-    await this.runByRepository(uris, async (repository, resources) => {
-      if (!repository) {
-        return;
-      }
+    if (uniqueRepositories.length !== 1) {
+      window.showErrorMessage(
+        "Unable to add files from different repositories to change list"
+      );
+      return;
+    }
 
-      let canRemove = false;
+    if (repositories.length !== uris.length) {
+      window.showErrorMessage(
+        "Some Files are not under version control and cannot be added to a change list"
+      );
+      return;
+    }
 
-      repository.changelists.forEach((group, changelist) => {
-        if (
-          group.resourceStates.some(state => {
-            return resources.some(resource => {
-              return resource.path === state.resourceUri.path;
-            });
-          })
-        ) {
-          canRemove = true;
-          return false;
-        }
-      });
+    const repository = repositories[0];
 
-      const changelistName = await inputSwitchChangelist(repository, canRemove);
+    if (!repository) {
+      return;
+    }
 
-      if (!changelistName && changelistName !== false) {
-        return;
-      }
+    const paths = uris.map(uri => uri.fsPath);
+    let canRemove = false;
 
-      const paths = resources.map(resource => resource.fsPath);
-
-      if (changelistName === false) {
-        try {
-          await repository.removeChangelist(paths);
-        } catch (error) {
-          console.log(error);
-          window.showErrorMessage(
-            `Unable to remove file "${paths.join(",")}" from changelist`
-          );
-        }
-      } else {
-        try {
-          await repository.addChangelist(paths, changelistName);
-        } catch (error) {
-          console.log(error);
-          window.showErrorMessage(
-            `Unable to add file "${paths.join(
-              ","
-            )}" to changelist "${changelistName}"`
-          );
-        }
+    repository.changelists.forEach((group, changelist) => {
+      if (
+        group.resourceStates.some(state => {
+          return paths.some(path => {
+            return path === state.resourceUri.path;
+          });
+        })
+      ) {
+        canRemove = true;
+        return false;
       }
     });
+
+    const changelistName = await inputSwitchChangelist(repository, canRemove);
+
+    if (!changelistName && changelistName !== false) {
+      return;
+    }
+
+    if (changelistName === false) {
+      try {
+        await repository.removeChangelist(paths);
+      } catch (error) {
+        console.log(error);
+        window.showErrorMessage(
+          `Unable to remove file "${paths.join(",")}" from changelist`
+        );
+      }
+    } else {
+      try {
+        await repository.addChangelist(paths, changelistName);
+        window.showInformationMessage(
+          `Added files "${paths.join(",")}" to changelist "${changelistName}"`
+        );
+      } catch (error) {
+        console.log(error);
+        window.showErrorMessage(
+          `Unable to add file "${paths.join(
+            ","
+          )}" to changelist "${changelistName}"`
+        );
+      }
+    }
   }
 }
