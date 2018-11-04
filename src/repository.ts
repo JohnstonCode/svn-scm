@@ -543,16 +543,10 @@ export class Repository {
         status.props
       );
 
-      if (status.changelist) {
-        let changelist = changelists.get(status.changelist);
-        if (!changelist) {
-          changelist = [];
-        }
-        changelist.push(resource);
-        changelists.set(status.changelist, changelist);
-      } else if (
+      if (
         (status.status === Status.NORMAL || status.status === Status.NONE) &&
-        (status.props === Status.NORMAL || status.props === Status.NONE)
+        (status.props === Status.NORMAL || status.props === Status.NONE) &&
+        !status.changelist
       ) {
         // Ignore non changed itens
         continue;
@@ -579,6 +573,13 @@ export class Repository {
         } else {
           unversioned.push(resource);
         }
+      } else if (status.changelist) {
+        let changelist = changelists.get(status.changelist);
+        if (!changelist) {
+          changelist = [];
+        }
+        changelist.push(resource);
+        changelists.set(status.changelist, changelist);
       } else {
         changes.push(resource);
       }
