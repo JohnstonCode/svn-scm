@@ -256,3 +256,20 @@ export interface IAuth {
   username: string;
   password: string;
 }
+
+export interface ISvnLogEntryPath {
+  // full path
+  _: string;
+  // A | D | M | R
+  action: string;
+  // "file" e.g.
+  kind: string;
+}
+
+export interface ISvnLogEntry {
+  revision: string;
+  author: string;
+  date: string;
+  msg: string;
+  paths: ISvnLogEntryPath[];
+}

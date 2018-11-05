@@ -7,6 +7,7 @@ import {
   IExecutionResult,
   IFileStatus,
   ISvnInfo,
+  ISvnLogEntry,
   Status
 } from "./common/types";
 import { sequentialize } from "./decorators";
@@ -14,6 +15,7 @@ import { getBranchName } from "./helpers/branch";
 import { configuration } from "./helpers/configuration";
 import { parseInfoXml } from "./infoParser";
 import { parseSvnList } from "./listParser";
+import { parseSvnLog } from "./logParser";
 import { parseStatusXml } from "./statusParser";
 import { Svn } from "./svn";
 import { fixPathSeparator } from "./util";
@@ -451,7 +453,7 @@ export class Repository {
     return result.stdout;
   }
 
-  public async log() {
+  public async log(): Promise<string> {
     const logLength = configuration.get<string>("log.length") || "50";
     const result = await this.exec([
       "log",
@@ -462,6 +464,23 @@ export class Repository {
     ]);
 
     return result.stdout;
+  }
+
+  public async log2(
+    rfrom: string,
+    rto: string,
+    limit: number
+  ): Promise<ISvnLogEntry[]> {
+    const result = await this.exec([
+      "log",
+      "-r",
+      `${rfrom}:${rto}`,
+      `--limit=${limit}`,
+      "--xml",
+      "-v"
+    ]);
+
+    return parseSvnLog(result.stdout);
   }
 
   public async countNewCommit(revision: string = "BASE:HEAD") {

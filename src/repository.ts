@@ -840,6 +840,12 @@ export class Repository {
     return this.run(Operation.Log, () => this.repository.log());
   }
 
+  public async log2(rfrom: string, rto: string, limit: number) {
+    return this.run(Operation.Log, () =>
+      this.repository.log2(rfrom, rto, limit)
+    );
+  }
+
   public async cleanup() {
     return this.run(Operation.CleanUp, () => this.repository.cleanup());
   }
