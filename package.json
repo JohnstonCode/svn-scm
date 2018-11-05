@@ -5,7 +5,7 @@
   "version": "1.45.0",
   "publisher": "johnstoncode",
   "engines": {
-    "vscode": "^1.20.0"
+    "vscode": "^1.28.0"
   },
   "private": true,
   "enableProposedApi": false,
@@ -78,7 +78,7 @@
     "semantic-release-vsce": "^2.1.2",
     "tslint": "^5.11.0",
     "typescript": "^3.0",
-    "vscode": "^1.1.18"
+    "vscode": "^1.1.21"
   },
   "config": {
     "commitizen": {
@@ -104,12 +104,21 @@
       ],
       "svnHistory": [
         {
-          "id": "svnHistoryView",
-          "name": "SVN History"
+          "id": "log",
+          "name": "Log"
         }
       ]
     },
     "commands": [
+      {
+        "command": "svn.log.refresh",
+        "category": "Log",
+        "title": "Refresh log",
+        "icon": {
+          "dark": "icons/dark/refresh.svg",
+          "light": "icons/light/refresh.svg"
+        }
+      },
       {
         "command": "svn.checkout",
         "title": "Checkout",
@@ -429,6 +438,11 @@
         {
           "command": "svn.treeview.refreshProvider",
           "when": "view == svn",
+          "group": "navigation"
+        },
+        {
+          "command": "svn.log.refresh",
+          "when": "view == log",
           "group": "navigation"
         }
       ],

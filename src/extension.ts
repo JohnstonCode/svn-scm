@@ -46,7 +46,8 @@ async function init(
   window.registerTreeDataProvider("svn", svnProvider);
 
   const logProvider = new LogProvider(model);
-  window.registerTreeDataProvider("svnHistoryView", logProvider);
+  window.registerTreeDataProvider("log", logProvider);
+  commands.registerCommand("svn.log.refresh", () => logProvider.refresh());
 
   // First, check the vscode has support to DecorationProvider
   if (hasSupportToDecorationProvider()) {
