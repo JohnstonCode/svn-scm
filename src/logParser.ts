@@ -9,8 +9,8 @@ export async function parseSvnLog(content: string): Promise<ISvnLogEntry[]> {
         reject();
       }
       let transformed: any[];
-      if (Array.isArray(result)) {
-        transformed = result.map(e => e.logentry);
+      if (Array.isArray(result.logentry)) {
+        transformed = result.logentry;
       } else {
         transformed = [result.logentry];
       }
@@ -18,10 +18,11 @@ export async function parseSvnLog(content: string): Promise<ISvnLogEntry[]> {
         if (logentry.paths === undefined) {
           continue;
         }
-        if (!Array.isArray(logentry.paths)) {
-          logentry.paths = [logentry.paths];
+        if (!Array.isArray(logentry.paths.path)) {
+          logentry.paths = [logentry.paths.path];
+        } else {
+          logentry.paths = logentry.paths.path;
         }
-        logentry.paths = logentry.paths.map((p: any) => p.path);
       }
       resolve(transformed);
     });

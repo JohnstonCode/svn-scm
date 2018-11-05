@@ -840,9 +840,14 @@ export class Repository {
     return this.run(Operation.Log, () => this.repository.log());
   }
 
-  public async log2(rfrom: string, rto: string, limit: number) {
+  public async log2(
+    rfrom: string,
+    rto: string,
+    limit: number,
+    target: string = "."
+  ) {
     return this.run(Operation.Log, () =>
-      this.repository.log2(rfrom, rto, limit)
+      this.repository.log2(rfrom, rto, limit, target)
     );
   }
 

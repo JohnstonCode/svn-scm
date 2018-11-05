@@ -469,7 +469,8 @@ export class Repository {
   public async log2(
     rfrom: string,
     rto: string,
-    limit: number
+    limit: number,
+    target: string
   ): Promise<ISvnLogEntry[]> {
     const result = await this.exec([
       "log",
