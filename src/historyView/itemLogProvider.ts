@@ -18,6 +18,7 @@ import {
   getLimit,
   ILogTreeItem,
   LogTreeItemKind,
+  needFetch,
   transform
 } from "./common";
 
@@ -105,14 +106,10 @@ export class ItemLogProvider implements TreeDataProvider<ILogTreeItem> {
       getLimit(),
       currentItem.target
     );
-    if (
-      moreCommits.length === 0 ||
-      (le.length && le[le.length - 1].revision === "1")
-    ) {
+    if (!needFetch(le, moreCommits)) {
       currentItem.isComplete = true;
-    } else {
-      le.push(...moreCommits);
     }
+    le.push(...moreCommits);
   }
 
   public async getTreeItem(element: ILogTreeItem): Promise<TreeItem> {
@@ -136,7 +133,9 @@ export class ItemLogProvider implements TreeDataProvider<ILogTreeItem> {
       if (this.currentItem === undefined) {
         return [];
       }
-      await this.fetchMore();
+      if (this.currentItem.logentries.length === 0) {
+        await this.fetchMore();
+      }
       const result = transform(
         this.currentItem.logentries,
         LogTreeItemKind.Commit

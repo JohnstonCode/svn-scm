@@ -8,10 +8,10 @@ export async function parseSvnLog(content: string): Promise<ISvnLogEntry[]> {
       if (err) {
         reject();
       }
-      let transformed: any[];
+      let transformed = [];
       if (Array.isArray(result.logentry)) {
         transformed = result.logentry;
-      } else {
+      } else if (typeof result.logentry === "object") {
         transformed = [result.logentry];
       }
       for (const logentry of transformed) {

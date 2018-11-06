@@ -17,6 +17,7 @@ import {
   getLimit,
   ILogTreeItem,
   LogTreeItemKind,
+  needFetch,
   RepoRoot,
   transform
 } from "./common";
@@ -99,14 +100,10 @@ export class LogProvider implements TreeDataProvider<ILogTreeItem> {
     }
     const repo = this.findRepo(repoRoot);
     const moreCommits = await repo.log2(rfrom, "1", getLimit());
-    if (
-      moreCommits.length === 0 ||
-      (logentries.length && logentries[logentries.length - 1].revision === "1")
-    ) {
+    if (!needFetch(logentries, moreCommits)) {
       cached.isComplete = true;
-    } else {
-      logentries.push(...moreCommits);
     }
+    logentries.push(...moreCommits);
   }
 
   public async getTreeItem(element: ILogTreeItem): Promise<TreeItem> {
