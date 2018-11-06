@@ -1,3 +1,4 @@
+import { createHash } from "crypto";
 import * as path from "path";
 import {
   Event,
@@ -69,6 +70,29 @@ function getActionIcon(action: string) {
     return undefined;
   }
   return getIconObject(name);
+}
+
+const gravatarCache: Map<string, Uri> = new Map();
+
+function md5(s: string) {
+  const data = createHash("md5");
+  data.write(s);
+  return data.digest().toString();
+}
+
+export function getGravatarUri(author: string, size: number = 16): Uri {
+  let gravatar = gravatarCache.get(author);
+  if (gravatar !== undefined) {
+    return gravatar;
+  }
+
+  gravatar = Uri.parse(
+    `https://www.gravatar.com/avatar/${md5(author)}.jpg?s=${size}&d=robohash`
+  );
+
+  gravatarCache.set(author, gravatar);
+
+  return gravatar;
 }
 
 export class LogProvider implements TreeDataProvider<ILogTreeItem> {
@@ -160,6 +184,7 @@ export class LogProvider implements TreeDataProvider<ILogTreeItem> {
       ti.tooltip = `Author ${commit.author}\n${date}\nRevision ${
         commit.revision
       }`;
+      ti.iconPath = getGravatarUri(commit.author);
     } else if (element.kind === LogTreeItemKind.CommitDetail) {
       const pathElem = element.data as ISvnLogEntryPath;
       const basename = path.basename(pathElem._);
