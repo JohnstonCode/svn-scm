@@ -844,10 +844,13 @@ export class Repository {
     rfrom: string,
     rto: string,
     limit: number,
-    target: string = "."
+    target?: string
   ) {
+    if (target === undefined) {
+      target = this.repository.workspaceRoot;
+    }
     return this.run(Operation.Log, () =>
-      this.repository.log2(rfrom, rto, limit, target)
+      this.repository.log2(rfrom, rto, limit, target as string)
     );
   }
 

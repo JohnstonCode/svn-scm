@@ -10,6 +10,7 @@ import {
 import { registerCommands } from "./commands";
 import SvnDecorations from "./decorations/svnDecorations";
 import { configuration } from "./helpers/configuration";
+import { ItemLogProvider } from "./historyView/itemLogProvider";
 import { LogProvider } from "./historyView/logProvider";
 import { Model } from "./model";
 import { Svn } from "./svn";
@@ -50,11 +51,13 @@ async function init(
   window.registerTreeDataProvider("svn", svnProvider);
 
   const logProvider = new LogProvider(model);
-  window.registerTreeDataProvider("log", logProvider);
+  window.registerTreeDataProvider("repolog", logProvider);
   commands.registerCommand(
     "svn.log.refresh",
     async (...args) => await logProvider.refresh(...args)
   );
+  const itemLogProvider = new ItemLogProvider(model);
+  window.registerTreeDataProvider("itemlog", itemLogProvider);
 
   // First, check the vscode has support to DecorationProvider
   if (hasSupportToDecorationProvider()) {

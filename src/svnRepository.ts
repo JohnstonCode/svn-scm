@@ -481,6 +481,10 @@ export class Repository {
       "-v"
     ]);
 
+    if (result.exitCode !== 0) {
+      throw new Error(`Invalid path:\n${result.stderr}`);
+    }
+
     return parseSvnLog(result.stdout);
   }
 

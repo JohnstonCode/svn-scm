@@ -1,17 +1,21 @@
-import { createHash } from "crypto";
 import * as path from "path";
 import {
   Event,
   EventEmitter,
   TreeDataProvider,
   TreeItem,
-  TreeItemCollapsibleState,
-  Uri
+  TreeItemCollapsibleState
 } from "vscode";
 import { ISvnLogEntry, ISvnLogEntryPath } from "../common/types";
 import { configuration } from "../helpers/configuration";
 import { Model } from "../model";
 import { Repository } from "../repository";
+import {
+  getCommitLabel,
+  getGravatarUri,
+  getIconObject,
+  getLimit
+} from "./common";
 
 enum LogTreeItemKind {
   Repo,
@@ -39,17 +43,6 @@ function transform(array: any[], kind: LogTreeItemKind): ILogTreeItem[] {
   });
 }
 
-// XXX code duplication with uri.ts. Maybe use full path?
-function getIconObject(iconName: string) {
-  const iconsRootPath = path.join(__dirname, "..", "..", "icons");
-  const toUri = (theme: string) =>
-    Uri.file(path.join(iconsRootPath, theme, `${iconName}.svg`));
-  return {
-    light: toUri("light"),
-    dark: toUri("dark")
-  };
-}
-
 function getActionIcon(action: string) {
   let name: string | undefined;
   switch (action) {
@@ -70,29 +63,6 @@ function getActionIcon(action: string) {
     return undefined;
   }
   return getIconObject(name);
-}
-
-const gravatarCache: Map<string, Uri> = new Map();
-
-function md5(s: string) {
-  const data = createHash("md5");
-  data.write(s);
-  return data.digest().toString();
-}
-
-export function getGravatarUri(author: string, size: number = 16): Uri {
-  let gravatar = gravatarCache.get(author);
-  if (gravatar !== undefined) {
-    return gravatar;
-  }
-
-  gravatar = Uri.parse(
-    `https://www.gravatar.com/avatar/${md5(author)}.jpg?s=${size}&d=robohash`
-  );
-
-  gravatarCache.set(author, gravatar);
-
-  return gravatar;
 }
 
 export class LogProvider implements TreeDataProvider<ILogTreeItem> {
@@ -144,7 +114,7 @@ export class LogProvider implements TreeDataProvider<ILogTreeItem> {
       rfrom = (Number.parseInt(rfrom, 10) - 1).toString();
     }
     const repo = this.findRepo(repoRoot);
-    const moreCommits = await repo.log2(rfrom, "1", this.getLimit());
+    const moreCommits = await repo.log2(rfrom, "1", getLimit());
     logentries.push(...moreCommits);
     if (
       moreCommits.length === 0 ||
@@ -152,17 +122,6 @@ export class LogProvider implements TreeDataProvider<ILogTreeItem> {
     ) {
       cached.isComplete = true;
     }
-  }
-
-  private getLimit(): number {
-    const limit = Number.parseInt(
-      configuration.get<string>("log.length") || "50",
-      10
-    );
-    if (isNaN(limit) || limit <= 0) {
-      throw new Error("Invalid log.length setting value");
-    }
-    return limit;
   }
 
   public async getTreeItem(element: ILogTreeItem): Promise<TreeItem> {
@@ -174,7 +133,7 @@ export class LogProvider implements TreeDataProvider<ILogTreeItem> {
     } else if (element.kind === LogTreeItemKind.Commit) {
       const commit = element.data as ISvnLogEntry;
       ti = new TreeItem(
-        `${commit.msg} • r${commit.revision}`,
+        getCommitLabel(commit),
         TreeItemCollapsibleState.Collapsed
       );
       let date = commit.date;
@@ -206,7 +165,7 @@ export class LogProvider implements TreeDataProvider<ILogTreeItem> {
     if (element === undefined) {
       return transform(Array.from(this.logCache.keys()), LogTreeItemKind.Repo);
     } else if (element.kind === LogTreeItemKind.Repo) {
-      const limit = this.getLimit();
+      const limit = getLimit();
       const repoRoot = element.data as RepoRoot;
       const cached = this.logCache.get(repoRoot);
       if (cached === undefined) {
