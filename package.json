@@ -124,6 +124,15 @@
         }
       },
       {
+        "command": "svn.itemlog.refresh",
+        "category": "Log",
+        "title": "Refresh log for item",
+        "icon": {
+          "dark": "icons/dark/refresh.svg",
+          "light": "icons/light/refresh.svg"
+        }
+      },
+      {
         "command": "svn.checkout",
         "title": "Checkout",
         "category": "SVN"
@@ -446,7 +455,12 @@
         },
         {
           "command": "svn.log.refresh",
-          "when": "view == log",
+          "when": "view == repolog",
+          "group": "navigation"
+        },
+        {
+          "command": "svn.itemlog.refresh",
+          "when": "view == itemlog",
           "group": "navigation"
         }
       ],

@@ -157,6 +157,7 @@ export function isReadOnly(operation: Operation): boolean {
     case Operation.CurrentBranch:
     case Operation.Log:
     case Operation.Show:
+    case Operation.Info:
       return true;
     default:
       return false;

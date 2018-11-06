@@ -52,12 +52,15 @@ async function init(
 
   const logProvider = new LogProvider(model);
   window.registerTreeDataProvider("repolog", logProvider);
-  commands.registerCommand(
-    "svn.log.refresh",
-    async (...args) => await logProvider.refresh(...args)
-  );
+  commands.registerCommand("svn.log.refresh", logProvider.refresh, logProvider);
+
   const itemLogProvider = new ItemLogProvider(model);
   window.registerTreeDataProvider("itemlog", itemLogProvider);
+  commands.registerCommand(
+    "svn.itemlog.refresh",
+    itemLogProvider.refresh,
+    itemLogProvider
+  );
 
   // First, check the vscode has support to DecorationProvider
   if (hasSupportToDecorationProvider()) {

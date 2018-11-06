@@ -1,8 +1,28 @@
 import { createHash } from "crypto";
 import * as path from "path";
-import { Uri } from "vscode";
-import { ISvnLogEntry } from "../common/types";
+import { TreeItem, Uri } from "vscode";
+import { ISvnLogEntry, ISvnLogEntryPath } from "../common/types";
 import { configuration } from "../helpers/configuration";
+
+export enum LogTreeItemKind {
+  Repo,
+  Commit,
+  CommitDetail,
+  Action
+}
+
+export type RepoRoot = string;
+
+export interface ILogTreeItem {
+  kind: LogTreeItemKind;
+  data: ISvnLogEntry | ISvnLogEntryPath | RepoRoot | TreeItem;
+}
+
+export function transform(array: any[], kind: LogTreeItemKind): ILogTreeItem[] {
+  return array.map(data => {
+    return { kind, data };
+  });
+}
 
 // XXX code duplication with uri.ts. Maybe use full path?
 export function getIconObject(iconName: string) {
@@ -27,10 +47,10 @@ export function getLimit(): number {
 
 const gravatarCache: Map<string, Uri> = new Map();
 
-function md5(s: string) {
+function md5(s: string): string {
   const data = createHash("md5");
   data.write(s);
-  return data.digest().toString();
+  return data.digest().toString("hex");
 }
 
 export function getGravatarUri(author: string, size: number = 16): Uri {

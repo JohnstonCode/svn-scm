@@ -14,33 +14,17 @@ import {
   getCommitLabel,
   getGravatarUri,
   getIconObject,
-  getLimit
+  getLimit,
+  ILogTreeItem,
+  LogTreeItemKind,
+  RepoRoot,
+  transform
 } from "./common";
-
-enum LogTreeItemKind {
-  Repo,
-  Commit,
-  CommitDetail,
-  Action
-}
-
-type RepoRoot = string;
-
-interface ILogTreeItem {
-  kind: LogTreeItemKind;
-  data: ISvnLogEntry | ISvnLogEntryPath | RepoRoot | TreeItem;
-}
 
 interface ICachedLog {
   repo: Repository;
   entries: ISvnLogEntry[];
   isComplete: boolean;
-}
-
-function transform(array: any[], kind: LogTreeItemKind): ILogTreeItem[] {
-  return array.map(data => {
-    return { kind, data };
-  });
 }
 
 function getActionIcon(action: string) {
@@ -115,12 +99,13 @@ export class LogProvider implements TreeDataProvider<ILogTreeItem> {
     }
     const repo = this.findRepo(repoRoot);
     const moreCommits = await repo.log2(rfrom, "1", getLimit());
-    logentries.push(...moreCommits);
     if (
       moreCommits.length === 0 ||
-      moreCommits[moreCommits.length - 1].revision === "1"
+      (logentries.length && logentries[logentries.length - 1].revision === "1")
     ) {
       cached.isComplete = true;
+    } else {
+      logentries.push(...moreCommits);
     }
   }
 

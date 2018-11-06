@@ -18,10 +18,10 @@ export async function parseSvnLog(content: string): Promise<ISvnLogEntry[]> {
         if (logentry.paths === undefined) {
           continue;
         }
-        if (!Array.isArray(logentry.paths.path)) {
-          logentry.paths = [logentry.paths.path];
-        } else {
+        if (Array.isArray(logentry.paths.path)) {
           logentry.paths = logentry.paths.path;
+        } else {
+          logentry.paths = [logentry.paths.path];
         }
       }
       resolve(transformed);

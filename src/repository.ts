@@ -19,6 +19,7 @@ import {
   IAuth,
   IFileStatus,
   IOperations,
+  ISvnInfo,
   ISvnResourceGroup,
   Operation,
   RepositoryState,
@@ -48,6 +49,7 @@ function shouldShowProgress(operation: Operation): boolean {
   switch (operation) {
     case Operation.CurrentBranch:
     case Operation.Show:
+    case Operation.Info:
       return false;
     default:
       return true;
@@ -846,16 +848,17 @@ export class Repository {
     limit: number,
     target?: string
   ) {
-    if (target === undefined) {
-      target = this.repository.workspaceRoot;
-    }
     return this.run(Operation.Log, () =>
-      this.repository.log2(rfrom, rto, limit, target as string)
+      this.repository.log2(rfrom, rto, limit, target)
     );
   }
 
   public async cleanup() {
     return this.run(Operation.CleanUp, () => this.repository.cleanup());
+  }
+
+  public async getInfo(path: string): Promise<ISvnInfo> {
+    return this.run(Operation.Info, () => this.repository.getInfo(path));
   }
 
   public async finishCheckout() {

@@ -470,20 +470,20 @@ export class Repository {
     rfrom: string,
     rto: string,
     limit: number,
-    target: string
+    target?: string
   ): Promise<ISvnLogEntry[]> {
-    const result = await this.exec([
+    const args = [
       "log",
       "-r",
       `${rfrom}:${rto}`,
       `--limit=${limit}`,
       "--xml",
       "-v"
-    ]);
-
-    if (result.exitCode !== 0) {
-      throw new Error(`Invalid path:\n${result.stderr}`);
+    ];
+    if (target !== undefined) {
+      args.push(target);
     }
+    const result = await this.exec(args);
 
     return parseSvnLog(result.stdout);
   }

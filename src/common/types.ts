@@ -88,6 +88,7 @@ export enum Operation {
   CleanUp = "CleanUp",
   Commit = "Commit",
   CurrentBranch = "CurrentBranch",
+  Info = "Info",
   Ignore = "Ignore",
   Log = "Log",
   NewBranch = "NewBranch",
