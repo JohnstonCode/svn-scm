@@ -47,7 +47,7 @@ export class Model implements IDisposable {
 
   public openRepositories: IOpenRepository[] = [];
   private disposables: Disposable[] = [];
-  private enabled = false;
+  private _enabled = false;
   private possibleSvnRepositoryPaths = new Set<string>();
   private ignoreList: string[] = [];
   private maxDepth: number = 0;
@@ -62,17 +62,17 @@ export class Model implements IDisposable {
     return this._svn;
   }
 
+  get enabled(): boolean {
+    return this._enabled;
+  }
+
   constructor(private _svn: Svn) {
-    this.enabled = configuration.get<boolean>("enabled") === true;
+    this._enabled = configuration.get<boolean>("enabled") === true;
 
     this.configurationChangeDisposable = workspace.onDidChangeConfiguration(
       this.onDidChangeConfiguration,
       this
     );
-
-    if (this.enabled) {
-      this.enable();
-    }
   }
 
   private onDidChangeConfiguration(): void {
@@ -80,11 +80,11 @@ export class Model implements IDisposable {
 
     this.maxDepth = configuration.get<number>("multipleFolders.depth", 0);
 
-    if (enabled === this.enabled) {
+    if (enabled === this._enabled) {
       return;
     }
 
-    this.enabled = enabled;
+    this._enabled = enabled;
 
     if (enabled) {
       this.enable();
@@ -93,7 +93,7 @@ export class Model implements IDisposable {
     }
   }
 
-  private enable(): void {
+  public async enable() {
     const multipleFolders = configuration.get<boolean>(
       "multipleFolders.enabled",
       false
@@ -110,7 +110,7 @@ export class Model implements IDisposable {
       this,
       this.disposables
     );
-    this.onDidChangeWorkspaceFolders({
+    await this.onDidChangeWorkspaceFolders({
       added: workspace.workspaceFolders || [],
       removed: []
     });
@@ -139,7 +139,7 @@ export class Model implements IDisposable {
       this.disposables
     );
 
-    this.scanWorkspaceFolders();
+    await this.scanWorkspaceFolders();
   }
 
   private onPossibleSvnRepositoryChange(uri: Uri): void {
@@ -257,7 +257,7 @@ export class Model implements IDisposable {
   private async scanWorkspaceFolders() {
     for (const folder of workspace.workspaceFolders || []) {
       const root = folder.uri.fsPath;
-      this.tryOpenRepository(root);
+      await this.tryOpenRepository(root);
     }
   }
 
@@ -317,14 +317,14 @@ export class Model implements IDisposable {
     const mm = new Minimatch("*");
     const newLevel = level + 1;
     if (newLevel <= this.maxDepth) {
-      fs.readdirSync(path).forEach(file => {
+      await fs.readdirSync(path).forEach(async file => {
         const dir = path + "/" + file;
 
         if (
           fs.statSync(dir).isDirectory() &&
           !mm.matchOne([dir], this.ignoreList, false)
         ) {
-          this.tryOpenRepository(dir, newLevel);
+          await this.tryOpenRepository(dir, newLevel);
         }
       });
     }

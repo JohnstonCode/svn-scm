@@ -26,12 +26,19 @@ interface ILogTreeItem {
   data: ISvnLogEntry | ISvnLogEntryPath | RepoRoot | TreeItem;
 }
 
+interface ICachedLog {
+  repo: Repository;
+  entries: ISvnLogEntry[];
+  isComplete: boolean;
+}
+
 function transform(array: any[], kind: LogTreeItemKind): ILogTreeItem[] {
   return array.map(data => {
     return { kind, data };
   });
 }
 
+// XXX code duplication with uri.ts. Maybe use full path?
 function getIconObject(iconName: string) {
   const iconsRootPath = path.join(__dirname, "..", "..", "icons");
   const toUri = (theme: string) =>
@@ -70,30 +77,25 @@ export class LogProvider implements TreeDataProvider<ILogTreeItem> {
   > = new EventEmitter<ILogTreeItem | undefined>();
   public readonly onDidChangeTreeData: Event<ILogTreeItem | undefined> = this
     ._onDidChangeTreeData.event;
-  private readonly logCache: Map<string, ISvnLogEntry[]> = new Map();
+  private readonly logCache: Map<string, ICachedLog> = new Map();
 
-  constructor(private model: Model) {}
+  constructor(private model: Model) {
+    this.refresh();
+  }
 
   public async refresh(element?: ILogTreeItem) {
     if (element === undefined) {
       this.logCache.clear();
       for (const repo of this.model.repositories) {
-        this.logCache.set(repo.root, []);
+        this.logCache.set(repo.root, {
+          entries: [],
+          isComplete: false,
+          repo
+        });
       }
     } else if (element.kind === LogTreeItemKind.Repo) {
       const repoRoot = element.data as RepoRoot;
-      const logentries = this.logCache.get(repoRoot);
-      if (logentries === undefined) {
-        throw new Error("no logentries for " + repoRoot);
-      }
-      let rfrom = "HEAD";
-      if (logentries) {
-        rfrom = logentries[logentries.length - 1].revision;
-        rfrom = (Number.parseInt(rfrom, 10) - 1).toString();
-      }
-      const repo = this.findRepo(repoRoot);
-      const moreCommits = await repo.log2(rfrom, "1", this.getLimit());
-      logentries.push(...moreCommits);
+      await this.fetchMore(repoRoot);
     }
     this._onDidChangeTreeData.fire(element);
   }
@@ -106,20 +108,26 @@ export class LogProvider implements TreeDataProvider<ILogTreeItem> {
     return repo;
   }
 
-  private async fetchMore(repoRoot: RepoRoot): Promise<ISvnLogEntry[]> {
-    const logentries = this.logCache.get(repoRoot);
-    if (logentries === undefined) {
+  private async fetchMore(repoRoot: RepoRoot) {
+    const cached = this.logCache.get(repoRoot);
+    if (cached === undefined) {
       throw new Error("no logentries for " + repoRoot);
     }
+    const logentries = cached.entries;
     let rfrom = "HEAD";
-    if (logentries) {
+    if (logentries.length) {
       rfrom = logentries[logentries.length - 1].revision;
       rfrom = (Number.parseInt(rfrom, 10) - 1).toString();
     }
     const repo = this.findRepo(repoRoot);
     const moreCommits = await repo.log2(rfrom, "1", this.getLimit());
     logentries.push(...moreCommits);
-    return logentries;
+    if (
+      moreCommits.length === 0 ||
+      moreCommits[moreCommits.length - 1].revision === "1"
+    ) {
+      cached.isComplete = true;
+    }
   }
 
   private getLimit(): number {
@@ -175,17 +183,16 @@ export class LogProvider implements TreeDataProvider<ILogTreeItem> {
     } else if (element.kind === LogTreeItemKind.Repo) {
       const limit = this.getLimit();
       const repoRoot = element.data as RepoRoot;
-      const logentries = this.logCache.get(repoRoot);
-      if (logentries === undefined) {
+      const cached = this.logCache.get(repoRoot);
+      if (cached === undefined) {
         throw new Error("no logentries for " + repoRoot);
       }
+      const logentries = cached.entries;
       if (logentries.length === 0) {
-        const repo = this.findRepo(repoRoot);
-        const topCommits = await repo.log2("HEAD", "1", limit);
-        logentries.push(...topCommits);
+        await this.fetchMore(repoRoot);
       }
       const result = transform(logentries, LogTreeItemKind.Commit);
-      if (logentries[logentries.length - 1].revision !== "1") {
+      if (!cached.isComplete) {
         const ti = new TreeItem(`Load another ${limit} revisions`);
         ti.tooltip = "Paging size may be adjusted using log.length setting";
         ti.command = {
