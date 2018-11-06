@@ -37,12 +37,16 @@ export function getIconObject(iconName: string) {
 
 export function needFetch(
   cached: ISvnLogEntry[],
-  fetched: ISvnLogEntry[]
+  fetched: ISvnLogEntry[],
+  limit: number
 ): boolean {
   if (cached.length && cached[cached.length - 1].revision === "1") {
     return false;
   }
   if (fetched.length === 0 || fetched[fetched.length - 1].revision === "1") {
+    return false;
+  }
+  if (fetched.length < limit) {
     return false;
   }
   return true;

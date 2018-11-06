@@ -100,13 +100,19 @@ export class ItemLogProvider implements TreeDataProvider<ILogTreeItem> {
       rfrom = le[le.length - 1].revision;
       rfrom = (Number.parseInt(rfrom, 10) - 1).toString();
     }
-    const moreCommits = await currentItem.repo.log2(
-      rfrom,
-      "1",
-      getLimit(),
-      currentItem.target
-    );
-    if (!needFetch(le, moreCommits)) {
+    let moreCommits: ISvnLogEntry[] = [];
+    const limit = getLimit();
+    try {
+      moreCommits = await currentItem.repo.log2(
+        rfrom,
+        "1",
+        limit,
+        currentItem.target
+      );
+    } catch {
+      // Item didn't exist
+    }
+    if (!needFetch(le, moreCommits, limit)) {
       currentItem.isComplete = true;
     }
     le.push(...moreCommits);

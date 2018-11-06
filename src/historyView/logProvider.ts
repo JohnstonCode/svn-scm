@@ -99,8 +99,9 @@ export class LogProvider implements TreeDataProvider<ILogTreeItem> {
       rfrom = (Number.parseInt(rfrom, 10) - 1).toString();
     }
     const repo = this.findRepo(repoRoot);
-    const moreCommits = await repo.log2(rfrom, "1", getLimit());
-    if (!needFetch(logentries, moreCommits)) {
+    const limit = getLimit();
+    const moreCommits = await repo.log2(rfrom, "1", limit);
+    if (!needFetch(logentries, moreCommits, limit)) {
       cached.isComplete = true;
     }
     logentries.push(...moreCommits);
