@@ -83,7 +83,7 @@ export class LogProvider implements TreeDataProvider<ILogTreeItem> {
       }
       box.dispose();
       const box2 = window.createInputBox();
-      box2.prompt = "Enter starting commit (default HEAD)";
+      box2.prompt = "Enter starting revision (optional)";
       box2.onDidAccept(async () => {
         console.log(box2.value);
         const repo = this.model.getRepository(repoLike);
@@ -106,7 +106,7 @@ export class LogProvider implements TreeDataProvider<ILogTreeItem> {
           }
         }
         if (!success) {
-          window.showErrorMessage(`Failed to resolve svn path`);
+          window.showErrorMessage("Failed to resolve svn path");
         }
         box2.dispose();
       });
