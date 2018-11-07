@@ -1,4 +1,3 @@
-import * as path from "path";
 import {
   Event,
   EventEmitter,
@@ -10,7 +9,6 @@ import {
 } from "vscode";
 import { ISvnLogEntry } from "../common/types";
 import { Model } from "../model";
-import { Repository } from "../repository";
 import {
   fetchMore,
   getCommitLabel,
@@ -76,7 +74,9 @@ export class ItemLogProvider implements TreeDataProvider<ILogTreeItem> {
               entries: [],
               repo,
               svnTarget: info.url,
-              commitFrom: info.revision
+              persisted: {
+                commitFrom: info.revision
+              }
             };
           } catch (e) {
             // doesn't belong to this repo

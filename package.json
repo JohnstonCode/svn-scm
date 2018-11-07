@@ -115,7 +115,7 @@
     },
     "commands": [
       {
-        "command": "svn.log.addrepolike",
+        "command": "svn.repolog.addrepolike",
         "category": "Log",
         "title": "Add repo-like path",
         "icon": {
@@ -124,13 +124,18 @@
         }
       },
       {
-        "command": "svn.log.refresh",
+        "command": "svn.repolog.refresh",
         "category": "Log",
         "title": "Refresh log",
         "icon": {
           "dark": "icons/dark/refresh.svg",
           "light": "icons/light/refresh.svg"
         }
+      },
+      {
+        "command": "svn.repolog.remove",
+        "category": "Log",
+        "title": "Remove"
       },
       {
         "command": "svn.itemlog.refresh",
@@ -463,12 +468,12 @@
           "group": "navigation"
         },
         {
-          "command": "svn.log.refresh",
+          "command": "svn.repolog.refresh",
           "when": "view == repolog",
           "group": "navigation"
         },
         {
-          "command": "svn.log.addrepolike",
+          "command": "svn.repolog.addrepolike",
           "when": "view == repolog",
           "group": "navigation"
         },
@@ -494,6 +499,10 @@
         {
           "command": "svn.openChangeHead",
           "when": "viewItem == incomingChange:modified"
+        },
+        {
+          "command": "svn.repolog.remove",
+          "when": "view == repolog && viewItem == userrepo"
         }
       ],
       "scm/title": [

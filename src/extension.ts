@@ -52,7 +52,11 @@ async function init(
 
   const logProvider = new LogProvider(model);
   window.registerTreeDataProvider("repolog", logProvider);
-  commands.registerCommand("svn.log.refresh", logProvider.refresh, logProvider);
+  commands.registerCommand(
+    "svn.repolog.refresh",
+    logProvider.refresh,
+    logProvider
+  );
 
   const itemLogProvider = new ItemLogProvider(model);
   window.registerTreeDataProvider("itemlog", itemLogProvider);

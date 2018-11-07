@@ -12,7 +12,6 @@ import {
 } from "vscode";
 import { ISvnLogEntry, ISvnLogEntryPath } from "../common/types";
 import { Model } from "../model";
-import { Repository } from "../repository";
 import {
   fetchMore,
   getCommitLabel,
@@ -59,7 +58,17 @@ export class LogProvider implements TreeDataProvider<ILogTreeItem> {
 
   constructor(private model: Model) {
     this.refresh();
-    commands.registerCommand("svn.log.addrepolike", this.addRepolike, this);
+    commands.registerCommand("svn.repolog.addrepolike", this.addRepolike, this);
+    commands.registerCommand("svn.repolog.remove", this.removeRepo, this);
+  }
+
+  public removeRepo(element?: any) {
+    if (typeof element === "object" && element.data) {
+      this.logCache.delete(element.data);
+      this.refresh();
+    } else {
+      console.error("Failed to delete " + element);
+    }
   }
 
   public addRepolike() {
@@ -97,7 +106,10 @@ export class LogProvider implements TreeDataProvider<ILogTreeItem> {
               isComplete: false,
               svnTarget: svninfo.url,
               repo,
-              commitFrom: rev
+              persisted: {
+                commitFrom: svninfo.revision,
+                userAdded: true
+              }
             });
             success = true;
             this._onDidChangeTreeData.fire();
@@ -119,17 +131,19 @@ export class LogProvider implements TreeDataProvider<ILogTreeItem> {
     if (element === undefined) {
       for (const repo of this.model.repositories) {
         const repoUrl = await repo.getInfo(repo.root);
-        let commitFrom = "HEAD";
+        let persisted = {
+          commitFrom: "HEAD"
+        };
         const prev = this.logCache.get(repoUrl.url);
         if (prev) {
-          commitFrom = prev.commitFrom;
+          persisted = prev.persisted;
         }
         this.logCache.set(repoUrl.url, {
           entries: [],
           isComplete: false,
           repo,
           svnTarget: repoUrl.url,
-          commitFrom
+          persisted
         });
       }
     } else if (element.kind === LogTreeItemKind.Repo) {
@@ -152,10 +166,14 @@ export class LogProvider implements TreeDataProvider<ILogTreeItem> {
         throw new Error("undefined cached");
       }
       ti = new TreeItem(svnTarget, TreeItemCollapsibleState.Collapsed);
-      ti.iconPath = getIconObject("icon-repo");
-      ti.tooltip = `${svnTarget} since ${
-        cached.commitFrom ? cached.commitFrom : "HEAD"
-      }`;
+      if (cached.persisted.userAdded) {
+        ti.iconPath = getIconObject("folder");
+        ti.contextValue = "userrepo";
+      } else {
+        ti.iconPath = getIconObject("icon-repo");
+      }
+      const from = cached.persisted.commitFrom || "HEAD";
+      ti.tooltip = `${svnTarget} since ${from}`;
     } else if (element.kind === LogTreeItemKind.Commit) {
       const commit = element.data as ISvnLogEntry;
       ti = new TreeItem(
@@ -206,7 +224,7 @@ export class LogProvider implements TreeDataProvider<ILogTreeItem> {
         const ti = new TreeItem(`Load another ${limit} revisions`);
         ti.tooltip = "Paging size may be adjusted using log.length setting";
         ti.command = {
-          command: "svn.log.refresh",
+          command: "svn.repolog.refresh",
           arguments: [element],
           title: "refresh element"
         };
