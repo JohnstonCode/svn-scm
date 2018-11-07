@@ -6,7 +6,7 @@ import { configuration } from "../helpers/configuration";
 import { Repository } from "../repository";
 
 export enum LogTreeItemKind {
-  Repo,
+  Repo = 1,
   Commit,
   CommitDetail,
   Action
@@ -16,19 +16,19 @@ export enum LogTreeItemKind {
 export type SvnPath = string;
 
 export interface ILogTreeItem {
-  kind: LogTreeItemKind;
+  readonly kind: LogTreeItemKind;
   data: ISvnLogEntry | ISvnLogEntryPath | SvnPath | TreeItem;
 }
 
 export interface ICachedLog {
   entries: ISvnLogEntry[];
   // svn-like path
-  svnTarget: string;
+  readonly svnTarget: string;
   isComplete: boolean;
-  repo: Repository;
-  persisted: {
-    commitFrom: string;
-    userAdded?: boolean;
+  readonly repo: Repository;
+  readonly persisted: {
+    readonly commitFrom: string;
+    readonly userAdded?: boolean;
   };
 }
 
