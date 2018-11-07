@@ -115,6 +115,15 @@
     },
     "commands": [
       {
+        "command": "svn.log.addrepolike",
+        "category": "Log",
+        "title": "Add repo-like path",
+        "icon": {
+          "dark": "icons/dark/add.svg",
+          "light": "icons/light/add.svg"
+        }
+      },
+      {
         "command": "svn.log.refresh",
         "category": "Log",
         "title": "Refresh log",
@@ -455,6 +464,11 @@
         },
         {
           "command": "svn.log.refresh",
+          "when": "view == repolog",
+          "group": "navigation"
+        },
+        {
+          "command": "svn.log.addrepolike",
           "when": "view == repolog",
           "group": "navigation"
         },

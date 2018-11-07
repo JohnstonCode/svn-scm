@@ -7,16 +7,18 @@ import { Repository } from "../repository";
 
 export enum LogTreeItemKind {
   Repo,
+  RepoLike,
   Commit,
   CommitDetail,
   Action
 }
 
-export type RepoRoot = string;
+// svn:// or ^/ or WC-path
+export type SvnPath = string;
 
 export interface ILogTreeItem {
   kind: LogTreeItemKind;
-  data: ISvnLogEntry | ISvnLogEntryPath | RepoRoot | TreeItem;
+  data: ISvnLogEntry | ISvnLogEntryPath | SvnPath | TreeItem;
 }
 
 export interface ICachedLog {
@@ -44,7 +46,7 @@ export function getIconObject(iconName: string) {
   };
 }
 
-export function needFetch(
+function needFetch(
   cached: ISvnLogEntry[],
   fetched: ISvnLogEntry[],
   limit: number

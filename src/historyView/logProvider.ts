@@ -1,15 +1,18 @@
 import * as path from "path";
 import {
+  commands,
   Event,
   EventEmitter,
   TreeDataProvider,
   TreeItem,
-  TreeItemCollapsibleState
+  TreeItemCollapsibleState,
+  window,
+  workspace
 } from "vscode";
 import { ISvnLogEntry, ISvnLogEntryPath } from "../common/types";
-import { configuration } from "../helpers/configuration";
 import { Model } from "../model";
 import { Repository } from "../repository";
+import { Repository as BaseRepository } from "../svnRepository";
 import {
   fetchMore,
   getCommitLabel,
@@ -19,8 +22,7 @@ import {
   ICachedLog,
   ILogTreeItem,
   LogTreeItemKind,
-  needFetch,
-  RepoRoot,
+  SvnPath,
   transform
 } from "./common";
 
@@ -52,15 +54,54 @@ export class LogProvider implements TreeDataProvider<ILogTreeItem> {
   > = new EventEmitter<ILogTreeItem | undefined>();
   public readonly onDidChangeTreeData: Event<ILogTreeItem | undefined> = this
     ._onDidChangeTreeData.event;
+  // TODO on-disk cache?
   private readonly logCache: Map<string, ICachedLog> = new Map();
 
   constructor(private model: Model) {
     this.refresh();
+    commands.registerCommand("svn.log.addrepolike", this.addRepolike, this);
+  }
+
+  public addRepolike() {
+    const box = window.createInputBox();
+    box.prompt = "Enter SVN URL or local path";
+    box.onDidAccept(() => {
+      let repoLike = box.value;
+      if (!path.isAbsolute(repoLike)) {
+        if (workspace.workspaceFolders && workspace.workspaceFolders.length) {
+          repoLike = path.join(
+            workspace.workspaceFolders[0].uri.path,
+            repoLike
+          );
+          // TODO detect ws folder
+        }
+      }
+      box.dispose();
+      const box2 = window.createInputBox();
+      box2.prompt = "Enter starting commit (default HEAD)";
+      box2.onDidAccept(() => {
+        console.log(box2.value);
+        const svnRepo = new BaseRepository(this.model.svn, repoLike, repoLike);
+        const repo = new Repository(svnRepo);
+        if (repo !== undefined) {
+          this.logCache.set(repoLike, {
+            entries: [],
+            isComplete: false,
+            svnTarget: repoLike,
+            repo
+          });
+          this._onDidChangeTreeData.fire();
+        }
+        box2.dispose();
+      });
+      box2.show();
+    });
+    box.show();
   }
 
   public async refresh(element?: ILogTreeItem) {
     if (element === undefined) {
-      this.logCache.clear();
+      // this.logCache.clear();
       for (const repo of this.model.repositories) {
         const repoUrl = await repo.getInfo(repo.root);
         this.logCache.set(repoUrl.url, {
@@ -71,7 +112,7 @@ export class LogProvider implements TreeDataProvider<ILogTreeItem> {
         });
       }
     } else if (element.kind === LogTreeItemKind.Repo) {
-      const repoRoot = element.data as RepoRoot;
+      const repoRoot = element.data as SvnPath;
       const cached = this.logCache.get(repoRoot);
       if (cached === undefined) {
         throw new Error("undefined cached");
@@ -84,7 +125,7 @@ export class LogProvider implements TreeDataProvider<ILogTreeItem> {
   public async getTreeItem(element: ILogTreeItem): Promise<TreeItem> {
     let ti: TreeItem;
     if (element.kind === LogTreeItemKind.Repo) {
-      const repoRoot = element.data as RepoRoot;
+      const repoRoot = element.data as SvnPath;
       ti = new TreeItem(repoRoot, TreeItemCollapsibleState.Collapsed);
       ti.iconPath = getIconObject("icon-repo");
     } else if (element.kind === LogTreeItemKind.Commit) {
@@ -123,7 +164,7 @@ export class LogProvider implements TreeDataProvider<ILogTreeItem> {
       return transform(Array.from(this.logCache.keys()), LogTreeItemKind.Repo);
     } else if (element.kind === LogTreeItemKind.Repo) {
       const limit = getLimit();
-      const repoRoot = element.data as RepoRoot;
+      const repoRoot = element.data as SvnPath;
       const cached = this.logCache.get(repoRoot);
       if (cached === undefined) {
         throw new Error("no logentries for " + repoRoot);

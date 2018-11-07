@@ -20,7 +20,6 @@ import {
   ICachedLog,
   ILogTreeItem,
   LogTreeItemKind,
-  needFetch,
   transform
 } from "./common";
 
