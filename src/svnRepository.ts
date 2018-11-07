@@ -109,12 +109,20 @@ export class Repository {
   }
 
   @sequentialize
-  public async getInfo(file: string = ""): Promise<ISvnInfo> {
-    if (this._info[file]) {
+  public async getInfo(
+    file: string = "",
+    revision?: string,
+    skipCache: boolean = false
+  ): Promise<ISvnInfo> {
+    if (!skipCache && this._info[file]) {
       return this._info[file];
     }
 
     const args = ["info", "--xml"];
+
+    if (revision) {
+      args.push("-r", revision);
+    }
 
     if (file) {
       file = fixPathSeparator(file);

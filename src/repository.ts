@@ -857,8 +857,10 @@ export class Repository {
     return this.run(Operation.CleanUp, () => this.repository.cleanup());
   }
 
-  public async getInfo(path: string): Promise<ISvnInfo> {
-    return this.run(Operation.Info, () => this.repository.getInfo(path));
+  public async getInfo(path: string, revision?: string): Promise<ISvnInfo> {
+    return this.run(Operation.Info, () =>
+      this.repository.getInfo(path, revision, true)
+    );
   }
 
   public async finishCheckout() {

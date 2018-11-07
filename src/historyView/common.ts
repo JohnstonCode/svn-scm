@@ -27,6 +27,7 @@ export interface ICachedLog {
   svnTarget: string;
   isComplete: boolean;
   repo: Repository;
+  commitFrom: string;
 }
 
 export function transform(array: any[], kind: LogTreeItemKind): ILogTreeItem[] {
@@ -65,7 +66,7 @@ function needFetch(
 
 /// @note: cached.svnTarget should be valid
 export async function fetchMore(cached: ICachedLog) {
-  let rfrom = "HEAD";
+  let rfrom = cached.commitFrom;
   const entries = cached.entries;
   if (entries.length) {
     rfrom = entries[entries.length - 1].revision;

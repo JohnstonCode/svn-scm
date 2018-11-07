@@ -75,7 +75,8 @@ export class ItemLogProvider implements TreeDataProvider<ILogTreeItem> {
               isComplete: false,
               entries: [],
               repo,
-              svnTarget: info.url
+              svnTarget: info.url,
+              commitFrom: info.revision
             };
           } catch (e) {
             // doesn't belong to this repo
