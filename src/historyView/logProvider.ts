@@ -11,22 +11,18 @@ import { configuration } from "../helpers/configuration";
 import { Model } from "../model";
 import { Repository } from "../repository";
 import {
+  fetchMore,
   getCommitLabel,
   getGravatarUri,
   getIconObject,
   getLimit,
+  ICachedLog,
   ILogTreeItem,
   LogTreeItemKind,
   needFetch,
   RepoRoot,
   transform
 } from "./common";
-
-interface ICachedLog {
-  repo: Repository;
-  entries: ISvnLogEntry[];
-  isComplete: boolean;
-}
 
 function getActionIcon(action: string) {
   let name: string | undefined;
@@ -69,42 +65,19 @@ export class LogProvider implements TreeDataProvider<ILogTreeItem> {
         this.logCache.set(repo.root, {
           entries: [],
           isComplete: false,
-          repo
+          repo,
+          svnTarget: repo.workspaceRoot
         });
       }
     } else if (element.kind === LogTreeItemKind.Repo) {
       const repoRoot = element.data as RepoRoot;
-      await this.fetchMore(repoRoot);
+      const cached = this.logCache.get(repoRoot);
+      if (cached === undefined) {
+        throw new Error("undefined cached");
+      }
+      await fetchMore(cached);
     }
     this._onDidChangeTreeData.fire(element);
-  }
-
-  private findRepo(repoRoot: RepoRoot): Repository {
-    const repo = this.model.repositories.find(r => r.root === repoRoot);
-    if (repo === undefined) {
-      throw new Error(`Repo ${repo} not found`);
-    }
-    return repo;
-  }
-
-  private async fetchMore(repoRoot: RepoRoot) {
-    const cached = this.logCache.get(repoRoot);
-    if (cached === undefined) {
-      throw new Error("no logentries for " + repoRoot);
-    }
-    const logentries = cached.entries;
-    let rfrom = "HEAD";
-    if (logentries.length) {
-      rfrom = logentries[logentries.length - 1].revision;
-      rfrom = (Number.parseInt(rfrom, 10) - 1).toString();
-    }
-    const repo = this.findRepo(repoRoot);
-    const limit = getLimit();
-    const moreCommits = await repo.log2(rfrom, "1", limit);
-    if (!needFetch(logentries, moreCommits, limit)) {
-      cached.isComplete = true;
-    }
-    logentries.push(...moreCommits);
   }
 
   public async getTreeItem(element: ILogTreeItem): Promise<TreeItem> {
@@ -156,7 +129,7 @@ export class LogProvider implements TreeDataProvider<ILogTreeItem> {
       }
       const logentries = cached.entries;
       if (logentries.length === 0) {
-        await this.fetchMore(repoRoot);
+        await fetchMore(cached);
       }
       const result = transform(logentries, LogTreeItemKind.Commit);
       if (!cached.isComplete) {

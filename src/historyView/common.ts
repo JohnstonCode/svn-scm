@@ -3,6 +3,7 @@ import * as path from "path";
 import { TreeItem, Uri } from "vscode";
 import { ISvnLogEntry, ISvnLogEntryPath } from "../common/types";
 import { configuration } from "../helpers/configuration";
+import { Repository } from "../repository";
 
 export enum LogTreeItemKind {
   Repo,
@@ -16,6 +17,14 @@ export type RepoRoot = string;
 export interface ILogTreeItem {
   kind: LogTreeItemKind;
   data: ISvnLogEntry | ISvnLogEntryPath | RepoRoot | TreeItem;
+}
+
+export interface ICachedLog {
+  entries: ISvnLogEntry[];
+  // svn-like path
+  svnTarget: string;
+  isComplete: boolean;
+  repo: Repository;
 }
 
 export function transform(array: any[], kind: LogTreeItemKind): ILogTreeItem[] {
@@ -50,6 +59,27 @@ export function needFetch(
     return false;
   }
   return true;
+}
+
+/// @note: cached.svnTarget should be valid
+export async function fetchMore(cached: ICachedLog) {
+  let rfrom = "HEAD";
+  const entries = cached.entries;
+  if (entries.length) {
+    rfrom = entries[entries.length - 1].revision;
+    rfrom = (Number.parseInt(rfrom, 10) - 1).toString();
+  }
+  let moreCommits: ISvnLogEntry[] = [];
+  const limit = getLimit();
+  try {
+    moreCommits = await cached.repo.log2(rfrom, "1", limit, cached.svnTarget);
+  } catch {
+    // Item didn't exist
+  }
+  if (!needFetch(entries, moreCommits, limit)) {
+    cached.isComplete = true;
+  }
+  entries.push(...moreCommits);
 }
 
 export function getLimit(): number {

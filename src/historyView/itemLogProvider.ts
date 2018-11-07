@@ -12,22 +12,17 @@ import { ISvnLogEntry } from "../common/types";
 import { Model } from "../model";
 import { Repository } from "../repository";
 import {
+  fetchMore,
   getCommitLabel,
   getGravatarUri,
   getIconObject,
   getLimit,
+  ICachedLog,
   ILogTreeItem,
   LogTreeItemKind,
   needFetch,
   transform
 } from "./common";
-
-interface IItem {
-  logentries: ISvnLogEntry[];
-  target: string;
-  isComplete: boolean;
-  repo: Repository;
-}
 
 export class ItemLogProvider implements TreeDataProvider<ILogTreeItem> {
   private _onDidChangeTreeData: EventEmitter<
@@ -36,7 +31,7 @@ export class ItemLogProvider implements TreeDataProvider<ILogTreeItem> {
   public readonly onDidChangeTreeData: Event<ILogTreeItem | undefined> = this
     ._onDidChangeTreeData.event;
 
-  private currentItem?: IItem;
+  private currentItem?: ICachedLog;
 
   constructor(private model: Model) {
     window.onDidChangeActiveTextEditor(this.editorChanged, this);
@@ -54,11 +49,14 @@ export class ItemLogProvider implements TreeDataProvider<ILogTreeItem> {
   ) {
     let currentTarget: string | undefined;
     if (this.currentItem) {
-      currentTarget = this.currentItem.target;
+      currentTarget = this.currentItem.svnTarget;
     }
 
     if (loadMore) {
-      await this.fetchMore();
+      if (this.currentItem === undefined) {
+        throw new Error("undefined this.currentItem");
+      }
+      await fetchMore(this.currentItem);
       this._onDidChangeTreeData.fire(element);
       return;
     }
@@ -79,43 +77,14 @@ export class ItemLogProvider implements TreeDataProvider<ILogTreeItem> {
           }
           this.currentItem = {
             isComplete: false,
-            logentries: [],
+            entries: [],
             repo,
-            target: uri.path
+            svnTarget: uri.path
           };
         }
       }
     }
     this._onDidChangeTreeData.fire(element);
-  }
-
-  private async fetchMore() {
-    if (this.currentItem === undefined) {
-      return;
-    }
-    let rfrom = "HEAD";
-    const currentItem = this.currentItem;
-    const le = currentItem.logentries;
-    if (le.length) {
-      rfrom = le[le.length - 1].revision;
-      rfrom = (Number.parseInt(rfrom, 10) - 1).toString();
-    }
-    let moreCommits: ISvnLogEntry[] = [];
-    const limit = getLimit();
-    try {
-      moreCommits = await currentItem.repo.log2(
-        rfrom,
-        "1",
-        limit,
-        currentItem.target
-      );
-    } catch {
-      // Item didn't exist
-    }
-    if (!needFetch(le, moreCommits, limit)) {
-      currentItem.isComplete = true;
-    }
-    le.push(...moreCommits);
   }
 
   public async getTreeItem(element: ILogTreeItem): Promise<TreeItem> {
@@ -139,11 +108,11 @@ export class ItemLogProvider implements TreeDataProvider<ILogTreeItem> {
       if (this.currentItem === undefined) {
         return [];
       }
-      if (this.currentItem.logentries.length === 0) {
-        await this.fetchMore();
+      if (this.currentItem.entries.length === 0) {
+        await fetchMore(this.currentItem);
       }
       const result = transform(
-        this.currentItem.logentries,
+        this.currentItem.entries,
         LogTreeItemKind.Commit
       );
       if (!this.currentItem.isComplete) {
