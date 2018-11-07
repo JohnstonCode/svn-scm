@@ -400,7 +400,8 @@ export class Model implements IDisposable {
       const repository = liveRepository.repository;
 
       try {
-        const info = await repository.info(uri.fsPath);
+        const path = normalizePath(uri.fsPath);
+        const info = await repository.info(path);
 
         return repository;
       } catch (error) {
