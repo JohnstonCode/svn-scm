@@ -62,11 +62,12 @@ export class LogProvider implements TreeDataProvider<ILogTreeItem> {
     if (element === undefined) {
       this.logCache.clear();
       for (const repo of this.model.repositories) {
-        this.logCache.set(repo.root, {
+        const repoUrl = await repo.getInfo(repo.root);
+        this.logCache.set(repoUrl.url, {
           entries: [],
           isComplete: false,
           repo,
-          svnTarget: repo.workspaceRoot
+          svnTarget: repoUrl.url
         });
       }
     } else if (element.kind === LogTreeItemKind.Repo) {

@@ -71,16 +71,16 @@ export class ItemLogProvider implements TreeDataProvider<ILogTreeItem> {
         const repo = this.model.getRepository(uri);
         if (repo !== undefined) {
           try {
-            await repo.getInfo(uri.path);
+            const info = await repo.getInfo(uri.path);
+            this.currentItem = {
+              isComplete: false,
+              entries: [],
+              repo,
+              svnTarget: info.url
+            };
           } catch (e) {
             // doesn't belong to this repo
           }
-          this.currentItem = {
-            isComplete: false,
-            entries: [],
-            repo,
-            svnTarget: uri.path
-          };
         }
       }
     }
