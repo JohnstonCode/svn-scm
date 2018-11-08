@@ -225,6 +225,11 @@
         }
       },
       {
+        "command": "svn.openFileRemote",
+        "title": "Open this revision",
+        "category": "SVN"
+      },
+      {
         "command": "svn.openHEADFile",
         "title": "Open File (HEAD)",
         "category": "SVN"
@@ -508,6 +513,10 @@
         {
           "command": "svn.repolog.remove",
           "when": "view == repolog && viewItem == userrepo"
+        },
+        {
+          "command": "svn.openFileRemote",
+          "when": "view == repolog || view == itemlog"
         }
       ],
       "scm/title": [

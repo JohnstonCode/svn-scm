@@ -38,7 +38,6 @@ async function init(
   const model = new Model(svn);
   if (model.enabled) {
     await model.enable();
-    console.log(model.repositories);
   }
   const contentProvider = new SvnContentProvider(model);
 

@@ -142,10 +142,13 @@ export class Repository {
   }
 
   public async show(
-    file: string,
+    file: string | Uri,
     revision?: string,
     options: ICpOptions = {}
   ): Promise<string> {
+    if (file instanceof Uri) {
+      file = file.fsPath;
+    }
     const uri = Uri.file(file);
     file = this.removeAbsolutePath(file);
     const args = ["cat"];

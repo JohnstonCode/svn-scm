@@ -95,9 +95,10 @@ export class ItemLogProvider implements TreeDataProvider<ILogTreeItem> {
       ti = new TreeItem(getCommitLabel(commit), TreeItemCollapsibleState.None);
       ti.iconPath = getGravatarUri(commit.author);
       ti.command = {
-        command: "svn.openDiff",
+        command: "svn.openFileRemote",
         title: "Open diff",
-        arguments: [svnFullPathToUri(commit.paths[0], cached.repo), "3"] // FIXME [0]
+        arguments: [cached.repo, Uri.parse(cached.svnTarget), "3"]
+        // FIXME svnFullPathToUri(commit.paths[0], cached.repo)
       };
     } else if (element.kind === LogTreeItemKind.Action) {
       ti = element.data as TreeItem;

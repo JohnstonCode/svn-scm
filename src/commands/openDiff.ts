@@ -1,6 +1,6 @@
-import * as fs from "fs";
-import * as tmp from "tmp";
-import { Uri } from "vscode";
+import { commands, TextDocumentShowOptions, Uri } from "vscode";
+import { Repository } from "../repository";
+import { dumpSvnFile } from "../tempFiles";
 import { Command } from "./command";
 
 export class OpenDiff extends Command {
@@ -8,8 +8,20 @@ export class OpenDiff extends Command {
     super("svn.openDiff");
   }
 
-  public async execute(arg?: Uri, against?: string) {
-    // return this.openChange(arg, against, []);
-    // TODO
+  public async execute(repo: Repository, arg: Uri, r1: string, r2: string) {
+    const out1 = await repo.show(arg.toString(), r1);
+    const uri1 = await dumpSvnFile(arg, r1, out1);
+    const out2 = await repo.show(arg.toString(), r2);
+    const uri2 = await dumpSvnFile(arg, r2, out2);
+    const opts: TextDocumentShowOptions = {
+      preview: true
+    };
+    return commands.executeCommand<void>(
+      "vscode.diff",
+      uri1,
+      uri2,
+      "title", // TODO
+      opts
+    );
   }
 }

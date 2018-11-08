@@ -18,6 +18,7 @@ import { OpenChangeHead } from "./commands/openChangeHead";
 import { OpenChangePrev } from "./commands/openChangePrev";
 import { OpenDiff } from "./commands/openDiff";
 import { OpenFile } from "./commands/openFile";
+import { OpenFileRemote } from "./commands/openFileRemote";
 import { OpenHeadFile } from "./commands/openHeadFile";
 import { OpenResourceBase } from "./commands/openResourceBase";
 import { OpenResourceHead } from "./commands/openResourceHead";
@@ -84,4 +85,5 @@ export function registerCommands(model: Model, disposables: Disposable[]) {
   disposables.push(new OpenChangeHead());
   disposables.push(new OpenHeadFile());
   disposables.push(new OpenDiff());
+  disposables.push(new OpenFileRemote());
 }
