@@ -12,6 +12,7 @@ import {
 } from "vscode";
 import { ISvnLogEntry, ISvnLogEntryPath } from "../common/types";
 import { Model } from "../model";
+import { unwrap } from "../util";
 import {
   fetchMore,
   getCommitLabel,
@@ -148,10 +149,7 @@ export class LogProvider implements TreeDataProvider<ILogTreeItem> {
       }
     } else if (element.kind === LogTreeItemKind.Repo) {
       const repoRoot = element.data as SvnPath;
-      const cached = this.logCache.get(repoRoot);
-      if (cached === undefined) {
-        throw new Error("undefined cached");
-      }
+      const cached = unwrap(this.logCache.get(repoRoot));
       await fetchMore(cached);
     }
     this._onDidChangeTreeData.fire(element);
@@ -161,10 +159,7 @@ export class LogProvider implements TreeDataProvider<ILogTreeItem> {
     let ti: TreeItem;
     if (element.kind === LogTreeItemKind.Repo) {
       const svnTarget = element.data as SvnPath;
-      const cached = this.logCache.get(svnTarget);
-      if (!cached) {
-        throw new Error("undefined cached");
-      }
+      const cached = unwrap(this.logCache.get(svnTarget));
       ti = new TreeItem(svnTarget, TreeItemCollapsibleState.Collapsed);
       if (cached.persisted.userAdded) {
         ti.iconPath = getIconObject("folder");
@@ -211,10 +206,7 @@ export class LogProvider implements TreeDataProvider<ILogTreeItem> {
     } else if (element.kind === LogTreeItemKind.Repo) {
       const limit = getLimit();
       const repoRoot = element.data as SvnPath;
-      const cached = this.logCache.get(repoRoot);
-      if (cached === undefined) {
-        throw new Error("undefined for " + repoRoot);
-      }
+      const cached = unwrap(this.logCache.get(repoRoot));
       const logentries = cached.entries;
       if (logentries.length === 0) {
         await fetchMore(cached);

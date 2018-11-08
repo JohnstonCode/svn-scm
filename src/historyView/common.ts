@@ -49,6 +49,13 @@ export function getIconObject(iconName: string) {
   };
 }
 
+export function svnFullPathToUri(
+  path: ISvnLogEntryPath,
+  repo: Repository
+): Uri {
+  return Uri.parse(`svn://${repo.root}${path._}`); // FIXME root -> svnRoot
+}
+
 function needFetch(
   cached: ISvnLogEntry[],
   fetched: ISvnLogEntry[],

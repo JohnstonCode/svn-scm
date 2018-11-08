@@ -5,10 +5,12 @@ import {
   TreeDataProvider,
   TreeItem,
   TreeItemCollapsibleState,
+  Uri,
   window
 } from "vscode";
-import { ISvnLogEntry } from "../common/types";
+import { ISvnLogEntry, Status } from "../common/types";
 import { Model } from "../model";
+import { unwrap } from "../util";
 import {
   fetchMore,
   getCommitLabel,
@@ -18,6 +20,7 @@ import {
   ICachedLog,
   ILogTreeItem,
   LogTreeItemKind,
+  svnFullPathToUri,
   transform
 } from "./common";
 
@@ -50,10 +53,7 @@ export class ItemLogProvider implements TreeDataProvider<ILogTreeItem> {
     }
 
     if (loadMore) {
-      if (this.currentItem === undefined) {
-        throw new Error("undefined this.currentItem");
-      }
-      await fetchMore(this.currentItem);
+      await fetchMore(unwrap(this.currentItem));
       this._onDidChangeTreeData.fire(element);
       return;
     }
@@ -90,9 +90,15 @@ export class ItemLogProvider implements TreeDataProvider<ILogTreeItem> {
   public async getTreeItem(element: ILogTreeItem): Promise<TreeItem> {
     let ti: TreeItem;
     if (element.kind === LogTreeItemKind.Commit) {
+      const cached = unwrap(this.currentItem);
       const commit = element.data as ISvnLogEntry;
       ti = new TreeItem(getCommitLabel(commit), TreeItemCollapsibleState.None);
       ti.iconPath = getGravatarUri(commit.author);
+      ti.command = {
+        command: "svn.openDiff",
+        title: "Open diff",
+        arguments: [svnFullPathToUri(commit.paths[0], cached.repo), "3"] // FIXME [0]
+      };
     } else if (element.kind === LogTreeItemKind.Action) {
       ti = element.data as TreeItem;
     } else {

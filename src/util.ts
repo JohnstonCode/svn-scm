@@ -182,3 +182,10 @@ export function deleteDirectory(dirPath: string) {
     fs.rmdirSync(dirPath);
   }
 }
+
+export function unwrap<T>(maybeT?: T): T {
+  if (maybeT === undefined) {
+    throw new Error("undefined unwrap");
+  }
+  return maybeT;
+}

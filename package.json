@@ -211,6 +211,11 @@
         "category": "SVN"
       },
       {
+        "command": "svn.openDiff",
+        "title": "Open diff",
+        "category": "SVN"
+      },
+      {
         "command": "svn.openFile",
         "title": "Open File",
         "category": "SVN",
