@@ -2,6 +2,7 @@ import { commands, SourceControlResourceState, Uri, window } from "vscode";
 import { inputSwitchChangelist } from "../changelistItems";
 import { Model } from "../model";
 import { Resource } from "../resource";
+import { normalizePath } from "../util";
 import { Command } from "./command";
 
 export class ChangeList extends Command {
@@ -65,7 +66,9 @@ export class ChangeList extends Command {
       if (
         group.resourceStates.some(state => {
           return paths.some(path => {
-            return path === state.resourceUri.path;
+            return (
+              normalizePath(path) === normalizePath(state.resourceUri.path)
+            );
           });
         })
       ) {
