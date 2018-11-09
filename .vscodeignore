@@ -11,3 +11,4 @@ src/**
 test/**
 tsconfig.json
 vsc-extension-quickstart.md
+**/*.map
