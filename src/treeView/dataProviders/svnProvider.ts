@@ -33,7 +33,6 @@ export default class SvnProvider implements TreeDataProvider<BaseNode> {
 
   public async getChildren(element?: BaseNode): Promise<BaseNode[]> {
     if (!this.model || this.model.openRepositories.length === 0) {
-      window.showInformationMessage("No Svn repositories open");
       return Promise.resolve([]);
     }
 
