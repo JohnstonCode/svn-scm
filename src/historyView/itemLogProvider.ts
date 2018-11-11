@@ -1,4 +1,5 @@
 import {
+  commands,
   Event,
   EventEmitter,
   TextEditor,
@@ -35,7 +36,42 @@ export class ItemLogProvider implements TreeDataProvider<ILogTreeItem> {
 
   constructor(private model: Model) {
     window.onDidChangeActiveTextEditor(this.editorChanged, this);
+    commands.registerCommand(
+      "svn.itemlog.openFileRemote",
+      this.openFileRemote,
+      this
+    );
+    commands.registerCommand("svn.itemlog.openDiff", this.openDiff, this);
     this.refresh();
+  }
+
+  public openFileRemote(element: any) {
+    const commit = (element as ILogTreeItem).data as ISvnLogEntry;
+    const item = unwrap(this.currentItem);
+    commands.executeCommand(
+      "svn.openFileRemote",
+      item.repo,
+      item.svnTarget,
+      commit.revision
+    );
+  }
+
+  public openDiff(element: any) {
+    const commit = (element as ILogTreeItem).data as ISvnLogEntry;
+    const item = unwrap(this.currentItem);
+    const pos = item.entries.findIndex(e => e === commit);
+    if (pos === item.entries.length - 1) {
+      window.showWarningMessage("Cannot diff last commit");
+      return;
+    }
+    const prevRev = item.entries[pos + 1].revision;
+    commands.executeCommand(
+      "svn.openDiff",
+      item.repo,
+      item.svnTarget,
+      commit.revision,
+      prevRev
+    );
   }
 
   public async editorChanged(te?: TextEditor) {

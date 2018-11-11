@@ -748,7 +748,10 @@ export class Repository {
     return this.run(Operation.Status);
   }
 
-  public async show(filePath: string, revision?: string): Promise<string> {
+  public async show(
+    filePath: string | Uri,
+    revision?: string
+  ): Promise<string> {
     return this.run<string>(Operation.Show, () => {
       return this.repository.show(filePath, revision);
     });

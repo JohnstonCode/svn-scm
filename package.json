@@ -138,6 +138,16 @@
         "title": "Remove"
       },
       {
+        "command": "svn.itemlog.openFileRemote",
+        "title": "Open this revision",
+        "category": "SVN"
+      },
+      {
+        "command": "svn.itemlog.openDiff",
+        "title": "Open diff",
+        "category": "SVN"
+      },
+      {
         "command": "svn.itemlog.refresh",
         "category": "Log",
         "title": "Refresh log for item",
@@ -515,11 +525,11 @@
           "when": "view == repolog && viewItem == userrepo"
         },
         {
-          "command": "svn.openFileRemote",
+          "command": "svn.itemlog.openFileRemote",
           "when": "!(view != repolog && view != itemlog) && viewItem == diffable"
         },
         {
-          "command": "svn.openDiff",
+          "command": "svn.itemlog.openDiff",
           "when": "!(view != repolog && view != itemlog) && viewItem == diffable"
         }
       ],

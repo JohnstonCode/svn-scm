@@ -9,9 +9,9 @@ export class OpenDiff extends Command {
   }
 
   public async execute(repo: Repository, arg: Uri, r1: string, r2: string) {
-    const out1 = await repo.show(arg.toString(), r1);
+    const out1 = await repo.show(arg, r1);
     const uri1 = await dumpSvnFile(arg, r1, out1);
-    const out2 = await repo.show(arg.toString(), r2);
+    const out2 = await repo.show(arg, r2);
     const uri2 = await dumpSvnFile(arg, r2, out2);
     const opts: TextDocumentShowOptions = {
       preview: true

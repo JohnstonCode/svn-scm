@@ -1,6 +1,5 @@
 import { commands, TextDocumentShowOptions, Uri } from "vscode";
-import { Svn } from "../svn";
-import { Repository } from "../svnRepository";
+import { Repository } from "../repository";
 import { dumpSvnFile } from "../tempFiles";
 import { Command } from "./command";
 
