@@ -299,7 +299,9 @@ export class Model implements IDisposable {
       try {
         const repositoryRoot = await this.svn.getRepositoryRoot(path);
 
-        const repository = new Repository(this.svn.open(repositoryRoot, path));
+        const repository = new Repository(
+          await this.svn.open(repositoryRoot, path)
+        );
 
         this.open(repository);
       } catch (err) {

@@ -20,7 +20,7 @@ export class OpenDiff extends Command {
       "vscode.diff",
       uri1,
       uri2,
-      "title", // TODO
+      `${arg.path} (${r1} : ${r2})`,
       opts
     );
   }

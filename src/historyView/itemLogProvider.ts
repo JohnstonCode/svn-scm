@@ -47,11 +47,6 @@ export class ItemLogProvider implements TreeDataProvider<ILogTreeItem> {
     te?: TextEditor,
     loadMore?: boolean
   ) {
-    let currentTarget: string | undefined;
-    if (this.currentItem) {
-      currentTarget = this.currentItem.svnTarget;
-    }
-
     if (loadMore) {
       await fetchMore(unwrap(this.currentItem));
       this._onDidChangeTreeData.fire(element);
@@ -73,7 +68,7 @@ export class ItemLogProvider implements TreeDataProvider<ILogTreeItem> {
               isComplete: false,
               entries: [],
               repo,
-              svnTarget: info.url,
+              svnTarget: Uri.parse(info.url),
               persisted: {
                 commitFrom: info.revision
               }
@@ -94,11 +89,11 @@ export class ItemLogProvider implements TreeDataProvider<ILogTreeItem> {
       const commit = element.data as ISvnLogEntry;
       ti = new TreeItem(getCommitLabel(commit), TreeItemCollapsibleState.None);
       ti.iconPath = getGravatarUri(commit.author);
+      ti.contextValue = "diffable";
       ti.command = {
         command: "svn.openFileRemote",
         title: "Open diff",
-        arguments: [cached.repo, Uri.parse(cached.svnTarget), "3"]
-        // FIXME svnFullPathToUri(commit.paths[0], cached.repo)
+        arguments: [cached.repo, cached.svnTarget, commit.revision]
       };
     } else if (element.kind === LogTreeItemKind.Action) {
       ti = element.data as TreeItem;

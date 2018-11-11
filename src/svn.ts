@@ -215,7 +215,12 @@ export class Svn {
     }
   }
 
-  public open(repositoryRoot: string, workspaceRoot: string): Repository {
-    return new Repository(this, repositoryRoot, workspaceRoot);
+  public async open(
+    repositoryRoot: string,
+    workspaceRoot: string
+  ): Promise<Repository> {
+    const repo = new Repository(this, repositoryRoot, workspaceRoot);
+    await repo.init();
+    return repo;
   }
 }

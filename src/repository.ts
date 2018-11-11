@@ -143,6 +143,11 @@ export class Repository {
     return this.repository.workspaceRoot;
   }
 
+  @memoize
+  get remoteRoot(): Uri {
+    return Uri.parse(this.repository.info.url);
+  }
+
   get inputBox(): SourceControlInputBox {
     return this.sourceControl.inputBox;
   }
@@ -846,7 +851,7 @@ export class Repository {
     rfrom: string,
     rto: string,
     limit: number,
-    target?: string
+    target?: string | Uri
   ) {
     return this.run(Operation.Log, () =>
       this.repository.log2(rfrom, rto, limit, target)

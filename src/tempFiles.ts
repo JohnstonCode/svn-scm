@@ -1,8 +1,11 @@
-import { promises as fs } from "fs";
+// use import { promises as fs } from "fs"; when nodejs will be updated
+import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
-import * as tmp from "tmp";
+import * as util from "util";
 import { Uri } from "vscode";
+
+const writeFile = util.promisify(fs.writeFile);
 
 export async function dumpSvnFile(
   snvUri: Uri,
@@ -10,12 +13,11 @@ export async function dumpSvnFile(
   payload: string
 ): Promise<Uri> {
   const tempdir = path.join(os.tmpdir(), "vscode-svm");
-  try {
-    await fs.access(tempdir);
-  } catch {
-    await fs.mkdir(tempdir);
+  if (!fs.existsSync(tempdir)) {
+    await fs.mkdirSync(tempdir);
   }
   const fname = `${path.basename(snvUri.fsPath)}_${revision}`;
-  await fs.writeFile(fname, payload);
-  return Uri.parse(`file://${fname}`);
+  const fpath = path.join(tempdir, fname);
+  await writeFile(fpath, payload);
+  return Uri.file(fpath);
 }

@@ -7,6 +7,7 @@ import {
   TreeDataProvider,
   TreeItem,
   TreeItemCollapsibleState,
+  Uri,
   window,
   workspace
 } from "vscode";
@@ -105,7 +106,7 @@ export class LogProvider implements TreeDataProvider<ILogTreeItem> {
             this.logCache.set(repoLike, {
               entries: [],
               isComplete: false,
-              svnTarget: svninfo.url,
+              svnTarget: Uri.parse(svninfo.url),
               repo,
               persisted: {
                 commitFrom: svninfo.revision,
@@ -131,19 +132,19 @@ export class LogProvider implements TreeDataProvider<ILogTreeItem> {
   public async refresh(element?: ILogTreeItem) {
     if (element === undefined) {
       for (const repo of this.model.repositories) {
-        const repoUrl = await repo.getInfo(repo.root);
+        const repoUrl = repo.remoteRoot.toString();
         let persisted = {
           commitFrom: "HEAD"
         };
-        const prev = this.logCache.get(repoUrl.url);
+        const prev = this.logCache.get(repoUrl);
         if (prev) {
           persisted = prev.persisted;
         }
-        this.logCache.set(repoUrl.url, {
+        this.logCache.set(repoUrl, {
           entries: [],
           isComplete: false,
           repo,
-          svnTarget: repoUrl.url,
+          svnTarget: repo.remoteRoot,
           persisted
         });
       }

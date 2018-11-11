@@ -23,7 +23,7 @@ export interface ILogTreeItem {
 export interface ICachedLog {
   entries: ISvnLogEntry[];
   // svn-like path
-  readonly svnTarget: string;
+  readonly svnTarget: Uri;
   isComplete: boolean;
   readonly repo: Repository;
   readonly persisted: {

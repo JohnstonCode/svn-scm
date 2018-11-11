@@ -1,5 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
+import * as util from "util";
 import { commands, Event, window } from "vscode";
 import { Operation } from "./common/types";
 
@@ -185,7 +186,9 @@ export function deleteDirectory(dirPath: string) {
 
 export function unwrap<T>(maybeT?: T): T {
   if (maybeT === undefined) {
-    throw new Error("undefined unwrap");
+    throw new Error(
+      "undefined unwrap of " + util.inspect(maybeT, { depth: 2 })
+    );
   }
   return maybeT;
 }

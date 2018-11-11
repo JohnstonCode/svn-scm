@@ -516,7 +516,11 @@
         },
         {
           "command": "svn.openFileRemote",
-          "when": "view == repolog || view == itemlog"
+          "when": "!(view != repolog && view != itemlog) && viewItem == diffable"
+        },
+        {
+          "command": "svn.openDiff",
+          "when": "!(view != repolog && view != itemlog) && viewItem == diffable"
         }
       ],
       "scm/title": [
