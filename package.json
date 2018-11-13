@@ -47,9 +47,7 @@
     "commit": "npx git-cz"
   },
   "dependencies": {
-    "iconv-lite": "^0.4.23",
     "is-utf8": "^0.2.1",
-    "jschardet": "^1.6.0",
     "minimatch": "^3.0.4",
     "semver": "^5.6.0",
     "tmp": "0.0.33",
@@ -69,7 +67,9 @@
     "decache": "^4.3.0",
     "glob": "^7.1.2",
     "husky": "^1.0.0",
+    "iconv-lite": "^0.4.23",
     "istanbul": "^0.4.5",
+    "jschardet": "^1.6.0",
     "mocha": "^5.2.0",
     "prettier": "^1.14.0",
     "pretty-quick": "^1.6.0",
