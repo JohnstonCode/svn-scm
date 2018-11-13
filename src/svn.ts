@@ -1,9 +1,19 @@
+/**
+ * Load local first, after load the from VSCode modules
+ * == 0 - is svn-scm/out/node_modules
+ * == 1 - is svn-scm/node_modules
+ * == 2 - is vscode folder
+ * >= 3 - parent folders of svn-scm
+ */
+import * as vscode from "vscode";
+module.paths.splice(2, 0, `${vscode.env.appRoot}/node_modules.asar`);
+module.paths.splice(2, 0, `${vscode.env.appRoot}/node_modules`); // VSCode < 1.21.0
+
 import * as cp from "child_process";
 import { EventEmitter } from "events";
 import * as iconv from "iconv-lite";
 import isUtf8 = require("is-utf8");
 import * as jschardet from "jschardet";
-import { Uri, workspace } from "vscode";
 import { ICpOptions, IExecutionResult, ISvnOptions } from "./common/types";
 import { configuration } from "./helpers/configuration";
 import { parseInfoXml } from "./infoParser";
