@@ -1,3 +1,10 @@
+## [1.45.2](https://github.com/JohnstonCode/svn-scm/compare/v1.45.1...v1.45.2) (2018-11-13)
+
+
+### Bug Fixes
+
+* Removed jschardet and iconv-lite from vsix ([#409](https://github.com/JohnstonCode/svn-scm/issues/409)) ([710090a](https://github.com/JohnstonCode/svn-scm/commit/710090a))
+
 ## [1.45.1](https://github.com/JohnstonCode/svn-scm/compare/v1.45.0...v1.45.1) (2018-11-09)
 
 
