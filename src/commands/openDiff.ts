@@ -1,5 +1,6 @@
+import * as fs from "fs";
 import * as path from "path";
-import { commands, TextDocumentShowOptions, Uri } from "vscode";
+import { commands, TextDocumentShowOptions, Uri, window } from "vscode";
 import { Repository } from "../repository";
 import { dumpSvnFile } from "../tempFiles";
 import { Command } from "./command";
@@ -21,10 +22,16 @@ export class OpenDiff extends Command {
   public async execute(repo: Repository, arg: Uri, r1: string, r2: string) {
     const getUri = async (revision: string): Promise<Uri> => {
       if (revision === "BASE") {
-        return getLocalPath(repo, arg);
+        const localPath = getLocalPath(repo, arg);
+        if (!fs.existsSync(localPath.path)) {
+          const errorMsg = "BASE revision doesn't exist for " + localPath.path;
+          window.showErrorMessage(errorMsg);
+          throw new Error(errorMsg);
+        }
+        return localPath;
       }
-      const out = await repo.show(arg, r1);
-      return dumpSvnFile(arg, r1, out);
+      const out = await repo.show(arg, revision);
+      return dumpSvnFile(arg, revision, out);
     };
     const uri1 = await getUri(r1);
     const uri2 = await getUri(r2);

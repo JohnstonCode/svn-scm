@@ -138,6 +138,16 @@
         "title": "Remove"
       },
       {
+        "command": "svn.repolog.openDiff",
+        "category": "Log",
+        "title": "Open diff"
+      },
+      {
+        "command": "svn.repolog.openFileRemote",
+        "category": "Log",
+        "title": "Open this revision"
+      },
+      {
         "command": "svn.itemlog.openFileRemote",
         "title": "Open this revision",
         "category": "SVN"
@@ -542,6 +552,14 @@
           "command": "svn.itemlog.openDiffBase",
           "when": "view == itemlog && viewItem == diffable",
           "group": "1_diff"
+        },
+        {
+          "command": "svn.repolog.openDiff",
+          "when": "view == repolog && viewItem == diffable"
+        },
+        {
+          "command": "svn.repolog.openFileRemote",
+          "when": "view == repolog && viewItem == diffable"
         }
       ],
       "scm/title": [

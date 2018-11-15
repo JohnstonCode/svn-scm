@@ -13,6 +13,7 @@ import {
 } from "vscode";
 import { ISvnLogEntry, ISvnLogEntryPath } from "../common/types";
 import { Model } from "../model";
+import { Repository } from "../repository";
 import { unwrap } from "../util";
 import {
   fetchMore,
@@ -49,6 +50,10 @@ function getActionIcon(action: string) {
   return getIconObject(name);
 }
 
+function elementUri(repo: Repository, itempath: string): Uri {
+  return Uri.parse(repo.remoteRoot.toString() + itempath);
+}
+
 export class RepoLogProvider implements TreeDataProvider<ILogTreeItem> {
   private _onDidChangeTreeData: EventEmitter<
     ILogTreeItem | undefined
@@ -58,19 +63,29 @@ export class RepoLogProvider implements TreeDataProvider<ILogTreeItem> {
   // TODO on-disk cache?
   private readonly logCache: Map<string, ICachedLog> = new Map();
 
+  private getCached(maybeItem?: ILogTreeItem): ICachedLog {
+    const item = unwrap(maybeItem);
+    if (item.data instanceof SvnPath) {
+      return unwrap(this.logCache.get(item.data.toString()));
+    }
+    return this.getCached(item.parent);
+  }
+
   constructor(private model: Model) {
     this.refresh();
     commands.registerCommand("svn.repolog.addrepolike", this.addRepolike, this);
     commands.registerCommand("svn.repolog.remove", this.removeRepo, this);
+    commands.registerCommand(
+      "svn.repolog.openFileRemote",
+      this.openFileRemote,
+      this
+    );
+    commands.registerCommand("svn.repolog.openDiff", this.openDiff, this);
   }
 
-  public removeRepo(element?: any) {
-    if (typeof element === "object" && element.data) {
-      this.logCache.delete(element.data);
-      this.refresh();
-    } else {
-      console.error("Failed to delete " + element);
-    }
+  public removeRepo(element: ILogTreeItem) {
+    this.logCache.delete((element.data as SvnPath).toString());
+    this.refresh();
   }
 
   public addRepolike() {
@@ -129,6 +144,49 @@ export class RepoLogProvider implements TreeDataProvider<ILogTreeItem> {
     box.show();
   }
 
+  public openFileRemote(element: ILogTreeItem) {
+    const commit = element.data as ISvnLogEntryPath;
+    const item = this.getCached(element);
+    const parent = (element.parent as ILogTreeItem).data as ISvnLogEntry;
+    commands.executeCommand(
+      "svn.openFileRemote",
+      item.repo,
+      elementUri(item.repo, commit._),
+      parent.revision
+    );
+  }
+
+  public openDiff(element: ILogTreeItem) {
+    const commit = element.data as ISvnLogEntryPath;
+    const item = this.getCached(element);
+    const parent = (element.parent as ILogTreeItem).data as ISvnLogEntry;
+    const pos = item.entries.findIndex(e => e === parent);
+    let posPrev: number | undefined;
+    for (
+      let i = pos + 1;
+      posPrev === undefined && i < item.entries.length;
+      i++
+    ) {
+      for (const p of item.entries[i].paths) {
+        if (p._ === commit._) {
+          posPrev = i;
+          break;
+        }
+      }
+    }
+    if (posPrev === undefined) {
+      window.showWarningMessage("Cannot find previous commit");
+      return;
+    }
+    commands.executeCommand(
+      "svn.openDiff",
+      item.repo,
+      elementUri(item.repo, commit._),
+      parent.revision,
+      item.entries[posPrev].revision
+    );
+  }
+
   public async refresh(element?: ILogTreeItem) {
     if (element === undefined) {
       for (const repo of this.model.repositories) {
@@ -149,8 +207,7 @@ export class RepoLogProvider implements TreeDataProvider<ILogTreeItem> {
         });
       }
     } else if (element.kind === LogTreeItemKind.Repo) {
-      const repoRoot = element.data as SvnPath;
-      const cached = unwrap(this.logCache.get(repoRoot));
+      const cached = this.getCached(element);
       await fetchMore(cached);
     }
     this._onDidChangeTreeData.fire(element);
@@ -160,8 +217,11 @@ export class RepoLogProvider implements TreeDataProvider<ILogTreeItem> {
     let ti: TreeItem;
     if (element.kind === LogTreeItemKind.Repo) {
       const svnTarget = element.data as SvnPath;
-      const cached = unwrap(this.logCache.get(svnTarget));
-      ti = new TreeItem(svnTarget, TreeItemCollapsibleState.Collapsed);
+      const cached = this.getCached(element);
+      ti = new TreeItem(
+        svnTarget.toString(),
+        TreeItemCollapsibleState.Collapsed
+      );
       if (cached.persisted.userAdded) {
         ti.iconPath = getIconObject("folder");
         ti.contextValue = "userrepo";
@@ -190,6 +250,7 @@ export class RepoLogProvider implements TreeDataProvider<ILogTreeItem> {
       ti = new TreeItem(basename, TreeItemCollapsibleState.None);
       ti.tooltip = path.dirname(pathElem._);
       ti.iconPath = getActionIcon(pathElem.action);
+      ti.contextValue = "diffable";
     } else if (element.kind === LogTreeItemKind.Action) {
       ti = element.data as TreeItem;
     } else {
@@ -203,16 +264,18 @@ export class RepoLogProvider implements TreeDataProvider<ILogTreeItem> {
     element: ILogTreeItem | undefined
   ): Promise<ILogTreeItem[]> {
     if (element === undefined) {
-      return transform(Array.from(this.logCache.keys()), LogTreeItemKind.Repo);
+      return transform(
+        Array.from(this.logCache.keys()).map(s => new SvnPath(s)),
+        LogTreeItemKind.Repo
+      );
     } else if (element.kind === LogTreeItemKind.Repo) {
       const limit = getLimit();
-      const repoRoot = element.data as SvnPath;
-      const cached = unwrap(this.logCache.get(repoRoot));
+      const cached = this.getCached(element);
       const logentries = cached.entries;
       if (logentries.length === 0) {
         await fetchMore(cached);
       }
-      const result = transform(logentries, LogTreeItemKind.Commit);
+      const result = transform(logentries, LogTreeItemKind.Commit, element);
       if (!cached.isComplete) {
         const ti = new TreeItem(`Load another ${limit} revisions`);
         ti.tooltip = "Paging size may be adjusted using log.length setting";
@@ -227,7 +290,7 @@ export class RepoLogProvider implements TreeDataProvider<ILogTreeItem> {
       return result;
     } else if (element.kind === LogTreeItemKind.Commit) {
       const commit = element.data as ISvnLogEntry;
-      return transform(commit.paths, LogTreeItemKind.CommitDetail);
+      return transform(commit.paths, LogTreeItemKind.CommitDetail, element);
     }
     return [];
   }

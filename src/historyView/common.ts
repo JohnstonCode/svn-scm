@@ -13,11 +13,11 @@ export enum LogTreeItemKind {
 }
 
 // svn:// or ^/ or WC-path
-export type SvnPath = string;
-
-export interface ILogTreeItem {
-  readonly kind: LogTreeItemKind;
-  data: ISvnLogEntry | ISvnLogEntryPath | SvnPath | TreeItem;
+export class SvnPath {
+  constructor(private path: string) {}
+  public toString(): string {
+    return this.path;
+  }
 }
 
 export interface ICachedLog {
@@ -31,10 +31,19 @@ export interface ICachedLog {
     readonly userAdded?: boolean;
   };
 }
+export interface ILogTreeItem {
+  readonly kind: LogTreeItemKind;
+  data: ISvnLogEntry | ISvnLogEntryPath | SvnPath | TreeItem;
+  readonly parent?: ILogTreeItem;
+}
 
-export function transform(array: any[], kind: LogTreeItemKind): ILogTreeItem[] {
+export function transform(
+  array: Array<ISvnLogEntry | ISvnLogEntryPath | SvnPath | TreeItem>,
+  kind: LogTreeItemKind,
+  parent?: ILogTreeItem
+): ILogTreeItem[] {
   return array.map(data => {
-    return { kind, data };
+    return { kind, data, parent };
   });
 }
 
@@ -117,7 +126,7 @@ export function getCommitIcon(
   author: string,
   size: number = 16
 ): Uri | { light: Uri; dark: Uri } {
-  if (configuration.get("svn.gravatars.enabled", true) as boolean) {
+  if (!configuration.get("gravatars.enabled", true) as boolean) {
     return getIconObject("icon-commit");
   }
 
