@@ -11,6 +11,7 @@ import {
 } from "vscode";
 import { ISvnLogEntry, Status } from "../common/types";
 import { Model } from "../model";
+import { tempdir } from "../tempFiles";
 import { unwrap } from "../util";
 import {
   fetchMore,
@@ -45,8 +46,8 @@ export class ItemLogProvider implements TreeDataProvider<ILogTreeItem> {
     this.refresh();
   }
 
-  public openFileRemote(element: any) {
-    const commit = (element as ILogTreeItem).data as ISvnLogEntry;
+  public openFileRemote(element: ILogTreeItem) {
+    const commit = element.data as ISvnLogEntry;
     const item = unwrap(this.currentItem);
     commands.executeCommand(
       "svn.openFileRemote",
@@ -56,8 +57,8 @@ export class ItemLogProvider implements TreeDataProvider<ILogTreeItem> {
     );
   }
 
-  public openDiff(element: any) {
-    const commit = (element as ILogTreeItem).data as ISvnLogEntry;
+  public openDiff(element: ILogTreeItem) {
+    const commit = element.data as ISvnLogEntry;
     const item = unwrap(this.currentItem);
     const pos = item.entries.findIndex(e => e === commit);
     if (pos === item.entries.length - 1) {
@@ -89,13 +90,15 @@ export class ItemLogProvider implements TreeDataProvider<ILogTreeItem> {
       return;
     }
 
-    this.currentItem = undefined;
     if (te === undefined) {
       te = window.activeTextEditor;
     }
     if (te) {
       const uri = te.document.uri;
       if (uri.scheme === "file") {
+        if (uri.path.startsWith(tempdir)) {
+          return; // do not refresh if diff was called
+        }
         const repo = this.model.getRepository(uri);
         if (repo !== undefined) {
           try {
@@ -114,8 +117,8 @@ export class ItemLogProvider implements TreeDataProvider<ILogTreeItem> {
           }
         }
       }
+      this._onDidChangeTreeData.fire(element);
     }
-    this._onDidChangeTreeData.fire(element);
   }
 
   public async getTreeItem(element: ILogTreeItem): Promise<TreeItem> {
@@ -127,9 +130,9 @@ export class ItemLogProvider implements TreeDataProvider<ILogTreeItem> {
       ti.iconPath = getGravatarUri(commit.author);
       ti.contextValue = "diffable";
       ti.command = {
-        command: "svn.openFileRemote",
+        command: "svn.itemlog.openDiff",
         title: "Open diff",
-        arguments: [cached.repo, cached.svnTarget, commit.revision]
+        arguments: [element]
       };
     } else if (element.kind === LogTreeItemKind.Action) {
       ti = element.data as TreeItem;

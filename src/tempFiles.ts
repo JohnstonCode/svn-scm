@@ -7,12 +7,13 @@ import { Uri } from "vscode";
 
 const writeFile = util.promisify(fs.writeFile);
 
+export const tempdir = path.join(os.tmpdir(), "vscode-svm");
+
 export async function dumpSvnFile(
   snvUri: Uri,
   revision: string,
   payload: string
 ): Promise<Uri> {
-  const tempdir = path.join(os.tmpdir(), "vscode-svm");
   if (!fs.existsSync(tempdir)) {
     await fs.mkdirSync(tempdir);
   }
