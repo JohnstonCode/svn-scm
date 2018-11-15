@@ -49,7 +49,7 @@ function getActionIcon(action: string) {
   return getIconObject(name);
 }
 
-export class LogProvider implements TreeDataProvider<ILogTreeItem> {
+export class RepoLogProvider implements TreeDataProvider<ILogTreeItem> {
   private _onDidChangeTreeData: EventEmitter<
     ILogTreeItem | undefined
   > = new EventEmitter<ILogTreeItem | undefined>();

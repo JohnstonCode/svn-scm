@@ -84,6 +84,7 @@ export class ItemLogProvider implements TreeDataProvider<ILogTreeItem> {
     te?: TextEditor,
     loadMore?: boolean
   ) {
+    // TODO maybe make autorefresh optionable?
     if (loadMore) {
       await fetchMore(unwrap(this.currentItem));
       this._onDidChangeTreeData.fire(element);

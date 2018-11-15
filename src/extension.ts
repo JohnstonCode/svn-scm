@@ -12,7 +12,7 @@ import { ConstructorPolicy } from "./common/types";
 import SvnDecorations from "./decorations/svnDecorations";
 import { configuration } from "./helpers/configuration";
 import { ItemLogProvider } from "./historyView/itemLogProvider";
-import { LogProvider } from "./historyView/logProvider";
+import { RepoLogProvider } from "./historyView/repoLogProvider";
 import { Model } from "./model";
 import { Svn } from "./svn";
 import { SvnContentProvider } from "./svnContentProvider";
@@ -47,7 +47,7 @@ async function init(
 
   window.registerTreeDataProvider("svn", svnProvider);
 
-  const logProvider = new LogProvider(model);
+  const logProvider = new RepoLogProvider(model);
   window.registerTreeDataProvider("repolog", logProvider);
   commands.registerCommand(
     "svn.repolog.refresh",
