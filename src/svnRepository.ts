@@ -3,6 +3,7 @@ import * as path from "path";
 import * as tmp from "tmp";
 import { Uri, workspace } from "vscode";
 import {
+  ConstructorPolicy,
   ICpOptions,
   IExecutionResult,
   IFileStatus,
@@ -30,12 +31,17 @@ export class Repository {
   constructor(
     private svn: Svn,
     public root: string,
-    public workspaceRoot: string
-  ) {}
-
-  public async init() {
-    const result = await this.exec(["info", "--xml", this.root]);
-    this._info = await parseInfoXml(result.stdout);
+    public workspaceRoot: string,
+    policy: ConstructorPolicy
+  ) {
+    if (policy !== ConstructorPolicy.Async) {
+      throw new Error("Unsupported");
+    }
+    return ((async (): Promise<Repository> => {
+      const result = await this.exec(["info", "--xml", this.root]);
+      this._info = await parseInfoXml(result.stdout);
+      return this;
+    })() as unknown) as Repository;
   }
 
   public async exec(

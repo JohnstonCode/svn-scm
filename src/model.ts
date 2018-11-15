@@ -13,6 +13,7 @@ import {
   WorkspaceFoldersChangeEvent
 } from "vscode";
 import {
+  ConstructorPolicy,
   IModelChangeEvent,
   IOpenRepository,
   RepositoryState,
@@ -47,7 +48,7 @@ export class Model implements IDisposable {
 
   public openRepositories: IOpenRepository[] = [];
   private disposables: Disposable[] = [];
-  private _enabled = false;
+  private enabled = false;
   private possibleSvnRepositoryPaths = new Set<string>();
   private ignoreList: string[] = [];
   private maxDepth: number = 0;
@@ -62,17 +63,23 @@ export class Model implements IDisposable {
     return this._svn;
   }
 
-  get enabled(): boolean {
-    return this._enabled;
-  }
-
-  constructor(private _svn: Svn) {
-    this._enabled = configuration.get<boolean>("enabled") === true;
+  constructor(private _svn: Svn, policy: ConstructorPolicy) {
+    if (policy !== ConstructorPolicy.Async) {
+      throw new Error("Unsopported policy");
+    }
+    this.enabled = configuration.get<boolean>("enabled") === true;
 
     this.configurationChangeDisposable = workspace.onDidChangeConfiguration(
       this.onDidChangeConfiguration,
       this
     );
+
+    return ((async (): Promise<Model> => {
+      if (this.enabled) {
+        await this.enable();
+      }
+      return this;
+    })() as unknown) as Model;
   }
 
   private onDidChangeConfiguration(): void {
@@ -80,11 +87,11 @@ export class Model implements IDisposable {
 
     this.maxDepth = configuration.get<number>("multipleFolders.depth", 0);
 
-    if (enabled === this._enabled) {
+    if (enabled === this.enabled) {
       return;
     }
 
-    this._enabled = enabled;
+    this.enabled = enabled;
 
     if (enabled) {
       this.enable();
@@ -93,7 +100,7 @@ export class Model implements IDisposable {
     }
   }
 
-  public async enable() {
+  private async enable() {
     const multipleFolders = configuration.get<boolean>(
       "multipleFolders.enabled",
       false

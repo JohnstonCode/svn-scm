@@ -1,5 +1,5 @@
 import * as assert from "assert";
-import { ICpOptions, ISvnOptions } from "../common/types";
+import { ConstructorPolicy, ICpOptions, ISvnOptions } from "../common/types";
 import { Svn } from "../svn";
 import { Repository } from "../svnRepository";
 
@@ -20,7 +20,12 @@ suite("Svn Repository Tests", () => {
 
   test("Test getStatus", async () => {
     svn = new Svn(options);
-    const repository = new Repository(svn, "/tmp", "/tpm");
+    const repository = await new Repository(
+      svn,
+      "/tmp",
+      "/tpm",
+      ConstructorPolicy.Async
+    );
     repository.exec = async (args: string[], options?: ICpOptions) => {
       return {
         exitCode: 1,
@@ -38,7 +43,12 @@ suite("Svn Repository Tests", () => {
 
   test("Test rename", async () => {
     svn = new Svn(options);
-    const repository = new Repository(svn, "/tmp", "/tpm");
+    const repository = await new Repository(
+      svn,
+      "/tmp",
+      "/tpm",
+      ConstructorPolicy.Async
+    );
     repository.exec = async (args: string[], options?: ICpOptions) => {
       assert.equal(args[0].includes("rename"), true);
       assert.equal(args[1].includes("test.php"), true);

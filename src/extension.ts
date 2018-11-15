@@ -8,6 +8,7 @@ import {
   window
 } from "vscode";
 import { registerCommands } from "./commands";
+import { ConstructorPolicy } from "./common/types";
 import SvnDecorations from "./decorations/svnDecorations";
 import { configuration } from "./helpers/configuration";
 import { ItemLogProvider } from "./historyView/itemLogProvider";
@@ -35,10 +36,7 @@ async function init(
 
   const info = await svnFinder.findSvn(pathHint);
   const svn = new Svn({ svnPath: info.path, version: info.version });
-  const model = new Model(svn);
-  if (model.enabled) {
-    await model.enable();
-  }
+  const model = await new Model(svn, ConstructorPolicy.Async);
   const contentProvider = new SvnContentProvider(model);
 
   registerCommands(model, disposables);
