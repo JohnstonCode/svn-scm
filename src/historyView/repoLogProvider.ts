@@ -16,6 +16,7 @@ import { Model } from "../model";
 import { Repository } from "../repository";
 import { unwrap } from "../util";
 import {
+  checkIfFile,
   fetchMore,
   getCommitIcon,
   getCommitLabel,
@@ -146,6 +147,9 @@ export class RepoLogProvider implements TreeDataProvider<ILogTreeItem> {
 
   public openFileRemote(element: ILogTreeItem) {
     const commit = element.data as ISvnLogEntryPath;
+    if (!checkIfFile(commit)) {
+      return;
+    }
     const item = this.getCached(element);
     const parent = (element.parent as ILogTreeItem).data as ISvnLogEntry;
     commands.executeCommand(
@@ -158,6 +162,9 @@ export class RepoLogProvider implements TreeDataProvider<ILogTreeItem> {
 
   public openDiff(element: ILogTreeItem) {
     const commit = element.data as ISvnLogEntryPath;
+    if (!checkIfFile(commit)) {
+      return;
+    }
     const item = this.getCached(element);
     const parent = (element.parent as ILogTreeItem).data as ISvnLogEntry;
     const pos = item.entries.findIndex(e => e === parent);

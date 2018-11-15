@@ -1,6 +1,6 @@
 import { createHash } from "crypto";
 import * as path from "path";
-import { TreeItem, Uri } from "vscode";
+import { TreeItem, Uri, window } from "vscode";
 import { ISvnLogEntry, ISvnLogEntryPath } from "../common/types";
 import { configuration } from "../helpers/configuration";
 import { Repository } from "../repository";
@@ -77,6 +77,14 @@ function needFetch(
     return false;
   }
   if (fetched.length < limit) {
+    return false;
+  }
+  return true;
+}
+
+export function checkIfFile(e: ISvnLogEntryPath): boolean {
+  if (e.kind !== "file") {
+    window.showErrorMessage("This target is not a file");
     return false;
   }
   return true;
