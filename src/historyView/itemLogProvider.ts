@@ -15,8 +15,8 @@ import { tempdir } from "../tempFiles";
 import { unwrap } from "../util";
 import {
   fetchMore,
+  getCommitIcon,
   getCommitLabel,
-  getGravatarUri,
   getIconObject,
   getLimit,
   ICachedLog,
@@ -127,7 +127,7 @@ export class ItemLogProvider implements TreeDataProvider<ILogTreeItem> {
       const cached = unwrap(this.currentItem);
       const commit = element.data as ISvnLogEntry;
       ti = new TreeItem(getCommitLabel(commit), TreeItemCollapsibleState.None);
-      ti.iconPath = getGravatarUri(commit.author);
+      ti.iconPath = getCommitIcon(commit.author);
       ti.contextValue = "diffable";
       ti.command = {
         command: "svn.itemlog.openDiff",

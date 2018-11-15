@@ -16,8 +16,8 @@ import { Model } from "../model";
 import { unwrap } from "../util";
 import {
   fetchMore,
+  getCommitIcon,
   getCommitLabel,
-  getGravatarUri,
   getIconObject,
   getLimit,
   ICachedLog,
@@ -183,7 +183,7 @@ export class LogProvider implements TreeDataProvider<ILogTreeItem> {
       ti.tooltip = `Author ${commit.author}\n${date}\nRevision ${
         commit.revision
       }`;
-      ti.iconPath = getGravatarUri(commit.author);
+      ti.iconPath = getCommitIcon(commit.author);
     } else if (element.kind === LogTreeItemKind.CommitDetail) {
       const pathElem = element.data as ISvnLogEntryPath;
       const basename = path.basename(pathElem._);

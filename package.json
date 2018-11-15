@@ -949,6 +949,11 @@
           "type": "boolean",
           "description": "Refresh remote changes on refresh command",
           "default": false
+        },
+        "svn.gravatars.enabled": {
+          "type": "boolean",
+          "description": "Use garavatar icons in log viewers",
+          "default": true
         }
       }
     }

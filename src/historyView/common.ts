@@ -39,7 +39,7 @@ export function transform(array: any[], kind: LogTreeItemKind): ILogTreeItem[] {
 }
 
 // XXX code duplication with uri.ts. Maybe use full path?
-export function getIconObject(iconName: string) {
+export function getIconObject(iconName: string): { light: Uri; dark: Uri } {
   const iconsRootPath = path.join(__dirname, "..", "..", "icons");
   const toUri = (theme: string) =>
     Uri.file(path.join(iconsRootPath, theme, `${iconName}.svg`));
@@ -113,7 +113,14 @@ function md5(s: string): string {
   return data.digest().toString("hex");
 }
 
-export function getGravatarUri(author: string, size: number = 16): Uri {
+export function getCommitIcon(
+  author: string,
+  size: number = 16
+): Uri | { light: Uri; dark: Uri } {
+  if (configuration.get("svn.gravatars.enabled", true) as boolean) {
+    return getIconObject("icon-commit");
+  }
+
   let gravatar = gravatarCache.get(author);
   if (gravatar !== undefined) {
     return gravatar;
