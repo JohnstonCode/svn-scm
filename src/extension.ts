@@ -11,6 +11,7 @@ import { registerCommands } from "./commands";
 import { ConstructorPolicy } from "./common/types";
 import SvnDecorations from "./decorations/svnDecorations";
 import { configuration } from "./helpers/configuration";
+import { copyCommitToClipboard, ILogTreeItem } from "./historyView/common";
 import { ItemLogProvider } from "./historyView/itemLogProvider";
 import { RepoLogProvider } from "./historyView/repoLogProvider";
 import { Model } from "./model";
@@ -49,18 +50,12 @@ async function init(
 
   const logProvider = new RepoLogProvider(model);
   window.registerTreeDataProvider("repolog", logProvider);
-  commands.registerCommand(
-    "svn.repolog.refresh",
-    logProvider.refresh,
-    logProvider
-  );
 
   const itemLogProvider = new ItemLogProvider(model);
   window.registerTreeDataProvider("itemlog", itemLogProvider);
-  commands.registerCommand(
-    "svn.itemlog.refresh",
-    itemLogProvider.refresh,
-    itemLogProvider
+
+  commands.registerCommand("svn.itemlog.copymsg", async (item: ILogTreeItem) =>
+    copyCommitToClipboard("msg", item)
   );
 
   // First, check the vscode has support to DecorationProvider

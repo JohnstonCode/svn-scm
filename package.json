@@ -172,6 +172,11 @@
         }
       },
       {
+        "command": "svn.itemlog.copymsg",
+        "category": "Log",
+        "title": "Copy message to clipboard"
+      },
+      {
         "command": "svn.checkout",
         "title": "Checkout",
         "category": "SVN"

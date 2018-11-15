@@ -48,6 +48,7 @@ export class ItemLogProvider implements TreeDataProvider<ILogTreeItem> {
       this.openDiffBase,
       this
     );
+    commands.registerCommand("svn.itemlog.refresh", this.refresh, this);
     this.refresh();
   }
 

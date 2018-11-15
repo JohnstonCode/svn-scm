@@ -82,6 +82,7 @@ export class RepoLogProvider implements TreeDataProvider<ILogTreeItem> {
       this
     );
     commands.registerCommand("svn.repolog.openDiff", this.openDiff, this);
+    commands.registerCommand("svn.repolog.refresh", this.refresh, this);
   }
 
   public removeRepo(element: ILogTreeItem) {
@@ -251,6 +252,7 @@ export class RepoLogProvider implements TreeDataProvider<ILogTreeItem> {
         commit.revision
       }`;
       ti.iconPath = getCommitIcon(commit.author);
+      ti.contextValue = "commit";
     } else if (element.kind === LogTreeItemKind.CommitDetail) {
       const pathElem = element.data as ISvnLogEntryPath;
       const basename = path.basename(pathElem._);

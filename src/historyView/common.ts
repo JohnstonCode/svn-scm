@@ -1,6 +1,6 @@
 import { createHash } from "crypto";
 import * as path from "path";
-import { TreeItem, Uri, window } from "vscode";
+import { env, TreeItem, Uri, window } from "vscode";
 import { ISvnLogEntry, ISvnLogEntryPath } from "../common/types";
 import { configuration } from "../helpers/configuration";
 import { Repository } from "../repository";
@@ -63,6 +63,17 @@ export function svnFullPathToUri(
   repo: Repository
 ): Uri {
   return Uri.parse(`svn://${repo.root}${path._}`); // FIXME root -> svnRoot
+}
+
+export async function copyCommitToClipboard(what: string, item: ILogTreeItem) {
+  if (item.kind === LogTreeItemKind.Commit) {
+    const commit = item.data as ISvnLogEntry;
+    switch (what) {
+      case "msg":
+      case "revision":
+        await env.clipboard.writeText(commit[what]);
+    }
+  }
 }
 
 function needFetch(

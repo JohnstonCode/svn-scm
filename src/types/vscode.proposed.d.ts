@@ -229,4 +229,13 @@ declare module "vscode" {
      */
     export let console: DebugConsole;
   }
+
+  export interface Clipboard {
+    readText(): Thenable<string>;
+    writeText(value: string): Thenable<void>;
+  }
+
+  export namespace env {
+    export const clipboard: Clipboard;
+  }
 }
