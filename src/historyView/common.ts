@@ -31,14 +31,17 @@ export interface ICachedLog {
     readonly userAdded?: boolean;
   };
 }
+
+type TreeItemData = ISvnLogEntry | ISvnLogEntryPath | SvnPath | TreeItem;
+
 export interface ILogTreeItem {
   readonly kind: LogTreeItemKind;
-  data: ISvnLogEntry | ISvnLogEntryPath | SvnPath | TreeItem;
+  data: TreeItemData;
   readonly parent?: ILogTreeItem;
 }
 
 export function transform(
-  array: Array<ISvnLogEntry | ISvnLogEntryPath | SvnPath | TreeItem>,
+  array: TreeItemData[],
   kind: LogTreeItemKind,
   parent?: ILogTreeItem
 ): ILogTreeItem[] {
