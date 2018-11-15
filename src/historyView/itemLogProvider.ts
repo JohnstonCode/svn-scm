@@ -43,6 +43,11 @@ export class ItemLogProvider implements TreeDataProvider<ILogTreeItem> {
       this
     );
     commands.registerCommand("svn.itemlog.openDiff", this.openDiff, this);
+    commands.registerCommand(
+      "svn.itemlog.openDiffBase",
+      this.openDiffBase,
+      this
+    );
     this.refresh();
   }
 
@@ -54,6 +59,18 @@ export class ItemLogProvider implements TreeDataProvider<ILogTreeItem> {
       item.repo,
       item.svnTarget,
       commit.revision
+    );
+  }
+
+  public openDiffBase(element: ILogTreeItem) {
+    const commit = element.data as ISvnLogEntry;
+    const item = unwrap(this.currentItem);
+    commands.executeCommand(
+      "svn.openDiff",
+      item.repo,
+      item.svnTarget,
+      commit.revision,
+      "BASE"
     );
   }
 

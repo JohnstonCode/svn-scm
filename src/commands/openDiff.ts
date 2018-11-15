@@ -1,7 +1,17 @@
+import * as path from "path";
 import { commands, TextDocumentShowOptions, Uri } from "vscode";
 import { Repository } from "../repository";
 import { dumpSvnFile } from "../tempFiles";
 import { Command } from "./command";
+
+function getLocalPath(repo: Repository, svnUri: Uri): Uri {
+  const remotePath = svnUri.path;
+  const repoRootRelative = path.relative(repo.remoteRoot.path, remotePath);
+  const fromRepoToWS = path.relative(repo.root, repo.workspaceRoot);
+  return Uri.file(
+    path.join(repo.workspaceRoot, fromRepoToWS, repoRootRelative)
+  );
+}
 
 export class OpenDiff extends Command {
   constructor() {
@@ -9,10 +19,15 @@ export class OpenDiff extends Command {
   }
 
   public async execute(repo: Repository, arg: Uri, r1: string, r2: string) {
-    const out1 = await repo.show(arg, r1);
-    const uri1 = await dumpSvnFile(arg, r1, out1);
-    const out2 = await repo.show(arg, r2);
-    const uri2 = await dumpSvnFile(arg, r2, out2);
+    const getUri = async (revision: string): Promise<Uri> => {
+      if (revision === "BASE") {
+        return getLocalPath(repo, arg);
+      }
+      const out = await repo.show(arg, r1);
+      return dumpSvnFile(arg, r1, out);
+    };
+    const uri1 = await getUri(r1);
+    const uri2 = await getUri(r2);
     const opts: TextDocumentShowOptions = {
       preview: true
     };

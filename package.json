@@ -148,6 +148,11 @@
         "category": "SVN"
       },
       {
+        "command": "svn.itemlog.openDiffBase",
+        "title": "Open diff with BASE",
+        "category": "SVN"
+      },
+      {
         "command": "svn.itemlog.refresh",
         "category": "Log",
         "title": "Refresh log for item",
@@ -526,11 +531,17 @@
         },
         {
           "command": "svn.itemlog.openFileRemote",
-          "when": "!(view != repolog && view != itemlog) && viewItem == diffable"
+          "when": "view == itemlog && viewItem == diffable"
         },
         {
           "command": "svn.itemlog.openDiff",
-          "when": "!(view != repolog && view != itemlog) && viewItem == diffable"
+          "when": "view == itemlog && viewItem == diffable",
+          "group": "1_diff"
+        },
+        {
+          "command": "svn.itemlog.openDiffBase",
+          "when": "view == itemlog && viewItem == diffable",
+          "group": "1_diff"
         }
       ],
       "scm/title": [

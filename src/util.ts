@@ -186,9 +186,7 @@ export function deleteDirectory(dirPath: string) {
 
 export function unwrap<T>(maybeT?: T): T {
   if (maybeT === undefined) {
-    throw new Error(
-      "undefined unwrap of " + util.inspect(maybeT, { depth: 2 })
-    );
+    throw new Error("undefined unwrap");
   }
   return maybeT;
 }
