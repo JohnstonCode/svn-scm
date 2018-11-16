@@ -19,6 +19,7 @@ import {
   IAuth,
   IFileStatus,
   IOperations,
+  ISvnInfo,
   ISvnResourceGroup,
   Operation,
   RepositoryState,
@@ -48,6 +49,7 @@ function shouldShowProgress(operation: Operation): boolean {
   switch (operation) {
     case Operation.CurrentBranch:
     case Operation.Show:
+    case Operation.Info:
       return false;
     default:
       return true;
@@ -139,6 +141,11 @@ export class Repository {
 
   get workspaceRoot(): string {
     return this.repository.workspaceRoot;
+  }
+
+  @memoize
+  get remoteRoot(): Uri {
+    return Uri.parse(this.repository.info.url);
   }
 
   get inputBox(): SourceControlInputBox {
@@ -741,7 +748,10 @@ export class Repository {
     return this.run(Operation.Status);
   }
 
-  public async show(filePath: string, revision?: string): Promise<string> {
+  public async show(
+    filePath: string | Uri,
+    revision?: string
+  ): Promise<string> {
     return this.run<string>(Operation.Show, () => {
       return this.repository.show(filePath, revision);
     });
@@ -840,8 +850,25 @@ export class Repository {
     return this.run(Operation.Log, () => this.repository.log());
   }
 
+  public async log2(
+    rfrom: string,
+    rto: string,
+    limit: number,
+    target?: string | Uri
+  ) {
+    return this.run(Operation.Log, () =>
+      this.repository.log2(rfrom, rto, limit, target)
+    );
+  }
+
   public async cleanup() {
     return this.run(Operation.CleanUp, () => this.repository.cleanup());
+  }
+
+  public async getInfo(path: string, revision?: string): Promise<ISvnInfo> {
+    return this.run(Operation.Info, () =>
+      this.repository.getInfo(path, revision, true)
+    );
   }
 
   public async finishCheckout() {

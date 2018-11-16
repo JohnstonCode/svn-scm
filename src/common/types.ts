@@ -3,6 +3,12 @@ import { Disposable, SourceControlResourceGroup, Uri } from "vscode";
 import { Repository } from "../repository";
 import { Resource } from "../resource";
 
+// Marker for constructors returingn Promise
+export enum ConstructorPolicy {
+  Async,
+  LateInit
+}
+
 export interface IBranchItem {
   name: string;
   path: string;
@@ -88,6 +94,7 @@ export enum Operation {
   CleanUp = "CleanUp",
   Commit = "Commit",
   CurrentBranch = "CurrentBranch",
+  Info = "Info",
   Ignore = "Ignore",
   Log = "Log",
   NewBranch = "NewBranch",
@@ -255,4 +262,21 @@ export interface IOperations {
 export interface IAuth {
   username: string;
   password: string;
+}
+
+export interface ISvnLogEntryPath {
+  // full path
+  _: string;
+  // A | D | M | R
+  action: string;
+  // "file" e.g.
+  kind: string;
+}
+
+export interface ISvnLogEntry {
+  revision: string;
+  author: string;
+  date: string;
+  msg: string;
+  paths: ISvnLogEntryPath[];
 }
