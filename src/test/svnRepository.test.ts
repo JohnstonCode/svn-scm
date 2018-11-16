@@ -24,7 +24,7 @@ suite("Svn Repository Tests", () => {
       svn,
       "/tmp",
       "/tpm",
-      ConstructorPolicy.Async
+      ConstructorPolicy.LateInit
     );
     repository.exec = async (args: string[], options?: ICpOptions) => {
       return {
@@ -47,7 +47,7 @@ suite("Svn Repository Tests", () => {
       svn,
       "/tmp",
       "/tpm",
-      ConstructorPolicy.Async
+      ConstructorPolicy.LateInit
     );
     repository.exec = async (args: string[], options?: ICpOptions) => {
       assert.equal(args[0].includes("rename"), true);

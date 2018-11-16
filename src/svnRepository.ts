@@ -34,8 +34,8 @@ export class Repository {
     public workspaceRoot: string,
     policy: ConstructorPolicy
   ) {
-    if (policy !== ConstructorPolicy.Async) {
-      throw new Error("Unsupported");
+    if (policy === ConstructorPolicy.LateInit) {
+      return;
     }
     return ((async (): Promise<Repository> => {
       const result = await this.exec(["info", "--xml", this.root]);
@@ -176,7 +176,7 @@ export class Repository {
         !["BASE", "COMMITTED", "PREV"].includes(revision.toUpperCase())
       ) {
         const info = await this.getInfo();
-        target = info.url + "/" + file.replace(/\\/g, "/");
+        target = info.url + "/" + path.basename(file);
       }
     }
 
