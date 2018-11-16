@@ -6,7 +6,7 @@ import { Repository } from "../svnRepository";
 suite("Svn Repository Tests", () => {
   let svn: Svn | null;
   const options = {
-    svnPath: "/bin/svn",
+    svnPath: "svn",
     version: "1.9"
   } as ISvnOptions;
 

@@ -14,6 +14,7 @@ import { EventEmitter } from "events";
 import * as iconv from "iconv-lite";
 import isUtf8 = require("is-utf8");
 import * as jschardet from "jschardet";
+import * as proc from "process";
 import { Uri, workspace } from "vscode";
 import {
   ConstructorPolicy,
@@ -115,7 +116,13 @@ export class Svn {
     let encoding = options.encoding || "utf8";
     delete options.encoding;
 
-    const process = cp.spawn(this.svnPath, args, options);
+    const defaults: cp.SpawnOptions = {
+      env: proc.env
+    };
+    if (cwd) {
+      defaults.cwd = cwd;
+    }
+    const process = cp.spawn(this.svnPath, args, defaults);
 
     const disposables: IDisposable[] = [];
 
