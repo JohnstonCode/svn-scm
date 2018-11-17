@@ -143,6 +143,7 @@ export class Repository {
     return this.repository.workspaceRoot;
   }
 
+  /** 'svn://repo.x/' e.g. */
   @memoize
   get remoteRoot(): Uri {
     return Uri.parse(this.repository.info.url);
@@ -846,18 +847,18 @@ export class Repository {
     );
   }
 
-  public async log() {
-    return this.run(Operation.Log, () => this.repository.log());
+  public async plainLog() {
+    return this.run(Operation.Log, () => this.repository.plainLog());
   }
 
-  public async log2(
+  public async log(
     rfrom: string,
     rto: string,
     limit: number,
     target?: string | Uri
   ) {
     return this.run(Operation.Log, () =>
-      this.repository.log2(rfrom, rto, limit, target)
+      this.repository.log(rfrom, rto, limit, target)
     );
   }
 

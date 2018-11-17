@@ -3,7 +3,7 @@ import { Disposable, SourceControlResourceGroup, Uri } from "vscode";
 import { Repository } from "../repository";
 import { Resource } from "../resource";
 
-// Marker for constructors returingn Promise
+/** Marker for constructors returning Promise<this> */
 export enum ConstructorPolicy {
   Async,
   LateInit
@@ -265,14 +265,15 @@ export interface IAuth {
 }
 
 export interface ISvnLogEntryPath {
-  // full path
+  /** full path from repo root */
   _: string;
-  // A | D | M | R
+  /** A | D | M | R */
   action: string;
-  // "file" e.g.
+  /** "file" | "dir" e.g. */
   kind: string;
 }
 
+/** produced by svn log */
 export interface ISvnLogEntry {
   revision: string;
   author: string;

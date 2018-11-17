@@ -488,7 +488,7 @@ export class Repository {
     return result.stdout;
   }
 
-  public async log(): Promise<string> {
+  public async plainLog(): Promise<string> {
     const logLength = configuration.get<string>("log.length") || "50";
     const result = await this.exec([
       "log",
@@ -501,7 +501,7 @@ export class Repository {
     return result.stdout;
   }
 
-  public async log2(
+  public async log(
     rfrom: string,
     rto: string,
     limit: number,
