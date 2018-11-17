@@ -449,10 +449,12 @@ export class Repository {
     );
 
     const statuses =
-      (await this.repository.getStatus({
-        includeIgnored: true,
-        includeExternals: combineExternal,
-        checkRemoteChanges
+      (await this.retryRun(async () => {
+        return await this.repository.getStatus({
+          includeIgnored: true,
+          includeExternals: combineExternal,
+          checkRemoteChanges
+        });
       })) || [];
 
     const fileConfig = workspace.getConfiguration("files", Uri.file(this.root));

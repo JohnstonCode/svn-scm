@@ -106,6 +106,9 @@ export class Svn {
       args.push("--password", options.password);
     }
 
+    // Force non interactive environment
+    args.push("--non-interactive");
+
     let encoding = options.encoding || "utf8";
     delete options.encoding;
 
