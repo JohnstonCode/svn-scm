@@ -395,6 +395,21 @@ export class Model implements IDisposable {
     return undefined;
   }
 
+  public async getRepositoryFromUri(uri: Uri) {
+    for (const liveRepository of this.openRepositories) {
+      const repository = liveRepository.repository;
+
+      try {
+        const path = normalizePath(uri.fsPath);
+        const info = await repository.info(path);
+
+        return repository;
+      } catch (error) {
+        console.error();
+      }
+    }
+  }
+
   private open(repository: Repository): void {
     const onDidDisappearRepository = filterEvent(
       repository.onDidChangeState,
