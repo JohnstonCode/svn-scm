@@ -22,7 +22,7 @@ import { Svn } from "./svn";
 import { fixPathSeparator, unwrap } from "./util";
 
 export class Repository {
-  private _infos: { [index: string]: ISvnInfo } = {};
+  private _infoCache: { [index: string]: ISvnInfo } = {};
   private _info?: ISvnInfo;
 
   public username?: string;
@@ -121,7 +121,7 @@ export class Repository {
   }
 
   public resetInfo(file: string = "") {
-    delete this._infos[file];
+    delete this._infoCache[file];
   }
 
   @sequentialize
@@ -130,8 +130,8 @@ export class Repository {
     revision?: string,
     skipCache: boolean = false
   ): Promise<ISvnInfo> {
-    if (!skipCache && this._infos[file]) {
-      return this._infos[file];
+    if (!skipCache && this._infoCache[file]) {
+      return this._infoCache[file];
     }
 
     const args = ["info", "--xml"];
@@ -147,14 +147,14 @@ export class Repository {
 
     const result = await this.exec(args);
 
-    this._infos[file] = await parseInfoXml(result.stdout);
+    this._infoCache[file] = await parseInfoXml(result.stdout);
 
     // Cache for 2 minutes
     setTimeout(() => {
       this.resetInfo(file);
     }, 2 * 60 * 1000);
 
-    return this._infos[file];
+    return this._infoCache[file];
   }
 
   public async show(

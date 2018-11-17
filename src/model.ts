@@ -326,7 +326,7 @@ export class Model implements IDisposable {
     const mm = new Minimatch("*");
     const newLevel = level + 1;
     if (newLevel <= this.maxDepth) {
-      await fs.readdirSync(path).forEach(async file => {
+      for (const file of fs.readdirSync(path)) {
         const dir = path + "/" + file;
 
         if (
@@ -335,10 +335,8 @@ export class Model implements IDisposable {
         ) {
           await this.tryOpenRepository(dir, newLevel);
         }
-      });
+      }
     }
-
-    return;
   }
 
   public getRepository(hint: any) {
