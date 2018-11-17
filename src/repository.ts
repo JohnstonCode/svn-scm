@@ -545,7 +545,8 @@ export class Repository {
 
       if (
         (status.status === Status.NORMAL || status.status === Status.NONE) &&
-        (status.props === Status.NORMAL || status.props === Status.NONE)
+        (status.props === Status.NORMAL || status.props === Status.NONE) &&
+        !status.changelist
       ) {
         // Ignore non changed itens
         continue;
@@ -572,17 +573,15 @@ export class Repository {
         } else {
           unversioned.push(resource);
         }
-      } else {
-        if (!status.changelist) {
-          changes.push(resource);
-        } else {
-          let changelist = changelists.get(status.changelist);
-          if (!changelist) {
-            changelist = [];
-          }
-          changelist.push(resource);
-          changelists.set(status.changelist, changelist);
+      } else if (status.changelist) {
+        let changelist = changelists.get(status.changelist);
+        if (!changelist) {
+          changelist = [];
         }
+        changelist.push(resource);
+        changelists.set(status.changelist, changelist);
+      } else {
+        changes.push(resource);
       }
     }
 
@@ -818,6 +817,10 @@ export class Repository {
 
   public async revert(files: string[]) {
     return this.run(Operation.Revert, () => this.repository.revert(files));
+  }
+
+  public async info(path: string) {
+    return this.run(Operation.Info, () => this.repository.getInfo(path));
   }
 
   public async patch(files: string[]) {
