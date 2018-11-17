@@ -1,3 +1,10 @@
+## [1.45.4](https://github.com/JohnstonCode/svn-scm/compare/v1.45.3...v1.45.4) (2018-11-17)
+
+
+### Bug Fixes
+
+* Fixed credentials for remote changes (Close [#401](https://github.com/JohnstonCode/svn-scm/issues/401)) ([#413](https://github.com/JohnstonCode/svn-scm/issues/413)) ([75600e5](https://github.com/JohnstonCode/svn-scm/commit/75600e5))
+
 ## [1.45.3](https://github.com/JohnstonCode/svn-scm/compare/v1.45.2...v1.45.3) (2018-11-17)
 
 
