@@ -104,7 +104,7 @@ export class SvnContentProvider
         return await repository.show(fsPath, ref);
       }
       if (action === SvnUriAction.LOG) {
-        return await repository.log();
+        return await repository.plainLog();
       }
       if (action === SvnUriAction.PATCH) {
         return await repository.patch([fsPath]);
