@@ -294,7 +294,7 @@
       },
       {
         "command": "svn.treeview.pullIncomingChange",
-        "title": "Pull selected changes",
+        "title": "Update selected",
         "category": "SVN"
       },
       {
