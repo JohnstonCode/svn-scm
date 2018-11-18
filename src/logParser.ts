@@ -16,9 +16,8 @@ export async function parseSvnLog(content: string): Promise<ISvnLogEntry[]> {
       }
       for (const logentry of transformed) {
         if (logentry.paths === undefined) {
-          continue;
-        }
-        if (Array.isArray(logentry.paths.path)) {
+          logentry.paths = [];
+        } else if (Array.isArray(logentry.paths.path)) {
           logentry.paths = logentry.paths.path;
         } else {
           logentry.paths = [logentry.paths.path];
