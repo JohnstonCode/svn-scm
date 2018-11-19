@@ -11,6 +11,7 @@ import {
   window,
   workspace
 } from "vscode";
+import { getLocalPath } from "../commands/openDiff";
 import { ISvnLogEntry, ISvnLogEntryPath } from "../common/types";
 import { Model } from "../model";
 import { Repository } from "../repository";
@@ -26,6 +27,7 @@ import {
   ICachedLog,
   ILogTreeItem,
   LogTreeItemKind,
+  svnFullPathToUri,
   SvnPath,
   transform
 } from "./common";
@@ -53,7 +55,7 @@ function getActionIcon(action: string) {
 }
 
 function elementUri(repo: Repository, itempath: string): Uri {
-  return Uri.parse(repo.remoteRoot.toString() + itempath);
+  return Uri.parse(repo.info.repository.root + itempath);
 }
 
 export class RepoLogProvider implements TreeDataProvider<ILogTreeItem> {
@@ -83,6 +85,11 @@ export class RepoLogProvider implements TreeDataProvider<ILogTreeItem> {
       this
     );
     commands.registerCommand("svn.repolog.openDiff", this.openDiff, this);
+    commands.registerCommand(
+      "svn.repolog.openFileLocal",
+      this.openFileLocal,
+      this
+    );
     commands.registerCommand("svn.repolog.refresh", this.refresh, this);
   }
 
@@ -160,6 +167,17 @@ export class RepoLogProvider implements TreeDataProvider<ILogTreeItem> {
       elementUri(item.repo, commit._),
       parent.revision
     );
+  }
+
+  public openFileLocal(element: ILogTreeItem) {
+    const commit = element.data as ISvnLogEntryPath;
+    if (!checkIfFile(commit)) {
+      return;
+    }
+    const item = this.getCached(element);
+    const svnf = svnFullPathToUri(commit, item.repo);
+    const lp = getLocalPath(item.repo, svnf);
+    commands.executeCommand("vscode.open", lp);
   }
 
   public openDiff(element: ILogTreeItem) {

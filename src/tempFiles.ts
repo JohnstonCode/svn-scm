@@ -17,7 +17,7 @@ export async function dumpSvnFile(
   if (!fs.existsSync(tempdir)) {
     await fs.mkdirSync(tempdir);
   }
-  const fname = `${path.basename(snvUri.fsPath)}_${revision}`;
+  const fname = `r${revision}_${path.basename(snvUri.fsPath)}`;
   const fpath = path.join(tempdir, fname);
   await writeFile(fpath, payload);
   return Uri.file(fpath);

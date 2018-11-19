@@ -5,13 +5,17 @@ import { Repository } from "../repository";
 import { dumpSvnFile } from "../tempFiles";
 import { Command } from "./command";
 
-function getLocalPath(repo: Repository, svnUri: Uri): Uri {
+/** svn://mysvn.org/repox/trunk/f1 -> file:///home/u/trunk/f1 */
+export function getLocalPath(repo: Repository, svnUri: Uri): Uri {
   const remotePath = svnUri.path;
-  const repoRootRelative = path.relative(repo.remoteRoot.path, remotePath);
-  const fromRepoToWS = path.relative(repo.root, repo.workspaceRoot);
-  return Uri.file(
-    path.join(repo.workspaceRoot, fromRepoToWS, repoRootRelative)
+  const repoRoot = Uri.parse(repo.info.repository.root);
+  const pathFromRepoRoot = path.relative(repoRoot.path, remotePath);
+  const wcRepoRelative = path.relative(
+    repo.info.relativeUrl.substr(1),
+    "/" + pathFromRepoRoot
   );
+  const fromRepoToWS = path.relative(repo.workspaceRoot, repo.root);
+  return Uri.file(path.join(repo.workspaceRoot, fromRepoToWS, wcRepoRelative));
 }
 
 export class OpenDiff extends Command {

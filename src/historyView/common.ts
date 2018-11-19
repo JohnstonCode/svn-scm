@@ -65,7 +65,7 @@ export function svnFullPathToUri(
   path: ISvnLogEntryPath,
   repo: Repository
 ): Uri {
-  return Uri.parse(`svn://${repo.root}${path._}`); // FIXME root -> svnRoot
+  return Uri.parse(`${repo.info.repository.root}${path._}`);
 }
 
 export async function copyCommitToClipboard(what: string, item: ILogTreeItem) {

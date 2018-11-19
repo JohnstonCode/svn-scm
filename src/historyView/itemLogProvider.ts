@@ -23,7 +23,6 @@ import {
   ICachedLog,
   ILogTreeItem,
   LogTreeItemKind,
-  svnFullPathToUri,
   transform
 } from "./common";
 

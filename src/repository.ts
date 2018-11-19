@@ -143,10 +143,14 @@ export class Repository {
     return this.repository.workspaceRoot;
   }
 
-  /** 'svn://repo.x/' e.g. */
+  /** 'svn://repo.x/branches/b1' e.g. */
   @memoize
   get remoteRoot(): Uri {
     return Uri.parse(this.repository.info.url);
+  }
+
+  get info(): ISvnInfo {
+    return this.repository.info;
   }
 
   get inputBox(): SourceControlInputBox {

@@ -148,6 +148,11 @@
         "title": "Open this revision"
       },
       {
+        "command": "svn.repolog.openFileLocal",
+        "category": "Log",
+        "title": "Open WC version of a file"
+      },
+      {
         "command": "svn.itemlog.openFileRemote",
         "title": "Open this revision",
         "category": "SVN"
@@ -564,6 +569,10 @@
         },
         {
           "command": "svn.repolog.openFileRemote",
+          "when": "view == repolog && viewItem == diffable"
+        },
+        {
+          "command": "svn.repolog.openFileLocal",
           "when": "view == repolog && viewItem == diffable"
         }
       ],
