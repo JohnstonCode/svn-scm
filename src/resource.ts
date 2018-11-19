@@ -246,7 +246,7 @@ export class Resource implements SourceControlResourceState {
     const abbreviation = this.letter;
     const color = this.color;
     const priority = this.priority;
-    return {
+    const decoration: DecorationData = {
       bubble: true,
       source: "svn.resource",
       title,
@@ -254,5 +254,13 @@ export class Resource implements SourceControlResourceState {
       color,
       priority
     };
+
+    /**
+     * @note Set letter in explorer for VSCode >= 1.27
+     * In VSCode 1.27 has renamed the abbreviation to letter
+     */
+    (decoration as any).letter = abbreviation;
+
+    return decoration;
   }
 }
