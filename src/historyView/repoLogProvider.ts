@@ -177,6 +177,12 @@ export class RepoLogProvider implements TreeDataProvider<ILogTreeItem> {
     const item = this.getCached(element);
     const svnf = svnFullPathToUri(commit, item.repo);
     const lp = getLocalPath(item.repo, svnf);
+    if (!fs.existsSync(lp.fsPath)) {
+      window.showWarningMessage(
+        "Not available from this working copy: " + lp.fsPath
+      );
+      return;
+    }
     commands.executeCommand("vscode.open", lp);
   }
 
@@ -273,6 +279,11 @@ export class RepoLogProvider implements TreeDataProvider<ILogTreeItem> {
       ti.tooltip = path.dirname(pathElem._);
       ti.iconPath = getActionIcon(pathElem.action);
       ti.contextValue = "diffable";
+      ti.command = {
+        command: "svn.repolog.openFileLocal",
+        title: "try to open WC version of a file",
+        arguments: [element]
+      };
     } else if (element.kind === LogTreeItemKind.Action) {
       ti = element.data as TreeItem;
     } else {
