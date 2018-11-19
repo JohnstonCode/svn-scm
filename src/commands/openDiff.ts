@@ -42,11 +42,12 @@ export class OpenDiff extends Command {
     const opts: TextDocumentShowOptions = {
       preview: true
     };
+    const title = `${path.basename(arg.path)} (${r1} : ${r2})`;
     return commands.executeCommand<void>(
       "vscode.diff",
       uri1,
       uri2,
-      `${arg.path} (${r1} : ${r2})`,
+      title,
       opts
     );
   }
