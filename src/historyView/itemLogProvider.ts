@@ -17,6 +17,7 @@ import {
   fetchMore,
   getCommitIcon,
   getCommitLabel,
+  getCommitToolTip,
   getIconObject,
   getLimit,
   ICachedLog,
@@ -147,6 +148,7 @@ export class ItemLogProvider implements TreeDataProvider<ILogTreeItem> {
       const commit = element.data as ISvnLogEntry;
       ti = new TreeItem(getCommitLabel(commit), TreeItemCollapsibleState.None);
       ti.iconPath = getCommitIcon(commit.author);
+      ti.tooltip = getCommitToolTip(commit);
       ti.contextValue = "diffable";
       ti.command = {
         command: "svn.itemlog.openDiff",

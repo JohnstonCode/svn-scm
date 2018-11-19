@@ -20,6 +20,7 @@ import {
   fetchMore,
   getCommitIcon,
   getCommitLabel,
+  getCommitToolTip,
   getIconObject,
   getLimit,
   ICachedLog,
@@ -244,13 +245,7 @@ export class RepoLogProvider implements TreeDataProvider<ILogTreeItem> {
         getCommitLabel(commit),
         TreeItemCollapsibleState.Collapsed
       );
-      let date = commit.date;
-      if (!isNaN(Date.parse(date))) {
-        date = new Date(date).toString();
-      }
-      ti.tooltip = `Author ${commit.author}\n${date}\nRevision ${
-        commit.revision
-      }`;
+      ti.tooltip = getCommitToolTip(commit);
       ti.iconPath = getCommitIcon(commit.author);
       ti.contextValue = "commit";
     } else if (element.kind === LogTreeItemKind.CommitDetail) {

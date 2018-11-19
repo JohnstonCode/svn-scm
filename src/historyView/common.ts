@@ -167,5 +167,17 @@ export function getCommitIcon(
 }
 
 export function getCommitLabel(commit: ISvnLogEntry): string {
-  return `${commit.msg} • r${commit.revision}`;
+  const fstLine = commit.msg.split(/\r?\n/, 1)[0];
+  return `${fstLine} • r${commit.revision}`;
+}
+
+export function getCommitToolTip(commit: ISvnLogEntry): string {
+  let date = commit.date;
+  if (!isNaN(Date.parse(date))) {
+    date = new Date(date).toString();
+  }
+  return `Author: ${commit.author}
+${date}
+Revision: ${commit.revision}
+Message: ${commit.msg}`;
 }
