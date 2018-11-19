@@ -1,3 +1,10 @@
+# [1.46.0](https://github.com/JohnstonCode/svn-scm/compare/v1.45.4...v1.46.0) (2018-11-19)
+
+
+### Features
+
+* Added config option to choose changes left click command ([#417](https://github.com/JohnstonCode/svn-scm/issues/417)) ([dc661cc](https://github.com/JohnstonCode/svn-scm/commit/dc661cc))
+
 ## [1.45.4](https://github.com/JohnstonCode/svn-scm/compare/v1.45.3...v1.45.4) (2018-11-17)
 
 
