@@ -2,7 +2,7 @@
   "name": "svn-scm",
   "displayName": "SVN",
   "description": "Integrated Subversion source control",
-  "version": "1.45.4",
+  "version": "1.46.1",
   "publisher": "johnstoncode",
   "engines": {
     "vscode": "^1.20.0"
@@ -294,7 +294,7 @@
       },
       {
         "command": "svn.treeview.pullIncomingChange",
-        "title": "Pull selected changes",
+        "title": "Update selected",
         "category": "SVN"
       },
       {
@@ -851,6 +851,15 @@
           "type": "boolean",
           "description": "Refresh remote changes on refresh command",
           "default": false
+        },
+        "svn.sourceControl.changesLeftClick": {
+          "type": "string",
+          "enum": [
+            "open",
+            "open diff"
+          ],
+          "description": "Set left click functionality on changes resource state",
+          "default": "open diff"
         }
       }
     }

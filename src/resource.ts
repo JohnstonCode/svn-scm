@@ -104,6 +104,18 @@ export class Resource implements SourceControlResourceState {
   @memoize
   get command(): Command {
     const diffHead = configuration.get<boolean>("diff.withHead", true);
+    const changesLeftClick = configuration.get<string>(
+      "sourceControl.changesLeftClick",
+      "open diff"
+    );
+
+    if (!this.remote && changesLeftClick === "open") {
+      return {
+        command: "svn.openFile",
+        title: "Open file",
+        arguments: [this]
+      };
+    }
 
     if (this.remote || diffHead) {
       return {
