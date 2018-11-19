@@ -1,3 +1,10 @@
+## [1.46.1](https://github.com/JohnstonCode/svn-scm/compare/v1.46.0...v1.46.1) (2018-11-19)
+
+
+### Bug Fixes
+
+* Changed "Pull selected changes" to "Update selected" to better reflect svn command name ([#416](https://github.com/JohnstonCode/svn-scm/issues/416)) ([4719239](https://github.com/JohnstonCode/svn-scm/commit/4719239))
+
 # [1.46.0](https://github.com/JohnstonCode/svn-scm/compare/v1.45.4...v1.46.0) (2018-11-19)
 
 
