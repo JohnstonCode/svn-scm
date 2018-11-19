@@ -215,8 +215,8 @@ export class RepoLogProvider implements TreeDataProvider<ILogTreeItem> {
       "svn.openDiff",
       item.repo,
       elementUri(item.repo, commit._),
-      parent.revision,
-      item.entries[posPrev].revision
+      item.entries[posPrev].revision,
+      parent.revision
     );
   }
 

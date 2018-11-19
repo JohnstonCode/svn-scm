@@ -88,8 +88,8 @@ export class ItemLogProvider implements TreeDataProvider<ILogTreeItem> {
       "svn.openDiff",
       item.repo,
       item.svnTarget,
-      commit.revision,
-      prevRev
+      prevRev,
+      commit.revision
     );
   }
 
