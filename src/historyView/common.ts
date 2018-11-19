@@ -97,7 +97,7 @@ function needFetch(
 }
 
 export function checkIfFile(e: ISvnLogEntryPath): boolean {
-  if (e.kind !== "file") {
+  if (e.kind === "dir") {
     window.showErrorMessage("This target is not a file");
     return false;
   }
