@@ -1,3 +1,10 @@
+## [1.46.2](https://github.com/JohnstonCode/svn-scm/compare/v1.46.1...v1.46.2) (2018-11-19)
+
+
+### Bug Fixes
+
+* Fixed svn status letter in file explorer ([#419](https://github.com/JohnstonCode/svn-scm/issues/419)) ([da656c2](https://github.com/JohnstonCode/svn-scm/commit/da656c2))
+
 ## [1.46.1](https://github.com/JohnstonCode/svn-scm/compare/v1.46.0...v1.46.1) (2018-11-19)
 
 
