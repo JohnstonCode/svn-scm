@@ -176,7 +176,9 @@ export class Repository {
         !["BASE", "COMMITTED", "PREV"].includes(revision.toUpperCase())
       ) {
         const info = await this.getInfo();
-        target = info.url + "/" + path.basename(file);
+        target = this.removeAbsolutePath(target);
+        target = info.url + "/" + target.replace(/\\/g, "/");
+        // TODO move to SvnRI
       }
     }
 
