@@ -29,6 +29,7 @@ import {
 import { debounce, memoize, throttle } from "./decorators";
 import { configuration } from "./helpers/configuration";
 import OperationsImpl from "./operationsImpl";
+import { PathNormalizer } from "./pathNormalizer";
 import { Resource } from "./resource";
 import { SvnStatusBar } from "./statusBar";
 import { svnErrorCodes } from "./svn";
@@ -147,10 +148,6 @@ export class Repository {
   @memoize
   get remoteRoot(): Uri {
     return Uri.parse(this.repository.info.url);
-  }
-
-  get info(): ISvnInfo {
-    return this.repository.info;
   }
 
   get inputBox(): SourceControlInputBox {
@@ -896,6 +893,11 @@ export class Repository {
     return this.run(Operation.Rename, () =>
       this.repository.rename(oldFile, newFile)
     );
+  }
+
+  @memoize
+  public getPathNormalizer(): PathNormalizer {
+    return new PathNormalizer(this.repository.info);
   }
 
   public async promptAuth(): Promise<IAuth | undefined> {

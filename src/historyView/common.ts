@@ -1,9 +1,11 @@
 import { createHash } from "crypto";
+import * as fs from "fs";
 import * as path from "path";
 import { env, TreeItem, Uri, window } from "vscode";
 import { ISvnLogEntry, ISvnLogEntryPath } from "../common/types";
 import { configuration } from "../helpers/configuration";
 import { Repository } from "../repository";
+import { SvnRI } from "../svnRI";
 
 export enum LogTreeItemKind {
   Repo = 1,
@@ -50,8 +52,8 @@ export function transform(
   });
 }
 
-// XXX code duplication with uri.ts. Maybe use full path?
 export function getIconObject(iconName: string): { light: Uri; dark: Uri } {
+  // XXX Maybe use full path to extension?
   const iconsRootPath = path.join(__dirname, "..", "..", "icons");
   const toUri = (theme: string) =>
     Uri.file(path.join(iconsRootPath, theme, `${iconName}.svg`));
@@ -59,13 +61,6 @@ export function getIconObject(iconName: string): { light: Uri; dark: Uri } {
     light: toUri("light"),
     dark: toUri("dark")
   };
-}
-
-export function svnFullPathToUri(
-  path: ISvnLogEntryPath,
-  repo: Repository
-): Uri {
-  return Uri.parse(`${repo.info.repository.root}${path._}`);
 }
 
 export async function copyCommitToClipboard(what: string, item: ILogTreeItem) {
@@ -96,8 +91,8 @@ function needFetch(
   return true;
 }
 
-export function checkIfFile(e: ISvnLogEntryPath): boolean {
-  if (e.kind === "dir") {
+export function checkIfFile(e: SvnRI): boolean {
+  if (!fs.lstatSync(e.localFullPath.path).isFile()) {
     window.showErrorMessage("This target is not a file");
     return false;
   }

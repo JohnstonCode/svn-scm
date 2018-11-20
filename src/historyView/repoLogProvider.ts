@@ -11,7 +11,6 @@ import {
   window,
   workspace
 } from "vscode";
-import { getLocalPath } from "../commands/openDiff";
 import { ISvnLogEntry, ISvnLogEntryPath } from "../common/types";
 import { Model } from "../model";
 import { Repository } from "../repository";
@@ -27,7 +26,6 @@ import {
   ICachedLog,
   ILogTreeItem,
   LogTreeItemKind,
-  svnFullPathToUri,
   SvnPath,
   transform
 } from "./common";
@@ -52,10 +50,6 @@ function getActionIcon(action: string) {
     return undefined;
   }
   return getIconObject(name);
-}
-
-function elementUri(repo: Repository, itempath: string): Uri {
-  return Uri.parse(repo.info.repository.root + itempath);
 }
 
 export class RepoLogProvider implements TreeDataProvider<ILogTreeItem> {
@@ -156,66 +150,85 @@ export class RepoLogProvider implements TreeDataProvider<ILogTreeItem> {
 
   public openFileRemote(element: ILogTreeItem) {
     const commit = element.data as ISvnLogEntryPath;
-    if (!checkIfFile(commit)) {
+    const item = this.getCached(element);
+    const ri = item.repo.getPathNormalizer().parse(commit._);
+    if (!checkIfFile(ri)) {
       return;
     }
-    const item = this.getCached(element);
     const parent = (element.parent as ILogTreeItem).data as ISvnLogEntry;
     commands.executeCommand(
       "svn.openFileRemote",
       item.repo,
-      elementUri(item.repo, commit._),
+      ri.remoteFullPath,
       parent.revision
     );
   }
 
   public openFileLocal(element: ILogTreeItem) {
     const commit = element.data as ISvnLogEntryPath;
-    if (!checkIfFile(commit)) {
+    const item = this.getCached(element);
+    const ri = item.repo.getPathNormalizer().parse(commit._);
+    if (!checkIfFile(ri)) {
       return;
     }
-    const item = this.getCached(element);
-    const svnf = svnFullPathToUri(commit, item.repo);
-    const lp = getLocalPath(item.repo, svnf);
-    if (!fs.existsSync(lp.fsPath)) {
+    if (!fs.existsSync(ri.localFullPath.path)) {
       window.showWarningMessage(
-        "Not available from this working copy: " + lp.fsPath
+        "Not available from this working copy: " + ri.localFullPath
       );
       return;
     }
-    commands.executeCommand("vscode.open", lp);
+    commands.executeCommand("vscode.open", ri.localFullPath);
   }
 
-  public openDiff(element: ILogTreeItem) {
+  public async openDiff(element: ILogTreeItem) {
     const commit = element.data as ISvnLogEntryPath;
-    if (!checkIfFile(commit)) {
+    const item = this.getCached(element);
+    const ri = item.repo.getPathNormalizer().parse(commit._);
+    if (!checkIfFile(ri)) {
       return;
     }
-    const item = this.getCached(element);
     const parent = (element.parent as ILogTreeItem).data as ISvnLogEntry;
-    const pos = item.entries.findIndex(e => e === parent);
-    let posPrev: number | undefined;
-    for (
-      let i = pos + 1;
-      posPrev === undefined && i < item.entries.length;
-      i++
-    ) {
-      for (const p of item.entries[i].paths) {
-        if (p._ === commit._) {
-          posPrev = i;
-          break;
+    let prevRev: ISvnLogEntry;
+    {
+      // find prevRev scope
+      const pos = item.entries.findIndex(e => e === parent);
+      let posPrev: number | undefined;
+      for (
+        let i = pos + 1;
+        posPrev === undefined && i < item.entries.length;
+        i++
+      ) {
+        for (const p of item.entries[i].paths) {
+          if (p._ === commit._) {
+            posPrev = i;
+            break;
+          }
         }
       }
-    }
-    if (posPrev === undefined) {
-      window.showWarningMessage("Cannot find previous commit");
-      return;
+      if (posPrev !== undefined) {
+        prevRev = item.entries[posPrev];
+      } else {
+        // if not found in cache
+        const nm = item.repo.getPathNormalizer();
+        const revs = await item.repo.log(
+          parent.revision,
+          "1",
+          2,
+          nm.parse(commit._).remoteFullPath
+        );
+        if (revs.length === 2) {
+          prevRev = revs[1];
+        } else {
+          window.showWarningMessage("Cannot find previous commit");
+          return;
+        }
+      }
     }
     commands.executeCommand(
       "svn.openDiff",
       item.repo,
-      elementUri(item.repo, commit._),
-      item.entries[posPrev].revision,
+      ri.remoteFullPath,
+      prevRev.revision,
       parent.revision
     );
   }

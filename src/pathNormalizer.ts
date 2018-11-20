@@ -22,22 +22,26 @@ export class PathNormalizer {
     this.checkoutRoot = Uri.file(repoInfo.wcInfo.wcrootAbspath);
   }
 
-  public parse(fpath: string, kind?: ResourceKind, rev?: string): SvnRI {
+  /** svn://foo.org/domain/trunk/x -> trunk/x */
+  private getFullRepoPathFromUrl(fpath: string): string {
+    if (fpath.startsWith("/")) {
+      return fpath.substr(1);
+    } else if (fpath.startsWith("svn://") || fpath.startsWith("file://")) {
+      const target = Uri.parse(fpath).path;
+      return path.relative(this.repoRoot.path, target);
+    } else {
+      throw new Error("unknown path");
+    }
+  }
+
+  public parse(
+    fpath: string,
+    kind = ResourceKind.RemoteFull,
+    rev?: string
+  ): SvnRI {
     let target: string;
-    if (kind === undefined) {
-      target = fpath;
-      if (fpath.startsWith("^/")) {
-        target = fpath.substr(2);
-      } else if (fpath.startsWith("/")) {
-        target = fpath.substr(1);
-      } else if (fpath.startsWith("svn://") || fpath.startsWith("file://")) {
-        target = Uri.parse(fpath).path.substr(1);
-      }
-      const match = /(.+)@(\d+)$/.exec(target);
-      if (match !== null) {
-        target = match[0];
-        rev = match[1];
-      }
+    if (kind === ResourceKind.RemoteFull) {
+      target = this.getFullRepoPathFromUrl(fpath);
     } else if (kind === ResourceKind.LocalFull) {
       if (!path.isAbsolute(fpath)) {
         throw new Error("Path isn't absolute");
@@ -51,8 +55,6 @@ export class PathNormalizer {
         throw new Error("Path is absolute");
       }
       target = path.join(this.fromRootToBranch(), fpath);
-    } else if (kind === ResourceKind.RemoteFull) {
-      target = fpath;
     } else {
       throw new Error("unsupported kind");
     }

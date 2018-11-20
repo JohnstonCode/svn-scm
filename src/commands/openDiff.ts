@@ -5,19 +5,6 @@ import { Repository } from "../repository";
 import { dumpSvnFile } from "../tempFiles";
 import { Command } from "./command";
 
-/** svn://mysvn.org/repox/trunk/f1 -> file:///home/u/trunk/f1 */
-export function getLocalPath(repo: Repository, svnUri: Uri): Uri {
-  const remotePath = svnUri.path;
-  const repoRoot = Uri.parse(repo.info.repository.root);
-  const pathFromRepoRoot = path.relative(repoRoot.path, remotePath);
-  const wcRepoRelative = path.relative(
-    repo.info.relativeUrl.substr(1),
-    "/" + pathFromRepoRoot
-  );
-  const fromRepoToWS = path.relative(repo.workspaceRoot, repo.root);
-  return Uri.file(path.join(repo.workspaceRoot, fromRepoToWS, wcRepoRelative));
-}
-
 export class OpenDiff extends Command {
   constructor() {
     super("svn.openDiff");
@@ -26,7 +13,9 @@ export class OpenDiff extends Command {
   public async execute(repo: Repository, arg: Uri, r1: string, r2: string) {
     const getUri = async (revision: string): Promise<Uri> => {
       if (revision === "BASE") {
-        const localPath = getLocalPath(repo, arg);
+        const nm = repo.getPathNormalizer();
+        const ri = nm.parse(arg.toString());
+        const localPath = ri.localFullPath;
         if (!fs.existsSync(localPath.path)) {
           const errorMsg = "BASE revision doesn't exist for " + localPath.path;
           window.showErrorMessage(errorMsg);

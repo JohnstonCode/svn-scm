@@ -21,12 +21,15 @@ export class SvnRI {
 
   get localFullPath(): Uri {
     return Uri.file(
-      path.join(this.checkoutRoot.path, this.fromBranchToRepo, this._path)
+      path.join(
+        this.checkoutRoot.path,
+        path.relative(this.fromRepoToBranch, this._path)
+      )
     );
   }
 
-  get fromBranchToRepo(): string {
-    return path.relative(this.branchRoot.path, this.remoteRoot.path);
+  get fromRepoToBranch(): string {
+    return path.relative(this.remoteRoot.path, this.branchRoot.path);
   }
 
   get revision(): string | undefined {
