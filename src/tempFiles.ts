@@ -7,7 +7,7 @@ import { Uri } from "vscode";
 
 const writeFile = util.promisify(fs.writeFile);
 
-export const tempdir = path.join(os.tmpdir(), "vscode-svm");
+export const tempdir = path.join(os.tmpdir(), "vscode-svn");
 
 export async function dumpSvnFile(
   snvUri: Uri,
