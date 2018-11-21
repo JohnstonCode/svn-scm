@@ -11,7 +11,11 @@ import {
   window,
   workspace
 } from "vscode";
-import { ISvnLogEntry, ISvnLogEntryPath } from "../common/types";
+import {
+  IModelChangeEvent,
+  ISvnLogEntry,
+  ISvnLogEntryPath
+} from "../common/types";
 import { Model } from "../model";
 import { Repository } from "../repository";
 import { unwrap } from "../util";
@@ -85,6 +89,9 @@ export class RepoLogProvider implements TreeDataProvider<ILogTreeItem> {
       this
     );
     commands.registerCommand("svn.repolog.refresh", this.refresh, this);
+    this.model.onDidChangeRepository(async (e: IModelChangeEvent) => {
+      return this.refresh();
+    }, this);
   }
 
   public removeRepo(element: ILogTreeItem) {
@@ -235,6 +242,12 @@ export class RepoLogProvider implements TreeDataProvider<ILogTreeItem> {
 
   public async refresh(element?: ILogTreeItem) {
     if (element === undefined) {
+      for (const [k, v] of this.logCache) {
+        // Remove auto-added repositories
+        if (!v.persisted.userAdded) {
+          this.logCache.delete(k);
+        }
+      }
       for (const repo of this.model.repositories) {
         const repoUrl = repo.remoteRoot.toString();
         let persisted = {
