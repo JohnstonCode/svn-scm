@@ -28,6 +28,10 @@ export class SvnRI {
     );
   }
 
+  get relativeFromBranch(): string {
+    return path.relative(this.fromRepoToBranch, this._path);
+  }
+
   get fromRepoToBranch(): string {
     return path.relative(this.remoteRoot.path, this.branchRoot.path);
   }

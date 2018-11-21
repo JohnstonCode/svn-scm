@@ -249,7 +249,8 @@ export class RepoLogProvider implements TreeDataProvider<ILogTreeItem> {
         }
       }
       for (const repo of this.model.repositories) {
-        const repoUrl = repo.remoteRoot.toString();
+        const remoteRoot = repo.remoteRoot;
+        const repoUrl = remoteRoot.toString();
         let persisted = {
           commitFrom: "HEAD"
         };
@@ -261,7 +262,7 @@ export class RepoLogProvider implements TreeDataProvider<ILogTreeItem> {
           entries: [],
           isComplete: false,
           repo,
-          svnTarget: repo.remoteRoot,
+          svnTarget: remoteRoot,
           persisted
         });
       }
@@ -299,10 +300,13 @@ export class RepoLogProvider implements TreeDataProvider<ILogTreeItem> {
       ti.iconPath = getCommitIcon(commit.author);
       ti.contextValue = "commit";
     } else if (element.kind === LogTreeItemKind.CommitDetail) {
+      // TODO optional tree-view instead of flat
       const pathElem = element.data as ISvnLogEntryPath;
       const basename = path.basename(pathElem._);
       ti = new TreeItem(basename, TreeItemCollapsibleState.None);
-      ti.tooltip = path.dirname(pathElem._);
+      const cached = this.getCached(element);
+      const nm = cached.repo.getPathNormalizer();
+      ti.tooltip = nm.parse(pathElem._).relativeFromBranch;
       ti.iconPath = getActionIcon(pathElem.action);
       ti.contextValue = "diffable";
       ti.command = {
