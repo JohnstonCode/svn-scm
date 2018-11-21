@@ -105,11 +105,13 @@
       "svnActivity": [
         {
           "id": "repolog",
-          "name": "Repositories"
+          "name": "Repositories",
+          "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
         },
         {
           "id": "itemlog",
-          "name": "Item History"
+          "name": "Item History",
+          "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
         }
       ]
     },
