@@ -42,10 +42,14 @@ export class Repository {
       return;
     }
     return ((async (): Promise<Repository> => {
-      const result = await this.exec(["info", "--xml", this.root]);
-      this._info = await parseInfoXml(result.stdout);
+      await this.updateInfo();
       return this;
     })() as unknown) as Repository;
+  }
+
+  public async updateInfo() {
+    const result = await this.exec(["info", "--xml", this.root]);
+    this._info = await parseInfoXml(result.stdout);
   }
 
   public async exec(
@@ -124,7 +128,7 @@ export class Repository {
     return unwrap(this._info);
   }
 
-  public resetInfo(file: string = "") {
+  public resetInfoCache(file: string = "") {
     delete this._infoCache[file];
   }
 
@@ -155,7 +159,7 @@ export class Repository {
 
     // Cache for 2 minutes
     setTimeout(() => {
-      this.resetInfo(file);
+      this.resetInfoCache(file);
     }, 2 * 60 * 1000);
 
     return this._infoCache[file];
@@ -404,7 +408,7 @@ export class Repository {
       ["switch", branchUrl].concat(force ? ["--ignore-ancestry"] : [])
     );
 
-    this.resetInfo();
+    this.resetInfoCache();
     return true;
   }
 
@@ -423,7 +427,7 @@ export class Repository {
 
     const result = await this.exec(args);
 
-    this.resetInfo();
+    this.resetInfoCache();
 
     const message = result.stdout
       .trim()
@@ -441,7 +445,7 @@ export class Repository {
 
     const result = await this.exec(args);
 
-    this.resetInfo();
+    this.resetInfoCache();
 
     const message = result.stdout
       .trim()

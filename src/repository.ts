@@ -143,8 +143,7 @@ export class Repository {
     return this.repository.workspaceRoot;
   }
 
-  /** 'svn://repo.x/' e.g. */
-  @memoize
+  /** 'svn://repo.x/branches/b1' e.g. */
   get remoteRoot(): Uri {
     return Uri.parse(this.repository.info.url);
   }
@@ -194,9 +193,13 @@ export class Repository {
       /[\\\/]\.svn[\\\/]/.test(uri.path)
     );
 
+    // TODO on svn switch event fired two times since two files were changed
     onRelevantSvnChange(
-      this._onDidChangeRepository.fire,
-      this._onDidChangeRepository,
+      async (e: Uri) => {
+        await this.repository.updateInfo();
+        this._onDidChangeRepository.fire(e);
+      },
+      this,
       this.disposables
     );
 
