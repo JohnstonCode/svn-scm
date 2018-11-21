@@ -122,30 +122,30 @@ export class RepoLogProvider implements TreeDataProvider<ILogTreeItem> {
       const box2 = window.createInputBox();
       box2.prompt = "Enter starting revision (optional)";
       box2.onDidAccept(async () => {
-        console.log(box2.value);
         const repo = this.model.getRepository(repoLike);
-        let success = false;
-        if (repo !== undefined) {
-          try {
-            const rev = box2.value;
-            const svninfo = await repo.getInfo(repoLike, rev);
-            this.logCache.set(repoLike, {
-              entries: [],
-              isComplete: false,
-              svnTarget: Uri.parse(svninfo.url),
-              repo,
-              persisted: {
-                commitFrom: svninfo.revision,
-                userAdded: true
-              }
-            });
-            success = true;
-            this._onDidChangeTreeData.fire();
-          } catch {
-            // ignore
-          }
+        if (repo === undefined) {
+          box2.dispose();
+          window.showWarningMessage(
+            "Provided path doesn't belong" +
+              " to repositories opened in this workspace"
+          );
+          return;
         }
-        if (!success) {
+        try {
+          const rev = box2.value;
+          const svninfo = await repo.getInfo(repoLike, rev);
+          this.logCache.set(repoLike, {
+            entries: [],
+            isComplete: false,
+            svnTarget: Uri.parse(svninfo.url),
+            repo,
+            persisted: {
+              commitFrom: svninfo.revision,
+              userAdded: true
+            }
+          });
+          this._onDidChangeTreeData.fire();
+        } catch (e) {
           window.showErrorMessage("Failed to resolve svn path");
         }
         box2.dispose();
