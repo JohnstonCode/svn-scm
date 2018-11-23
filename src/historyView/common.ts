@@ -91,12 +91,16 @@ function needFetch(
   return true;
 }
 
-export function checkIfFile(e: SvnRI): boolean {
+export function checkIfFile(e: SvnRI): Uri | undefined {
+  if (e.localFullPath === undefined) {
+    window.showErrorMessage("Specified path belongs to remote repository");
+    return undefined;
+  }
   if (!fs.lstatSync(e.localFullPath.path).isFile()) {
     window.showErrorMessage("This target is not a file");
-    return false;
+    return undefined;
   }
-  return true;
+  return e.localFullPath;
 }
 
 /// @note: cached.svnTarget should be valid

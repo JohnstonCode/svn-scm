@@ -175,10 +175,11 @@ export class RepoLogProvider implements TreeDataProvider<ILogTreeItem> {
     const commit = element.data as ISvnLogEntryPath;
     const item = this.getCached(element);
     const ri = item.repo.getPathNormalizer().parse(commit._);
-    if (!checkIfFile(ri)) {
+    const localUri = checkIfFile(ri);
+    if (localUri === undefined) {
       return;
     }
-    if (!fs.existsSync(ri.localFullPath.path)) {
+    if (!fs.existsSync(localUri.path)) {
       window.showWarningMessage(
         "Not available from this working copy: " + ri.localFullPath
       );

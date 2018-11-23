@@ -16,8 +16,10 @@ export class OpenDiff extends Command {
         const nm = repo.getPathNormalizer();
         const ri = nm.parse(arg.toString());
         const localPath = ri.localFullPath;
-        if (!fs.existsSync(localPath.path)) {
-          const errorMsg = "BASE revision doesn't exist for " + localPath.path;
+        if (localPath === undefined || !fs.existsSync(localPath.path)) {
+          const errorMsg =
+            "BASE revision doesn't exist for " +
+            (localPath ? localPath.path : "remote path");
           window.showErrorMessage(errorMsg);
           throw new Error(errorMsg);
         }

@@ -39,12 +39,18 @@ suite("Url parsing", () => {
       nm1.repoRoot.toString(),
       Uri.parse(ri1.repository.root).toString()
     );
+    if (!nm1.checkoutRoot) {
+      throw new Error("impossible");
+    }
     assert.equal(
       nm1.checkoutRoot.toString(),
       Uri.file(ri1.wcInfo.wcrootAbspath).toString()
     );
     const x1 = nm1.parse("/d1/f1");
     assert.equal(x1.remoteFullPath.toString(), ri1.repository.root + "/d1/f1");
+    if (!x1.localFullPath) {
+      throw new Error("impossible");
+    }
     assert.equal(x1.localFullPath.toString(), "file:///home/d1/f1");
   });
 });
