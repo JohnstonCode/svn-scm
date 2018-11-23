@@ -30,6 +30,7 @@ import { debounce, memoize, throttle } from "./decorators";
 import { configuration } from "./helpers/configuration";
 import OperationsImpl from "./operationsImpl";
 import { PathNormalizer } from "./pathNormalizer";
+import { IRemoteRepository } from "./remoteRepository";
 import { Resource } from "./resource";
 import { SvnStatusBar } from "./statusBar";
 import { svnErrorCodes } from "./svn";
@@ -57,7 +58,7 @@ function shouldShowProgress(operation: Operation): boolean {
   }
 }
 
-export class Repository {
+export class Repository implements IRemoteRepository {
   public sourceControl: SourceControl;
   public statusBar: SvnStatusBar;
   public changes: ISvnResourceGroup;
@@ -145,7 +146,7 @@ export class Repository {
   }
 
   /** 'svn://repo.x/branches/b1' e.g. */
-  get remoteRoot(): Uri {
+  get branchRoot(): Uri {
     return Uri.parse(this.repository.info.url);
   }
 

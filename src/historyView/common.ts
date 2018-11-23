@@ -4,7 +4,7 @@ import * as path from "path";
 import { env, TreeItem, Uri, window } from "vscode";
 import { ISvnLogEntry, ISvnLogEntryPath } from "../common/types";
 import { configuration } from "../helpers/configuration";
-import { Repository } from "../repository";
+import { IRemoteRepository } from "../remoteRepository";
 import { SvnRI } from "../svnRI";
 
 export enum LogTreeItemKind {
@@ -27,7 +27,7 @@ export interface ICachedLog {
   // svn-like path
   readonly svnTarget: Uri;
   isComplete: boolean;
-  readonly repo: Repository;
+  readonly repo: IRemoteRepository;
   readonly persisted: {
     readonly commitFrom: string;
     readonly userAdded?: boolean;

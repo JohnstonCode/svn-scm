@@ -250,7 +250,7 @@ export class RepoLogProvider implements TreeDataProvider<ILogTreeItem> {
         }
       }
       for (const repo of this.model.repositories) {
-        const remoteRoot = repo.remoteRoot;
+        const remoteRoot = repo.branchRoot;
         const repoUrl = remoteRoot.toString();
         let persisted = {
           commitFrom: "HEAD"

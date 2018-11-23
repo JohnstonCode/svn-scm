@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import { commands, TextDocumentShowOptions, Uri, window } from "vscode";
-import { Repository } from "../repository";
+import { IRemoteRepository } from "../remoteRepository";
 import { dumpSvnFile } from "../tempFiles";
 import { Command } from "./command";
 
@@ -10,7 +10,12 @@ export class OpenDiff extends Command {
     super("svn.openDiff");
   }
 
-  public async execute(repo: Repository, arg: Uri, r1: string, r2: string) {
+  public async execute(
+    repo: IRemoteRepository,
+    arg: Uri,
+    r1: string,
+    r2: string
+  ) {
     const getUri = async (revision: string): Promise<Uri> => {
       if (revision === "BASE") {
         const nm = repo.getPathNormalizer();
