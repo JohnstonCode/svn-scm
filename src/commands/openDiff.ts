@@ -19,7 +19,7 @@ export class OpenDiff extends Command {
     const getUri = async (revision: string): Promise<Uri> => {
       if (revision === "BASE") {
         const nm = repo.getPathNormalizer();
-        const ri = nm.parse(arg.toString());
+        const ri = nm.parse(arg.toString(true));
         const localPath = ri.localFullPath;
         if (localPath === undefined || !fs.existsSync(localPath.path)) {
           const errorMsg =

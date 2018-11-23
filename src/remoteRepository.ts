@@ -1,6 +1,7 @@
 import { Uri } from "vscode";
 import { ISvnInfo, ISvnLogEntry } from "./common/types";
 import { PathNormalizer } from "./pathNormalizer";
+import { Svn } from "./svn";
 import { Repository as BaseRepository } from "./svnRepository";
 
 export interface IRemoteRepository {
@@ -19,10 +20,15 @@ export interface IRemoteRepository {
 }
 
 export class RemoteRepository implements IRemoteRepository {
-  public static async open(uri: Uri): Promise<RemoteRepository> {
-    throw new Error("unimplemted");
+  private info: ISvnInfo;
+  private constructor(private repo: BaseRepository) {
+    this.info = repo.info;
   }
-  private constructor(private info: ISvnInfo) {}
+
+  public static async open(svn: Svn, uri: Uri): Promise<RemoteRepository> {
+    const repo = await svn.open(uri.toString(true), "");
+    return new RemoteRepository(repo);
+  }
 
   public getPathNormalizer(): PathNormalizer {
     return new PathNormalizer(this.info);
@@ -38,13 +44,13 @@ export class RemoteRepository implements IRemoteRepository {
     limit: number,
     target?: string | Uri
   ): Promise<ISvnLogEntry[]> {
-    return [];
+    return this.repo.log(rfrom, rto, limit, target);
   }
 
   public async show(
     filePath: string | Uri,
     revision?: string
   ): Promise<string> {
-    return "";
+    return this.repo.show(filePath, revision);
   }
 }

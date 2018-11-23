@@ -17,7 +17,7 @@ import {
   ISvnLogEntryPath
 } from "../common/types";
 import { Model } from "../model";
-import { Repository } from "../repository";
+import { IRemoteRepository } from "../remoteRepository";
 import { unwrap } from "../util";
 import {
   checkIfFile,
@@ -122,31 +122,52 @@ export class RepoLogProvider implements TreeDataProvider<ILogTreeItem> {
       const box2 = window.createInputBox();
       box2.prompt = "Enter starting revision (optional)";
       box2.onDidAccept(async () => {
+        // TODO Refactor, now it's messy
+        // TODO persist user's custom repositories
+        const rev = box2.value || "HEAD";
         const repo = this.model.getRepository(repoLike);
         if (repo === undefined) {
-          box2.dispose();
-          window.showWarningMessage(
-            "Provided path doesn't belong" +
-              " to repositories opened in this workspace"
-          );
-          return;
-        }
-        try {
-          const rev = box2.value;
-          const svninfo = await repo.getInfo(repoLike, rev);
-          this.logCache.set(repoLike, {
-            entries: [],
-            isComplete: false,
-            svnTarget: Uri.parse(svninfo.url),
-            repo,
-            persisted: {
-              commitFrom: svninfo.revision,
-              userAdded: true
+          try {
+            const uri = Uri.parse(repoLike);
+            if (rev !== "HEAD" && isNaN(parseInt(rev, 10))) {
+              throw new Error("erroneous revision");
             }
-          });
-          this._onDidChangeTreeData.fire();
-        } catch (e) {
-          window.showErrorMessage("Failed to resolve svn path");
+            const remRepo = await this.model.getRemoteRepository(uri);
+            this.logCache.set(repoLike, {
+              entries: [],
+              isComplete: false,
+              svnTarget: uri,
+              repo: remRepo,
+              persisted: {
+                commitFrom: rev,
+                userAdded: true
+              }
+            });
+            this._onDidChangeTreeData.fire();
+          } catch {
+            box2.dispose();
+            window.showWarningMessage(
+              "Provided path doesn't look like SVN URI or erroneous revision"
+            );
+            return;
+          }
+        } else {
+          try {
+            const svninfo = await repo.getInfo(repoLike, rev);
+            this.logCache.set(repoLike, {
+              entries: [],
+              isComplete: false,
+              svnTarget: Uri.parse(svninfo.url),
+              repo,
+              persisted: {
+                commitFrom: svninfo.revision,
+                userAdded: true
+              }
+            });
+            this._onDidChangeTreeData.fire();
+          } catch (e) {
+            window.showErrorMessage("Failed to resolve svn path");
+          }
         }
         box2.dispose();
       });
@@ -251,7 +272,7 @@ export class RepoLogProvider implements TreeDataProvider<ILogTreeItem> {
       }
       for (const repo of this.model.repositories) {
         const remoteRoot = repo.branchRoot;
-        const repoUrl = remoteRoot.toString();
+        const repoUrl = remoteRoot.toString(true);
         let persisted = {
           commitFrom: "HEAD"
         };
