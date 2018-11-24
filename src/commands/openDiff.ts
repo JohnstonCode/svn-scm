@@ -30,7 +30,13 @@ export class OpenDiff extends Command {
         }
         return localPath;
       }
-      const out = await repo.show(arg, revision);
+      let out;
+      try {
+        out = await repo.show(arg, revision);
+      } catch (e) {
+        window.showErrorMessage("Failed to open path");
+        throw e;
+      }
       return dumpSvnFile(arg, revision, out);
     };
     const uri1 = await getUri(r1);

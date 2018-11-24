@@ -91,16 +91,27 @@ function needFetch(
   return true;
 }
 
-export function checkIfFile(e: SvnRI): Uri | undefined {
+export function checkIfFile(e: SvnRI, local: boolean): boolean | undefined {
   if (e.localFullPath === undefined) {
-    window.showErrorMessage("Specified path belongs to remote repository");
+    if (local) {
+      window.showErrorMessage("No working copy for this path");
+    }
     return undefined;
   }
-  if (!fs.lstatSync(e.localFullPath.path).isFile()) {
+  let stat;
+  try {
+    stat = fs.lstatSync(e.localFullPath.fsPath);
+  } catch {
+    window.showWarningMessage(
+      "Not available from this working copy: " + e.localFullPath
+    );
+    return false;
+  }
+  if (!stat.isFile()) {
     window.showErrorMessage("This target is not a file");
-    return undefined;
+    return false;
   }
-  return e.localFullPath;
+  return true;
 }
 
 /// @note: cached.svnTarget should be valid

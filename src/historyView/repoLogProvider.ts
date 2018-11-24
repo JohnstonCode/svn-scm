@@ -111,7 +111,7 @@ export class RepoLogProvider implements TreeDataProvider<ILogTreeItem> {
         !/^[a-z]+?:\/\//.test(repoLike)
       ) {
         for (const wsf of workspace.workspaceFolders) {
-          const joined = path.join(wsf.uri.path, repoLike);
+          const joined = path.join(wsf.uri.fsPath, repoLike);
           if (fs.existsSync(joined)) {
             repoLike = joined;
             break;
@@ -180,7 +180,7 @@ export class RepoLogProvider implements TreeDataProvider<ILogTreeItem> {
     const commit = element.data as ISvnLogEntryPath;
     const item = this.getCached(element);
     const ri = item.repo.getPathNormalizer().parse(commit._);
-    if (!checkIfFile(ri)) {
+    if (checkIfFile(ri, false) === false) {
       return;
     }
     const parent = (element.parent as ILogTreeItem).data as ISvnLogEntry;
@@ -196,24 +196,17 @@ export class RepoLogProvider implements TreeDataProvider<ILogTreeItem> {
     const commit = element.data as ISvnLogEntryPath;
     const item = this.getCached(element);
     const ri = item.repo.getPathNormalizer().parse(commit._);
-    const localUri = checkIfFile(ri);
-    if (localUri === undefined) {
+    if (!checkIfFile(ri, true)) {
       return;
     }
-    if (!fs.existsSync(localUri.path)) {
-      window.showWarningMessage(
-        "Not available from this working copy: " + ri.localFullPath
-      );
-      return;
-    }
-    commands.executeCommand("vscode.open", ri.localFullPath);
+    commands.executeCommand("vscode.open", unwrap(ri.localFullPath));
   }
 
   public async openDiff(element: ILogTreeItem) {
     const commit = element.data as ISvnLogEntryPath;
     const item = this.getCached(element);
     const ri = item.repo.getPathNormalizer().parse(commit._);
-    if (!checkIfFile(ri)) {
+    if (checkIfFile(ri, false) === false) {
       return;
     }
     const parent = (element.parent as ILogTreeItem).data as ISvnLogEntry;
