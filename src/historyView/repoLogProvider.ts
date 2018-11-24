@@ -75,7 +75,11 @@ export class RepoLogProvider implements TreeDataProvider<ILogTreeItem> {
 
   constructor(private model: Model) {
     this.refresh();
-    commands.registerCommand("svn.repolog.addrepolike", this.addRepolike, this);
+    commands.registerCommand(
+      "svn.repolog.addrepolike",
+      this.addRepolikeGui,
+      this
+    );
     commands.registerCommand("svn.repolog.remove", this.removeRepo, this);
     commands.registerCommand(
       "svn.repolog.openFileRemote",
@@ -99,7 +103,50 @@ export class RepoLogProvider implements TreeDataProvider<ILogTreeItem> {
     this.refresh();
   }
 
-  public addRepolike() {
+  private async addRepolike(repoLike: string, rev: string) {
+    // TODO save user's custom repositories
+    const repo = this.model.getRepository(repoLike);
+    const item: ICachedLog = {
+      entries: [],
+      isComplete: false,
+      svnTarget: {} as Uri,
+      repo: {} as IRemoteRepository,
+      persisted: {
+        commitFrom: rev,
+        userAdded: true
+      }
+    };
+    if (repo === undefined) {
+      try {
+        const uri = Uri.parse(repoLike);
+        if (rev !== "HEAD" && isNaN(parseInt(rev, 10))) {
+          throw new Error("erroneous revision");
+        }
+        const remRepo = await this.model.getRemoteRepository(uri);
+        item.repo = remRepo;
+        item.svnTarget = uri;
+      } catch {
+        window.showWarningMessage(
+          "Provided path doesn't look like SVN URI or erroneous revision"
+        );
+        return;
+      }
+    } else {
+      try {
+        const svninfo = await repo.getInfo(repoLike, rev);
+        item.repo = repo;
+        item.svnTarget = Uri.parse(svninfo.url);
+      } catch (e) {
+        window.showErrorMessage("Failed to resolve svn path");
+        return;
+      }
+    }
+
+    this.logCache.set(repoLike, item);
+    this._onDidChangeTreeData.fire();
+  }
+
+  public addRepolikeGui() {
     const box = window.createInputBox();
     box.prompt = "Enter SVN URL or local path";
     box.onDidAccept(() => {
@@ -122,55 +169,10 @@ export class RepoLogProvider implements TreeDataProvider<ILogTreeItem> {
       const box2 = window.createInputBox();
       box2.prompt = "Enter starting revision (optional)";
       box2.onDidAccept(async () => {
-        // TODO Refactor, now it's messy
-        // TODO persist user's custom repositories
-        const rev = box2.value || "HEAD";
-        const repo = this.model.getRepository(repoLike);
-        if (repo === undefined) {
-          try {
-            const uri = Uri.parse(repoLike);
-            if (rev !== "HEAD" && isNaN(parseInt(rev, 10))) {
-              throw new Error("erroneous revision");
-            }
-            const remRepo = await this.model.getRemoteRepository(uri);
-            this.logCache.set(repoLike, {
-              entries: [],
-              isComplete: false,
-              svnTarget: uri,
-              repo: remRepo,
-              persisted: {
-                commitFrom: rev,
-                userAdded: true
-              }
-            });
-            this._onDidChangeTreeData.fire();
-          } catch {
-            box2.dispose();
-            window.showWarningMessage(
-              "Provided path doesn't look like SVN URI or erroneous revision"
-            );
-            return;
-          }
-        } else {
-          try {
-            const svninfo = await repo.getInfo(repoLike, rev);
-            this.logCache.set(repoLike, {
-              entries: [],
-              isComplete: false,
-              svnTarget: Uri.parse(svninfo.url),
-              repo,
-              persisted: {
-                commitFrom: svninfo.revision,
-                userAdded: true
-              }
-            });
-            this._onDidChangeTreeData.fire();
-          } catch (e) {
-            window.showErrorMessage("Failed to resolve svn path");
-          }
-        }
+        const rev = box2.value;
         box2.dispose();
-      });
+        return this.addRepolike(repoLike, rev || "HEAD");
+      }, undefined);
       box2.show();
     });
     box.show();

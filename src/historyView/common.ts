@@ -25,10 +25,10 @@ export class SvnPath {
 export interface ICachedLog {
   entries: ISvnLogEntry[];
   // svn-like path
-  readonly svnTarget: Uri;
+  svnTarget: Uri;
   isComplete: boolean;
-  readonly repo: IRemoteRepository;
-  readonly persisted: {
+  repo: IRemoteRepository;
+  persisted: {
     readonly commitFrom: string;
     readonly userAdded?: boolean;
   };
