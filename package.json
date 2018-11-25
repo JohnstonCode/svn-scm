@@ -2,7 +2,7 @@
   "name": "svn-scm",
   "displayName": "SVN",
   "description": "Integrated Subversion source control",
-  "version": "1.45.2",
+  "version": "1.46.2",
   "publisher": "johnstoncode",
   "engines": {
     "vscode": "^1.28.0"
@@ -54,31 +54,31 @@
     "xml2js": "^0.4.19"
   },
   "devDependencies": {
-    "@semantic-release/changelog": "^3.0.0",
-    "@semantic-release/git": "^7.0.4",
-    "@types/glob": "^7.1.0",
+    "@semantic-release/changelog": "^3.0.1",
+    "@semantic-release/git": "^7.0.5",
+    "@types/glob": "^7.1.1",
     "@types/mocha": "^5.2.5",
-    "@types/node": "^10.11.7",
+    "@types/node": "^10.12.9",
     "@types/semver": "^5.5.0",
     "@types/tmp": "0.0.33",
     "@types/xml2js": "^0.4.3",
-    "commitizen": "^3.0.2",
+    "commitizen": "^3.0.4",
     "cz-conventional-changelog": "^2.1.0",
-    "decache": "^4.3.0",
+    "decache": "^4.4.1",
     "glob": "^7.1.2",
-    "husky": "^1.0.0",
+    "husky": "^1.1.4",
     "iconv-lite": "^0.4.23",
     "istanbul": "^0.4.5",
     "jschardet": "^1.6.0",
     "mocha": "^5.2.0",
-    "prettier": "^1.14.0",
-    "pretty-quick": "^1.6.0",
+    "prettier": "^1.15.2",
+    "pretty-quick": "^1.8.0",
     "remap-istanbul": "^0.12.0",
-    "semantic-release": "^15.9.8",
+    "semantic-release": "^15.12.0",
     "semantic-release-vsce": "^2.1.2",
     "tslint": "^5.11.0",
-    "typescript": "^3.0",
-    "vscode": "^1.1.21"
+    "typescript": "^3.1.6",
+    "vscode": "^1.1.18"
   },
   "config": {
     "commitizen": {
@@ -392,7 +392,7 @@
       },
       {
         "command": "svn.treeview.pullIncomingChange",
-        "title": "Pull selected changes",
+        "title": "Update selected",
         "category": "SVN"
       },
       {
@@ -994,6 +994,15 @@
           "type": "boolean",
           "description": "Refresh remote changes on refresh command",
           "default": false
+        },
+        "svn.sourceControl.changesLeftClick": {
+          "type": "string",
+          "enum": [
+            "open",
+            "open diff"
+          ],
+          "description": "Set left click functionality on changes resource state",
+          "default": "open diff"
         },
         "svn.gravatars.enabled": {
           "type": "boolean",

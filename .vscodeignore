@@ -2,13 +2,16 @@
 .github/**
 .vscode-test/**
 .vscode/**
+**/*.map
+**/*.ts
 coverage/**
 coverconfig.json
 jsconfig.json
 out/test/**
 out/tools/**
+package-lock.json
 src/**
 test/**
 tsconfig.json
+tslint.json
 vsc-extension-quickstart.md
-**/*.map
