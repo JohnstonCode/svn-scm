@@ -109,8 +109,7 @@ export enum Operation {
   Status = "Status",
   StatusRemote = "StatusRemote",
   SwitchBranch = "SwitchBranch",
-  Update = "Update",
-  Info = "Info"
+  Update = "Update"
 }
 
 export interface ISvnResourceGroup extends SourceControlResourceGroup {
