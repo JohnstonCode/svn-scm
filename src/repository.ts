@@ -19,6 +19,7 @@ import {
   IAuth,
   IFileStatus,
   IOperations,
+  ISvnInfo,
   ISvnResourceGroup,
   Operation,
   RepositoryState,
@@ -48,6 +49,7 @@ function shouldShowProgress(operation: Operation): boolean {
   switch (operation) {
     case Operation.CurrentBranch:
     case Operation.Show:
+    case Operation.Info:
       return false;
     default:
       return true;
@@ -141,6 +143,11 @@ export class Repository {
     return this.repository.workspaceRoot;
   }
 
+  /** 'svn://repo.x/branches/b1' e.g. */
+  get remoteRoot(): Uri {
+    return Uri.parse(this.repository.info.url);
+  }
+
   get inputBox(): SourceControlInputBox {
     return this.sourceControl.inputBox;
   }
@@ -186,9 +193,13 @@ export class Repository {
       /[\\\/]\.svn[\\\/]/.test(uri.path)
     );
 
+    // TODO on svn switch event fired two times since two files were changed
     onRelevantSvnChange(
-      this._onDidChangeRepository.fire,
-      this._onDidChangeRepository,
+      async (e: Uri) => {
+        await this.repository.updateInfo();
+        this._onDidChangeRepository.fire(e);
+      },
+      this,
       this.disposables
     );
 
@@ -742,7 +753,10 @@ export class Repository {
     return this.run(Operation.Status);
   }
 
-  public async show(filePath: string, revision?: string): Promise<string> {
+  public async show(
+    filePath: string | Uri,
+    revision?: string
+  ): Promise<string> {
     return this.run<string>(Operation.Show, () => {
       return this.repository.show(filePath, revision);
     });
@@ -841,12 +855,29 @@ export class Repository {
     );
   }
 
-  public async log() {
-    return this.run(Operation.Log, () => this.repository.log());
+  public async plainLog() {
+    return this.run(Operation.Log, () => this.repository.plainLog());
+  }
+
+  public async log(
+    rfrom: string,
+    rto: string,
+    limit: number,
+    target?: string | Uri
+  ) {
+    return this.run(Operation.Log, () =>
+      this.repository.log(rfrom, rto, limit, target)
+    );
   }
 
   public async cleanup() {
     return this.run(Operation.CleanUp, () => this.repository.cleanup());
+  }
+
+  public async getInfo(path: string, revision?: string): Promise<ISvnInfo> {
+    return this.run(Operation.Info, () =>
+      this.repository.getInfo(path, revision, true)
+    );
   }
 
   public async finishCheckout() {

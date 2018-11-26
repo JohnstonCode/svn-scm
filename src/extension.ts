@@ -8,6 +8,7 @@ import {
   window
 } from "vscode";
 import { registerCommands } from "./commands";
+import { ConstructorPolicy } from "./common/types";
 import SvnDecorations from "./decorations/svnDecorations";
 import { configuration } from "./helpers/configuration";
 import { Model } from "./model";
@@ -33,7 +34,7 @@ async function init(
 
   const info = await svnFinder.findSvn(pathHint);
   const svn = new Svn({ svnPath: info.path, version: info.version });
-  const model = new Model(svn);
+  const model = await new Model(svn, ConstructorPolicy.Async);
   const contentProvider = new SvnContentProvider(model);
 
   registerCommands(model, disposables);
