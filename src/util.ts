@@ -1,5 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
+import * as util from "util";
 import { commands, Event, window } from "vscode";
 import { Operation } from "./common/types";
 
@@ -157,6 +158,7 @@ export function isReadOnly(operation: Operation): boolean {
     case Operation.CurrentBranch:
     case Operation.Log:
     case Operation.Show:
+    case Operation.Info:
       return true;
     default:
       return false;
@@ -180,4 +182,11 @@ export function deleteDirectory(dirPath: string) {
     });
     fs.rmdirSync(dirPath);
   }
+}
+
+export function unwrap<T>(maybeT?: T): T {
+  if (maybeT === undefined) {
+    throw new Error("undefined unwrap");
+  }
+  return maybeT;
 }

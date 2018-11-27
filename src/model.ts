@@ -13,6 +13,7 @@ import {
   WorkspaceFoldersChangeEvent
 } from "vscode";
 import {
+  ConstructorPolicy,
   IModelChangeEvent,
   IOpenRepository,
   RepositoryState,
@@ -62,7 +63,10 @@ export class Model implements IDisposable {
     return this._svn;
   }
 
-  constructor(private _svn: Svn) {
+  constructor(private _svn: Svn, policy: ConstructorPolicy) {
+    if (policy !== ConstructorPolicy.Async) {
+      throw new Error("Unsopported policy");
+    }
     this.enabled = configuration.get<boolean>("enabled") === true;
 
     this.configurationChangeDisposable = workspace.onDidChangeConfiguration(
@@ -70,9 +74,12 @@ export class Model implements IDisposable {
       this
     );
 
-    if (this.enabled) {
-      this.enable();
-    }
+    return ((async (): Promise<Model> => {
+      if (this.enabled) {
+        await this.enable();
+      }
+      return this;
+    })() as unknown) as Model;
   }
 
   private onDidChangeConfiguration(): void {
@@ -93,7 +100,7 @@ export class Model implements IDisposable {
     }
   }
 
-  private enable(): void {
+  private async enable() {
     const multipleFolders = configuration.get<boolean>(
       "multipleFolders.enabled",
       false
@@ -110,7 +117,7 @@ export class Model implements IDisposable {
       this,
       this.disposables
     );
-    this.onDidChangeWorkspaceFolders({
+    await this.onDidChangeWorkspaceFolders({
       added: workspace.workspaceFolders || [],
       removed: []
     });
@@ -139,7 +146,7 @@ export class Model implements IDisposable {
       this.disposables
     );
 
-    this.scanWorkspaceFolders();
+    await this.scanWorkspaceFolders();
   }
 
   private onPossibleSvnRepositoryChange(uri: Uri): void {
@@ -257,7 +264,7 @@ export class Model implements IDisposable {
   private async scanWorkspaceFolders() {
     for (const folder of workspace.workspaceFolders || []) {
       const root = folder.uri.fsPath;
-      this.tryOpenRepository(root);
+      await this.tryOpenRepository(root);
     }
   }
 
@@ -299,7 +306,9 @@ export class Model implements IDisposable {
       try {
         const repositoryRoot = await this.svn.getRepositoryRoot(path);
 
-        const repository = new Repository(this.svn.open(repositoryRoot, path));
+        const repository = new Repository(
+          await this.svn.open(repositoryRoot, path)
+        );
 
         this.open(repository);
       } catch (err) {
@@ -317,19 +326,17 @@ export class Model implements IDisposable {
     const mm = new Minimatch("*");
     const newLevel = level + 1;
     if (newLevel <= this.maxDepth) {
-      fs.readdirSync(path).forEach(file => {
+      for (const file of fs.readdirSync(path)) {
         const dir = path + "/" + file;
 
         if (
           fs.statSync(dir).isDirectory() &&
           !mm.matchOne([dir], this.ignoreList, false)
         ) {
-          this.tryOpenRepository(dir, newLevel);
+          await this.tryOpenRepository(dir, newLevel);
         }
-      });
+      }
     }
-
-    return;
   }
 
   public getRepository(hint: any) {

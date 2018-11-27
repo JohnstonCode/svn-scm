@@ -1,3 +1,24 @@
+## [1.46.2](https://github.com/JohnstonCode/svn-scm/compare/v1.46.1...v1.46.2) (2018-11-19)
+
+
+### Bug Fixes
+
+* Fixed svn status letter in file explorer ([#419](https://github.com/JohnstonCode/svn-scm/issues/419)) ([da656c2](https://github.com/JohnstonCode/svn-scm/commit/da656c2))
+
+## [1.46.1](https://github.com/JohnstonCode/svn-scm/compare/v1.46.0...v1.46.1) (2018-11-19)
+
+
+### Bug Fixes
+
+* Changed "Pull selected changes" to "Update selected" to better reflect svn command name ([#416](https://github.com/JohnstonCode/svn-scm/issues/416)) ([4719239](https://github.com/JohnstonCode/svn-scm/commit/4719239))
+
+# [1.46.0](https://github.com/JohnstonCode/svn-scm/compare/v1.45.4...v1.46.0) (2018-11-19)
+
+
+### Features
+
+* Added config option to choose changes left click command ([#417](https://github.com/JohnstonCode/svn-scm/issues/417)) ([dc661cc](https://github.com/JohnstonCode/svn-scm/commit/dc661cc))
+
 ## [1.45.4](https://github.com/JohnstonCode/svn-scm/compare/v1.45.3...v1.45.4) (2018-11-17)
 
 

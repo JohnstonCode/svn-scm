@@ -3,10 +3,12 @@ import * as path from "path";
 import * as tmp from "tmp";
 import { Uri, workspace } from "vscode";
 import {
+  ConstructorPolicy,
   ICpOptions,
   IExecutionResult,
   IFileStatus,
   ISvnInfo,
+  ISvnLogEntry,
   Status
 } from "./common/types";
 import { sequentialize } from "./decorators";
@@ -14,12 +16,14 @@ import { getBranchName } from "./helpers/branch";
 import { configuration } from "./helpers/configuration";
 import { parseInfoXml } from "./infoParser";
 import { parseSvnList } from "./listParser";
+import { parseSvnLog } from "./logParser";
 import { parseStatusXml } from "./statusParser";
 import { Svn } from "./svn";
-import { fixPathSeparator } from "./util";
+import { fixPathSeparator, unwrap } from "./util";
 
 export class Repository {
-  private _info: { [index: string]: ISvnInfo } = {};
+  private _infoCache: { [index: string]: ISvnInfo } = {};
+  private _info?: ISvnInfo;
 
   public username?: string;
   public password?: string;
@@ -27,8 +31,26 @@ export class Repository {
   constructor(
     private svn: Svn,
     public root: string,
-    public workspaceRoot: string
-  ) {}
+    public workspaceRoot: string,
+    policy: ConstructorPolicy
+  ) {
+    if (policy === ConstructorPolicy.LateInit) {
+      console.error(
+        "Constructor called in sync fashion, test-only\n",
+        new Error().stack
+      );
+      return;
+    }
+    return ((async (): Promise<Repository> => {
+      await this.updateInfo();
+      return this;
+    })() as unknown) as Repository;
+  }
+
+  public async updateInfo() {
+    const result = await this.exec(["info", "--xml", this.root]);
+    this._info = await parseInfoXml(result.stdout);
+  }
 
   public async exec(
     args: string[],
@@ -102,17 +124,29 @@ export class Repository {
     return status;
   }
 
-  public resetInfo(file: string = "") {
-    delete this._info[file];
+  public get info(): ISvnInfo {
+    return unwrap(this._info);
+  }
+
+  public resetInfoCache(file: string = "") {
+    delete this._infoCache[file];
   }
 
   @sequentialize
-  public async getInfo(file: string = ""): Promise<ISvnInfo> {
-    if (this._info[file]) {
-      return this._info[file];
+  public async getInfo(
+    file: string = "",
+    revision?: string,
+    skipCache: boolean = false
+  ): Promise<ISvnInfo> {
+    if (!skipCache && this._infoCache[file]) {
+      return this._infoCache[file];
     }
 
     const args = ["info", "--xml"];
+
+    if (revision) {
+      args.push("-r", revision);
+    }
 
     if (file) {
       file = fixPathSeparator(file);
@@ -121,42 +155,51 @@ export class Repository {
 
     const result = await this.exec(args);
 
-    this._info[file] = await parseInfoXml(result.stdout);
+    this._infoCache[file] = await parseInfoXml(result.stdout);
 
     // Cache for 2 minutes
     setTimeout(() => {
-      this.resetInfo(file);
+      this.resetInfoCache(file);
     }, 2 * 60 * 1000);
 
-    return this._info[file];
+    return this._infoCache[file];
   }
 
   public async show(
-    file: string,
+    file: string | Uri,
     revision?: string,
     options: ICpOptions = {}
   ): Promise<string> {
-    const uri = Uri.file(file);
-    file = this.removeAbsolutePath(file);
     const args = ["cat"];
-
-    if (revision) {
-      if (!["BASE", "COMMITTED", "PREV"].includes(revision.toUpperCase())) {
-        const info = await this.getInfo();
-
-        args.push(info.url + "/" + file.replace(/\\/g, "/"));
-        args.push("-r", revision);
-      } else {
-        args.push(file);
-        args.push("-r", revision);
-      }
+    let target: string;
+    if (file instanceof Uri) {
+      target = file.toString();
     } else {
-      args.push(file);
+      target = file;
+    }
+    if (revision) {
+      args.push("-r", revision);
+      if (
+        typeof file === "string" &&
+        !["BASE", "COMMITTED", "PREV"].includes(revision.toUpperCase())
+      ) {
+        const info = await this.getInfo();
+        target = this.removeAbsolutePath(target);
+        target = info.url + "/" + target.replace(/\\/g, "/");
+        // TODO move to SvnRI
+      }
     }
 
-    const encoding = workspace
-      .getConfiguration("files", uri)
-      .get<string>("encoding", "utf8");
+    args.push(target);
+
+    let encoding = "utf8";
+    if (typeof file === "string") {
+      const uri = Uri.file(file);
+      file = this.removeAbsolutePath(file);
+      encoding = workspace
+        .getConfiguration("files", uri)
+        .get<string>("encoding", encoding);
+    }
 
     const result = await this.exec(args, { encoding });
 
@@ -365,7 +408,7 @@ export class Repository {
       ["switch", branchUrl].concat(force ? ["--ignore-ancestry"] : [])
     );
 
-    this.resetInfo();
+    this.resetInfoCache();
     return true;
   }
 
@@ -384,7 +427,7 @@ export class Repository {
 
     const result = await this.exec(args);
 
-    this.resetInfo();
+    this.resetInfoCache();
 
     const message = result.stdout
       .trim()
@@ -402,7 +445,7 @@ export class Repository {
 
     const result = await this.exec(args);
 
-    this.resetInfo();
+    this.resetInfoCache();
 
     const message = result.stdout
       .trim()
@@ -451,7 +494,7 @@ export class Repository {
     return result.stdout;
   }
 
-  public async log() {
+  public async plainLog(): Promise<string> {
     const logLength = configuration.get<string>("log.length") || "50";
     const result = await this.exec([
       "log",
@@ -462,6 +505,28 @@ export class Repository {
     ]);
 
     return result.stdout;
+  }
+
+  public async log(
+    rfrom: string,
+    rto: string,
+    limit: number,
+    target?: string | Uri
+  ): Promise<ISvnLogEntry[]> {
+    const args = [
+      "log",
+      "-r",
+      `${rfrom}:${rto}`,
+      `--limit=${limit}`,
+      "--xml",
+      "-v"
+    ];
+    if (target !== undefined) {
+      args.push(target.toString());
+    }
+    const result = await this.exec(args);
+
+    return parseSvnLog(result.stdout);
   }
 
   public async countNewCommit(revision: string = "BASE:HEAD") {
