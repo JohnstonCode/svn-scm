@@ -42,7 +42,7 @@ export interface ISvnInfo {
     root: string;
     uuid: string;
   };
-  wcInfo: {
+  wcInfo?: {
     wcrootAbspath: string;
     uuid: string;
   };
