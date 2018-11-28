@@ -1,3 +1,10 @@
+## [1.46.3](https://github.com/JohnstonCode/svn-scm/compare/v1.46.2...v1.46.3) (2018-11-28)
+
+
+### Bug Fixes
+
+* Fix ignore SCM context menu ([#425](https://github.com/JohnstonCode/svn-scm/issues/425)) ([8f55f24](https://github.com/JohnstonCode/svn-scm/commit/8f55f24))
+
 ## [1.46.2](https://github.com/JohnstonCode/svn-scm/compare/v1.46.1...v1.46.2) (2018-11-19)
 
 
