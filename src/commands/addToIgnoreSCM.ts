@@ -3,7 +3,7 @@ import { Command } from "./command";
 
 export class AddToIgnoreSCM extends Command {
   constructor() {
-    super("svn.addToIgnoreSCM", { repository: true });
+    super("svn.addToIgnoreSCM");
   }
 
   public async execute(...resourceStates: SourceControlResourceState[]) {
