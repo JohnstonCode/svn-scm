@@ -101,8 +101,7 @@ export abstract class Command implements Disposable {
   ): Promise<Resource[]> {
     if (
       resourceStates.length === 0 ||
-      (!(resourceStates[0].resourceUri instanceof Uri) &&
-        !(resourceStates[0] instanceof Repository))
+      !(resourceStates[0].resourceUri instanceof Uri)
     ) {
       const resource = await this.getSCMResource();
 
