@@ -118,10 +118,6 @@ export class Model implements IDisposable {
       this,
       this.disposables
     );
-    await this.onDidChangeWorkspaceFolders({
-      added: workspace.workspaceFolders || [],
-      removed: []
-    });
 
     const fsWatcher = workspace.createFileSystemWatcher("**");
     this.disposables.push(fsWatcher);
@@ -269,7 +265,6 @@ export class Model implements IDisposable {
     }
   }
 
-  @sequentialize
   public async tryOpenRepository(path: string, level = 0): Promise<void> {
     if (this.getRepository(path)) {
       return;
