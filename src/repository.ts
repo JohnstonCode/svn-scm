@@ -1,4 +1,3 @@
-import { Minimatch } from "minimatch";
 import * as path from "path";
 import { clearInterval, setInterval } from "timers";
 import {
@@ -44,6 +43,7 @@ import {
   timeout,
   toDisposable
 } from "./util";
+import { match, matchAll } from "./util/globMatch";
 
 function shouldShowProgress(operation: Operation): boolean {
   switch (operation) {
@@ -349,9 +349,7 @@ export class Repository {
       "delete.ignoredRulesForDeletedFiles",
       []
     );
-    const rules = ignoredRulesForDeletedFiles.map(
-      ignored => new Minimatch(ignored)
-    );
+    const rules = ignoredRulesForDeletedFiles.map(ignored => match(ignored));
 
     if (rules.length) {
       uris = uris.filter(uri => {
@@ -527,8 +525,7 @@ export class Repository {
         continue;
       }
 
-      const mm = new Minimatch("*");
-      if (mm.matchOne([status.path], excludeList, false)) {
+      if (matchAll(status.path, excludeList, { dot: true })) {
         continue;
       }
 
