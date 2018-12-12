@@ -116,6 +116,10 @@ export class RepoLogProvider implements TreeDataProvider<ILogTreeItem> {
         userAdded: true
       }
     };
+    if (this.logCache.has(repoLike)) {
+      window.showWarningMessage("This path is already added");
+      return;
+    }
     const repo = this.model.getRepository(repoLike);
     if (repo === undefined) {
       try {
