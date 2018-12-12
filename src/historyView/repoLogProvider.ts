@@ -18,6 +18,7 @@ import {
 } from "../common/types";
 import { Model } from "../model";
 import { IRemoteRepository } from "../remoteRepository";
+import { Repository } from "../repository";
 import { unwrap } from "../util";
 import {
   checkIfFile,
@@ -312,11 +313,15 @@ export class RepoLogProvider implements TreeDataProvider<ILogTreeItem> {
         TreeItemCollapsibleState.Collapsed
       );
       if (cached.persisted.userAdded) {
-        ti.iconPath = getIconObject("folder");
+        ti.label = "∘ " + ti.label;
         ti.contextValue = "userrepo";
       } else {
-        ti.iconPath = getIconObject("icon-repo");
         ti.contextValue = "repo";
+      }
+      if (cached.repo instanceof Repository) {
+        ti.iconPath = getIconObject("folder");
+      } else {
+        ti.iconPath = getIconObject("icon-repo");
       }
       const from = cached.persisted.commitFrom || "HEAD";
       ti.tooltip = `${svnTarget} since ${from}`;
