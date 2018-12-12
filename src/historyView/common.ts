@@ -24,12 +24,13 @@ export class SvnPath {
 
 export interface ICachedLog {
   entries: ISvnLogEntry[];
-  // svn-like path
+  // Uri of svn repository
   svnTarget: Uri;
   isComplete: boolean;
   repo: IRemoteRepository;
   persisted: {
     readonly commitFrom: string;
+    baseRevision?: number;
     readonly userAdded?: boolean;
   };
 }
@@ -89,6 +90,27 @@ function needFetch(
     return false;
   }
   return true;
+}
+
+export function insertBaseMarker(
+  item: ICachedLog,
+  entries: ISvnLogEntry[],
+  out: ILogTreeItem[]
+): TreeItem | undefined {
+  const baseRev = item.persisted.baseRevision;
+  if (
+    entries.length &&
+    baseRev &&
+    parseInt(entries[0].revision, 10) > baseRev
+  ) {
+    let i = 1;
+    while (entries.length > i && parseInt(entries[i].revision, 10) > baseRev) {
+      i++;
+    }
+    const titem = new TreeItem("BASE");
+    out.splice(i, 0, { kind: LogTreeItemKind.Action, data: titem });
+  }
+  return undefined;
 }
 
 export function checkIfFile(e: SvnRI, local: boolean): boolean | undefined {

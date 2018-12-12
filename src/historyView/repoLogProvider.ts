@@ -29,6 +29,7 @@ import {
   getLimit,
   ICachedLog,
   ILogTreeItem,
+  insertBaseMarker,
   LogTreeItemKind,
   SvnPath,
   transform
@@ -105,17 +106,17 @@ export class RepoLogProvider implements TreeDataProvider<ILogTreeItem> {
 
   private async addRepolike(repoLike: string, rev: string) {
     // TODO save user's custom repositories
-    const repo = this.model.getRepository(repoLike);
     const item: ICachedLog = {
       entries: [],
       isComplete: false,
-      svnTarget: {} as Uri,
-      repo: {} as IRemoteRepository,
+      svnTarget: {} as Uri, // later
+      repo: {} as IRemoteRepository, // later
       persisted: {
         commitFrom: rev,
         userAdded: true
       }
     };
+    const repo = this.model.getRepository(repoLike);
     if (repo === undefined) {
       try {
         const uri = Uri.parse(repoLike);
@@ -136,6 +137,7 @@ export class RepoLogProvider implements TreeDataProvider<ILogTreeItem> {
         const svninfo = await repo.getInfo(repoLike, rev);
         item.repo = repo;
         item.svnTarget = Uri.parse(svninfo.url);
+        item.persisted.baseRevision = parseInt(svninfo.revision, 10);
       } catch (e) {
         window.showErrorMessage("Failed to resolve svn path");
         return;
@@ -268,8 +270,9 @@ export class RepoLogProvider implements TreeDataProvider<ILogTreeItem> {
       for (const repo of this.model.repositories) {
         const remoteRoot = repo.branchRoot;
         const repoUrl = remoteRoot.toString(true);
-        let persisted = {
-          commitFrom: "HEAD"
+        let persisted: ICachedLog["persisted"] = {
+          commitFrom: "HEAD",
+          baseRevision: parseInt(repo.repository.info.revision, 10)
         };
         const prev = this.logCache.get(repoUrl);
         if (prev) {
@@ -356,6 +359,7 @@ export class RepoLogProvider implements TreeDataProvider<ILogTreeItem> {
         await fetchMore(cached);
       }
       const result = transform(logentries, LogTreeItemKind.Commit, element);
+      insertBaseMarker(cached, logentries, result);
       if (!cached.isComplete) {
         const ti = new TreeItem(`Load another ${limit} revisions`);
         ti.tooltip = "Paging size may be adjusted using log.length setting";

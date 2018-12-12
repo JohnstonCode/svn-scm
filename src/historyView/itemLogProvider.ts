@@ -22,6 +22,7 @@ import {
   getLimit,
   ICachedLog,
   ILogTreeItem,
+  insertBaseMarker,
   LogTreeItemKind,
   transform
 } from "./common";
@@ -128,7 +129,8 @@ export class ItemLogProvider implements TreeDataProvider<ILogTreeItem> {
               repo,
               svnTarget: Uri.parse(info.url),
               persisted: {
-                commitFrom: info.revision
+                commitFrom: "HEAD",
+                baseRevision: parseInt(info.revision, 10)
               }
             };
           } catch (e) {
@@ -169,13 +171,12 @@ export class ItemLogProvider implements TreeDataProvider<ILogTreeItem> {
       if (this.currentItem === undefined) {
         return [];
       }
-      if (this.currentItem.entries.length === 0) {
+      const entries = this.currentItem.entries;
+      if (entries.length === 0) {
         await fetchMore(this.currentItem);
       }
-      const result = transform(
-        this.currentItem.entries,
-        LogTreeItemKind.Commit
-      );
+      const result = transform(entries, LogTreeItemKind.Commit);
+      insertBaseMarker(this.currentItem, entries, result);
       if (!this.currentItem.isComplete) {
         const ti = new TreeItem(`Load another ${getLimit()} revisions`);
         const ltItem: ILogTreeItem = {
