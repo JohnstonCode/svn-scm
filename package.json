@@ -576,6 +576,10 @@
         {
           "command": "svn.repolog.openFileLocal",
           "when": "view == repolog && viewItem == diffable"
+        },
+        {
+          "command": "svn.repolog.refresh",
+          "when": "view == repolog && viewItem =~ /.*repo/"
         }
       ],
       "scm/title": [

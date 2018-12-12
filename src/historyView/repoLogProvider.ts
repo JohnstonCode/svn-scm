@@ -96,7 +96,7 @@ export class RepoLogProvider implements TreeDataProvider<ILogTreeItem> {
     commands.registerCommand("svn.repolog.refresh", this.refresh, this);
     this.model.onDidChangeRepository(async (e: IModelChangeEvent) => {
       return this.refresh();
-    }, this);
+    });
   }
 
   public removeRepo(element: ILogTreeItem) {
@@ -259,7 +259,7 @@ export class RepoLogProvider implements TreeDataProvider<ILogTreeItem> {
     );
   }
 
-  public async refresh(element?: ILogTreeItem) {
+  public async refresh(element?: ILogTreeItem, fetchMoreClick?: boolean) {
     if (element === undefined) {
       for (const [k, v] of this.logCache) {
         // Remove auto-added repositories
@@ -288,7 +288,12 @@ export class RepoLogProvider implements TreeDataProvider<ILogTreeItem> {
       }
     } else if (element.kind === LogTreeItemKind.Repo) {
       const cached = this.getCached(element);
-      await fetchMore(cached);
+      if (fetchMoreClick) {
+        await fetchMore(cached);
+      } else {
+        cached.entries = [];
+        cached.isComplete = false;
+      }
     }
     this._onDidChangeTreeData.fire(element);
   }
@@ -307,6 +312,7 @@ export class RepoLogProvider implements TreeDataProvider<ILogTreeItem> {
         ti.contextValue = "userrepo";
       } else {
         ti.iconPath = getIconObject("icon-repo");
+        ti.contextValue = "repo";
       }
       const from = cached.persisted.commitFrom || "HEAD";
       ti.tooltip = `${svnTarget} since ${from}`;
@@ -365,7 +371,7 @@ export class RepoLogProvider implements TreeDataProvider<ILogTreeItem> {
         ti.tooltip = "Paging size may be adjusted using log.length setting";
         ti.command = {
           command: "svn.repolog.refresh",
-          arguments: [element],
+          arguments: [element, true],
           title: "refresh element"
         };
         ti.iconPath = getIconObject("icon-unfold");
