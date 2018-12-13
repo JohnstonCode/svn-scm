@@ -5,7 +5,7 @@
   "version": "1.46.2",
   "publisher": "johnstoncode",
   "engines": {
-    "vscode": "^1.28.0"
+    "vscode": "^1.30.0"
   },
   "private": true,
   "enableProposedApi": false,
@@ -153,6 +153,11 @@
         "command": "svn.repolog.openFileLocal",
         "category": "Log",
         "title": "Open WC version of a file"
+      },
+      {
+        "command": "svn.repolog.copymsg",
+        "category": "Log",
+        "title": "Copy message to clipboard"
       },
       {
         "command": "svn.itemlog.openFileRemote",
@@ -566,6 +571,10 @@
           "group": "1_diff"
         },
         {
+          "command": "svn.itemlog.copymsg",
+          "when": "view == itemlog"
+        },
+        {
           "command": "svn.repolog.openDiff",
           "when": "view == repolog && viewItem == diffable"
         },
@@ -580,6 +589,10 @@
         {
           "command": "svn.repolog.refresh",
           "when": "view == repolog && viewItem =~ /.*repo/"
+        },
+        {
+          "command": "svn.repolog.copymsg",
+          "when": "view == repolog && viewItem == commit"
         }
       ],
       "scm/title": [

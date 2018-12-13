@@ -57,6 +57,9 @@ async function init(
   commands.registerCommand("svn.itemlog.copymsg", async (item: ILogTreeItem) =>
     copyCommitToClipboard("msg", item)
   );
+  commands.registerCommand("svn.repolog.copymsg", async (item: ILogTreeItem) =>
+    copyCommitToClipboard("msg", item)
+  );
 
   // First, check the vscode has support to DecorationProvider
   if (hasSupportToDecorationProvider()) {
