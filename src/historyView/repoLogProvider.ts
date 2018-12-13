@@ -126,16 +126,28 @@ export class RepoLogProvider implements TreeDataProvider<ILogTreeItem> {
     const repo = this.model.getRepository(repoLike);
     if (repo === undefined) {
       try {
-        const uri = Uri.parse(repoLike);
+        let uri: Uri;
+        if (repoLike.startsWith("^")) {
+          const wsrepo = this.model.getRepository(
+            unwrap(workspace.workspaceFolders)[0].uri
+          );
+          if (!wsrepo) {
+            throw new Error("No repository in workspace root");
+          }
+          const info = await wsrepo.getInfo(repoLike);
+          uri = Uri.parse(info.url);
+        } else {
+          uri = Uri.parse(repoLike);
+        }
         if (rev !== "HEAD" && isNaN(parseInt(rev, 10))) {
           throw new Error("erroneous revision");
         }
         const remRepo = await this.model.getRemoteRepository(uri);
         item.repo = remRepo;
         item.svnTarget = uri;
-      } catch {
+      } catch (e) {
         window.showWarningMessage(
-          "Provided path doesn't look like SVN URI or erroneous revision"
+          "Failed to add repo: " + (e instanceof Error ? e.message : "")
         );
         return;
       }
@@ -151,7 +163,12 @@ export class RepoLogProvider implements TreeDataProvider<ILogTreeItem> {
       }
     }
 
-    this.logCache.set(repoLike, item);
+    const repoName = item.svnTarget.toString(true);
+    if (this.logCache.has(repoName)) {
+      window.showWarningMessage("Repository with this name already exists");
+      return;
+    }
+    this.logCache.set(repoName, item);
     this._onDidChangeTreeData.fire();
   }
 
