@@ -97,6 +97,7 @@ export class RepoLogProvider implements TreeDataProvider<ILogTreeItem> {
     commands.registerCommand("svn.repolog.refresh", this.refresh, this);
     this.model.onDidChangeRepository(async (e: IModelChangeEvent) => {
       return this.refresh();
+      // TODO refresh only required repo, need to pass element === getChildren()
     });
   }
 
@@ -115,7 +116,8 @@ export class RepoLogProvider implements TreeDataProvider<ILogTreeItem> {
       persisted: {
         commitFrom: rev,
         userAdded: true
-      }
+      },
+      order: this.logCache.size
     };
     if (this.logCache.has(repoLike)) {
       window.showWarningMessage("This path is already added");
@@ -288,7 +290,8 @@ export class RepoLogProvider implements TreeDataProvider<ILogTreeItem> {
           isComplete: false,
           repo,
           svnTarget: remoteRoot,
-          persisted
+          persisted,
+          order: this.logCache.size
         });
       }
     } else if (element.kind === LogTreeItemKind.Repo) {
@@ -363,7 +366,16 @@ export class RepoLogProvider implements TreeDataProvider<ILogTreeItem> {
   ): Promise<ILogTreeItem[]> {
     if (element === undefined) {
       return transform(
-        Array.from(this.logCache.keys()).map(s => new SvnPath(s)),
+        Array.from(this.logCache.entries())
+          .sort(
+            ([lk, lv], [rk, rv]): number => {
+              if (lv.persisted.userAdded !== rv.persisted.userAdded) {
+                return lv.persisted.userAdded ? 1 : -1;
+              }
+              return lv.order - rv.order;
+            }
+          )
+          .map(([k, v]) => new SvnPath(k)),
         LogTreeItemKind.Repo
       );
     } else if (element.kind === LogTreeItemKind.Repo) {

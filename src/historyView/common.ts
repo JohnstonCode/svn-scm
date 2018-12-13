@@ -33,6 +33,7 @@ export interface ICachedLog {
     baseRevision?: number;
     readonly userAdded?: boolean;
   };
+  order: number;
 }
 
 type TreeItemData = ISvnLogEntry | ISvnLogEntryPath | SvnPath | TreeItem;

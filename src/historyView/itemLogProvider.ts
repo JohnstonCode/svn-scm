@@ -131,7 +131,8 @@ export class ItemLogProvider implements TreeDataProvider<ILogTreeItem> {
               persisted: {
                 commitFrom: "HEAD",
                 baseRevision: parseInt(info.revision, 10)
-              }
+              },
+              order: 0
             };
           } catch (e) {
             // doesn't belong to this repo
