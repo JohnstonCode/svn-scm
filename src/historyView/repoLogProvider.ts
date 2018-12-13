@@ -348,8 +348,8 @@ export class RepoLogProvider implements TreeDataProvider<ILogTreeItem> {
       ti.iconPath = getActionIcon(pathElem.action);
       ti.contextValue = "diffable";
       ti.command = {
-        command: "svn.repolog.openFileLocal",
-        title: "try to open WC version of a file",
+        command: "svn.repolog.openDiff",
+        title: "Open diff",
         arguments: [element]
       };
     } else if (element.kind === LogTreeItemKind.Action) {
