@@ -522,7 +522,7 @@ export class Repository {
       "-v"
     ];
     if (target !== undefined) {
-      args.push(target.toString());
+      args.push(target instanceof Uri ? target.toString(true) : target);
     }
     const result = await this.exec(args);
 
