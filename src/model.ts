@@ -21,6 +21,7 @@ import {
 } from "./common/types";
 import { debounce, sequentialize } from "./decorators";
 import { configuration } from "./helpers/configuration";
+import { RemoteRepository } from "./remoteRepository";
 import { Repository } from "./repository";
 import { Svn, svnErrorCodes } from "./svn";
 import SvnError from "./svnError";
@@ -332,6 +333,10 @@ export class Model implements IDisposable {
         }
       }
     }
+  }
+
+  public async getRemoteRepository(uri: Uri): Promise<RemoteRepository> {
+    return RemoteRepository.open(this.svn, uri);
   }
 
   public getRepository(hint: any) {
