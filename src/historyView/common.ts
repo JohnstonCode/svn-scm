@@ -71,7 +71,7 @@ export async function copyCommitToClipboard(what: string, item: ILogTreeItem) {
     switch (what) {
       case "msg":
       case "revision":
-        await env.clipboard.writeText(commit[what]);
+        await (env as any).clipboard.writeText(commit[what]);
     }
   }
 }
