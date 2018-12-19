@@ -118,7 +118,7 @@
     "commands": [
       {
         "command": "svn.repolog.addrepolike",
-        "category": "Log",
+        "category": "SVN",
         "title": "Add repo-like path",
         "icon": {
           "dark": "icons/dark/add.svg",
@@ -127,7 +127,7 @@
       },
       {
         "command": "svn.repolog.refresh",
-        "category": "Log",
+        "category": "SVN",
         "title": "Refresh log",
         "icon": {
           "dark": "icons/dark/refresh.svg",
@@ -136,27 +136,27 @@
       },
       {
         "command": "svn.repolog.remove",
-        "category": "Log",
+        "category": "SVN",
         "title": "Remove"
       },
       {
         "command": "svn.repolog.openDiff",
-        "category": "Log",
+        "category": "SVN",
         "title": "Open diff"
       },
       {
         "command": "svn.repolog.openFileRemote",
-        "category": "Log",
+        "category": "SVN",
         "title": "Open this revision"
       },
       {
         "command": "svn.repolog.openFileLocal",
-        "category": "Log",
+        "category": "SVN",
         "title": "Open WC version of a file"
       },
       {
         "command": "svn.repolog.copymsg",
-        "category": "Log",
+        "category": "SVN",
         "title": "Copy message to clipboard"
       },
       {
@@ -176,7 +176,7 @@
       },
       {
         "command": "svn.itemlog.refresh",
-        "category": "Log",
+        "category": "SVN",
         "title": "Refresh log for item",
         "icon": {
           "dark": "icons/dark/refresh.svg",
@@ -185,7 +185,7 @@
       },
       {
         "command": "svn.itemlog.copymsg",
-        "category": "Log",
+        "category": "SVN",
         "title": "Copy message to clipboard"
       },
       {
@@ -253,11 +253,6 @@
         "category": "SVN"
       },
       {
-        "command": "svn.openDiff",
-        "title": "Open diff",
-        "category": "SVN"
-      },
-      {
         "command": "svn.openFile",
         "title": "Open File",
         "category": "SVN",
@@ -265,11 +260,6 @@
           "light": "icons/light/open-file.svg",
           "dark": "icons/dark/open-file.svg"
         }
-      },
-      {
-        "command": "svn.openFileRemote",
-        "title": "Open this revision",
-        "category": "SVN"
       },
       {
         "command": "svn.openHEADFile",
@@ -510,6 +500,54 @@
         },
         {
           "command": "svn.deleteUnversioned",
+          "when": "false"
+        },
+        {
+          "command": "svn.repolog.addrepolike",
+          "when": "false"
+        },
+        {
+          "command": "svn.repolog.refresh",
+          "when": "false"
+        },
+        {
+          "command": "svn.repolog.remove",
+          "when": "false"
+        },
+        {
+          "command": "svn.repolog.openDiff",
+          "when": "false"
+        },
+        {
+          "command": "svn.repolog.openFileRemote",
+          "when": "false"
+        },
+        {
+          "command": "svn.repolog.openFileLocal",
+          "when": "false"
+        },
+        {
+          "command": "svn.repolog.copymsg",
+          "when": "false"
+        },
+        {
+          "command": "svn.itemlog.openFileRemote",
+          "when": "false"
+        },
+        {
+          "command": "svn.itemlog.openDiff",
+          "when": "false"
+        },
+        {
+          "command": "svn.itemlog.openDiffBase",
+          "when": "false"
+        },
+        {
+          "command": "svn.itemlog.refresh",
+          "when": "false"
+        },
+        {
+          "command": "svn.itemlog.copymsg",
           "when": "false"
         }
       ],

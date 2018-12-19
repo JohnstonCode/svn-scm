@@ -173,7 +173,7 @@ export class Repository {
     const args = ["cat"];
     let target: string;
     if (file instanceof Uri) {
-      target = file.toString();
+      target = file.toString(true);
     } else {
       target = file;
     }

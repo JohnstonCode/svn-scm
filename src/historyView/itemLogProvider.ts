@@ -24,6 +24,8 @@ import {
   ILogTreeItem,
   insertBaseMarker,
   LogTreeItemKind,
+  openDiff,
+  openFileRemote,
   transform
 } from "./common";
 
@@ -40,43 +42,32 @@ export class ItemLogProvider implements TreeDataProvider<ILogTreeItem> {
     window.onDidChangeActiveTextEditor(this.editorChanged, this);
     commands.registerCommand(
       "svn.itemlog.openFileRemote",
-      this.openFileRemote,
+      this.openFileRemoteCmd,
       this
     );
-    commands.registerCommand("svn.itemlog.openDiff", this.openDiff, this);
+    commands.registerCommand("svn.itemlog.openDiff", this.openDiffCmd, this);
     commands.registerCommand(
       "svn.itemlog.openDiffBase",
-      this.openDiffBase,
+      this.openDiffBaseCmd,
       this
     );
     commands.registerCommand("svn.itemlog.refresh", this.refresh, this);
     this.refresh();
   }
 
-  public openFileRemote(element: ILogTreeItem) {
+  public async openFileRemoteCmd(element: ILogTreeItem) {
     const commit = element.data as ISvnLogEntry;
     const item = unwrap(this.currentItem);
-    commands.executeCommand(
-      "svn.openFileRemote",
-      item.repo,
-      item.svnTarget,
-      commit.revision
-    );
+    return openFileRemote(item.repo, item.svnTarget, commit.revision);
   }
 
-  public openDiffBase(element: ILogTreeItem) {
+  public async openDiffBaseCmd(element: ILogTreeItem) {
     const commit = element.data as ISvnLogEntry;
     const item = unwrap(this.currentItem);
-    commands.executeCommand(
-      "svn.openDiff",
-      item.repo,
-      item.svnTarget,
-      commit.revision,
-      "BASE"
-    );
+    return openDiff(item.repo, item.svnTarget, commit.revision, "BASE");
   }
 
-  public openDiff(element: ILogTreeItem) {
+  public async openDiffCmd(element: ILogTreeItem) {
     const commit = element.data as ISvnLogEntry;
     const item = unwrap(this.currentItem);
     const pos = item.entries.findIndex(e => e === commit);
@@ -85,13 +76,7 @@ export class ItemLogProvider implements TreeDataProvider<ILogTreeItem> {
       return;
     }
     const prevRev = item.entries[pos + 1].revision;
-    commands.executeCommand(
-      "svn.openDiff",
-      item.repo,
-      item.svnTarget,
-      prevRev,
-      commit.revision
-    );
+    return openDiff(item.repo, item.svnTarget, prevRev, commit.revision);
   }
 
   public async editorChanged(te?: TextEditor) {

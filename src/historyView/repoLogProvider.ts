@@ -32,6 +32,8 @@ import {
   ILogTreeItem,
   insertBaseMarker,
   LogTreeItemKind,
+  openDiff,
+  openFileRemote,
   SvnPath,
   transform
 } from "./common";
@@ -85,10 +87,10 @@ export class RepoLogProvider implements TreeDataProvider<ILogTreeItem> {
     commands.registerCommand("svn.repolog.remove", this.removeRepo, this);
     commands.registerCommand(
       "svn.repolog.openFileRemote",
-      this.openFileRemote,
+      this.openFileRemoteCmd,
       this
     );
-    commands.registerCommand("svn.repolog.openDiff", this.openDiff, this);
+    commands.registerCommand("svn.repolog.openDiff", this.openDiffCmd, this);
     commands.registerCommand(
       "svn.repolog.openFileLocal",
       this.openFileLocal,
@@ -204,7 +206,7 @@ export class RepoLogProvider implements TreeDataProvider<ILogTreeItem> {
     box.show();
   }
 
-  public openFileRemote(element: ILogTreeItem) {
+  public openFileRemoteCmd(element: ILogTreeItem) {
     const commit = element.data as ISvnLogEntryPath;
     const item = this.getCached(element);
     const ri = item.repo.getPathNormalizer().parse(commit._);
@@ -212,12 +214,7 @@ export class RepoLogProvider implements TreeDataProvider<ILogTreeItem> {
       return;
     }
     const parent = (element.parent as ILogTreeItem).data as ISvnLogEntry;
-    commands.executeCommand(
-      "svn.openFileRemote",
-      item.repo,
-      ri.remoteFullPath,
-      parent.revision
-    );
+    return openFileRemote(item.repo, ri.remoteFullPath, parent.revision);
   }
 
   public openFileLocal(element: ILogTreeItem) {
@@ -230,7 +227,7 @@ export class RepoLogProvider implements TreeDataProvider<ILogTreeItem> {
     commands.executeCommand("vscode.open", unwrap(ri.localFullPath));
   }
 
-  public async openDiff(element: ILogTreeItem) {
+  public async openDiffCmd(element: ILogTreeItem) {
     const commit = element.data as ISvnLogEntryPath;
     const item = this.getCached(element);
     const ri = item.repo.getPathNormalizer().parse(commit._);
@@ -274,8 +271,7 @@ export class RepoLogProvider implements TreeDataProvider<ILogTreeItem> {
         }
       }
     }
-    commands.executeCommand(
-      "svn.openDiff",
+    return openDiff(
       item.repo,
       ri.remoteFullPath,
       prevRev.revision,
