@@ -164,7 +164,7 @@ export class ItemLogProvider
         title: "Open diff",
         arguments: [element]
       };
-    } else if (element.kind === LogTreeItemKind.Action) {
+    } else if (element.kind === LogTreeItemKind.TItem) {
       ti = element.data as TreeItem;
     } else {
       throw new Error("Shouldn't happen");
@@ -188,7 +188,7 @@ export class ItemLogProvider
       if (!this.currentItem.isComplete) {
         const ti = new TreeItem(`Load another ${getLimit()} revisions`);
         const ltItem: ILogTreeItem = {
-          kind: LogTreeItemKind.Action,
+          kind: LogTreeItemKind.TItem,
           data: ti
         };
         ti.tooltip = "Paging size may be adjusted using log.length setting";

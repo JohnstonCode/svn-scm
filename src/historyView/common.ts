@@ -19,7 +19,7 @@ export enum LogTreeItemKind {
   Repo = 1,
   Commit,
   CommitDetail,
-  Action
+  TItem
 }
 
 // svn:// or ^/ or WC-path
@@ -122,7 +122,7 @@ export function insertBaseMarker(
       i++;
     }
     const titem = new TreeItem("BASE");
-    out.splice(i, 0, { kind: LogTreeItemKind.Action, data: titem });
+    out.splice(i, 0, { kind: LogTreeItemKind.TItem, data: titem });
   }
   return undefined;
 }

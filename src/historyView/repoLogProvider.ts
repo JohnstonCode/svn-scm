@@ -391,7 +391,7 @@ export class RepoLogProvider
         title: "Open diff",
         arguments: [element]
       };
-    } else if (element.kind === LogTreeItemKind.Action) {
+    } else if (element.kind === LogTreeItemKind.TItem) {
       ti = element.data as TreeItem;
     } else {
       throw new Error("Unknown tree elem");
@@ -435,7 +435,7 @@ export class RepoLogProvider
           title: "refresh element"
         };
         ti.iconPath = getIconObject("icon-unfold");
-        result.push({ kind: LogTreeItemKind.Action, data: ti });
+        result.push({ kind: LogTreeItemKind.TItem, data: ti });
       }
       return result;
     } else if (element.kind === LogTreeItemKind.Commit) {
