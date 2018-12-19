@@ -22,6 +22,7 @@ import { Repository } from "../repository";
 import { unwrap } from "../util";
 import {
   checkIfFile,
+  copyCommitToClipboard,
   fetchMore,
   getCommitIcon,
   getCommitLabel,
@@ -79,6 +80,10 @@ export class RepoLogProvider implements TreeDataProvider<ILogTreeItem> {
 
   constructor(private model: Model) {
     this.refresh();
+    commands.registerCommand(
+      "svn.repolog.copymsg",
+      async (item: ILogTreeItem) => copyCommitToClipboard("msg", item)
+    );
     commands.registerCommand(
       "svn.repolog.addrepolike",
       this.addRepolikeGui,

@@ -54,13 +54,6 @@ async function init(
   const itemLogProvider = new ItemLogProvider(model);
   window.registerTreeDataProvider("itemlog", itemLogProvider);
 
-  commands.registerCommand("svn.itemlog.copymsg", async (item: ILogTreeItem) =>
-    copyCommitToClipboard("msg", item)
-  );
-  commands.registerCommand("svn.repolog.copymsg", async (item: ILogTreeItem) =>
-    copyCommitToClipboard("msg", item)
-  );
-
   // First, check the vscode has support to DecorationProvider
   if (hasSupportToDecorationProvider()) {
     const decoration = new SvnDecorations(model);

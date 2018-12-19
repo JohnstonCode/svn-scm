@@ -14,6 +14,7 @@ import { Model } from "../model";
 import { tempdir } from "../tempFiles";
 import { unwrap } from "../util";
 import {
+  copyCommitToClipboard,
   fetchMore,
   getCommitIcon,
   getCommitLabel,
@@ -40,6 +41,10 @@ export class ItemLogProvider implements TreeDataProvider<ILogTreeItem> {
 
   constructor(private model: Model) {
     window.onDidChangeActiveTextEditor(this.editorChanged, this);
+    commands.registerCommand(
+      "svn.itemlog.copymsg",
+      async (item: ILogTreeItem) => copyCommitToClipboard("msg", item)
+    );
     commands.registerCommand(
       "svn.itemlog.openFileRemote",
       this.openFileRemoteCmd,
