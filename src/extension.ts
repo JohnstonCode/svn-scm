@@ -11,7 +11,6 @@ import { registerCommands } from "./commands";
 import { ConstructorPolicy } from "./common/types";
 import SvnDecorations from "./decorations/svnDecorations";
 import { configuration } from "./helpers/configuration";
-import { copyCommitToClipboard, ILogTreeItem } from "./historyView/common";
 import { ItemLogProvider } from "./historyView/itemLogProvider";
 import { RepoLogProvider } from "./historyView/repoLogProvider";
 import { Model } from "./model";
