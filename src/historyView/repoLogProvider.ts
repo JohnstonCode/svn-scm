@@ -2,6 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 import {
   commands,
+  Disposable,
   Event,
   EventEmitter,
   TreeDataProvider,
@@ -19,7 +20,7 @@ import {
 import { Model } from "../model";
 import { IRemoteRepository } from "../remoteRepository";
 import { Repository } from "../repository";
-import { unwrap } from "../util";
+import { dispose, unwrap } from "../util";
 import {
   checkIfFile,
   copyCommitToClipboard,
@@ -61,7 +62,8 @@ function getActionIcon(action: string) {
   return getIconObject(name);
 }
 
-export class RepoLogProvider implements TreeDataProvider<ILogTreeItem> {
+export class RepoLogProvider
+  implements TreeDataProvider<ILogTreeItem>, Disposable {
   private _onDidChangeTreeData: EventEmitter<
     ILogTreeItem | undefined
   > = new EventEmitter<ILogTreeItem | undefined>();
@@ -69,6 +71,7 @@ export class RepoLogProvider implements TreeDataProvider<ILogTreeItem> {
     ._onDidChangeTreeData.event;
   // TODO on-disk cache?
   private readonly logCache: Map<string, ICachedLog> = new Map();
+  private _dispose: Disposable[] = [];
 
   private getCached(maybeItem?: ILogTreeItem): ICachedLog {
     const item = unwrap(maybeItem);
@@ -80,32 +83,50 @@ export class RepoLogProvider implements TreeDataProvider<ILogTreeItem> {
 
   constructor(private model: Model) {
     this.refresh();
-    commands.registerCommand(
-      "svn.repolog.copymsg",
-      async (item: ILogTreeItem) => copyCommitToClipboard("msg", item)
+    this._dispose.push(
+      commands.registerCommand(
+        "svn.repolog.copymsg",
+        async (item: ILogTreeItem) => copyCommitToClipboard("msg", item)
+      )
     );
-    commands.registerCommand(
-      "svn.repolog.addrepolike",
-      this.addRepolikeGui,
-      this
+    this._dispose.push(
+      commands.registerCommand(
+        "svn.repolog.addrepolike",
+        this.addRepolikeGui,
+        this
+      )
     );
-    commands.registerCommand("svn.repolog.remove", this.removeRepo, this);
-    commands.registerCommand(
-      "svn.repolog.openFileRemote",
-      this.openFileRemoteCmd,
-      this
+    this._dispose.push(
+      commands.registerCommand("svn.repolog.remove", this.removeRepo, this)
     );
-    commands.registerCommand("svn.repolog.openDiff", this.openDiffCmd, this);
-    commands.registerCommand(
-      "svn.repolog.openFileLocal",
-      this.openFileLocal,
-      this
+    this._dispose.push(
+      commands.registerCommand(
+        "svn.repolog.openFileRemote",
+        this.openFileRemoteCmd,
+        this
+      )
     );
-    commands.registerCommand("svn.repolog.refresh", this.refresh, this);
+    this._dispose.push(
+      commands.registerCommand("svn.repolog.openDiff", this.openDiffCmd, this)
+    );
+    this._dispose.push(
+      commands.registerCommand(
+        "svn.repolog.openFileLocal",
+        this.openFileLocal,
+        this
+      )
+    );
+    this._dispose.push(
+      commands.registerCommand("svn.repolog.refresh", this.refresh, this)
+    );
     this.model.onDidChangeRepository(async (e: IModelChangeEvent) => {
       return this.refresh();
       // TODO refresh only required repo, need to pass element === getChildren()
     });
+  }
+
+  public dispose() {
+    dispose(this._dispose);
   }
 
   public removeRepo(element: ILogTreeItem) {

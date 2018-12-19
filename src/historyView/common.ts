@@ -228,37 +228,42 @@ Revision: ${commit.revision}
 Message: ${commit.msg}`;
 }
 
+async function downloadFile(
+  repo: IRemoteRepository,
+  arg: Uri,
+  revision: string
+): Promise<Uri> {
+  if (revision === "BASE") {
+    const nm = repo.getPathNormalizer();
+    const ri = nm.parse(arg.toString(true));
+    const localPath = ri.localFullPath;
+    if (localPath === undefined || !fs.existsSync(localPath.path)) {
+      const errorMsg =
+        "BASE revision doesn't exist for " +
+        (localPath ? localPath.path : "remote path");
+      window.showErrorMessage(errorMsg);
+      throw new Error(errorMsg);
+    }
+    return localPath;
+  }
+  let out;
+  try {
+    out = await repo.show(arg, revision);
+  } catch (e) {
+    window.showErrorMessage("Failed to open path");
+    throw e;
+  }
+  return dumpSvnFile(arg, revision, out);
+}
+
 export async function openDiff(
   repo: IRemoteRepository,
   arg: Uri,
   r1: string,
   r2: string
 ) {
-  const getUri = async (revision: string): Promise<Uri> => {
-    if (revision === "BASE") {
-      const nm = repo.getPathNormalizer();
-      const ri = nm.parse(arg.toString(true));
-      const localPath = ri.localFullPath;
-      if (localPath === undefined || !fs.existsSync(localPath.path)) {
-        const errorMsg =
-          "BASE revision doesn't exist for " +
-          (localPath ? localPath.path : "remote path");
-        window.showErrorMessage(errorMsg);
-        throw new Error(errorMsg);
-      }
-      return localPath;
-    }
-    let out;
-    try {
-      out = await repo.show(arg, revision);
-    } catch (e) {
-      window.showErrorMessage("Failed to open path");
-      throw e;
-    }
-    return dumpSvnFile(arg, revision, out);
-  };
-  const uri1 = await getUri(r1);
-  const uri2 = await getUri(r2);
+  const uri1 = await downloadFile(repo, arg, r1);
+  const uri2 = await downloadFile(repo, arg, r2);
   const opts: TextDocumentShowOptions = {
     preview: true
   };

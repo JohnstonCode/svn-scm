@@ -1,5 +1,6 @@
 import {
   commands,
+  Disposable,
   Event,
   EventEmitter,
   TextEditor,
@@ -12,7 +13,7 @@ import {
 import { ISvnLogEntry, Status } from "../common/types";
 import { Model } from "../model";
 import { tempdir } from "../tempFiles";
-import { unwrap } from "../util";
+import { dispose, unwrap } from "../util";
 import {
   copyCommitToClipboard,
   fetchMore,
@@ -30,7 +31,8 @@ import {
   transform
 } from "./common";
 
-export class ItemLogProvider implements TreeDataProvider<ILogTreeItem> {
+export class ItemLogProvider
+  implements TreeDataProvider<ILogTreeItem>, Disposable {
   private _onDidChangeTreeData: EventEmitter<
     ILogTreeItem | undefined
   > = new EventEmitter<ILogTreeItem | undefined>();
@@ -38,26 +40,41 @@ export class ItemLogProvider implements TreeDataProvider<ILogTreeItem> {
     ._onDidChangeTreeData.event;
 
   private currentItem?: ICachedLog;
+  private _dispose: Disposable[] = [];
 
   constructor(private model: Model) {
     window.onDidChangeActiveTextEditor(this.editorChanged, this);
-    commands.registerCommand(
-      "svn.itemlog.copymsg",
-      async (item: ILogTreeItem) => copyCommitToClipboard("msg", item)
+    this._dispose.push(
+      commands.registerCommand(
+        "svn.itemlog.copymsg",
+        async (item: ILogTreeItem) => copyCommitToClipboard("msg", item)
+      )
     );
-    commands.registerCommand(
-      "svn.itemlog.openFileRemote",
-      this.openFileRemoteCmd,
-      this
+    this._dispose.push(
+      commands.registerCommand(
+        "svn.itemlog.openFileRemote",
+        this.openFileRemoteCmd,
+        this
+      )
     );
-    commands.registerCommand("svn.itemlog.openDiff", this.openDiffCmd, this);
-    commands.registerCommand(
-      "svn.itemlog.openDiffBase",
-      this.openDiffBaseCmd,
-      this
+    this._dispose.push(
+      commands.registerCommand("svn.itemlog.openDiff", this.openDiffCmd, this)
     );
-    commands.registerCommand("svn.itemlog.refresh", this.refresh, this);
+    this._dispose.push(
+      commands.registerCommand(
+        "svn.itemlog.openDiffBase",
+        this.openDiffBaseCmd,
+        this
+      )
+    );
+    this._dispose.push(
+      commands.registerCommand("svn.itemlog.refresh", this.refresh, this)
+    );
     this.refresh();
+  }
+
+  public dispose() {
+    dispose(this._dispose);
   }
 
   public async openFileRemoteCmd(element: ILogTreeItem) {

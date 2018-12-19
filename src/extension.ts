@@ -48,10 +48,12 @@ async function init(
 
   window.registerTreeDataProvider("svn", svnProvider);
 
-  const logProvider = new RepoLogProvider(model);
-  window.registerTreeDataProvider("repolog", logProvider);
+  const repoLogProvider = new RepoLogProvider(model);
+  disposables.push(repoLogProvider);
+  window.registerTreeDataProvider("repolog", repoLogProvider);
 
   const itemLogProvider = new ItemLogProvider(model);
+  disposables.push(itemLogProvider);
   window.registerTreeDataProvider("itemlog", itemLogProvider);
 
   // First, check the vscode has support to DecorationProvider
