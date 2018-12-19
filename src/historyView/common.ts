@@ -66,12 +66,17 @@ export function getIconObject(iconName: string): { light: Uri; dark: Uri } {
 }
 
 export async function copyCommitToClipboard(what: string, item: ILogTreeItem) {
+  const clipboard = (env as any).clipboard;
+  if (clipboard === undefined) {
+    window.showErrorMessage("Clipboard is supported in VS Code 1.30 and newer");
+    return;
+  }
   if (item.kind === LogTreeItemKind.Commit) {
     const commit = item.data as ISvnLogEntry;
     switch (what) {
       case "msg":
       case "revision":
-        await (env as any).clipboard.writeText(commit[what]);
+        await clipboard.writeText(commit[what]);
     }
   }
 }
