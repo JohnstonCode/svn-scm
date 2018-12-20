@@ -35,11 +35,12 @@ suite("Extension Tests", () => {
   // tslint:disable-next-line: only-arrow-functions
   test("should be able to activate the extension", function(done) {
     this.timeout(60 * 1000);
-    const extension = vscode.extensions.getExtension("johnstoncode.svn-scm");
+    const extension = vscode.extensions.getExtension(
+      "johnstoncode.svn-scm"
+    ) as vscode.Extension<any>;
 
     if (!extension) {
-      done("Extension not found");
-      return;
+      assert.fail("Extension not found");
     }
 
     if (!extension.isActive) {
@@ -48,7 +49,7 @@ suite("Extension Tests", () => {
           done();
         },
         () => {
-          done("Failed to activate extension");
+          assert.fail("Failed to activate extension");
         }
       );
     } else {
