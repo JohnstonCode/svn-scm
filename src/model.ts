@@ -1,12 +1,10 @@
 import * as fs from "fs";
-import { Minimatch } from "minimatch";
 import * as path from "path";
 import {
   commands,
   Disposable,
   Event,
   EventEmitter,
-  SourceControlResourceGroup,
   Uri,
   window,
   workspace,
@@ -19,7 +17,7 @@ import {
   RepositoryState,
   Status
 } from "./common/types";
-import { debounce, sequentialize } from "./decorators";
+import { debounce } from "./decorators";
 import { configuration } from "./helpers/configuration";
 import { RemoteRepository } from "./remoteRepository";
 import { Repository } from "./repository";
@@ -33,6 +31,7 @@ import {
   isDescendant,
   normalizePath
 } from "./util";
+import { matchAll } from "./util/globMatch";
 
 export class Model implements IDisposable {
   private _onDidOpenRepository = new EventEmitter<Repository>();
@@ -319,7 +318,6 @@ export class Model implements IDisposable {
       return;
     }
 
-    const mm = new Minimatch("*");
     const newLevel = level + 1;
     if (newLevel <= this.maxDepth) {
       for (const file of fs.readdirSync(path)) {
@@ -327,7 +325,7 @@ export class Model implements IDisposable {
 
         if (
           fs.statSync(dir).isDirectory() &&
-          !mm.matchOne([dir], this.ignoreList, false)
+          !matchAll(dir, this.ignoreList, { dot: true })
         ) {
           await this.tryOpenRepository(dir, newLevel);
         }
