@@ -20,6 +20,7 @@ install:
   - npm install --no-audit
 
 before_test:
+  - npm run style-check
   - npm run lint
   - npm run build
   # For coverage
