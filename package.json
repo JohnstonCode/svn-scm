@@ -610,7 +610,7 @@
         },
         {
           "command": "svn.itemlog.copymsg",
-          "when": "view == itemlog"
+          "when": "view == itemlog && viewItem == diffable"
         },
         {
           "command": "svn.repolog.openDiff",
