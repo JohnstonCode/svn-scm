@@ -122,6 +122,7 @@ export function insertBaseMarker(
       i++;
     }
     const titem = new TreeItem("BASE");
+    titem.tooltip = "Log entries above do not exist in working copy";
     out.splice(i, 0, { kind: LogTreeItemKind.TItem, data: titem });
   }
   return undefined;
