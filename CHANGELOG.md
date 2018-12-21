@@ -1,3 +1,15 @@
+# [1.47.0](https://github.com/JohnstonCode/svn-scm/compare/v1.46.4...v1.47.0) (2018-12-21)
+
+
+### Bug Fixes
+
+* Created matchAll function wrapper for minimatch so dir globs are properly ignored ([#432](https://github.com/JohnstonCode/svn-scm/issues/432)) ([dda6f13](https://github.com/JohnstonCode/svn-scm/commit/dda6f13))
+
+
+### Features
+
+* Added History lens ([#440](https://github.com/JohnstonCode/svn-scm/issues/440)) ([35988d1](https://github.com/JohnstonCode/svn-scm/commit/35988d1))
+
 ## [1.46.4](https://github.com/JohnstonCode/svn-scm/compare/v1.46.3...v1.46.4) (2018-12-05)
 
 
