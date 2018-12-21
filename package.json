@@ -86,15 +86,108 @@
     }
   },
   "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "svnActivity",
+          "title": "Subversion",
+          "icon": "icons/subversion-logo.svg"
+        }
+      ]
+    },
     "views": {
       "explorer": [
         {
           "id": "svn",
           "name": "SVN"
         }
+      ],
+      "svnActivity": [
+        {
+          "id": "repolog",
+          "name": "Repositories",
+          "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
+        },
+        {
+          "id": "itemlog",
+          "name": "File History",
+          "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
+        }
       ]
     },
     "commands": [
+      {
+        "command": "svn.repolog.addrepolike",
+        "category": "SVN",
+        "title": "Add repo-like path",
+        "icon": {
+          "dark": "icons/dark/add.svg",
+          "light": "icons/light/add.svg"
+        }
+      },
+      {
+        "command": "svn.repolog.refresh",
+        "category": "SVN",
+        "title": "Refresh log",
+        "icon": {
+          "dark": "icons/dark/refresh.svg",
+          "light": "icons/light/refresh.svg"
+        }
+      },
+      {
+        "command": "svn.repolog.remove",
+        "category": "SVN",
+        "title": "Remove"
+      },
+      {
+        "command": "svn.repolog.openDiff",
+        "category": "SVN",
+        "title": "Open diff"
+      },
+      {
+        "command": "svn.repolog.openFileRemote",
+        "category": "SVN",
+        "title": "Open this revision"
+      },
+      {
+        "command": "svn.repolog.openFileLocal",
+        "category": "SVN",
+        "title": "Open WC version of a file"
+      },
+      {
+        "command": "svn.repolog.copymsg",
+        "category": "SVN",
+        "title": "Copy message to clipboard"
+      },
+      {
+        "command": "svn.itemlog.openFileRemote",
+        "title": "Open this revision",
+        "category": "SVN"
+      },
+      {
+        "command": "svn.itemlog.openDiff",
+        "title": "Open diff",
+        "category": "SVN"
+      },
+      {
+        "command": "svn.itemlog.openDiffBase",
+        "title": "Open diff with BASE",
+        "category": "SVN"
+      },
+      {
+        "command": "svn.itemlog.refresh",
+        "category": "SVN",
+        "title": "Refresh log for item",
+        "icon": {
+          "dark": "icons/dark/refresh.svg",
+          "light": "icons/light/refresh.svg"
+        }
+      },
+      {
+        "command": "svn.itemlog.copymsg",
+        "category": "SVN",
+        "title": "Copy message to clipboard"
+      },
       {
         "command": "svn.checkout",
         "title": "Checkout",
@@ -408,12 +501,75 @@
         {
           "command": "svn.deleteUnversioned",
           "when": "false"
+        },
+        {
+          "command": "svn.repolog.addrepolike",
+          "when": "false"
+        },
+        {
+          "command": "svn.repolog.refresh",
+          "when": "false"
+        },
+        {
+          "command": "svn.repolog.remove",
+          "when": "false"
+        },
+        {
+          "command": "svn.repolog.openDiff",
+          "when": "false"
+        },
+        {
+          "command": "svn.repolog.openFileRemote",
+          "when": "false"
+        },
+        {
+          "command": "svn.repolog.openFileLocal",
+          "when": "false"
+        },
+        {
+          "command": "svn.repolog.copymsg",
+          "when": "false"
+        },
+        {
+          "command": "svn.itemlog.openFileRemote",
+          "when": "false"
+        },
+        {
+          "command": "svn.itemlog.openDiff",
+          "when": "false"
+        },
+        {
+          "command": "svn.itemlog.openDiffBase",
+          "when": "false"
+        },
+        {
+          "command": "svn.itemlog.refresh",
+          "when": "false"
+        },
+        {
+          "command": "svn.itemlog.copymsg",
+          "when": "false"
         }
       ],
       "view/title": [
         {
           "command": "svn.treeview.refreshProvider",
           "when": "view == svn",
+          "group": "navigation"
+        },
+        {
+          "command": "svn.repolog.refresh",
+          "when": "view == repolog",
+          "group": "navigation"
+        },
+        {
+          "command": "svn.repolog.addrepolike",
+          "when": "view == repolog",
+          "group": "navigation"
+        },
+        {
+          "command": "svn.itemlog.refresh",
+          "when": "view == itemlog",
           "group": "navigation"
         }
       ],
@@ -433,6 +589,48 @@
         {
           "command": "svn.openChangeHead",
           "when": "viewItem == incomingChange:modified"
+        },
+        {
+          "command": "svn.repolog.remove",
+          "when": "view == repolog && viewItem == userrepo"
+        },
+        {
+          "command": "svn.itemlog.openFileRemote",
+          "when": "view == itemlog && viewItem == diffable"
+        },
+        {
+          "command": "svn.itemlog.openDiff",
+          "when": "view == itemlog && viewItem == diffable",
+          "group": "1_diff"
+        },
+        {
+          "command": "svn.itemlog.openDiffBase",
+          "when": "view == itemlog && viewItem == diffable",
+          "group": "1_diff"
+        },
+        {
+          "command": "svn.itemlog.copymsg",
+          "when": "view == itemlog && viewItem == diffable"
+        },
+        {
+          "command": "svn.repolog.openDiff",
+          "when": "view == repolog && viewItem == diffable"
+        },
+        {
+          "command": "svn.repolog.openFileRemote",
+          "when": "view == repolog && viewItem == diffable"
+        },
+        {
+          "command": "svn.repolog.openFileLocal",
+          "when": "view == repolog && viewItem == diffable"
+        },
+        {
+          "command": "svn.repolog.refresh",
+          "when": "view == repolog && viewItem =~ /.*repo/"
+        },
+        {
+          "command": "svn.repolog.copymsg",
+          "when": "view == repolog && viewItem == commit"
         }
       ],
       "scm/title": [
@@ -860,6 +1058,11 @@
           ],
           "description": "Set left click functionality on changes resource state",
           "default": "open diff"
+        },
+        "svn.gravatars.enabled": {
+          "type": "boolean",
+          "description": "Use garavatar icons in log viewers",
+          "default": true
         }
       }
     }

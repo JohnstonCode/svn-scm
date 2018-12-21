@@ -11,6 +11,8 @@ import { registerCommands } from "./commands";
 import { ConstructorPolicy } from "./common/types";
 import SvnDecorations from "./decorations/svnDecorations";
 import { configuration } from "./helpers/configuration";
+import { ItemLogProvider } from "./historyView/itemLogProvider";
+import { RepoLogProvider } from "./historyView/repoLogProvider";
 import { Model } from "./model";
 import { Svn } from "./svn";
 import { SvnContentProvider } from "./svnContentProvider";
@@ -44,6 +46,14 @@ async function init(
   const svnProvider = new SvnProvider(model);
 
   window.registerTreeDataProvider("svn", svnProvider);
+
+  const repoLogProvider = new RepoLogProvider(model);
+  disposables.push(repoLogProvider);
+  window.registerTreeDataProvider("repolog", repoLogProvider);
+
+  const itemLogProvider = new ItemLogProvider(model);
+  disposables.push(itemLogProvider);
+  window.registerTreeDataProvider("itemlog", itemLogProvider);
 
   // First, check the vscode has support to DecorationProvider
   if (hasSupportToDecorationProvider()) {
