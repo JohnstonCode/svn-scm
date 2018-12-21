@@ -110,7 +110,7 @@
         },
         {
           "id": "itemlog",
-          "name": "Item History",
+          "name": "File History",
           "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
         }
       ]
