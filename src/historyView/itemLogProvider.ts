@@ -1,3 +1,4 @@
+import * as path from "path";
 import {
   commands,
   Disposable,
@@ -175,10 +176,20 @@ export class ItemLogProvider
   public async getChildren(
     element: ILogTreeItem | undefined
   ): Promise<ILogTreeItem[]> {
+    if (this.currentItem === undefined) {
+      return [];
+    }
     if (element === undefined) {
-      if (this.currentItem === undefined) {
-        return [];
-      }
+      const fname = path.basename(this.currentItem.svnTarget.fsPath);
+      const ti = new TreeItem(fname, TreeItemCollapsibleState.Expanded);
+      ti.tooltip = path.dirname(this.currentItem.svnTarget.fsPath);
+      ti.iconPath = getIconObject("icon-history");
+      const item = {
+        kind: LogTreeItemKind.TItem,
+        data: ti
+      };
+      return [item];
+    } else {
       const entries = this.currentItem.entries;
       if (entries.length === 0) {
         await fetchMore(this.currentItem);
@@ -202,6 +213,5 @@ export class ItemLogProvider
       }
       return result;
     }
-    return [];
   }
 }
