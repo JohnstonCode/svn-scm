@@ -95,17 +95,15 @@ export class SvnFinder {
       const child = cp.spawn(path, ["--version", "--quiet"]);
       child.stdout.on("data", (b: Buffer) => buffers.push(b));
       child.on("error", cpErrorHandler(e));
-      child.on(
-        "close",
-        code =>
-          code
-            ? e(new Error("Not found"))
-            : c({
-                path,
-                version: Buffer.concat(buffers)
-                  .toString("utf8")
-                  .trim()
-              })
+      child.on("close", code =>
+        code
+          ? e(new Error("Not found"))
+          : c({
+              path,
+              version: Buffer.concat(buffers)
+                .toString("utf8")
+                .trim()
+            })
       );
     });
   }
