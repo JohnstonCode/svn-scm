@@ -30,7 +30,6 @@ install:
   - sed -i.bak 's/"\*"//g' package.json
 
 script:
-  - npm run lint
   - npm test --silent
 
 after_success:
