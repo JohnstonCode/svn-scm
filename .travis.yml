@@ -30,6 +30,7 @@ install:
   - sed -i.bak 's/"\*"//g' package.json
 
 script:
+  - npm run style-check
   - npm test --silent
 
 after_success:
