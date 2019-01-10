@@ -73,30 +73,42 @@ function run(testsRoot: any, clb: any): any {
   }
 
   // Glob test files
-  glob("**/**.test.js", { cwd: testsRoot }, (error, files): any => {
-    if (error) {
-      return clb(error);
-    }
-    try {
-      // Fill into Mocha
-      files.forEach((f): Mocha => {
-        return mocha.addFile(paths.join(testsRoot, f));
-      });
-      // Run the tests
-      let failureCount = 0;
+  glob(
+    "**/**.test.js",
+    { cwd: testsRoot },
+    (error, files): any => {
+      if (error) {
+        return clb(error);
+      }
+      try {
+        // Fill into Mocha
+        files.forEach(
+          (f): Mocha => {
+            return mocha.addFile(paths.join(testsRoot, f));
+          }
+        );
+        // Run the tests
+        let failureCount = 0;
 
-      mocha
-        .run()
-        .on("fail", (test: any, err: any): void => {
-          failureCount++;
-        })
-        .on("end", (): void => {
-          clb(undefined, failureCount);
-        });
-    } catch (error) {
-      return clb(error);
+        mocha
+          .run()
+          .on(
+            "fail",
+            (test: any, err: any): void => {
+              failureCount++;
+            }
+          )
+          .on(
+            "end",
+            (): void => {
+              clb(undefined, failureCount);
+            }
+          );
+      } catch (error) {
+        return clb(error);
+      }
     }
-  });
+  );
 }
 exports.run = run;
 
