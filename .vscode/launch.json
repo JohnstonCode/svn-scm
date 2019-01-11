@@ -20,7 +20,7 @@
       "runtimeExecutable": "${execPath}",
       "args": [
         "--extensionDevelopmentPath=${workspaceRoot}",
-        "--extensionTestsPath=${workspaceFolder}/out/test/test-runner/jest-runner"
+        "--extensionTestsPath=${workspaceFolder}/out/test/test-runner"
       ],
       "stopOnEntry": false,
       "sourceMaps": true,

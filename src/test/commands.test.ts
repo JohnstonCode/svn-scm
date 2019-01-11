@@ -1,5 +1,5 @@
 import * as testUtil from "./testUtil";
-import { Uri, commands, workspace } from "vscode";
+import { Uri, commands } from "vscode";
 import { Model } from "../model";
 import * as path from "path";
 import * as fs from "fs";
