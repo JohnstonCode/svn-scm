@@ -1,4 +1,4 @@
-import * as testUtil from './testUtil';
+import * as testUtil from "./testUtil";
 import { Uri, commands } from "vscode";
 import { Model } from "../model";
 

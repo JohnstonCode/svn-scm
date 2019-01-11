@@ -44,14 +44,14 @@ describe("Commands Tests", () => {
     await commands.executeCommand("svn.refresh");
 
     expect(repository.unversioned.resourceStates.length).toBe(1);
-    expect(repository.changes.resourceStates.length).toBe(0)
+    expect(repository.changes.resourceStates.length).toBe(0);
 
     const resource = repository.unversioned.resourceStates[0];
 
     await commands.executeCommand("svn.add", resource);
 
     expect(repository.unversioned.resourceStates.length).toBe(0);
-    expect(repository.changes.resourceStates.length).toBe(1)
+    expect(repository.changes.resourceStates.length).toBe(1);
   });
 
   test("Commit file", async () => {

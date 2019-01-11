@@ -15,9 +15,7 @@ describe("Url parsing", () => {
   const nm1 = new PathNormalizer(ri1 as ISvnInfo);
 
   test("r1 ops", function() {
-    expect(nm1.branchRoot.toString()).toEqual(
-      Uri.parse(ri1.url).toString()
-    );
+    expect(nm1.branchRoot.toString()).toEqual(Uri.parse(ri1.url).toString());
     expect(nm1.repoRoot.toString()).toEqual(
       Uri.parse(ri1.repository.root).toString()
     );
