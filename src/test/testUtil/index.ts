@@ -2,13 +2,11 @@
 
 import * as cp from "child_process";
 import { ChildProcess, SpawnOptions } from "child_process";
-import * as fs from "fs";
-import * as os from "os";
-import { type } from "os";
 import * as path from "path";
 import * as tmp from "tmp";
 import { extensions, Uri, window } from "vscode";
-import { timeout } from "../util";
+import { timeout } from "../../util";
+import * as fs from "fs";
 
 tmp.setGracefulCleanup();
 
@@ -26,25 +24,6 @@ export function spawn(
   options?: SpawnOptions
 ): ChildProcess {
   const proc = cp.spawn(command, args, options);
-
-  // let fullCommand = "command: " + command;
-
-  // if (args) {
-  //   fullCommand += ' "' + args.join('" "') + '"';
-  // }
-  // console.log(fullCommand);
-
-  // proc.stdout.on("data", function(data) {
-  //   console.log("stdout: " + data.toString());
-  // });
-
-  // proc.stderr.on("data", function(data) {
-  //   console.log("stderr: " + data.toString());
-  // });
-
-  // proc.on("exit", function(code) {
-  //   console.log("child process exited with code " + code.toString());
-  // });
 
   return proc;
 }
@@ -109,7 +88,6 @@ export async function createStandardLayout(
   tags = "tags"
 ) {
   const fullpath = newTempDir("svn_layout_");
-  const dirname = path.basename(fullpath);
 
   fs.mkdirSync(path.join(fullpath, trunk));
   fs.mkdirSync(path.join(fullpath, branches));

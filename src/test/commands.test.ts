@@ -1,32 +1,17 @@
-/* tslint:disable */
-
-//
-// Note: This example test is leveraging the Mocha test framework.
-// Please refer to their documentation on https://mochajs.org/ for help.
-//
-
-// The module 'assert' provides assertion methods from node
-import * as assert from "assert";
-
-// You can import and use all API from the 'vscode' module
-// as well as import your extension to test it
-import * as fs from "fs";
-import * as path from "path";
-import { commands, Uri } from "vscode";
-import { ISvnResourceGroup } from "../common/types";
-import { Model } from "../model";
-import { Repository } from "../repository";
 import * as testUtil from "./testUtil";
+import { Uri, commands, workspace } from "vscode";
+import { Model } from "../model";
+import * as path from "path";
+import * as fs from "fs";
+import { Repository } from "../repository";
+import { ISvnResourceGroup } from "../common/types";
 
-// Defines a Mocha test suite to group tests of similar kind together
-suite("Commands Tests", () => {
+describe("Commands Tests", () => {
   let repoUri: Uri;
   let checkoutDir: Uri;
   let model: Model;
 
-  suiteSetup(async () => {
-    await testUtil.activeExtension();
-
+  beforeAll(async () => {
     repoUri = await testUtil.createRepoServer();
     await testUtil.createStandardLayout(testUtil.getSvnUrl(repoUri));
     checkoutDir = await testUtil.createRepoCheckout(
@@ -41,41 +26,42 @@ suite("Commands Tests", () => {
     await model.tryOpenRepository(checkoutDir.fsPath);
   });
 
-  suiteTeardown(() => {
+  afterAll(() => {
     model.openRepositories.forEach(repository => repository.dispose());
     testUtil.destroyAllTempPaths();
   });
 
-  test("File Open", async function() {
+  test("Open file", async () => {
     const file = path.join(checkoutDir.fsPath, "new.txt");
     fs.writeFileSync(file, "test");
 
     await commands.executeCommand("svn.fileOpen", Uri.file(file));
   });
 
-  test("Add File", async function() {
+  test("Add file", async () => {
     const repository = model.getRepository(checkoutDir) as Repository;
 
     await commands.executeCommand("svn.refresh");
-    assert.equal(repository.unversioned.resourceStates.length, 1);
-    assert.equal(repository.changes.resourceStates.length, 0);
+
+    expect(repository.unversioned.resourceStates.length).toBe(1);
+    expect(repository.changes.resourceStates.length).toBe(0)
 
     const resource = repository.unversioned.resourceStates[0];
 
     await commands.executeCommand("svn.add", resource);
 
-    assert.equal(repository.unversioned.resourceStates.length, 0);
-    assert.equal(repository.changes.resourceStates.length, 1);
+    expect(repository.unversioned.resourceStates.length).toBe(0);
+    expect(repository.changes.resourceStates.length).toBe(1)
   });
 
-  test("Commit File", async function() {
+  test("Commit file", async () => {
     const repository = model.getRepository(checkoutDir) as Repository;
     repository.inputBox.value = "First Commit";
 
     await commands.executeCommand("svn.commitWithMessage");
   });
 
-  test("Update", async function() {
+  test("update", async () => {
     await commands.executeCommand("svn.update");
   });
 
@@ -105,7 +91,7 @@ suite("Commands Tests", () => {
     const repository = model.getRepository(checkoutDir) as Repository;
 
     await commands.executeCommand("svn.refresh");
-    assert.equal(repository.changes.resourceStates.length, 1);
+    expect(repository.changes.resourceStates.length).toBe(1);
 
     const resource = repository.changes.resourceStates[0];
 
@@ -117,7 +103,7 @@ suite("Commands Tests", () => {
     const repository = model.getRepository(checkoutDir) as Repository;
 
     await commands.executeCommand("svn.refresh");
-    assert.equal(repository.changes.resourceStates.length, 1);
+    expect(repository.changes.resourceStates.length).toBe(1);
 
     const resource = repository.changes.resourceStates[0];
 
@@ -125,7 +111,7 @@ suite("Commands Tests", () => {
     testUtil.overrideNextShowInputBox("changelist-test");
 
     await commands.executeCommand("svn.changelist", resource);
-    assert.ok(repository.changelists.has("changelist-test"));
+    expect(repository.changelists.has("changelist-test")).toBeTruthy();
   });
 
   test("Remove Changelist", async function() {
@@ -139,7 +125,7 @@ suite("Commands Tests", () => {
     testUtil.overrideNextShowQuickPick(3);
 
     await commands.executeCommand("svn.changelist", resource);
-    assert.equal(group.resourceStates.length, 0);
+    expect(group.resourceStates.length).toBe(0);
   });
 
   test("Show Patch", async function() {
@@ -150,14 +136,14 @@ suite("Commands Tests", () => {
     const repository = model.getRepository(checkoutDir) as Repository;
 
     await commands.executeCommand("svn.refresh");
-    assert.equal(repository.changes.resourceStates.length, 1);
+    expect(repository.changes.resourceStates.length).toBe(1);
 
     const resource = repository.changes.resourceStates[0];
 
     testUtil.overrideNextShowInputBox("Second Commit");
     await commands.executeCommand("svn.commit", resource);
 
-    assert.equal(repository.changes.resourceStates.length, 0);
+    expect(repository.changes.resourceStates.length).toBe(0);
   });
 
   test("Commit File", async function() {
@@ -175,7 +161,7 @@ suite("Commands Tests", () => {
     await commands.executeCommand("svn.switchBranch");
 
     const repository = model.getRepository(checkoutDir) as Repository;
-    assert.equal(await repository.getCurrentBranch(), "branches/test");
+    expect(await repository.getCurrentBranch()).toBe("branches/test");
   });
 
   test("Switch Branch", async function() {
@@ -183,6 +169,6 @@ suite("Commands Tests", () => {
     await commands.executeCommand("svn.switchBranch");
 
     const repository = model.getRepository(checkoutDir) as Repository;
-    assert.equal(await repository.getCurrentBranch(), "trunk");
+    expect(await repository.getCurrentBranch()).toBe("trunk");
   });
 });
