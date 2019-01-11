@@ -36,7 +36,7 @@
     "vscode:prepublish": "npm run lint && npm run build",
     "compile": "npx tsc -watch -p ./",
     "postinstall": "node ./node_modules/vscode/bin/install",
-    "test": "CODE_TESTS_PATH=${INIT_CWD}/out/test/test-runner node ./node_modules/vscode/bin/test",
+    "test": "CODE_TESTS_WORKSPACE=${INIT_CWD} CODE_TESTS_PATH=${INIT_CWD}/out/test/test-runner node ./node_modules/vscode/bin/test",
     "tools:genReadme": "node ./out/tools/generateConfigSectionForReadme.js",
     "lint": "npx tslint -p ./",
     "lint:fix": "npx tslint --fix -p ./",
