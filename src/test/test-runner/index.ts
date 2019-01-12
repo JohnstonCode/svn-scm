@@ -14,9 +14,11 @@ const jestConfig = {
   runInBand: true, // Required due to the way the "vscode" module is injected.
   // testRegex: "\\.spec\\.ts$",
   testEnvironment: testDirectory + "/test-runner/jest-vscode-environment.js",
-  setupTestFrameworkScriptFile: testDirectory + "/test-runner/jest-vscode-framework-setup.js",
+  setupTestFrameworkScriptFile:
+    testDirectory + "/test-runner/jest-vscode-framework-setup.js",
   // moduleFileExtensions: ["ts", "js", "json"],
   // globals: JSON.stringify({ "ts-jest": { tsConfigFile: "../tsconfig.json" } }),
+  collectCoverage: true
 };
 
 export async function run(_testRoot: string, callback: TestRunnerCallback) {
