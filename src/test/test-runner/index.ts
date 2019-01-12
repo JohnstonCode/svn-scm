@@ -9,7 +9,7 @@ const testDirectory = path.resolve(__dirname, "../../test");
 
 const jestConfig = {
   // colors: false,
-  rootDir: path.resolve(__dirname, "../../src"),
+  rootDir: path.resolve(__dirname, "../.."),
   // transform: JSON.stringify({ "^.+\\.ts$": "ts-jest" }),
   runInBand: true, // Required due to the way the "vscode" module is injected.
   // testRegex: "\\.spec\\.ts$",
@@ -18,7 +18,8 @@ const jestConfig = {
     testDirectory + "/test-runner/jest-vscode-framework-setup.js",
   // moduleFileExtensions: ["ts", "js", "json"],
   // globals: JSON.stringify({ "ts-jest": { tsConfigFile: "../tsconfig.json" } }),
-  collectCoverage: true
+  collectCoverage: true,
+  collectCoverageFrom: ["**/*.ts", "!**/node_modules/**"]
 };
 
 export async function run(_testRoot: string, callback: TestRunnerCallback) {
