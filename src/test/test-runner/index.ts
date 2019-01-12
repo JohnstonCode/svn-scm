@@ -9,7 +9,7 @@ const testDirectory = path.resolve(__dirname, "../../test");
 
 const jestConfig = {
   // colors: false,
-  rootDir: path.resolve(__dirname, "../.."),
+  rootDir: path.resolve(__dirname, "../../src"),
   // transform: JSON.stringify({ "^.+\\.ts$": "ts-jest" }),
   runInBand: true, // Required due to the way the "vscode" module is injected.
   // testRegex: "\\.spec\\.ts$",
