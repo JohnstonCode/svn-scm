@@ -19,7 +19,7 @@ const jestConfig = {
   // moduleFileExtensions: ["ts", "js", "json"],
   // globals: JSON.stringify({ "ts-jest": { tsConfigFile: "../tsconfig.json" } }),
   collectCoverage: true,
-  collectCoverageFrom: ["**/*.ts", "!**/node_modules/**"]
+  collectCoverageFrom: ["src/**/*.ts", "!**/node_modules/**"]
 };
 
 export async function run(_testRoot: string, callback: TestRunnerCallback) {
