@@ -12,6 +12,8 @@ describe("Commands Tests", () => {
   let model: Model;
 
   beforeAll(async () => {
+    await testUtil.activeExtension();
+
     repoUri = await testUtil.createRepoServer();
     await testUtil.createStandardLayout(testUtil.getSvnUrl(repoUri));
     checkoutDir = await testUtil.createRepoCheckout(
