@@ -8,18 +8,14 @@ import * as sourceMapSupport from "source-map-support";
 const testDirectory = path.resolve(__dirname, "../../test");
 
 const jestConfig = {
-  // colors: false,
   rootDir: path.resolve(__dirname, "../.."),
-  // transform: JSON.stringify({ "^.+\\.ts$": "ts-jest" }),
   runInBand: true, // Required due to the way the "vscode" module is injected.
-  // testRegex: "\\.spec\\.ts$",
   testEnvironment: testDirectory + "/test-runner/jest-vscode-environment.js",
   setupTestFrameworkScriptFile:
     testDirectory + "/test-runner/jest-vscode-framework-setup.js",
-  // moduleFileExtensions: ["ts", "js", "json"],
-  // globals: JSON.stringify({ "ts-jest": { tsConfigFile: "../tsconfig.json" } }),
-  // collectCoverage: true,
-  // collectCoverageFrom: ["**/*.js", "!test/**/*", "!**/common/**/*", "!coverage/**"]
+  collectCoverage: true,
+  coverageDirectory: path.resolve(__dirname, "../../../coverage"),
+  collectCoverageFrom: ["**/*.js", "!test/**/*", "!**/common/**/*"]
 };
 
 export async function run(_testRoot: string, callback: TestRunnerCallback) {
