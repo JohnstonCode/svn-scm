@@ -18,8 +18,8 @@ const jestConfig = {
     testDirectory + "/test-runner/jest-vscode-framework-setup.js",
   // moduleFileExtensions: ["ts", "js", "json"],
   // globals: JSON.stringify({ "ts-jest": { tsConfigFile: "../tsconfig.json" } }),
-  collectCoverage: true,
-  collectCoverageFrom: ["**/*.js", "!test/**/*", "!**/common/**/*", "!coverage/**"]
+  // collectCoverage: true,
+  // collectCoverageFrom: ["**/*.js", "!test/**/*", "!**/common/**/*", "!coverage/**"]
 };
 
 export async function run(_testRoot: string, callback: TestRunnerCallback) {

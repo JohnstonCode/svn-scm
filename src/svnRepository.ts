@@ -35,10 +35,10 @@ export class Repository {
     policy: ConstructorPolicy
   ) {
     if (policy === ConstructorPolicy.LateInit) {
-      console.error(
-        "Constructor called in sync fashion, test-only\n",
-        new Error().stack
-      );
+      // console.error(
+      //   "Constructor called in sync fashion, test-only\n",
+      //   new Error().stack
+      // );
       return;
     }
     return ((async (): Promise<Repository> => {
