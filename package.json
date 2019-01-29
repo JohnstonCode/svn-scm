@@ -31,9 +31,9 @@
   "activationEvents": [
     "*"
   ],
-  "main": "./out/extension",
+  "main": "./dist/extension",
   "scripts": {
-    "vscode:prepublish": "npm run lint && npm run build",
+    "vscode:prepublish": "npm run lint && npm run webpack-prod",
     "compile": "npx tsc -watch -p ./",
     "postinstall": "node ./node_modules/vscode/bin/install",
     "test": "node ./node_modules/vscode/bin/test",
@@ -41,9 +41,10 @@
     "lint": "npx tslint -p ./",
     "lint:fix": "npx tslint --fix -p ./",
     "semantic-release": "semantic-release",
-    "build": "npx tsc -p ./",
     "commit": "npx git-cz",
-    "style-check": "npx prettylint src/**/*.ts"
+    "style-check": "npx prettylint src/**/*.ts",
+    "webpack-dev": "webpack --mode development --watch",
+    "webpack-prod": "webpack --mode production"
   },
   "dependencies": {
     "is-utf8": "^0.2.1",
@@ -76,7 +77,10 @@
     "semantic-release-vsce": "^2.1.2",
     "tslint": "^5.11.0",
     "typescript": "~3.2.2",
-    "vscode": "^1.1.22"
+    "vscode": "^1.1.22",
+    "ts-loader": "^4.4.2",
+    "webpack": "^4.19.1",
+    "webpack-cli": "^3.1.0"
   },
   "config": {
     "commitizen": {
