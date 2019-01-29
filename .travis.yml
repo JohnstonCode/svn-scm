@@ -25,11 +25,12 @@ before_install:
 
 install:
   - npm install
-  - npm run vscode:prepublish
   # For coverage, disable automatic start of extension
   - sed -i.bak 's/"\*"//g' package.json
 
 script:
+  - npm run lint
+  - npm run build
   - npm run style-check
   - npm test --silent
 

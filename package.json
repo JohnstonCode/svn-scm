@@ -42,6 +42,7 @@
     "lint:fix": "npx tslint --fix -p ./",
     "semantic-release": "semantic-release",
     "commit": "npx git-cz",
+    "build": "npx tsc -p ./",
     "style-check": "npx prettylint src/**/*.ts",
     "webpack-dev": "webpack --mode development --watch",
     "webpack-prod": "webpack --mode production"
