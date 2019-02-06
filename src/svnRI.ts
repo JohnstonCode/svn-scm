@@ -29,7 +29,7 @@ export class SvnRI {
     return Uri.file(
       path.join(
         this.checkoutRoot.path,
-        path.relative(this.fromRepoToBranch, this._path)
+        path.relative(this.branchRoot.path, "/" + this._path)
       )
     );
   }
