@@ -1,4 +1,4 @@
-import * as path from "path";
+import { posix as path } from "path";
 import { Uri } from "vscode";
 import { memoize } from "./decorators";
 
@@ -45,7 +45,10 @@ export class SvnRI {
 
   @memoize
   get fromRepoToBranch(): string {
-    return path.relative(pathOrRoot(this.remoteRoot), pathOrRoot(this.branchRoot));
+    return path.relative(
+      pathOrRoot(this.remoteRoot),
+      pathOrRoot(this.branchRoot)
+    );
   }
 
   @memoize

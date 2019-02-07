@@ -1,4 +1,5 @@
-import * as path from "path";
+import { posix as path } from "path";
+import * as nativepath from "path";
 import { Uri } from "vscode";
 import { ISvnInfo } from "./common/types";
 import { memoize } from "./decorators";
@@ -53,8 +54,8 @@ export class PathNormalizer {
       if (this.checkoutRoot === undefined) {
         throw new Error("Local paths are not");
       }
-      target = path.relative(this.checkoutRoot.fsPath, fpath);
-      target = path.join(this.fromRootToBranch() , target);
+      target = nativepath.relative(this.checkoutRoot.fsPath, fpath);
+      target = path.join(this.fromRootToBranch(), target);
     } else if (kind === ResourceKind.LocalRelative) {
       if (path.isAbsolute(fpath)) {
         throw new Error("Path is absolute");
@@ -78,11 +79,17 @@ export class PathNormalizer {
 
   @memoize
   public fromRootToBranch(): string {
-    return path.relative(pathOrRoot(this.repoRoot), pathOrRoot(this.branchRoot));
+    return path.relative(
+      pathOrRoot(this.repoRoot),
+      pathOrRoot(this.branchRoot)
+    );
   }
 
   @memoize
   public fromBranchToRoot(): string {
-    return path.relative(pathOrRoot(this.branchRoot), pathOrRoot(this.repoRoot));
+    return path.relative(
+      pathOrRoot(this.branchRoot),
+      pathOrRoot(this.repoRoot)
+    );
   }
 }

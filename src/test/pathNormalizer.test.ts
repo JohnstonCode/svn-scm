@@ -53,10 +53,11 @@ suite("SVN URLs parsing", () => {
     }
     assert.equal(x1.localFullPath.toString(), "file:///home/d1/f1");
     const x2 = nm1.parse("/branches/features/F1/dir/file.c");
-    assert.equal(x2.localFullPath!.toString(), "file:///home/user/dev/mypero/dir/file.c");
+    assert.equal(
+      x2.localFullPath!.toString(),
+      "file:///home/user/dev/mypero/dir/file.c"
+    );
   });
-
-
 
   const ri2 = {
     repository: {
@@ -70,12 +71,54 @@ suite("SVN URLs parsing", () => {
   const nm2 = new PathNormalizer(ri2 as ISvnInfo);
 
   test("rootdomain", function() {
-    const p1 = nm2.parse("/foo/drupal-7/trunk/drupal/sites/all/themes/foo_theme/scss/foo-pdf.scss")
-    assert.equal(p1.localFullPath!.path, "/home/dev-mi/projects/drupal/foo/drupal/sites/all/themes/foo_theme/scss/foo-pdf.scss");
+    const p1 = nm2.parse(
+      "/foo/drupal-7/trunk/drupal/sites/all/themes/foo_theme/scss/foo-pdf.scss"
+    );
+    assert.equal(
+      p1.localFullPath!.path,
+      "/home/dev-mi/projects/drupal/foo/drupal/sites/all/themes/foo_theme/scss/foo-pdf.scss"
+    );
 
     const p2 = nm2.parse("drupal/sites", ResourceKind.LocalRelative);
     assert.equal(p2.remoteFullPath.path, "/foo/drupal-7/trunk/drupal/sites");
-    const p3 = nm2.parse("/home/dev-mi/projects/drupal/foo/drupal", ResourceKind.LocalFull);
+    const p3 = nm2.parse(
+      "/home/dev-mi/projects/drupal/foo/drupal",
+      ResourceKind.LocalFull
+    );
     assert.equal(p3.remoteFullPath.path, "/foo/drupal-7/trunk/drupal");
   });
+
+  const ri3 = {
+    repository: {
+      root: "svn://rootdomain.com"
+    },
+    url: "svn://rootdomain.com",
+    wcInfo: {
+      wcrootAbspath: "/home/user/svn"
+    }
+  };
+  const nm3 = new PathNormalizer(ri3 as ISvnInfo);
+
+  test("rootbranch", function() {
+    const p4 = nm3.parse("/file.c");
+    assert.equal(p4.localFullPath!.path, "/home/user/svn/file.c");
+  });
+
+  const ri4 = {
+    repository: {
+      root: "svn://rootdomain.com"
+    },
+    url: "svn://rootdomain.com/trunk",
+    wcInfo: {
+      wcrootAbspath: "X:\\work\\rootd"
+    }
+  };
+  const nm4 = new PathNormalizer(ri4 as ISvnInfo);
+
+  if (process.platform == "win32") {
+    test("winpath", function() {
+      const p4 = nm4.parse("/trunk/file.c");
+      assert.equal(p4.localFullPath!.fsPath, "x:\\work\\rootd\\file.c");
+    });
+  }
 });
