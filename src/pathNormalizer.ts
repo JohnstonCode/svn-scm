@@ -2,9 +2,9 @@ import * as path from "path";
 import { Uri } from "vscode";
 import { ISvnInfo } from "./common/types";
 import { memoize } from "./decorators";
-import { SvnRI } from "./svnRI";
+import { pathOrRoot, SvnRI } from "./svnRI";
 
-enum ResourceKind {
+export enum ResourceKind {
   LocalRelative,
   LocalFull,
   RemoteFull
@@ -32,7 +32,7 @@ export class PathNormalizer {
       return fpath.substr(1);
     } else if (fpath.startsWith("svn://") || fpath.startsWith("file://")) {
       const target = Uri.parse(fpath).path;
-      return path.relative(this.repoRoot.path, target);
+      return path.relative(pathOrRoot(this.repoRoot), target);
     } else {
       throw new Error("unknown path");
     }
@@ -53,10 +53,8 @@ export class PathNormalizer {
       if (this.checkoutRoot === undefined) {
         throw new Error("Local paths are not");
       }
-      target = path.join(
-        this.fromRootToBranch(),
-        path.relative(this.checkoutRoot.path, fpath)
-      );
+      target = path.relative(this.checkoutRoot.fsPath, fpath);
+      target = path.join(this.fromRootToBranch() , target);
     } else if (kind === ResourceKind.LocalRelative) {
       if (path.isAbsolute(fpath)) {
         throw new Error("Path is absolute");
@@ -80,11 +78,11 @@ export class PathNormalizer {
 
   @memoize
   public fromRootToBranch(): string {
-    return path.relative(this.repoRoot.path, this.branchRoot.path);
+    return path.relative(pathOrRoot(this.repoRoot), pathOrRoot(this.branchRoot));
   }
 
   @memoize
   public fromBranchToRoot(): string {
-    return path.relative(this.branchRoot.path, this.repoRoot.path);
+    return path.relative(pathOrRoot(this.branchRoot), pathOrRoot(this.repoRoot));
   }
 }

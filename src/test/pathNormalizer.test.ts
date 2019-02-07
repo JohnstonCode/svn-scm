@@ -8,12 +8,12 @@
 // The module 'assert' provides assertion methods from node
 import * as assert from "assert";
 import * as path from "path";
-import { PathNormalizer } from "../pathNormalizer";
+import { PathNormalizer, ResourceKind } from "../pathNormalizer";
 import { Uri } from "vscode";
 import { ISvnInfo } from "../common/types";
 
 // Defines a Mocha test suite to group tests of similar kind together
-suite("Url parsing", () => {
+suite("SVN URLs parsing", () => {
   const ri1 = {
     repository: {
       root: "svn://somedomain.x.org/public/devs"
@@ -33,7 +33,7 @@ suite("Url parsing", () => {
     // do nothing
   });
 
-  test("r1 ops", function() {
+  test("somedomain", function() {
     assert.equal(nm1.branchRoot.toString(), Uri.parse(ri1.url).toString());
     assert.equal(
       nm1.repoRoot.toString(),
@@ -52,5 +52,30 @@ suite("Url parsing", () => {
       throw new Error("impossible");
     }
     assert.equal(x1.localFullPath.toString(), "file:///home/d1/f1");
+    const x2 = nm1.parse("/branches/features/F1/dir/file.c");
+    assert.equal(x2.localFullPath!.toString(), "file:///home/user/dev/mypero/dir/file.c");
+  });
+
+
+
+  const ri2 = {
+    repository: {
+      root: "svn://rootdomain.com"
+    },
+    url: "svn://rootdomain.com/foo/drupal-7/trunk",
+    wcInfo: {
+      wcrootAbspath: "/home/dev-mi/projects/drupal/foo"
+    }
+  };
+  const nm2 = new PathNormalizer(ri2 as ISvnInfo);
+
+  test("rootdomain", function() {
+    const p1 = nm2.parse("/foo/drupal-7/trunk/drupal/sites/all/themes/foo_theme/scss/foo-pdf.scss")
+    assert.equal(p1.localFullPath!.path, "/home/dev-mi/projects/drupal/foo/drupal/sites/all/themes/foo_theme/scss/foo-pdf.scss");
+
+    const p2 = nm2.parse("drupal/sites", ResourceKind.LocalRelative);
+    assert.equal(p2.remoteFullPath.path, "/foo/drupal-7/trunk/drupal/sites");
+    const p3 = nm2.parse("/home/dev-mi/projects/drupal/foo/drupal", ResourceKind.LocalFull);
+    assert.equal(p3.remoteFullPath.path, "/foo/drupal-7/trunk/drupal");
   });
 });
