@@ -1,6 +1,10 @@
-import * as path from "path";
+import { posix as path } from "path";
 import { Uri } from "vscode";
 import { memoize } from "./decorators";
+
+export function pathOrRoot(uri: Uri): string {
+  return uri.path || "/";
+}
 
 export class SvnRI {
   constructor(
@@ -41,7 +45,10 @@ export class SvnRI {
 
   @memoize
   get fromRepoToBranch(): string {
-    return path.relative(this.remoteRoot.path, this.branchRoot.path);
+    return path.relative(
+      pathOrRoot(this.remoteRoot),
+      pathOrRoot(this.branchRoot)
+    );
   }
 
   @memoize
