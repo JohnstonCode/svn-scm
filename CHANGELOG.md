@@ -1,3 +1,10 @@
+## [1.47.1](https://github.com/JohnstonCode/svn-scm/compare/v1.47.0...v1.47.1) (2019-02-12)
+
+
+### Bug Fixes
+
+* path normalizer ([#477](https://github.com/JohnstonCode/svn-scm/issues/477)) ([db214dd](https://github.com/JohnstonCode/svn-scm/commit/db214dd))
+
 # [1.47.0](https://github.com/JohnstonCode/svn-scm/compare/v1.46.4...v1.47.0) (2018-12-21)
 
 
