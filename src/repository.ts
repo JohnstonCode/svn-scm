@@ -28,12 +28,13 @@ import {
 import { debounce, memoize, throttle } from "./decorators";
 import { configuration } from "./helpers/configuration";
 import OperationsImpl from "./operationsImpl";
-import { PathNormalizer } from "./pathNormalizer";
+import { PathNormalizer, ResourceKind } from "./pathNormalizer";
 import { IRemoteRepository } from "./remoteRepository";
 import { Resource } from "./resource";
 import { SvnStatusBar } from "./statusBar";
 import { svnErrorCodes } from "./svn";
 import { Repository as BaseRepository } from "./svnRepository";
+import { SvnRI } from "./svnRI";
 import { toSvnUri } from "./uri";
 import {
   anyEvent,
@@ -754,10 +755,16 @@ export class Repository implements IRemoteRepository {
 
   public async show(
     filePath: string | Uri,
+    rscKind: ResourceKind,
     revision?: string
   ): Promise<string> {
+    const pn = this.getPathNormalizer();
     return this.run<string>(Operation.Show, () => {
-      return this.repository.show(filePath, revision);
+      return this.repository.show(
+        pn.parse(filePath.toString(true), rscKind, revision),
+        rscKind !== ResourceKind.RemoteFull,
+        revision
+      );
     });
   }
 
@@ -862,10 +869,16 @@ export class Repository implements IRemoteRepository {
     rfrom: string,
     rto: string,
     limit: number,
-    target?: string | Uri
+    target?: string | Uri,
+    rscKind?: ResourceKind
   ) {
+    const pn = this.getPathNormalizer();
+    let ri: SvnRI | undefined;
+    if (target !== undefined) {
+      ri = pn.parse(target.toString(true), rscKind, rfrom);
+    }
     return this.run(Operation.Log, () =>
-      this.repository.log(rfrom, rto, limit, target)
+      this.repository.log(rfrom, rto, limit, ri)
     );
   }
 

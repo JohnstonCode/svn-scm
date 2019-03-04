@@ -11,6 +11,10 @@ export enum ResourceKind {
   RemoteFull
 }
 
+function removeSchema(url: string): string {
+  return url.replace(/^\w+:\/\//, "");
+}
+
 /**
  * create from Repository class
  */
@@ -33,7 +37,9 @@ export class PathNormalizer {
       return fpath.substr(1);
     } else if (fpath.startsWith("svn://") || fpath.startsWith("file://")) {
       const target = Uri.parse(fpath).path;
-      return path.relative(pathOrRoot(this.repoRoot), target);
+      return nativepath
+        .relative(pathOrRoot(this.repoRoot), target)
+        .replace("\\", "/");
     } else {
       throw new Error("unknown path");
     }
@@ -45,27 +51,29 @@ export class PathNormalizer {
     rev?: string
   ): SvnRI {
     let target: string;
-    if (kind === ResourceKind.RemoteFull) {
-      target = this.getFullRepoPathFromUrl(fpath);
-    } else if (kind === ResourceKind.LocalFull) {
-      if (!path.isAbsolute(fpath)) {
-        throw new Error("Path isn't absolute");
-      }
-      if (this.checkoutRoot === undefined) {
-        throw new Error("Local paths are not");
-      }
-      target = nativepath.relative(this.checkoutRoot.fsPath, fpath);
-      target = path.join(this.fromRootToBranch(), target);
-    } else if (kind === ResourceKind.LocalRelative) {
-      if (path.isAbsolute(fpath)) {
-        throw new Error("Path is absolute");
-      }
-      if (this.checkoutRoot === undefined) {
-        throw new Error("Local paths are not");
-      }
-      target = path.join(this.fromRootToBranch(), fpath);
-    } else {
-      throw new Error("unsupported kind");
+    switch (kind) {
+      case ResourceKind.RemoteFull:
+        target = this.getFullRepoPathFromUrl(fpath);
+        break;
+      case ResourceKind.LocalFull:
+      case ResourceKind.LocalRelative:
+        if (
+          nativepath.isAbsolute(fpath) !==
+          (kind === ResourceKind.LocalFull)
+        ) {
+          throw new Error("Path absolute error");
+        }
+        if (this.checkoutRoot === undefined) {
+          throw new Error("Local path is not supported in remote repository");
+        }
+        target = removeSchema(fpath);
+        if (kind === ResourceKind.LocalFull) {
+          target = nativepath.relative(this.checkoutRoot.fsPath, fpath);
+        }
+        target = path.join(this.fromRootToBranch(), target);
+        break;
+      default:
+        throw new Error("unsupported kind");
     }
 
     return new SvnRI(

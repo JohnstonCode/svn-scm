@@ -7,16 +7,27 @@ export function pathOrRoot(uri: Uri): string {
 }
 
 export class SvnRI {
+  private readonly _revision?: string;
+
   constructor(
     private readonly remoteRoot: Uri,
     private readonly branchRoot: Uri,
     private readonly checkoutRoot: Uri | undefined,
     /** path relative from remoteRoot */
     private readonly _path: string,
-    private readonly _revision?: string
+    revision?: string
   ) {
     if (_path.length === 0 || _path.charAt(0) === "/") {
       throw new Error("Invalid _path " + _path);
+    }
+    if (revision !== undefined) {
+      if (["PREV", "BASE", "COMMITTED"].includes(revision)) {
+        // ignore
+      } else if (revision === "HEAD" || !isNaN(parseInt(revision, 10))) {
+        this._revision = revision;
+      } else {
+        throw new Error("Invalid revision " + revision);
+      }
     }
   }
 
@@ -58,6 +69,9 @@ export class SvnRI {
 
   @memoize
   public toString(withRevision?: boolean): string {
-    return this.remoteFullPath + (withRevision ? this._revision || "" : "");
+    return (
+      this.remoteFullPath.toString(true) +
+      (withRevision ? "@" + (this._revision || "") : "")
+    );
   }
 }

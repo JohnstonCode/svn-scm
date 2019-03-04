@@ -15,6 +15,7 @@ import {
 } from "./common/types";
 import { debounce, throttle } from "./decorators";
 import { Model } from "./model";
+import { ResourceKind } from "./pathNormalizer";
 import { fromSvnUri } from "./uri";
 import {
   eventToPromise,
@@ -101,7 +102,7 @@ export class SvnContentProvider
 
       if (action === SvnUriAction.SHOW) {
         const ref = extra.ref;
-        return await repository.show(fsPath, ref);
+        return await repository.show(fsPath, ResourceKind.LocalFull, ref);
       }
       if (action === SvnUriAction.LOG) {
         return await repository.plainLog();

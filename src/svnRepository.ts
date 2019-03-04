@@ -19,6 +19,7 @@ import { parseSvnList } from "./listParser";
 import { parseSvnLog } from "./logParser";
 import { parseStatusXml } from "./statusParser";
 import { Svn } from "./svn";
+import { SvnRI } from "./svnRI";
 import { fixPathSeparator, unwrap } from "./util";
 
 export class Repository {
@@ -166,40 +167,23 @@ export class Repository {
   }
 
   public async show(
-    file: string | Uri,
-    revision?: string,
-    options: ICpOptions = {}
+    file: SvnRI,
+    local: boolean,
+    revision?: string
   ): Promise<string> {
     const args = ["cat"];
-    let target: string;
-    if (file instanceof Uri) {
-      target = file.toString(true);
+    if (local) {
+      args.push(unwrap(file.localFullPath).fsPath);
     } else {
-      target = file;
+      args.push(file.toString(true));
     }
-    if (revision) {
+    if (revision !== undefined) {
       args.push("-r", revision);
-      if (
-        typeof file === "string" &&
-        !["BASE", "COMMITTED", "PREV"].includes(revision.toUpperCase())
-      ) {
-        const info = await this.getInfo();
-        target = this.removeAbsolutePath(target);
-        target = info.url + "/" + target.replace(/\\/g, "/");
-        // TODO move to SvnRI
-      }
     }
 
-    args.push(target);
-
-    let encoding = "utf8";
-    if (typeof file === "string") {
-      const uri = Uri.file(file);
-      file = this.removeAbsolutePath(file);
-      encoding = workspace
-        .getConfiguration("files", uri)
-        .get<string>("encoding", encoding);
-    }
+    const encoding = workspace
+      .getConfiguration("files")
+      .get<string>("encoding", "utf8");
 
     const result = await this.exec(args, { encoding });
 
@@ -511,7 +495,7 @@ export class Repository {
     rfrom: string,
     rto: string,
     limit: number,
-    target?: string | Uri
+    target?: SvnRI
   ): Promise<ISvnLogEntry[]> {
     const args = [
       "log",
@@ -522,7 +506,7 @@ export class Repository {
       "-v"
     ];
     if (target !== undefined) {
-      args.push(target instanceof Uri ? target.toString(true) : target);
+      args.push(target.toString(true));
     }
     const result = await this.exec(args);
 

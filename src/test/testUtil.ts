@@ -15,9 +15,7 @@ tmp.setGracefulCleanup();
 const tempDirList: tmp.SynchrounousResult[] = [];
 
 export function getSvnUrl(uri: Uri) {
-  const url = uri.toString();
-
-  return url.replace(/%3A/g, ":");
+  return uri.toString(true);
 }
 
 export function spawn(

@@ -16,6 +16,7 @@ import { commands, Uri, window, workspace } from "vscode";
 import { Model } from "../model";
 import { Repository } from "../repository";
 import * as testUtil from "./testUtil";
+import { ResourceKind } from "../pathNormalizer";
 
 // Defines a Mocha test suite to group tests of similar kind together
 suite("Repository Tests", () => {
@@ -113,7 +114,11 @@ suite("Repository Tests", () => {
 
     assert.equal(repository.changes.resourceStates.length, 0);
 
-    const remoteContent = await repository.show(file, "HEAD");
+    const remoteContent = await repository.show(
+      file,
+      ResourceKind.LocalFull,
+      "HEAD"
+    );
     assert.equal(remoteContent, "test");
   });
 

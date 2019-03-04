@@ -1,8 +1,10 @@
 import { Uri } from "vscode";
 import { ISvnInfo, ISvnLogEntry } from "./common/types";
-import { PathNormalizer } from "./pathNormalizer";
+import { memoize } from "./decorators";
+import { PathNormalizer, ResourceKind } from "./pathNormalizer";
 import { Svn } from "./svn";
 import { Repository as BaseRepository } from "./svnRepository";
+import { SvnRI } from "./svnRI";
 
 export interface IRemoteRepository {
   branchRoot: Uri;
@@ -13,10 +15,15 @@ export interface IRemoteRepository {
     rfrom: string,
     rto: string,
     limit: number,
-    target?: string | Uri
+    target?: string | Uri,
+    rscKind?: ResourceKind
   ): Promise<ISvnLogEntry[]>;
 
-  show(filePath: string | Uri, revision?: string): Promise<string>;
+  show(
+    filePath: string | Uri,
+    rscKind: ResourceKind,
+    revision?: string
+  ): Promise<string>;
 }
 
 export class RemoteRepository implements IRemoteRepository {
@@ -30,6 +37,7 @@ export class RemoteRepository implements IRemoteRepository {
     return new RemoteRepository(repo);
   }
 
+  @memoize
   public getPathNormalizer(): PathNormalizer {
     return new PathNormalizer(this.info);
   }
@@ -42,15 +50,27 @@ export class RemoteRepository implements IRemoteRepository {
     rfrom: string,
     rto: string,
     limit: number,
-    target?: string | Uri
+    target?: string | Uri,
+    rscKind?: ResourceKind
   ): Promise<ISvnLogEntry[]> {
-    return this.repo.log(rfrom, rto, limit, target);
+    const pn = this.getPathNormalizer();
+    let ri: SvnRI | undefined;
+    if (target !== undefined) {
+      ri = pn.parse(target.toString(true), rscKind, rfrom);
+    }
+    return this.repo.log(rfrom, rto, limit, ri);
   }
 
   public async show(
     filePath: string | Uri,
+    rscKind: ResourceKind,
     revision?: string
   ): Promise<string> {
-    return this.repo.show(filePath, revision);
+    const pn = this.getPathNormalizer();
+    return this.repo.show(
+      pn.parse(filePath.toString(true), rscKind, revision),
+      rscKind !== ResourceKind.RemoteFull,
+      revision
+    );
   }
 }
