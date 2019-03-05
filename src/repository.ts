@@ -865,7 +865,7 @@ export class Repository implements IRemoteRepository {
     rfrom: string,
     rto: string,
     limit: number,
-    target?: ITarget,
+    target?: ITarget
   ) {
     const pn = this.getPathNormalizer();
     let ri: SvnRI | undefined;

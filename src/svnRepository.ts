@@ -508,9 +508,7 @@ export class Repository {
     ];
     if (target !== undefined) {
       args.push(
-        isLocal
-          ? unwrap(target.localFullPath).fsPath
-          : target.toString(true)
+        isLocal ? unwrap(target.localFullPath).fsPath : target.toString(true)
       );
     }
     const result = await this.exec(args);
