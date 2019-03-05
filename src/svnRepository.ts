@@ -507,7 +507,11 @@ export class Repository {
       "-v"
     ];
     if (target !== undefined) {
-      args.push(isLocal ? unwrap(target.localFullPath).toString(true) : target.toString(true));
+      args.push(
+        isLocal
+          ? unwrap(target.localFullPath).toString(true)
+          : target.toString(true)
+      );
     }
     const result = await this.exec(args);
 

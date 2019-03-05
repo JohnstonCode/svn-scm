@@ -165,12 +165,12 @@ export async function fetchMore(cached: ICachedLog) {
   let moreCommits: ISvnLogEntry[] = [];
   const limit = getLimit();
   try {
-        moreCommits = await cached.repo.log(rfrom, "1", limit, {
-          path: cached.svnTarget,
-          isLocal: false,
-          rscKind: ResourceKind.RemoteFull
-        });
-      } catch {
+    moreCommits = await cached.repo.log(rfrom, "1", limit, {
+      path: cached.svnTarget,
+      isLocal: false,
+      rscKind: ResourceKind.RemoteFull
+    });
+  } catch {
     // Item didn't exist
   }
   if (!needFetch(entries, moreCommits, limit)) {
