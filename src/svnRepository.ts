@@ -181,9 +181,12 @@ export class Repository {
       args.push("-r", revision);
     }
 
-    const encoding = workspace
-      .getConfiguration("files")
-      .get<string>("encoding", "utf8");
+    let encoding = "utf8";
+    if (isLocal) {
+      encoding = workspace
+        .getConfiguration("files", target.localFullPath)
+        .get<string>("encoding", encoding);
+    }
 
     const result = await this.exec(args, { encoding });
 
