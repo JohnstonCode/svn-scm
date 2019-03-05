@@ -509,7 +509,7 @@ export class Repository {
     if (target !== undefined) {
       args.push(
         isLocal
-          ? unwrap(target.localFullPath).toString(true)
+          ? unwrap(target.localFullPath).fsPath
           : target.toString(true)
       );
     }
