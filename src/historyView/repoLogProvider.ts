@@ -18,6 +18,7 @@ import {
   ISvnLogEntryPath
 } from "../common/types";
 import { Model } from "../model";
+import { ResourceKind } from "../pathNormalizer";
 import { IRemoteRepository } from "../remoteRepository";
 import { Repository } from "../repository";
 import { dispose, unwrap } from "../util";
@@ -283,12 +284,12 @@ export class RepoLogProvider
       } else {
         // if not found in cache
         const nm = item.repo.getPathNormalizer();
-        const revs = await item.repo.log(
-          parent.revision,
-          "1",
-          2,
-          nm.parse(commit._).remoteFullPath
-        );
+        const revs = await item.repo.log(parent.revision, "1", 2, {
+          path: nm.parse(commit._).remoteFullPath,
+          isLocal: false,
+          rscKind: ResourceKind.RemoteFull,
+          revision: parent.revision
+        });
         if (revs.length === 2) {
           prevRev = revs[1];
         } else {

@@ -102,7 +102,12 @@ export class SvnContentProvider
 
       if (action === SvnUriAction.SHOW) {
         const ref = extra.ref;
-        return await repository.show(fsPath, ResourceKind.LocalFull, ref);
+        return await repository.show({
+          path: fsPath,
+          rscKind: ResourceKind.LocalFull,
+          revision: ref,
+          isLocal: true
+        });
       }
       if (action === SvnUriAction.LOG) {
         return await repository.plainLog();

@@ -6,6 +6,13 @@ import { Svn } from "./svn";
 import { Repository as BaseRepository } from "./svnRepository";
 import { SvnRI } from "./svnRI";
 
+export interface ITarget {
+  isLocal: boolean;
+  revision?: string;
+  rscKind: ResourceKind;
+  path: string | Uri;
+}
+
 export interface IRemoteRepository {
   branchRoot: Uri;
 
@@ -15,13 +22,11 @@ export interface IRemoteRepository {
     rfrom: string,
     rto: string,
     limit: number,
-    target?: string | Uri,
-    rscKind?: ResourceKind
+    target?: ITarget,
   ): Promise<ISvnLogEntry[]>;
 
   show(
-    filePath: string | Uri,
-    rscKind: ResourceKind,
+    target: ITarget,
     revision?: string
   ): Promise<string>;
 }
@@ -50,26 +55,24 @@ export class RemoteRepository implements IRemoteRepository {
     rfrom: string,
     rto: string,
     limit: number,
-    target?: string | Uri,
-    rscKind?: ResourceKind
+    target?: ITarget,
   ): Promise<ISvnLogEntry[]> {
     const pn = this.getPathNormalizer();
     let ri: SvnRI | undefined;
     if (target !== undefined) {
-      ri = pn.parse(target.toString(true), rscKind, rfrom);
+      ri = pn.parse(target.path.toString(true), target.rscKind, target.revision);
     }
     return this.repo.log(rfrom, rto, limit, ri);
   }
 
   public async show(
-    filePath: string | Uri,
-    rscKind: ResourceKind,
+    target: ITarget,
     revision?: string
   ): Promise<string> {
     const pn = this.getPathNormalizer();
     return this.repo.show(
-      pn.parse(filePath.toString(true), rscKind, revision),
-      rscKind !== ResourceKind.RemoteFull,
+      pn.parse(target.path.toString(true), target.rscKind, revision),
+      target.isLocal,
       revision
     );
   }

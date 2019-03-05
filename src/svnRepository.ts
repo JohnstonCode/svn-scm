@@ -167,15 +167,15 @@ export class Repository {
   }
 
   public async show(
-    file: SvnRI,
-    local: boolean,
+    target: SvnRI,
+    isLocal: boolean,
     revision?: string
   ): Promise<string> {
     const args = ["cat"];
-    if (local) {
-      args.push(unwrap(file.localFullPath).fsPath);
+    if (isLocal) {
+      args.push(unwrap(target.localFullPath).fsPath);
     } else {
-      args.push(file.toString(true));
+      args.push(target.toString(true));
     }
     if (revision !== undefined) {
       args.push("-r", revision);
@@ -495,7 +495,8 @@ export class Repository {
     rfrom: string,
     rto: string,
     limit: number,
-    target?: SvnRI
+    target?: SvnRI,
+    isLocal?: boolean
   ): Promise<ISvnLogEntry[]> {
     const args = [
       "log",
@@ -506,7 +507,7 @@ export class Repository {
       "-v"
     ];
     if (target !== undefined) {
-      args.push(target.toString(true));
+      args.push(isLocal ? unwrap(target.localFullPath).toString(true) : target.toString(true));
     }
     const result = await this.exec(args);
 
