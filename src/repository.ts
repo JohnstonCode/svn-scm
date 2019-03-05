@@ -866,11 +866,12 @@ export class Repository implements IRemoteRepository {
     rto: string,
     limit: number,
     target?: ITarget,
-    isLocal?: boolean
   ) {
     const pn = this.getPathNormalizer();
     let ri: SvnRI | undefined;
+    let isLocal = false;
     if (target !== undefined) {
+      isLocal = target.isLocal;
       ri = pn.parse(
         target.path.toString(true),
         target.rscKind,
