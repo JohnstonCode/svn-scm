@@ -61,7 +61,7 @@
     "@types/semver": "^5.5.0",
     "@types/tmp": "0.0.34",
     "@types/xml2js": "^0.4.3",
-    "commitizen": "^3.0.5",
+    "commitizen": "^3.0.7",
     "cz-conventional-changelog": "^2.1.0",
     "decache": "^4.5.0",
     "glob": "^7.1.2",
