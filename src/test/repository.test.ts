@@ -114,12 +114,17 @@ suite("Repository Tests", () => {
 
     assert.equal(repository.changes.resourceStates.length, 0);
 
-    const remoteContent = await repository.show({
-      path: file,
-      rscKind: ResourceKind.LocalFull,
-      revision: "HEAD",
-      isLocal: false
-    });
+    try {
+      const remoteContent = await repository.show({
+        path: file,
+        rscKind: ResourceKind.LocalFull,
+        revision: "HEAD",
+        isLocal: false
+      });
+    } catch (error) {
+      console.log(error.stdout, error.stderr);
+    }
+    
     assert.equal(remoteContent, "test");
   });
 
