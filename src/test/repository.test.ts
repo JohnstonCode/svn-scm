@@ -114,17 +114,14 @@ suite("Repository Tests", () => {
 
     assert.equal(repository.changes.resourceStates.length, 0);
 
-    try {
-      const remoteContent = await repository.show({
-        path: file,
-        rscKind: ResourceKind.LocalFull,
-        revision: "HEAD",
-        isLocal: false
-      });
-    } catch (error) {
-      console.log(error.stdout, error.stderr);
-    }
-    //assert.equal(remoteContent, "test");
+    const remoteContent = await repository.show({
+      path: file,
+      rscKind: ResourceKind.LocalFull,
+      revision: "HEAD",
+      isLocal: false
+    });
+
+    assert.equal(remoteContent, "test");
   });
 
   test("Try switch branch", async function() {
