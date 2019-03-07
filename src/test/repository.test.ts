@@ -123,6 +123,7 @@ suite("Repository Tests", () => {
       });
     } catch (error) {
       console.log(error.stdout, error.stderr);
+      return;
     }
     
     assert.equal(remoteContent, "test");
