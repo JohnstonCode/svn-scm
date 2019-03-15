@@ -21,6 +21,12 @@ jobs:
         inputs:
           verbose: false
       - task: Npm@1
+        displayname: 'Lint check'
+        inputs:
+          command: custom
+          verbose: false
+          customCommand: 'run style-check'
+      - task: Npm@1
         displayName: 'Compile sources'
         inputs:
           command: custom
@@ -50,6 +56,12 @@ jobs:
         inputs:
           verbose: false
       - task: Npm@1
+        displayname: 'Lint check'
+        inputs:
+          command: custom
+          verbose: false
+          customCommand: 'run style-check'
+      - task: Npm@1
         displayName: 'Compile sources'
         inputs:
           command: custom
@@ -78,6 +90,12 @@ jobs:
         displayName: 'Install dependencies'
         inputs:
           verbose: false
+      - task: Npm@1
+        displayname: 'Lint check'
+        inputs:
+          command: custom
+          verbose: false
+          customCommand: 'run style-check'
       - task: Npm@1
         displayName: 'Compile sources'
         inputs:
