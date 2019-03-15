@@ -32,8 +32,12 @@ jobs:
           command: custom
           verbose: false
           customCommand: 'run build'
-      - script: 'node node_modules/vscode/bin/test'
+      - task: Npm@1
         displayName: 'Run tests'
+        inputs:
+          command: custom
+          verbose: false
+          customCommand: 'run test --silent'
   - job: macOS
     strategy:
       matrix:
@@ -67,8 +71,12 @@ jobs:
           command: custom
           verbose: false
           customCommand: 'run build'
-      - script: 'node node_modules/vscode/bin/test'
+      - task: Npm@1
         displayName: 'Run tests'
+        inputs:
+          command: custom
+          verbose: false
+          customCommand: 'run test --silent'
   - job: Linux
     strategy:
       matrix:
@@ -107,7 +115,11 @@ jobs:
           /usr/bin/Xvfb :10 -ac >> /tmp/Xvfb.out 2>&1 &
           disown -ar
         displayName: 'Start xvfb'
-      - script: 'node node_modules/vscode/bin/test'
+      - task: Npm@1
         displayName: 'Run tests'
+        inputs:
+          command: custom
+          verbose: false
+          customCommand: 'run test --silent'
         env:
           DISPLAY: :10
