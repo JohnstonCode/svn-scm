@@ -125,6 +125,10 @@ jobs:
           DISPLAY: :10
   - job: Release
     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+    dependsOn:
+    - Windows
+    - macOS
+    - Linux
     pool:
       name: Hosted Ubuntu 1604
       demands: npm
