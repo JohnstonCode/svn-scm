@@ -159,6 +159,5 @@ jobs:
           verbose: false
           customCommand: 'run semantic-release'
         env:
-          DISPLAY: :10
           GITHUB_TOKEN: $(GITHUB_TOKEN)
           VSCE_TOKEN: $(VSCE_TOKEN)
