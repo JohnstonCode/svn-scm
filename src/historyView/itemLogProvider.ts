@@ -130,7 +130,7 @@ export class ItemLogProvider
         const repo = this.model.getRepository(uri);
         if (repo !== undefined) {
           try {
-            const info = await repo.getInfo(uri.path);
+            const info = await repo.getInfo(uri.fsPath);
             this.currentItem = {
               isComplete: false,
               entries: [],
