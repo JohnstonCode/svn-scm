@@ -18,7 +18,7 @@ export class PromptRemove extends Command {
       `The file(s) "${relativeList.join(
         ", "
       )}" are removed from disk.\nWould you like remove from SVN?`,
-      { modal: true },
+      { modal: false },
       "Yes",
       ignoreText,
       "No"
