@@ -1,8 +1,8 @@
 import * as cp from "child_process";
 import * as path from "path";
 import * as semver from "semver";
-import { cpErrorHandler } from "./svn";
 import { Readable } from "stream";
+import { cpErrorHandler } from "./svn";
 
 export interface ISvn {
   path: string;

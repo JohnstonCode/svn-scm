@@ -15,6 +15,7 @@ import * as iconv from "iconv-lite";
 import isUtf8 = require("is-utf8");
 import * as jschardet from "jschardet";
 import * as proc from "process";
+import { Readable } from "stream";
 import { Uri, workspace } from "vscode";
 import {
   ConstructorPolicy,
@@ -27,7 +28,6 @@ import { parseInfoXml } from "./infoParser";
 import SvnError from "./svnError";
 import { Repository } from "./svnRepository";
 import { dispose, IDisposable, toDisposable } from "./util";
-import { Readable } from "stream";
 
 export const svnErrorCodes: { [key: string]: string } = {
   AuthorizationFailed: "E170001",
