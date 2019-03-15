@@ -152,8 +152,6 @@ jobs:
           /usr/bin/Xvfb :10 -ac >> /tmp/Xvfb.out 2>&1 &
           disown -ar
         displayName: 'Start xvfb'
-      - script: |
-          echo GIT_AUTHOR_EMAIL
       - task: Npm@1
         displayName: 'Run semantic-release'
         inputs:
@@ -161,4 +159,9 @@ jobs:
           verbose: false
           customCommand: 'run semantic-release'
         env:
-          GIT_AUTHOR_EMAIL: 'chris@johnstoncode.com'
+          VSCE_TOKEN: $(vsceToken)
+          GH_TOKEN: $(githubToken)
+          GIT_AUTHOR_EMAIL: $(gitEmail)
+          GIT_COMMITTER_EMAIL: $(gitEmail)
+          GIT_AUTHOR_NAME: $(gitName)
+          GIT_COMMITTER_NAME: $(gitName)
