@@ -22,6 +22,5 @@
       "assets": "svn-scm.vsix"
     }
   ],
-  "packageVsix": "svn-scm.vsix",
-  "branch": "deploy-fix"
+  "packageVsix": "svn-scm.vsix"
 }
