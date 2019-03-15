@@ -1,3 +1,17 @@
+## [1.47.4](https://github.com/JohnstonCode/svn-scm/compare/v1.47.3...v1.47.4) (2019-03-15)
+
+
+### Bug Fixes
+
+* If encoding is passed to svn.ts it uses that rather than guessing ([#499](https://github.com/JohnstonCode/svn-scm/issues/499)) ([17c5438](https://github.com/JohnstonCode/svn-scm/commit/17c5438)), closes [#483](https://github.com/JohnstonCode/svn-scm/issues/483)
+
+## [1.47.3](https://github.com/JohnstonCode/svn-scm/compare/v1.47.2...v1.47.3) (2019-03-15)
+
+
+### Bug Fixes
+
+* Make deletion modal less intrusive ([#498](https://github.com/JohnstonCode/svn-scm/issues/498)) ([1585771](https://github.com/JohnstonCode/svn-scm/commit/1585771)), closes [#487](https://github.com/JohnstonCode/svn-scm/issues/487)
+
 ## [1.47.2](https://github.com/JohnstonCode/svn-scm/compare/v1.47.1...v1.47.2) (2019-03-15)
 
 
