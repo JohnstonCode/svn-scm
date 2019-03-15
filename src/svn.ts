@@ -116,7 +116,7 @@ export class Svn {
     // Force non interactive environment
     args.push("--non-interactive");
 
-    let encoding = options.encoding || "utf8";
+    let encoding = options.encoding || "";
     delete options.encoding;
 
     const defaults: cp.SpawnOptions = {
@@ -171,7 +171,7 @@ export class Svn {
     // SVN with '--xml' always return 'UTF-8', and jschardet detects this encoding: 'TIS-620'
     if (args.includes("--xml")) {
       encoding = "utf8";
-    } else {
+    } else if (encoding === "") {
       const defaultEncoding = configuration.get<string>("default.encoding");
       if (defaultEncoding) {
         if (!iconv.encodingExists(defaultEncoding)) {
