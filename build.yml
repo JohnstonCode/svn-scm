@@ -112,7 +112,7 @@ jobs:
         env:
           DISPLAY: :10
   - job: Release
-    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'master'))
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
     dependsOn:
     - Windows
     - macOS
