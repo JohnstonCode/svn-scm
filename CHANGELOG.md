@@ -1,3 +1,10 @@
+## [1.47.2](https://github.com/JohnstonCode/svn-scm/compare/v1.47.1...v1.47.2) (2019-03-15)
+
+
+### Bug Fixes
+
+* Fixed windows network drive issues ([#497](https://github.com/JohnstonCode/svn-scm/issues/497)) ([6a6c846](https://github.com/JohnstonCode/svn-scm/commit/6a6c846)), closes [#466](https://github.com/JohnstonCode/svn-scm/issues/466) [#451](https://github.com/JohnstonCode/svn-scm/issues/451) [#494](https://github.com/JohnstonCode/svn-scm/issues/494)
+
 ## [1.47.1](https://github.com/JohnstonCode/svn-scm/compare/v1.47.0...v1.47.1) (2019-02-12)
 
 
