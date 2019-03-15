@@ -1,3 +1,10 @@
+## [1.47.3](https://github.com/JohnstonCode/svn-scm/compare/v1.47.2...v1.47.3) (2019-03-15)
+
+
+### Bug Fixes
+
+* Make deletion modal less intrusive ([#498](https://github.com/JohnstonCode/svn-scm/issues/498)) ([1585771](https://github.com/JohnstonCode/svn-scm/commit/1585771)), closes [#487](https://github.com/JohnstonCode/svn-scm/issues/487)
+
 ## [1.47.2](https://github.com/JohnstonCode/svn-scm/compare/v1.47.1...v1.47.2) (2019-03-15)
 
 
