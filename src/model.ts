@@ -278,7 +278,9 @@ export class Model implements IDisposable {
 
     try {
       isSvnFolder = await exists(path + "/.svn");
-    } catch (error) {}
+    } catch (error) {
+      // error
+    }
 
     // If open only a subpath.
     if (!isSvnFolder && level === 0) {
@@ -289,7 +291,9 @@ export class Model implements IDisposable {
 
         try {
           isSvnFolder = await exists(topPath);
-        } catch (error) {}
+        } catch (error) {
+          // error
+        }
 
         if (isSvnFolder) {
           break;
