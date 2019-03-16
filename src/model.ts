@@ -1,5 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
+import { promisify } from "util";
 import {
   commands,
   Disposable,
@@ -32,6 +33,10 @@ import {
   normalizePath
 } from "./util";
 import { matchAll } from "./util/globMatch";
+
+const readDir = promisify(fs.readdir);
+const stat = promisify(fs.stat);
+const exists = promisify(fs.exists);
 
 export class Model implements IDisposable {
   private _onDidOpenRepository = new EventEmitter<Repository>();
@@ -269,7 +274,11 @@ export class Model implements IDisposable {
       return;
     }
 
-    let isSvnFolder = fs.existsSync(path + "/.svn");
+    let isSvnFolder = false;
+
+    try {
+      isSvnFolder = await exists(path + "/.svn");
+    } catch (error) {}
 
     // If open only a subpath.
     if (!isSvnFolder && level === 0) {
@@ -277,7 +286,11 @@ export class Model implements IDisposable {
       while (pathParts.length > 0) {
         pathParts.pop();
         const topPath = pathParts.join("/") + "/.svn";
-        isSvnFolder = fs.existsSync(topPath);
+
+        try {
+          isSvnFolder = await exists(topPath);
+        } catch (error) {}
+
         if (isSvnFolder) {
           break;
         }
@@ -320,11 +333,26 @@ export class Model implements IDisposable {
 
     const newLevel = level + 1;
     if (newLevel <= this.maxDepth) {
-      for (const file of fs.readdirSync(path)) {
+      let files: string[] | Buffer[] = [];
+
+      try {
+        files = await readDir(path);
+      } catch (error) {
+        return;
+      }
+
+      for (const file of files) {
         const dir = path + "/" + file;
+        let stats: fs.Stats;
+
+        try {
+          stats = await stat(dir);
+        } catch (error) {
+          continue;
+        }
 
         if (
-          fs.statSync(dir).isDirectory() &&
+          stats.isDirectory() &&
           !matchAll(dir, this.ignoreList, { dot: true })
         ) {
           await this.tryOpenRepository(dir, newLevel);
