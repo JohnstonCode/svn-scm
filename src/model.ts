@@ -1,6 +1,5 @@
-import * as fs from "fs";
+import { Stats } from "fs";
 import * as path from "path";
-import { promisify } from "util";
 import {
   commands,
   Disposable,
@@ -33,10 +32,7 @@ import {
   normalizePath
 } from "./util";
 import { matchAll } from "./util/globMatch";
-
-const readDir = promisify(fs.readdir);
-const stat = promisify(fs.stat);
-const exists = promisify(fs.exists);
+import { readDir, stat, exists } from "./util/async_fs";
 
 export class Model implements IDisposable {
   private _onDidOpenRepository = new EventEmitter<Repository>();
@@ -347,7 +343,7 @@ export class Model implements IDisposable {
 
       for (const file of files) {
         const dir = path + "/" + file;
-        let stats: fs.Stats;
+        let stats: Stats;
 
         try {
           stats = await stat(dir);
