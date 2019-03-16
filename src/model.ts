@@ -31,8 +31,8 @@ import {
   isDescendant,
   normalizePath
 } from "./util";
+import { exists, readDir, stat } from "./util/async_fs";
 import { matchAll } from "./util/globMatch";
-import { readDir, stat, exists } from "./util/async_fs";
 
 export class Model implements IDisposable {
   private _onDidOpenRepository = new EventEmitter<Repository>();
