@@ -1,3 +1,10 @@
+## [1.47.5](https://github.com/JohnstonCode/svn-scm/compare/v1.47.4...v1.47.5) (2019-03-16)
+
+
+### Bug Fixes
+
+* Removed sync fs calls from model ([#505](https://github.com/JohnstonCode/svn-scm/issues/505)) ([516dc22](https://github.com/JohnstonCode/svn-scm/commit/516dc22))
+
 ## [1.47.4](https://github.com/JohnstonCode/svn-scm/compare/v1.47.3...v1.47.4) (2019-03-15)
 
 
