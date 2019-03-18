@@ -32,6 +32,13 @@ jobs:
           command: custom
           verbose: false
           customCommand: 'run test --silent'
+      - task: PublishTestResults@2
+        displayName: 'Publish Test Results'
+        inputs:
+          testResultsFormat: 'JUnit'
+          testResultsFiles: 'test-reports/*.xml'
+          mergeTestResults: true
+          testRunTitle: '$(Agent.OS) $(Agent.JobName)'
   - job: macOS
     strategy:
       matrix:
@@ -65,6 +72,13 @@ jobs:
           command: custom
           verbose: false
           customCommand: 'run test --silent'
+      - task: PublishTestResults@2
+        displayName: 'Publish Test Results'
+        inputs:
+          testResultsFormat: 'JUnit'
+          testResultsFiles: 'test-reports/*.xml'
+          mergeTestResults: true
+          testRunTitle: '$(Agent.OS) $(Agent.JobName)'
   - job: Linux
     strategy:
       matrix:
@@ -111,6 +125,13 @@ jobs:
           customCommand: 'run test --silent'
         env:
           DISPLAY: :10
+      - task: PublishTestResults@2
+        displayName: 'Publish Test Results'
+        inputs:
+          testResultsFormat: 'JUnit'
+          testResultsFiles: 'test-reports/*.xml'
+          mergeTestResults: true
+          testRunTitle: '$(Agent.OS) $(Agent.JobName)'
   - job: Release
     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
     dependsOn:
