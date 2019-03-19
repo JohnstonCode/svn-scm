@@ -1,6 +1,7 @@
 import * as cp from "child_process";
 import * as path from "path";
 import * as semver from "semver";
+import { Readable } from "stream";
 import { cpErrorHandler } from "./svn";
 
 export interface ISvn {
@@ -93,7 +94,7 @@ export class SvnFinder {
     return new Promise<ISvn>((c, e) => {
       const buffers: Buffer[] = [];
       const child = cp.spawn(path, ["--version", "--quiet"]);
-      child.stdout.on("data", (b: Buffer) => buffers.push(b));
+      (child.stdout as Readable).on("data", (b: Buffer) => buffers.push(b));
       child.on("error", cpErrorHandler(e));
       child.on("close", code =>
         code

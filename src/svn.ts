@@ -15,6 +15,7 @@ import * as iconv from "iconv-lite";
 import isUtf8 = require("is-utf8");
 import * as jschardet from "jschardet";
 import * as proc from "process";
+import { Readable } from "stream";
 import { Uri, workspace } from "vscode";
 import {
   ConstructorPolicy,
@@ -154,13 +155,13 @@ export class Svn {
       }),
       new Promise<Buffer>(resolve => {
         const buffers: Buffer[] = [];
-        on(process.stdout, "data", (b: Buffer) => buffers.push(b));
-        once(process.stdout, "close", () => resolve(Buffer.concat(buffers)));
+        on((process.stdout as Readable), "data", (b: Buffer) => buffers.push(b));
+        once((process.stdout as Readable), "close", () => resolve(Buffer.concat(buffers)));
       }),
       new Promise<string>(resolve => {
         const buffers: Buffer[] = [];
-        on(process.stderr, "data", (b: Buffer) => buffers.push(b));
-        once(process.stderr, "close", () =>
+        on((process.stderr as Readable), "data", (b: Buffer) => buffers.push(b));
+        once((process.stderr as Readable), "close", () =>
           resolve(Buffer.concat(buffers).toString())
         );
       })
