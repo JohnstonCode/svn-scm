@@ -47,8 +47,10 @@ jobs:
           codeCoverageTool: Cobertura
           summaryFileLocation: '$(System.DefaultWorkingDirectory)/coverage/cobertura-coverage.xml'
           reportDirectory: '$(System.DefaultWorkingDirectory)/coverage/lcov-report'
-      - script: node_modules\.bin\codecov --disable=gcov --token $(CODECOV_TOKEN)
+      - script: node_modules\.bin\codecov --disable=gcov
         displayName: 'Publish Code Coverage to Codecov'
+        env:
+          CODECOV_TOKEN: $(codecovToken)
   - job: macOS
     strategy:
       matrix:
@@ -97,8 +99,10 @@ jobs:
           codeCoverageTool: Cobertura
           summaryFileLocation: '$(System.DefaultWorkingDirectory)/coverage/cobertura-coverage.xml'
           reportDirectory: '$(System.DefaultWorkingDirectory)/coverage/lcov-report'
-      - script: node_modules/.bin/codecov --disable=gcov --token $(CODECOV_TOKEN)
+      - script: node_modules/.bin/codecov --disable=gcov
         displayName: 'Publish Code Coverage to Codecov'
+        env:
+          CODECOV_TOKEN: $(codecovToken)
   - job: Linux
     strategy:
       matrix:
@@ -160,8 +164,10 @@ jobs:
           codeCoverageTool: Cobertura
           summaryFileLocation: '$(System.DefaultWorkingDirectory)/coverage/cobertura-coverage.xml'
           reportDirectory: '$(System.DefaultWorkingDirectory)/coverage/lcov-report'
-      - script: node_modules/.bin/codecov --disable=gcov --token $(CODECOV_TOKEN)
+      - script: node_modules/.bin/codecov --disable=gcov
         displayName: 'Publish Code Coverage to Codecov'
+        env:
+          CODECOV_TOKEN: $(codecovToken)
   - job: Release
     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
     dependsOn:
