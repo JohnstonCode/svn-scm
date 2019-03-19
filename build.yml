@@ -26,6 +26,8 @@ jobs:
           command: custom
           verbose: false
           customCommand: 'run build'
+      - bash: sed -i.bak 's/"\*"//g' package.json
+        displayName: 'Enable full coverage'
       - task: Npm@1
         displayName: 'Run tests'
         inputs:
@@ -39,6 +41,14 @@ jobs:
           testResultsFiles: 'test-reports/*.xml'
           mergeTestResults: true
           testRunTitle: '$(Agent.OS) $(Agent.JobName)'
+      - task: PublishCodeCoverageResults@1
+        displayName: 'Publish Code Coverage to Azure'
+        inputs:
+          codeCoverageTool: Cobertura
+          summaryFileLocation: '$(System.DefaultWorkingDirectory)/coverage/cobertura-coverage.xml'
+          reportDirectory: '$(System.DefaultWorkingDirectory)/coverage/lcov-report'
+      - script: node_modules\.bin\codecov --disable=gcov --token $(CODECOV_TOKEN)
+        displayName: 'Publish Code Coverage to Codecov'
   - job: macOS
     strategy:
       matrix:
@@ -66,6 +76,8 @@ jobs:
           command: custom
           verbose: false
           customCommand: 'run build'
+      - bash: sed -i.bak 's/"\*"//g' package.json
+        displayName: 'Enable full coverage'
       - task: Npm@1
         displayName: 'Run tests'
         inputs:
@@ -79,6 +91,14 @@ jobs:
           testResultsFiles: 'test-reports/*.xml'
           mergeTestResults: true
           testRunTitle: '$(Agent.OS) $(Agent.JobName)'
+      - task: PublishCodeCoverageResults@1
+        displayName: 'Publish Code Coverage to Azure'
+        inputs:
+          codeCoverageTool: Cobertura
+          summaryFileLocation: '$(System.DefaultWorkingDirectory)/coverage/cobertura-coverage.xml'
+          reportDirectory: '$(System.DefaultWorkingDirectory)/coverage/lcov-report'
+      - script: node_modules/.bin/codecov --disable=gcov --token $(CODECOV_TOKEN)
+        displayName: 'Publish Code Coverage to Codecov'
   - job: Linux
     strategy:
       matrix:
@@ -117,6 +137,8 @@ jobs:
           /usr/bin/Xvfb :10 -ac >> /tmp/Xvfb.out 2>&1 &
           disown -ar
         displayName: 'Start xvfb'
+      - bash: sed -i.bak 's/"\*"//g' package.json
+        displayName: 'Enable full coverage'
       - task: Npm@1
         displayName: 'Run tests'
         inputs:
@@ -132,6 +154,14 @@ jobs:
           testResultsFiles: 'test-reports/*.xml'
           mergeTestResults: true
           testRunTitle: '$(Agent.OS) $(Agent.JobName)'
+      - task: PublishCodeCoverageResults@1
+        displayName: 'Publish Code Coverage to Azure'
+        inputs:
+          codeCoverageTool: Cobertura
+          summaryFileLocation: '$(System.DefaultWorkingDirectory)/coverage/cobertura-coverage.xml'
+          reportDirectory: '$(System.DefaultWorkingDirectory)/coverage/lcov-report'
+      - script: node_modules/.bin/codecov --disable=gcov --token $(CODECOV_TOKEN)
+        displayName: 'Publish Code Coverage to Codecov'
   - job: Release
     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
     dependsOn:
