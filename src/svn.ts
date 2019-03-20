@@ -155,13 +155,15 @@ export class Svn {
       }),
       new Promise<Buffer>(resolve => {
         const buffers: Buffer[] = [];
-        on((process.stdout as Readable), "data", (b: Buffer) => buffers.push(b));
-        once((process.stdout as Readable), "close", () => resolve(Buffer.concat(buffers)));
+        on(process.stdout as Readable, "data", (b: Buffer) => buffers.push(b));
+        once(process.stdout as Readable, "close", () =>
+          resolve(Buffer.concat(buffers))
+        );
       }),
       new Promise<string>(resolve => {
         const buffers: Buffer[] = [];
-        on((process.stderr as Readable), "data", (b: Buffer) => buffers.push(b));
-        once((process.stderr as Readable), "close", () =>
+        on(process.stderr as Readable, "data", (b: Buffer) => buffers.push(b));
+        once(process.stderr as Readable, "close", () =>
           resolve(Buffer.concat(buffers).toString())
         );
       })
@@ -201,7 +203,14 @@ export class Svn {
     const decodedStdout = iconv.decode(stdout, encoding);
 
     if (options.log !== false && stderr.length > 0) {
-      this.logOutput(`${stderr}\n`);
+      const err = stderr
+        .split("\n")
+        .filter((line: string) => line)
+        .map(
+          (line: string) => `[${this.lastCwd.split(/[\\\/]+/).pop()}]$ ${line}`
+        )
+        .join("\n");
+      this.logOutput(err);
     }
 
     if (exitCode) {
