@@ -30,7 +30,7 @@ jobs:
           customCommand: 'run build'
       - bash: sed -i.bak 's/"\*"//g' package.json
         displayName: 'Enable full coverage'
-      - script: 'npm test --silent'
+      - script: 'node node_modules/vscode/bin/test'
         displayName: 'Run tests'
       - task: PublishTestResults@2
         displayName: 'Publish Test Results'
@@ -80,7 +80,7 @@ jobs:
           customCommand: 'run build'
       - bash: sed -i.bak 's/"\*"//g' package.json
         displayName: 'Enable full coverage'
-      - script: 'npm test --silent'
+      - script: 'node node_modules/vscode/bin/test'
         displayName: 'Run tests'
       - task: PublishTestResults@2
         displayName: 'Publish Test Results'
@@ -141,7 +141,7 @@ jobs:
         displayName: 'Start xvfb'
       - bash: sed -i.bak 's/"\*"//g' package.json
         displayName: 'Enable full coverage'
-      - script: 'npm test --silent'
+      - script: 'node node_modules/vscode/bin/test'
         displayName: 'Run tests'
         env:
           DISPLAY: :10
