@@ -203,12 +203,11 @@ export class Svn {
     const decodedStdout = iconv.decode(stdout, encoding);
 
     if (options.log !== false && stderr.length > 0) {
+      const name = this.lastCwd.split(/[\\\/]+/).pop();
       const err = stderr
         .split("\n")
         .filter((line: string) => line)
-        .map(
-          (line: string) => `[${this.lastCwd.split(/[\\\/]+/).pop()}]$ ${line}`
-        )
+        .map((line: string) => `[${name}]$ ${line}`)
         .join("\n");
       this.logOutput(err);
     }
