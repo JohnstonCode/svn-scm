@@ -31,7 +31,9 @@ import {
   isDescendant,
   normalizePath
 } from "./util";
-import { exists, readDir, stat } from "./util/async_fs";
+import { exists } from "./fs/exists";
+import { readdir } from "./fs/readdir";
+import { stat } from "./fs/stat";
 import { matchAll } from "./util/globMatch";
 
 export class Model implements IDisposable {
@@ -336,7 +338,7 @@ export class Model implements IDisposable {
       let files: string[] | Buffer[] = [];
 
       try {
-        files = await readDir(path);
+        files = await readdir(path);
       } catch (error) {
         return;
       }
