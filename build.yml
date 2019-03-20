@@ -30,12 +30,8 @@ jobs:
           customCommand: 'run build'
       - bash: sed -i.bak 's/"\*"//g' package.json
         displayName: 'Enable full coverage'
-      - task: Npm@1
+      - script: 'npm test --silent'
         displayName: 'Run tests'
-        inputs:
-          command: custom
-          verbose: false
-          customCommand: 'run test --silent'
       - task: PublishTestResults@2
         displayName: 'Publish Test Results'
         inputs:
@@ -84,12 +80,8 @@ jobs:
           customCommand: 'run build'
       - bash: sed -i.bak 's/"\*"//g' package.json
         displayName: 'Enable full coverage'
-      - task: Npm@1
+      - script: 'npm test --silent'
         displayName: 'Run tests'
-        inputs:
-          command: custom
-          verbose: false
-          customCommand: 'run test --silent'
       - task: PublishTestResults@2
         displayName: 'Publish Test Results'
         inputs:
@@ -149,12 +141,8 @@ jobs:
         displayName: 'Start xvfb'
       - bash: sed -i.bak 's/"\*"//g' package.json
         displayName: 'Enable full coverage'
-      - task: Npm@1
+      - script: 'npm test --silent'
         displayName: 'Run tests'
-        inputs:
-          command: custom
-          verbose: false
-          customCommand: 'run test --silent'
         env:
           DISPLAY: :10
       - task: PublishTestResults@2
