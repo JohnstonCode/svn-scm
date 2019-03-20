@@ -116,7 +116,7 @@ export class SvnContentProvider
         return await repository.patch([fsPath]);
       }
     } catch (error) {
-      console.error(error);
+      // Dont show error
     }
     return "";
   }
