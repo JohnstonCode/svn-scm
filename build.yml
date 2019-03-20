@@ -20,6 +20,8 @@ jobs:
         displayName: 'Install dependencies'
         inputs:
           verbose: false
+          command: 'custom'
+          customCommand: 'ci'
       - task: Npm@1
         displayName: 'Compile sources'
         inputs:
@@ -72,6 +74,8 @@ jobs:
         displayName: 'Install dependencies'
         inputs:
           verbose: false
+          command: 'custom'
+          customCommand: 'ci'
       - task: Npm@1
         displayName: 'Compile sources'
         inputs:
@@ -124,6 +128,8 @@ jobs:
         displayName: 'Install dependencies'
         inputs:
           verbose: false
+          command: 'custom'
+          customCommand: 'ci'
       - task: Npm@1
         displayName: 'Lint check'
         inputs:
@@ -186,6 +192,8 @@ jobs:
         displayName: 'Install dependencies'
         inputs:
           verbose: false
+          command: 'custom'
+          customCommand: 'ci'
       - task: Npm@1
         displayName: 'Compile sources'
         inputs:
