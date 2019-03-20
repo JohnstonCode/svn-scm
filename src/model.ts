@@ -18,6 +18,9 @@ import {
   Status
 } from "./common/types";
 import { debounce } from "./decorators";
+import { exists } from "./fs/exists";
+import { readdir } from "./fs/readdir";
+import { stat } from "./fs/stat";
 import { configuration } from "./helpers/configuration";
 import { RemoteRepository } from "./remoteRepository";
 import { Repository } from "./repository";
@@ -31,9 +34,6 @@ import {
   isDescendant,
   normalizePath
 } from "./util";
-import { exists } from "./fs/exists";
-import { readdir } from "./fs/readdir";
-import { stat } from "./fs/stat";
 import { matchAll } from "./util/globMatch";
 
 export class Model implements IDisposable {
