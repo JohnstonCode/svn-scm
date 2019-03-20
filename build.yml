@@ -32,6 +32,8 @@ jobs:
         displayName: 'Enable full coverage'
       - script: 'node node_modules/vscode/bin/test'
         displayName: 'Run tests'
+        env:
+          DISPLAY: :10
       - task: PublishTestResults@2
         displayName: 'Publish Test Results'
         inputs:
@@ -82,6 +84,8 @@ jobs:
         displayName: 'Enable full coverage'
       - script: 'node node_modules/vscode/bin/test'
         displayName: 'Run tests'
+        env:
+          DISPLAY: :10
       - task: PublishTestResults@2
         displayName: 'Publish Test Results'
         inputs:
