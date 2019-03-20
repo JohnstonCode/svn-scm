@@ -9,6 +9,7 @@ import {
 } from "vscode";
 import { registerCommands } from "./commands";
 import { ConstructorPolicy } from "./common/types";
+import { CheckActiveEditor } from "./contexts/checkActiveEditor";
 import SvnDecorations from "./decorations/svnDecorations";
 import { configuration } from "./helpers/configuration";
 import { ItemLogProvider } from "./historyView/itemLogProvider";
@@ -54,6 +55,8 @@ async function init(
   const itemLogProvider = new ItemLogProvider(model);
   disposables.push(itemLogProvider);
   window.registerTreeDataProvider("itemlog", itemLogProvider);
+
+  disposables.push(new CheckActiveEditor(model));
 
   // First, check the vscode has support to DecorationProvider
   if (hasSupportToDecorationProvider()) {
