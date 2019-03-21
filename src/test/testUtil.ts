@@ -200,10 +200,10 @@ export function overrideNextShowInputBox(value: any) {
 
 const originalShowInputBox = window.showInputBox;
 
-window.showInputBox = (options?: any, token?: any) => {
+window.showInputBox = (...args) => {
   const next = overridesShowInputBox.shift();
   if (typeof next === "undefined") {
-    return originalShowInputBox.call(null, arguments as any);
+    return originalShowInputBox.call(null, args as any);
   }
   return new Promise((resolve, reject) => {
     resolve(next);
@@ -220,12 +220,11 @@ const originalShowQuickPick = window.showQuickPick;
 
 window.showQuickPick = (
   items: any[] | Thenable<any[]>,
-  options?: any,
-  token?: any
+  ...args: any[]
 ): Thenable<any | undefined> => {
   let next = overridesShowQuickPick.shift();
   if (typeof next === "undefined") {
-    return originalShowQuickPick.call(null, arguments as any);
+    return originalShowQuickPick.call(null, [items, ...args] as any);
   }
 
   if (typeof next === "number" && Array.isArray(items)) {
