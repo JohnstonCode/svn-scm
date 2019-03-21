@@ -17,6 +17,7 @@ import { ISvnResourceGroup } from "../common/types";
 import { Model } from "../model";
 import { Repository } from "../repository";
 import * as testUtil from "./testUtil";
+import { timeout } from "../util";
 
 // Defines a Mocha test suite to group tests of similar kind together
 suite("Commands Tests", () => {
@@ -174,6 +175,9 @@ suite("Commands Tests", () => {
     testUtil.overrideNextShowInputBox("Created new branch test");
     await commands.executeCommand("svn.switchBranch");
 
+    // Wait run updateRemoteChangedFiles
+    await timeout(2000);
+
     const repository = model.getRepository(checkoutDir) as Repository;
     assert.equal(await repository.getCurrentBranch(), "branches/test");
   });
@@ -181,6 +185,9 @@ suite("Commands Tests", () => {
   test("Switch Branch", async function() {
     testUtil.overrideNextShowQuickPick(2);
     await commands.executeCommand("svn.switchBranch");
+
+    // Wait run updateRemoteChangedFiles
+    await timeout(2000);
 
     const repository = model.getRepository(checkoutDir) as Repository;
     assert.equal(await repository.getCurrentBranch(), "trunk");
