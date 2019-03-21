@@ -13,10 +13,13 @@ const mochaOpts: Mocha.MochaOptions = {
   useColors: true, // colored output from test results,
   timeout: 10000, // default timeout: 10 seconds
   retries: 1,
-  reporter: "mocha-junit-reporter",
+  reporter: "mocha-multi-reporters",
   reporterOptions: {
-    mochaFile: __dirname + "/../../test-reports/extension_tests.xml",
-    suiteTitleSeparatedBy: ": "
+    reporterEnabled: "spec, mocha-junit-reporter",
+    mochaJunitReporterReporterOptions: {
+      mochaFile: __dirname + "/../../test-reports/extension_tests.xml",
+      suiteTitleSeparatedBy: ": "
+    }
   }
 };
 
