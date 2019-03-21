@@ -46,6 +46,7 @@ import {
   toDisposable
 } from "./util";
 import { match, matchAll } from "./util/globMatch";
+import { RepositoryFilesWatcher } from "./watchers/repositoryFilesWatcher";
 
 function shouldShowProgress(operation: Operation): boolean {
   switch (operation) {
@@ -77,6 +78,11 @@ export class Repository implements IRemoteRepository {
   private deletedUris: Uri[] = [];
 
   private lastPromptAuth?: Thenable<IAuth | undefined>;
+
+  private _fsWatcher: RepositoryFilesWatcher;
+  public get fsWatcher() {
+    return this._fsWatcher;
+  }
 
   private _onDidChangeRepository = new EventEmitter<Uri>();
   public readonly onDidChangeRepository: Event<Uri> = this
@@ -171,32 +177,13 @@ export class Repository implements IRemoteRepository {
   }
 
   constructor(public repository: BaseRepository) {
-    const fsWatcher = workspace.createFileSystemWatcher("**");
-    this.disposables.push(fsWatcher);
+    this._fsWatcher = new RepositoryFilesWatcher(repository.root);
+    this.disposables.push(this._fsWatcher);
 
-    const onWorkspaceChange = anyEvent(
-      fsWatcher.onDidChange,
-      fsWatcher.onDidCreate,
-      fsWatcher.onDidDelete
-    );
-
-    const onRepositoryChange = filterEvent(
-      onWorkspaceChange,
-      uri => !/^\.\./.test(path.relative(repository.root, uri.fsPath))
-    );
-    const onRelevantRepositoryChange = filterEvent(
-      onRepositoryChange,
-      uri => !/[\\\/]\.svn[\\\/]tmp/.test(uri.path)
-    );
-
-    onRelevantRepositoryChange(this.onFSChange, this, this.disposables);
-
-    const onRelevantSvnChange = filterEvent(onRelevantRepositoryChange, uri =>
-      /[\\\/]\.svn[\\\/]/.test(uri.path)
-    );
+    this._fsWatcher.onDidAny(this.onFSChange, this, this.disposables);
 
     // TODO on svn switch event fired two times since two files were changed
-    onRelevantSvnChange(
+    this._fsWatcher.onDidSvnAny(
       async (e: Uri) => {
         await this.repository.updateInfo();
         this._onDidChangeRepository.fire(e);
@@ -263,12 +250,11 @@ export class Repository implements IRemoteRepository {
     );
 
     // For each deleted file, append to list
-    const onFsDelete = filterEvent(
-      fsWatcher.onDidDelete,
-      uri => !/[\\\/]\.svn[\\\/]/.test(uri.path)
+    this._fsWatcher.onDidWorkspaceDelete(
+      uri => this.deletedUris.push(uri),
+      this,
+      this.disposables
     );
-
-    onFsDelete(uri => this.deletedUris.push(uri), this, this.disposables);
 
     // Only check deleted files after the status list is fully updated
     this.onDidChangeStatus(this.actionForDeletedFiles, this, this.disposables);
