@@ -27,14 +27,18 @@ if (!tty.getWindowSize) {
 }
 
 let mocha = new Mocha({
-  ui: "tdd",
-  useColors: true
+  ui: "tdd"
 });
 
 let testOptions: any;
 
 export function configure(mochaOpts: Mocha.MochaOptions, testOpts: any): void {
+  // For Mocha >= 6.0.0, `useColors` is deprecated
+  const color = mochaOpts.useColors || (<any>mochaOpts).color || false;
+  delete mochaOpts.useColors;
+
   mocha = new Mocha(mochaOpts);
+  mocha.useColors(color);
   testOptions = testOpts;
 }
 
