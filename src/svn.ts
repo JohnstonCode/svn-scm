@@ -196,6 +196,9 @@ export class Svn {
           iconv.encodingExists(encodingGuess.encoding)
         ) {
           encoding = encodingGuess.encoding;
+        } else if (!iconv.encodingExists(encoding)) {
+          console.error(`Encoding '${encoding}' doesn't exist!`);
+          encoding = "utf8";
         }
       }
     }
