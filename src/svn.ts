@@ -216,6 +216,7 @@ export class Svn {
     }
 
     if (exitCode) {
+      console.error("Err", stderr, new Error().stack);
       return Promise.reject<IExecutionResult>(
         new SvnError({
           message: "Failed to execute svn",
