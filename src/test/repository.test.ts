@@ -114,8 +114,10 @@ suite("Repository Tests", () => {
 
     assert.equal(repository.changes.resourceStates.length, 0);
 
+    const info = await repository.info(file);
+
     const remoteContent = await repository.show({
-      path: file,
+      path: path.join(info.wcInfo!.wcrootAbspath, "new.txt"),
       rscKind: ResourceKind.LocalFull,
       revision: "HEAD",
       isLocal: false
