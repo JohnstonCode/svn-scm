@@ -68,12 +68,9 @@ export class PathNormalizer {
           throw new Error("Local path is not supported in remote repository");
         }
         if (kind === ResourceKind.LocalFull) {
-          console.log("t1", target);
           target = nativepath.relative(this.checkoutRoot.fsPath, target);
-          console.log("t2", target, this.checkoutRoot.fsPath);
         }
         target = path.join(this.fromRootToBranch(), target);
-        console.log("t3", target);
         break;
       default:
         throw new Error("unsupported kind");
