@@ -201,7 +201,7 @@ const originalShowInputBox = window.showInputBox;
 window.showInputBox = (options?: any, token?: any) => {
   const next = overridesShowInputBox.shift();
   if (typeof next === "undefined") {
-    return originalShowInputBox.call(null, arguments as any);
+    return originalShowInputBox.call(null, options, token);
   }
   return new Promise((resolve, reject) => {
     resolve(next);
@@ -223,7 +223,7 @@ window.showQuickPick = (
 ): Thenable<any | undefined> => {
   let next = overridesShowQuickPick.shift();
   if (typeof next === "undefined") {
-    return originalShowQuickPick.call(null, arguments as any);
+    return originalShowQuickPick.call(null, items, options, token);
   }
 
   if (typeof next === "number" && Array.isArray(items)) {
