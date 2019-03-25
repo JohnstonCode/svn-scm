@@ -57,8 +57,9 @@ export class PathNormalizer {
         break;
       case ResourceKind.LocalFull:
       case ResourceKind.LocalRelative:
+        target = removeSchema(fpath);
         if (
-          nativepath.isAbsolute(fpath) !==
+          nativepath.isAbsolute(target) !==
           (kind === ResourceKind.LocalFull)
         ) {
           throw new Error("Path absolute error");
@@ -66,7 +67,6 @@ export class PathNormalizer {
         if (this.checkoutRoot === undefined) {
           throw new Error("Local path is not supported in remote repository");
         }
-        target = removeSchema(fpath);
         if (kind === ResourceKind.LocalFull) {
           target = nativepath.relative(this.checkoutRoot.fsPath, fpath);
         }
