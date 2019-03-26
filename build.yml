@@ -5,7 +5,7 @@ jobs:
         Code26:
           CODE_VERSION: '1.26.0'
         CodeCurrent:
-          CODE_VERSION: '*'
+          CODE_VERSION: ''
         CodeInssiders:
           CODE_VERSION: 'insiders'
     pool:
