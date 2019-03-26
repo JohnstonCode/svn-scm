@@ -31,7 +31,7 @@ import OperationsImpl from "./operationsImpl";
 import { PathNormalizer } from "./pathNormalizer";
 import { IRemoteRepository } from "./remoteRepository";
 import { Resource } from "./resource";
-import { SvnStatusBar } from "./statusBar";
+import { StatusBarCommands } from "./statusbar/statusBarCommands";
 import { svnErrorCodes } from "./svn";
 import { Repository as BaseRepository } from "./svnRepository";
 import { toSvnUri } from "./uri";
@@ -61,7 +61,7 @@ function shouldShowProgress(operation: Operation): boolean {
 
 export class Repository implements IRemoteRepository {
   public sourceControl: SourceControl;
-  public statusBar: SvnStatusBar;
+  public statusBar: StatusBarCommands;
   public changes: ISvnResourceGroup;
   public unversioned: ISvnResourceGroup;
   public remoteChanges?: ISvnResourceGroup;
@@ -209,7 +209,7 @@ export class Repository implements IRemoteRepository {
     this.sourceControl.quickDiffProvider = this;
     this.disposables.push(this.sourceControl);
 
-    this.statusBar = new SvnStatusBar(this);
+    this.statusBar = new StatusBarCommands(this);
     this.disposables.push(this.statusBar);
     this.statusBar.onDidChange(
       () => (this.sourceControl.statusBarCommands = this.statusBar.commands),
