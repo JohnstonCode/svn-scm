@@ -1,3 +1,17 @@
+## [1.47.7](https://github.com/JohnstonCode/svn-scm/compare/v1.47.6...v1.47.7) (2019-03-26)
+
+
+### Bug Fixes
+
+* Fixed high cpu usage by parallel svn processes (close [#463](https://github.com/JohnstonCode/svn-scm/issues/463)) ([#531](https://github.com/JohnstonCode/svn-scm/issues/531)) ([e70872c](https://github.com/JohnstonCode/svn-scm/commit/e70872c))
+
+## [1.47.6](https://github.com/JohnstonCode/svn-scm/compare/v1.47.5...v1.47.6) (2019-03-26)
+
+
+### Bug Fixes
+
+* Fixed unable to commit (close [#515](https://github.com/JohnstonCode/svn-scm/issues/515)) ([#530](https://github.com/JohnstonCode/svn-scm/issues/530)) ([72d9bd8](https://github.com/JohnstonCode/svn-scm/commit/72d9bd8))
+
 ## [1.47.5](https://github.com/JohnstonCode/svn-scm/compare/v1.47.4...v1.47.5) (2019-03-16)
 
 
