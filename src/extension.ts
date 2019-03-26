@@ -10,6 +10,7 @@ import {
 import { registerCommands } from "./commands";
 import { ConstructorPolicy } from "./common/types";
 import { CheckActiveEditor } from "./contexts/checkActiveEditor";
+import { OpenRepositoryCount } from "./contexts/openRepositoryCount";
 import SvnDecorations from "./decorations/svnDecorations";
 import { configuration } from "./helpers/configuration";
 import { ItemLogProvider } from "./historyView/itemLogProvider";
@@ -30,8 +31,6 @@ async function init(
   outputChannel: OutputChannel,
   disposables: Disposable[]
 ) {
-  commands.executeCommand("setContext", "svnOpenRepositoryCount", "0");
-
   const pathHint = configuration.get<string>("path");
   const svnFinder = new SvnFinder();
 
@@ -57,21 +56,13 @@ async function init(
   window.registerTreeDataProvider("itemlog", itemLogProvider);
 
   disposables.push(new CheckActiveEditor(model));
+  disposables.push(new OpenRepositoryCount(model));
 
   // First, check the vscode has support to DecorationProvider
   if (hasSupportToDecorationProvider()) {
     const decoration = new SvnDecorations(model);
     disposables.push(decoration);
   }
-  const onRepository = () =>
-    commands.executeCommand(
-      "setContext",
-      "svnOpenRepositoryCount",
-      `${model.repositories.length}`
-    );
-  model.onDidOpenRepository(onRepository, null, disposables);
-  model.onDidCloseRepository(onRepository, null, disposables);
-  onRepository();
 
   commands.executeCommand(
     "setContext",
