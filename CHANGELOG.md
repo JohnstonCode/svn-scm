@@ -1,3 +1,10 @@
+## [1.47.10](https://github.com/JohnstonCode/svn-scm/compare/v1.47.9...v1.47.10) (2019-03-27)
+
+
+### Bug Fixes
+
+* Fixed watch files changes with external ([#538](https://github.com/JohnstonCode/svn-scm/issues/538)) ([2899a60](https://github.com/JohnstonCode/svn-scm/commit/2899a60))
+
 ## [1.47.9](https://github.com/JohnstonCode/svn-scm/compare/v1.47.8...v1.47.9) (2019-03-27)
 
 
