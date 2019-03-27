@@ -17,6 +17,8 @@ export class ChangeList extends Command {
       uris = (args as Resource[]).map(resource => resource.resourceUri);
     } else if (args[0] instanceof Uri) {
       uris = args[1] as Uri[];
+    } else if (window.activeTextEditor) {
+      uris = [window.activeTextEditor.document.uri];
     } else {
       console.error("Unhandled type for changelist command");
       return;

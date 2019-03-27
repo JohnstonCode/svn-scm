@@ -104,3 +104,17 @@ export function debounce(delay: number): Function {
     };
   });
 }
+
+const _seqList: { [key: string]: any } = {};
+
+export function globalSequentialize(name: string): Function {
+  return decorate((fn, key) => {
+    return function(...args: any[]) {
+      const currentPromise =
+        (_seqList[name] as Promise<any>) || Promise.resolve(null);
+      const run = async () => fn.apply(this, args);
+      _seqList[name] = currentPromise.then(run, run);
+      return _seqList[name];
+    };
+  });
+}
