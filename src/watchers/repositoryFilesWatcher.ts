@@ -23,14 +23,14 @@ export class RepositoryFilesWatcher implements IDisposable {
     const fsWatcher = workspace.createFileSystemWatcher("**");
     this.disposables.push(fsWatcher);
 
-    const ignoreTmp = (uri: Uri) => !/[\\\/]\.svn[\\\/]tmp/.test(uri.path);
+    const isTmp = (uri: Uri) => /[\\\/]\.svn[\\\/]tmp/.test(uri.path);
 
-    const ignoreNonRelevants = (uri: Uri) =>
-      ignoreTmp(uri) && !isDescendant(this.root, uri.fsPath);
+    const isRelevant = (uri: Uri) =>
+      !isTmp(uri) && isDescendant(this.root, uri.fsPath);
 
-    this.onDidChange = filterEvent(fsWatcher.onDidChange, ignoreNonRelevants);
-    this.onDidCreate = filterEvent(fsWatcher.onDidCreate, ignoreNonRelevants);
-    this.onDidDelete = filterEvent(fsWatcher.onDidDelete, ignoreNonRelevants);
+    this.onDidChange = filterEvent(fsWatcher.onDidChange, isRelevant);
+    this.onDidCreate = filterEvent(fsWatcher.onDidCreate, isRelevant);
+    this.onDidDelete = filterEvent(fsWatcher.onDidDelete, isRelevant);
 
     this.onDidAny = anyEvent(
       this.onDidChange,

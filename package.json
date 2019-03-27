@@ -2,7 +2,7 @@
   "name": "svn-scm",
   "displayName": "SVN",
   "description": "Integrated Subversion source control",
-  "version": "1.47.7",
+  "version": "1.47.10",
   "publisher": "johnstoncode",
   "engines": {
     "vscode": "^1.26.0"
@@ -48,7 +48,7 @@
   "dependencies": {
     "is-utf8": "^0.2.1",
     "minimatch": "^3.0.4",
-    "semver": "^5.6.0",
+    "semver": "^6.0.0",
     "tmp": "0.1.0",
     "xml2js": "^0.4.19"
   },

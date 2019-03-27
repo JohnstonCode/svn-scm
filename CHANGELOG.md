@@ -1,3 +1,24 @@
+## [1.47.10](https://github.com/JohnstonCode/svn-scm/compare/v1.47.9...v1.47.10) (2019-03-27)
+
+
+### Bug Fixes
+
+* Fixed watch files changes with external ([#538](https://github.com/JohnstonCode/svn-scm/issues/538)) ([2899a60](https://github.com/JohnstonCode/svn-scm/commit/2899a60))
+
+## [1.47.9](https://github.com/JohnstonCode/svn-scm/compare/v1.47.8...v1.47.9) (2019-03-27)
+
+
+### Bug Fixes
+
+* Fixed ignore folder context on explorer (close [#438](https://github.com/JohnstonCode/svn-scm/issues/438)) ([#533](https://github.com/JohnstonCode/svn-scm/issues/533)) ([3354958](https://github.com/JohnstonCode/svn-scm/commit/3354958))
+
+## [1.47.8](https://github.com/JohnstonCode/svn-scm/compare/v1.47.7...v1.47.8) (2019-03-27)
+
+
+### Bug Fixes
+
+* Fixed set changelist from command palette (close [#460](https://github.com/JohnstonCode/svn-scm/issues/460)) ([#532](https://github.com/JohnstonCode/svn-scm/issues/532)) ([93f1030](https://github.com/JohnstonCode/svn-scm/commit/93f1030))
+
 ## [1.47.7](https://github.com/JohnstonCode/svn-scm/compare/v1.47.6...v1.47.7) (2019-03-26)
 
 
