@@ -175,6 +175,8 @@ export class Svn {
     if (args.includes("--xml")) {
       encoding = "utf8";
     } else if (encoding === "") {
+      encoding = "utf8"; // Initial encoding
+
       const defaultEncoding = configuration.get<string>("default.encoding");
       if (defaultEncoding) {
         if (!iconv.encodingExists(defaultEncoding)) {
