@@ -3,7 +3,7 @@ import { Command } from "./command";
 
 export class AddToIgnoreExplorer extends Command {
   constructor() {
-    super("svn.addToIgnoreExplorer", { repository: true });
+    super("svn.addToIgnoreExplorer");
   }
 
   public async execute(mainUri?: Uri, allUris?: Uri[]) {
