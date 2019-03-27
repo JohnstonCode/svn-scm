@@ -25,7 +25,7 @@ import {
   Status,
   SvnUriAction
 } from "./common/types";
-import { debounce, memoize, throttle } from "./decorators";
+import { debounce, globalSequentialize, memoize, throttle } from "./decorators";
 import { configuration } from "./helpers/configuration";
 import OperationsImpl from "./operationsImpl";
 import { PathNormalizer } from "./pathNormalizer";
@@ -427,6 +427,7 @@ export class Repository implements IRemoteRepository {
   }
 
   @throttle
+  @globalSequentialize("updateModelState")
   public async updateModelState(checkRemoteChanges: boolean = false) {
     const changes: any[] = [];
     const unversioned: any[] = [];
