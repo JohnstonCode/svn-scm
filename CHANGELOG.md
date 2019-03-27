@@ -1,3 +1,10 @@
+## [1.47.9](https://github.com/JohnstonCode/svn-scm/compare/v1.47.8...v1.47.9) (2019-03-27)
+
+
+### Bug Fixes
+
+* Fixed ignore folder context on explorer (close [#438](https://github.com/JohnstonCode/svn-scm/issues/438)) ([#533](https://github.com/JohnstonCode/svn-scm/issues/533)) ([3354958](https://github.com/JohnstonCode/svn-scm/commit/3354958))
+
 ## [1.47.8](https://github.com/JohnstonCode/svn-scm/compare/v1.47.7...v1.47.8) (2019-03-27)
 
 
