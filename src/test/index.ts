@@ -7,7 +7,6 @@
 import * as IstanbulTestRunner from "./istanbultestrunner";
 
 const testRunner = IstanbulTestRunner;
-const version = process.env.CODE_VERSION || "";
 
 const mochaOpts: Mocha.MochaOptions = {
   ui: "tdd", // the TDD UI is being used in extension.test.ts (suite, test, etc.)
@@ -18,8 +17,7 @@ const mochaOpts: Mocha.MochaOptions = {
   reporterOptions: {
     reporterEnabled: "spec, mocha-junit-reporter",
     mochaJunitReporterReporterOptions: {
-      mochaFile:
-        __dirname + `/../../test-reports/extension_tests_${version}.xml`,
+      mochaFile: __dirname + "/../../test-reports/extension_tests.xml",
       suiteTitleSeparatedBy: ": "
     }
   }
