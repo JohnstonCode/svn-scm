@@ -8,6 +8,8 @@ async function go() {
   const testWorkspace = path.resolve(__dirname, "../../");
 
   try {
+    process.env.CODE_VERSION = "stable";
+
     /**
      * Basic usage
      */
