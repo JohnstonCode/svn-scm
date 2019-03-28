@@ -19,6 +19,8 @@ async function go() {
       testWorkspace
     });
 
+    process.env.CODE_VERSION = "minimal";
+
     /**
      * Use 1.26.0 release for testing
      */
@@ -34,6 +36,8 @@ async function go() {
   }
 
   try {
+    process.env.CODE_VERSION = "insider";
+
     /**
      * Use insiders release for testing
      */
