@@ -1,4 +1,4 @@
-import * as fs from "fs";
+import * as fs from "original-fs";
 import { SourceControlResourceState, window } from "vscode";
 import { deleteDirectory } from "../util";
 import { Command } from "./command";

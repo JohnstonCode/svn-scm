@@ -1,3 +1,17 @@
+## [1.47.11](https://github.com/JohnstonCode/svn-scm/compare/v1.47.10...v1.47.11) (2019-03-28)
+
+
+### Bug Fixes
+
+* Fixed .asar file locking (close [#437](https://github.com/JohnstonCode/svn-scm/issues/437)) ([#539](https://github.com/JohnstonCode/svn-scm/issues/539)) ([66af99b](https://github.com/JohnstonCode/svn-scm/commit/66af99b))
+
+## [1.47.10](https://github.com/JohnstonCode/svn-scm/compare/v1.47.9...v1.47.10) (2019-03-27)
+
+
+### Bug Fixes
+
+* Fixed watch files changes with external ([#538](https://github.com/JohnstonCode/svn-scm/issues/538)) ([2899a60](https://github.com/JohnstonCode/svn-scm/commit/2899a60))
+
 ## [1.47.9](https://github.com/JohnstonCode/svn-scm/compare/v1.47.8...v1.47.9) (2019-03-27)
 
 

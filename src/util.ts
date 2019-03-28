@@ -1,4 +1,4 @@
-import * as fs from "fs";
+import * as fs from "original-fs";
 import * as path from "path";
 import * as util from "util";
 import { commands, Event, window } from "vscode";
