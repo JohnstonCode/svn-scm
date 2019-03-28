@@ -1,5 +1,13 @@
 jobs:
   - job: Windows
+    strategy:
+      matrix:
+        Code26:
+          CODE_VERSION: '1.26.0'
+        CodeCurrent:
+          CODE_VERSION: ''
+        CodeInssiders:
+          CODE_VERSION: 'insiders'
     pool:
       name: Hosted VS2017
       demands: npm
@@ -46,6 +54,14 @@ jobs:
         env:
           CODECOV_TOKEN: $(codecovToken)
   - job: macOS
+    strategy:
+      matrix:
+        Code26:
+          CODE_VERSION: '1.26.0'
+        CodeCurrent:
+          CODE_VERSION: ''
+        CodeInssiders:
+          CODE_VERSION: 'insiders'
     pool:
       name: Hosted macOS
       demands: npm
@@ -92,6 +108,14 @@ jobs:
         env:
           CODECOV_TOKEN: $(codecovToken)
   - job: Linux
+    strategy:
+      matrix:
+        Code26:
+          CODE_VERSION: '1.26.0'
+        CodeCurrent:
+          CODE_VERSION: ''
+        CodeInssiders:
+          CODE_VERSION: 'insiders'
     pool:
       name: Hosted Ubuntu 1604
       demands: npm
