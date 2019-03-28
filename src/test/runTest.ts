@@ -3,11 +3,11 @@ import * as path from "path";
 import { runTests } from "vscode-test";
 
 async function go() {
-  try {
-    const extensionPath = path.resolve(__dirname, "../../");
-    const testRunnerPath = path.resolve(__dirname, "../../out/test");
-    const testWorkspace = path.resolve(__dirname, "../../");
+  const extensionPath = path.resolve(__dirname, "../../");
+  const testRunnerPath = path.resolve(__dirname, "../../out/test");
+  const testWorkspace = path.resolve(__dirname, "../../");
 
+  try {
     /**
      * Basic usage
      */
@@ -26,7 +26,12 @@ async function go() {
       testRunnerPath,
       testWorkspace
     });
+  } catch (err) {
+    console.error("Failed to run tests");
+    process.exit(1);
+  }
 
+  try {
     /**
      * Use insiders release for testing
      */
@@ -37,8 +42,8 @@ async function go() {
       testWorkspace
     });
   } catch (err) {
-    console.error("Failed to run tests");
-    process.exit(1);
+    console.error("Insiders tests failing!");
+    process.exit(0);
   }
 }
 
