@@ -2,7 +2,7 @@
 
 import * as cp from "child_process";
 import { ChildProcess, SpawnOptions } from "child_process";
-import * as fs from "fs";
+import * as fs from "original-fs";
 import * as os from "os";
 import { type } from "os";
 import * as path from "path";

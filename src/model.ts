@@ -1,4 +1,4 @@
-import { Stats } from "fs";
+import { Stats } from "original-fs";
 import * as path from "path";
 import {
   commands,

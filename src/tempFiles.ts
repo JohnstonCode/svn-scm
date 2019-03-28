@@ -1,5 +1,5 @@
-// use import { promises as fs } from "fs"; when nodejs will be updated
-import * as fs from "fs";
+// use import { promises as fs } from "original-fs"; when nodejs will be updated
+import * as fs from "original-fs";
 import * as os from "os";
 import * as path from "path";
 import * as util from "util";
