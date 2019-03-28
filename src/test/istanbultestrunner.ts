@@ -3,7 +3,7 @@
  *--------------------------------------------------------*/
 
 "use strict";
-import * as fs from "fs";
+import * as fs from "original-fs";
 import * as glob from "glob";
 import * as istanbul from "istanbul";
 import * as Mocha from "mocha";

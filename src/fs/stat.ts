@@ -1,4 +1,4 @@
-import { stat as fsStat, Stats } from "fs";
+import { stat as fsStat, Stats } from "original-fs";
 
 export function stat(filePath: string): Promise<Stats> {
   return new Promise((resolve, reject) => {

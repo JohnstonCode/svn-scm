@@ -1,4 +1,4 @@
-import * as fs from "fs";
+import * as fs from "original-fs";
 import * as path from "path";
 import * as tmp from "tmp";
 import { Uri, workspace } from "vscode";
