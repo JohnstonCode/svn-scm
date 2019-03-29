@@ -1,3 +1,10 @@
+## [1.47.12](https://github.com/JohnstonCode/svn-scm/compare/v1.47.11...v1.47.12) (2019-03-29)
+
+
+### Performance Improvements
+
+* All fs is done async ([#540](https://github.com/JohnstonCode/svn-scm/issues/540)) ([b26602f](https://github.com/JohnstonCode/svn-scm/commit/b26602f))
+
 ## [1.47.11](https://github.com/JohnstonCode/svn-scm/compare/v1.47.10...v1.47.11) (2019-03-28)
 
 
