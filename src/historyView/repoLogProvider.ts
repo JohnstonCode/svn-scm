@@ -16,6 +16,7 @@ import {
   ISvnLogEntry,
   ISvnLogEntryPath
 } from "../common/types";
+import { exists } from "../fs/exists";
 import { Model } from "../model";
 import { IRemoteRepository } from "../remoteRepository";
 import { Repository } from "../repository";
@@ -38,7 +39,6 @@ import {
   SvnPath,
   transform
 } from "./common";
-import { exists } from "../fs/exists";
 
 function getActionIcon(action: string) {
   let name: string | undefined;

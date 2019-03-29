@@ -6,12 +6,12 @@ import {
   window,
   workspace
 } from "vscode";
+import { exists } from "../fs/exists";
+import { stat } from "../fs/stat";
 import { Resource } from "../resource";
 import IncomingChangeNode from "../treeView/nodes/incomingChangeNode";
 import { fromSvnUri } from "../uri";
 import { Command } from "./command";
-import { exists } from "../fs/exists";
-import { stat } from "../fs/stat";
 
 export class OpenFile extends Command {
   constructor() {

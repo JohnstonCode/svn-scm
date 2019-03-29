@@ -1,10 +1,10 @@
 import * as fs from "original-fs";
 import { SourceControlResourceState, window } from "vscode";
-import { deleteDirectory } from "../util";
-import { Command } from "./command";
 import { exists } from "../fs/exists";
 import { lstat } from "../fs/lstat";
 import { unlink } from "../fs/unlink";
+import { deleteDirectory } from "../util";
+import { Command } from "./command";
 
 export class DeleteUnversioned extends Command {
   constructor() {
@@ -31,16 +31,16 @@ export class DeleteUnversioned extends Command {
           if (!await exists(fsPath)) {
             continue;
           }
-  
+
           const stat = await lstat(fsPath);
-  
+
           if (stat.isDirectory()) {
             deleteDirectory(fsPath);
           } else {
             await unlink(fsPath);
           }
         } catch (err) {
-          //TODO(cjohnston) Show meaningful error to user
+          // TODO(cjohnston) Show meaningful error to user
         }
       }
     }

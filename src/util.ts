@@ -4,8 +4,8 @@ import { Operation } from "./common/types";
 import { exists } from "./fs/exists";
 import { lstat } from "./fs/lstat";
 import { readdir } from "./fs/readdir";
-import { unlink } from "./fs/unlink";
 import { rmdir } from "./fs/rmdir";
+import { unlink } from "./fs/unlink";
 
 export interface IDisposable {
   dispose(): void;

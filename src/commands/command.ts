@@ -15,6 +15,10 @@ import {
   WorkspaceEdit
 } from "vscode";
 import { ICommandOptions, Status, SvnUriAction } from "../common/types";
+import { exists } from "../fs/exists";
+import { readFile } from "../fs/read_file";
+import { stat } from "../fs/stat";
+import { unlink } from "../fs/unlink";
 import { inputIgnoreList } from "../ignoreitems";
 import { applyLineChanges } from "../lineChanges";
 import { Model } from "../model";
@@ -23,10 +27,6 @@ import { Resource } from "../resource";
 import IncomingChangeNode from "../treeView/nodes/incomingChangeNode";
 import { fromSvnUri, toSvnUri } from "../uri";
 import { hasSupportToRegisterDiffCommand } from "../util";
-import { exists } from "../fs/exists";
-import { stat } from "../fs/stat";
-import { unlink } from "../fs/unlink";
-import { readFile } from "../fs/read_file";
 
 export abstract class Command implements Disposable {
   private _disposable?: Disposable;
@@ -401,7 +401,7 @@ export abstract class Command implements Disposable {
         try {
           await unlink(tempFile);
         } catch (err) {
-          //TODO(cjohnston)//log error
+          // TODO(cjohnston)//log error
         }
       }
 

@@ -11,6 +11,8 @@ import {
   Status
 } from "./common/types";
 import { sequentialize } from "./decorators";
+import { exists } from "./fs/exists";
+import { writeFile } from "./fs/write_file";
 import { getBranchName } from "./helpers/branch";
 import { configuration } from "./helpers/configuration";
 import { parseInfoXml } from "./infoParser";
@@ -19,8 +21,6 @@ import { parseSvnLog } from "./logParser";
 import { parseStatusXml } from "./statusParser";
 import { Svn } from "./svn";
 import { fixPathSeparator, unwrap } from "./util";
-import { exists } from "./fs/exists";
-import { writeFile } from "./fs/write_file";
 
 export class Repository {
   private _infoCache: { [index: string]: ISvnInfo } = {};
