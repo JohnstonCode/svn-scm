@@ -114,15 +114,18 @@ suite("Repository Tests", () => {
 
     assert.equal(repository.changes.resourceStates.length, 0);
 
-    const remoteContent = await repository.show({
-      path: path.join(
-        repository.repository.info.wcInfo!.wcrootAbspath,
-        "new.txt"
-      ),
-      rscKind: ResourceKind.LocalFull,
-      revision: "HEAD",
-      isLocal: false
-    });
+    const remoteContent = await repository.show(
+      {
+        path: path.join(
+          repository.repository.info.wcInfo!.wcrootAbspath,
+          "new.txt"
+        ),
+        rscKind: ResourceKind.LocalFull,
+        revision: "HEAD",
+        isLocal: false
+      },
+      "HEAD"
+    );
 
     assert.equal(remoteContent, "test");
   });

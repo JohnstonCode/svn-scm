@@ -107,7 +107,7 @@ export class SvnContentProvider
           rscKind: ResourceKind.LocalFull,
           revision: ref,
           isLocal: true
-        });
+        }, ref);
       }
       if (action === SvnUriAction.LOG) {
         return await repository.plainLog();
