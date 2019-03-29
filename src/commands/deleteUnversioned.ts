@@ -28,7 +28,7 @@ export class DeleteUnversioned extends Command {
         const fsPath = uri.fsPath;
 
         try {
-          if (!await exists(fsPath)) {
+          if (!(await exists(fsPath))) {
             continue;
           }
 

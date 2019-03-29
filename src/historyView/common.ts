@@ -129,7 +129,10 @@ export function insertBaseMarker(
   return undefined;
 }
 
-export async function checkIfFile(e: SvnRI, local: boolean): Promise<boolean | undefined> {
+export async function checkIfFile(
+  e: SvnRI,
+  local: boolean
+): Promise<boolean | undefined> {
   if (e.localFullPath === undefined) {
     if (local) {
       window.showErrorMessage("No working copy for this path");
@@ -239,7 +242,7 @@ async function downloadFile(
     const nm = repo.getPathNormalizer();
     const ri = nm.parse(arg.toString(true));
     const localPath = ri.localFullPath;
-    if (localPath === undefined || !await exists(localPath.path)) {
+    if (localPath === undefined || !(await exists(localPath.path))) {
       const errorMsg =
         "BASE revision doesn't exist for " +
         (localPath ? localPath.path : "remote path");

@@ -236,7 +236,7 @@ export class RepoLogProvider
     const commit = element.data as ISvnLogEntryPath;
     const item = this.getCached(element);
     const ri = item.repo.getPathNormalizer().parse(commit._);
-    if (await checkIfFile(ri, false) === false) {
+    if ((await checkIfFile(ri, false)) === false) {
       return;
     }
     const parent = (element.parent as ILogTreeItem).data as ISvnLogEntry;
@@ -257,7 +257,7 @@ export class RepoLogProvider
     const commit = element.data as ISvnLogEntryPath;
     const item = this.getCached(element);
     const ri = item.repo.getPathNormalizer().parse(commit._);
-    if (await checkIfFile(ri, false) === false) {
+    if ((await checkIfFile(ri, false)) === false) {
       return;
     }
     const parent = (element.parent as ILogTreeItem).data as ISvnLogEntry;
