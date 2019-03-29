@@ -26,4 +26,8 @@ suite("Test async exists wrapper", () => {
 
         assert.ok((await exists(filePath)));
     });
+
+    test("File does not exist", async () => {
+        assert.strictEqual((await exists('/tmp/thisfiledoesnotexsist.txt')), false);
+    });
 });
