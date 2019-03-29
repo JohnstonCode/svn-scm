@@ -1,4 +1,3 @@
-import * as fs from "original-fs";
 import {
   SourceControlResourceState,
   TextDocumentShowOptions,
@@ -11,6 +10,8 @@ import { Resource } from "../resource";
 import IncomingChangeNode from "../treeView/nodes/incomingChangeNode";
 import { fromSvnUri } from "../uri";
 import { Command } from "./command";
+import { exists } from "../fs/exists";
+import { stat } from "../fs/stat";
 
 export class OpenFile extends Command {
   constructor() {
@@ -65,7 +66,7 @@ export class OpenFile extends Command {
     const preview = uris.length === 1 ? true : false;
     const activeTextEditor = window.activeTextEditor;
     for (const uri of uris) {
-      if (fs.existsSync(uri.fsPath) && fs.statSync(uri.fsPath).isDirectory()) {
+      if (await exists(uri.fsPath) && (await stat(uri.fsPath)).isDirectory()) {
         continue;
       }
 
