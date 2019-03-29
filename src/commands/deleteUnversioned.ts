@@ -1,5 +1,5 @@
 import { SourceControlResourceState, window } from "vscode";
-import { exists, unlink, lstat } from "../fs";
+import { exists, lstat, unlink } from "../fs";
 import { deleteDirectory } from "../util";
 import { Command } from "./command";
 
