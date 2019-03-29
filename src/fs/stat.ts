@@ -1,13 +1,5 @@
-import { stat as fsStat, Stats } from "original-fs";
+import { stat as fsStat } from "original-fs";
+import { promisify } from "util";
 
-export function stat(filePath: string): Promise<Stats> {
-  return new Promise((resolve, reject) => {
-    fsStat(filePath, (err, stats) => {
-      if (err) {
-        reject(err);
-      }
+export const stat = promisify(fsStat);
 
-      resolve(stats);
-    });
-  });
-}

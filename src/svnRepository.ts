@@ -11,8 +11,7 @@ import {
   Status
 } from "./common/types";
 import { sequentialize } from "./decorators";
-import { exists } from "./fs/exists";
-import { writeFile } from "./fs/write_file";
+import { exists, writeFile } from "./fs";
 import { getBranchName } from "./helpers/branch";
 import { configuration } from "./helpers/configuration";
 import { parseInfoXml } from "./infoParser";

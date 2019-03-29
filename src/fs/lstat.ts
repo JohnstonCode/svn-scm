@@ -1,7 +1,5 @@
-import { lstat as fsLstat, Stats } from "original-fs";
+import { lstat as fsLstat } from "original-fs";
+import { promisify } from "util";
 
-export function lstat(filePath: string): Promise<Stats> {
-  return new Promise((resolve, reject) => {
-    fsLstat(filePath, (err, stats) => (err ? reject(err) : resolve(stats)));
-  });
-}
+export const lstat = promisify(fsLstat);
+

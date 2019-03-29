@@ -1,7 +1,4 @@
 import { mkdir as fsMkdir } from "original-fs";
+import { promisify } from "util";
 
-export function mkdir(path: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    fsMkdir(path, err => (err ? reject(err) : resolve()));
-  });
-}
+export const mkdir = promisify(fsMkdir);

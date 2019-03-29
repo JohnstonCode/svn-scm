@@ -1,11 +1,7 @@
 import * as path from "path";
 import { commands, Event, window } from "vscode";
 import { Operation } from "./common/types";
-import { exists } from "./fs/exists";
-import { lstat } from "./fs/lstat";
-import { readdir } from "./fs/readdir";
-import { rmdir } from "./fs/rmdir";
-import { unlink } from "./fs/unlink";
+import { exists, lstat, readdir, rmdir, unlink } from "./fs";
 
 export interface IDisposable {
   dispose(): void;

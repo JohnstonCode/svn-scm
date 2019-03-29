@@ -1,9 +1,7 @@
 import * as os from "os";
 import * as path from "path";
 import { Uri } from "vscode";
-import { exists } from "./fs/exists";
-import { mkdir } from "./fs/mkdir";
-import { writeFile } from "./fs/write_file";
+import { exists, mkdir, writeFile } from "./fs";
 
 export const tempdir = path.join(os.tmpdir(), "vscode-svn");
 

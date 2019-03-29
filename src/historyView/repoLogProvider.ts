@@ -16,7 +16,7 @@ import {
   ISvnLogEntry,
   ISvnLogEntryPath
 } from "../common/types";
-import { exists } from "../fs/exists";
+import { exists } from "../fs";
 import { Model } from "../model";
 import { IRemoteRepository } from "../remoteRepository";
 import { Repository } from "../repository";

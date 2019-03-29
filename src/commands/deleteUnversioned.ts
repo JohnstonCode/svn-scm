@@ -1,8 +1,5 @@
-import * as fs from "original-fs";
 import { SourceControlResourceState, window } from "vscode";
-import { exists } from "../fs/exists";
-import { lstat } from "../fs/lstat";
-import { unlink } from "../fs/unlink";
+import { exists, unlink, lstat } from "../fs";
 import { deleteDirectory } from "../util";
 import { Command } from "./command";
 

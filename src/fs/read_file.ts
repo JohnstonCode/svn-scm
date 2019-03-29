@@ -1,12 +1,5 @@
 import { readFile as fsReadFile } from "original-fs";
+import { promisify } from "util";
 
-export function readFile(
-  filePath: string,
-  options: { encoding?: string | null; flag?: string } = {}
-): Promise<string | Buffer> {
-  return new Promise((resolve, reject) => {
-    fsReadFile(filePath, options, (err, data) =>
-      err ? reject(err) : resolve(data)
-    );
-  });
-}
+export const readFile = promisify(fsReadFile);
+

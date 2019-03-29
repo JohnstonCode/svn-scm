@@ -1,7 +1,5 @@
 import { rmdir as fsRmdir } from "original-fs";
+import { promisify } from "util";
 
-export function rmdir(path: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    fsRmdir(path, err => (err ? reject(err) : resolve()));
-  });
-}
+export const rmdir = promisify(fsRmdir);
+

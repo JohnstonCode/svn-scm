@@ -1,7 +1,5 @@
 import { unlink as fsUnlink } from "original-fs";
+import { promisify } from "util";
 
-export function unlink(filePath: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    fsUnlink(filePath, err => (err ? reject(err) : resolve()));
-  });
-}
+export const unlink = promisify(fsUnlink);
+

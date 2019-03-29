@@ -15,10 +15,7 @@ import {
   WorkspaceEdit
 } from "vscode";
 import { ICommandOptions, Status, SvnUriAction } from "../common/types";
-import { exists } from "../fs/exists";
-import { readFile } from "../fs/read_file";
-import { stat } from "../fs/stat";
-import { unlink } from "../fs/unlink";
+import { exists, readFile, stat, unlink } from "../fs";
 import { inputIgnoreList } from "../ignoreitems";
 import { applyLineChanges } from "../lineChanges";
 import { Model } from "../model";

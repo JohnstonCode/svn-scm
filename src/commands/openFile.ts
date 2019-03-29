@@ -6,8 +6,7 @@ import {
   window,
   workspace
 } from "vscode";
-import { exists } from "../fs/exists";
-import { stat } from "../fs/stat";
+import { exists, stat } from "../fs";
 import { Resource } from "../resource";
 import IncomingChangeNode from "../treeView/nodes/incomingChangeNode";
 import { fromSvnUri } from "../uri";
