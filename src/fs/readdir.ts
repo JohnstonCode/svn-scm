@@ -1,13 +1,4 @@
 import { readdir as fsReaddir } from "original-fs";
+import { promisify } from "util";
 
-export function readdir(path: string): Promise<string[]> {
-  return new Promise((resolve, reject) => {
-    fsReaddir(path, (err, files) => {
-      if (err) {
-        reject(err);
-      }
-
-      resolve(files);
-    });
-  });
-}
+export const readdir = promisify(fsReaddir);

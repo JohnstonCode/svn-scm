@@ -1,5 +1,5 @@
-import * as fs from "original-fs";
 import { SourceControlResourceState, window } from "vscode";
+import { exists, lstat, unlink } from "../fs";
 import { deleteDirectory } from "../util";
 import { Command } from "./command";
 
@@ -24,16 +24,20 @@ export class DeleteUnversioned extends Command {
       for (const uri of uris) {
         const fsPath = uri.fsPath;
 
-        if (!fs.existsSync(fsPath)) {
-          continue;
-        }
+        try {
+          if (!(await exists(fsPath))) {
+            continue;
+          }
 
-        const stat = fs.lstatSync(fsPath);
+          const stat = await lstat(fsPath);
 
-        if (stat.isDirectory()) {
-          deleteDirectory(fsPath);
-        } else {
-          fs.unlinkSync(fsPath);
+          if (stat.isDirectory()) {
+            deleteDirectory(fsPath);
+          } else {
+            await unlink(fsPath);
+          }
+        } catch (err) {
+          // TODO(cjohnston) Show meaningful error to user
         }
       }
     }

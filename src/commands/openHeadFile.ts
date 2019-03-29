@@ -26,7 +26,7 @@ export class OpenHeadFile extends Command {
       return;
     }
 
-    const HEAD = this.getLeftResource(resource, "HEAD");
+    const HEAD = await this.getLeftResource(resource, "HEAD");
 
     const basename = path.basename(resource.resourceUri.fsPath);
     if (!HEAD) {

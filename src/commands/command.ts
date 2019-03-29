@@ -1,4 +1,3 @@
-import * as fs from "original-fs";
 import * as path from "path";
 import {
   commands,
@@ -16,6 +15,7 @@ import {
   WorkspaceEdit
 } from "vscode";
 import { ICommandOptions, Status, SvnUriAction } from "../common/types";
+import { exists, readFile, stat, unlink } from "../fs";
 import { inputIgnoreList } from "../ignoreitems";
 import { applyLineChanges } from "../lineChanges";
 import { Model } from "../model";
@@ -194,7 +194,7 @@ export abstract class Command implements Disposable {
     preserveFocus?: boolean,
     preserveSelection?: boolean
   ): Promise<void> {
-    let left = this.getLeftResource(resource, against);
+    let left = await this.getLeftResource(resource, against);
     let right = this.getRightResource(resource, against);
     const title = this.getTitle(resource, against);
 
@@ -209,8 +209,8 @@ export abstract class Command implements Disposable {
     }
 
     if (
-      fs.existsSync(right.fsPath) &&
-      fs.statSync(right.fsPath).isDirectory()
+      (await exists(right.fsPath)) &&
+      (await stat(right.fsPath)).isDirectory()
     ) {
       return;
     }
@@ -244,10 +244,10 @@ export abstract class Command implements Disposable {
     );
   }
 
-  protected getLeftResource(
+  protected async getLeftResource(
     resource: Resource,
     against: string = ""
-  ): Uri | undefined {
+  ): Promise<Uri | undefined> {
     if (resource.remote) {
       if (resource.type !== Status.DELETED) {
         return toSvnUri(resource.resourceUri, SvnUriAction.SHOW, {
@@ -266,11 +266,11 @@ export abstract class Command implements Disposable {
     // Show file if has conflicts marks
     if (
       resource.type === Status.CONFLICTED &&
-      fs.existsSync(resource.resourceUri.fsPath)
+      (await exists(resource.resourceUri.fsPath))
     ) {
-      const text = fs.readFileSync(resource.resourceUri.fsPath, {
+      const text = (await readFile(resource.resourceUri.fsPath, {
         encoding: "utf8"
-      });
+      })) as string;
 
       // Check for lines begin with "<<<<<<", "=======", ">>>>>>>"
       if (/^<{7}[^]+^={7}[^]+^>{7}/m.test(text)) {
@@ -394,8 +394,12 @@ export abstract class Command implements Disposable {
     try {
       const tempFile = path.join(repository.root, ".svn", "tmp", "svn.patch");
 
-      if (fs.existsSync(tempFile)) {
-        fs.unlinkSync(tempFile);
+      if (await exists(tempFile)) {
+        try {
+          await unlink(tempFile);
+        } catch (err) {
+          // TODO(cjohnston)//log error
+        }
       }
 
       const uri = Uri.file(tempFile).with({
