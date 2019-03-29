@@ -10,7 +10,7 @@ import * as assert from "assert";
 
 // You can import and use all API from the 'vscode' module
 // as well as import your extension to test it
-import * as fs from "fs";
+import * as fs from "original-fs";
 import * as path from "path";
 import { commands, Uri, window, workspace } from "vscode";
 import { Model } from "../model";

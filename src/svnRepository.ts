@@ -1,4 +1,3 @@
-import * as fs from "fs";
 import * as path from "path";
 import * as tmp from "tmp";
 import { Uri, workspace } from "vscode";
@@ -12,6 +11,7 @@ import {
   Status
 } from "./common/types";
 import { sequentialize } from "./decorators";
+import { exists, writeFile } from "./fs";
 import { getBranchName } from "./helpers/branch";
 import { configuration } from "./helpers/configuration";
 import { parseInfoXml } from "./infoParser";
@@ -196,7 +196,7 @@ export class Repository {
 
     const args = ["commit", ...files];
 
-    if (fs.existsSync(path.join(this.workspaceRoot, message))) {
+    if (await exists(path.join(this.workspaceRoot, message))) {
       args.push("--force-log");
     }
 
@@ -215,7 +215,7 @@ export class Repository {
         prefix: "svn-commit-message-"
       });
 
-      fs.writeFileSync(tmpFile.name, message, "UTF-8");
+      await writeFile(tmpFile.name, message, "UTF-8");
 
       args.push("-F", tmpFile.name);
       args.push("--encoding", "UTF-8");

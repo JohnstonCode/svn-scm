@@ -1,8 +1,7 @@
-import * as fs from "fs";
 import * as path from "path";
-import * as util from "util";
 import { commands, Event, window } from "vscode";
 import { Operation } from "./common/types";
+import { exists, lstat, readdir, rmdir, unlink } from "./fs";
 
 export interface IDisposable {
   dispose(): void;
@@ -170,17 +169,17 @@ export function isReadOnly(operation: Operation): boolean {
  * @param {string} dirPath
  * @see https://stackoverflow.com/a/42505874/3027390
  */
-export function deleteDirectory(dirPath: string) {
-  if (fs.existsSync(dirPath) && fs.lstatSync(dirPath).isDirectory()) {
-    fs.readdirSync(dirPath).forEach((entry: string) => {
+export async function deleteDirectory(dirPath: string): Promise<void> {
+  if (await exists(dirPath) && (await lstat(dirPath)).isDirectory()) {
+    (await readdir(dirPath)).forEach(async (entry: string) => {
       const entryPath = path.join(dirPath, entry);
-      if (fs.lstatSync(entryPath).isDirectory()) {
+      if ((await lstat(entryPath)).isDirectory()) {
         deleteDirectory(entryPath);
       } else {
-        fs.unlinkSync(entryPath);
+        await unlink(entryPath);
       }
     });
-    fs.rmdirSync(dirPath);
+    await rmdir(dirPath);
   }
 }
 

@@ -1,4 +1,4 @@
-import { Stats } from "fs";
+import { Stats } from "original-fs";
 import * as path from "path";
 import {
   commands,
@@ -18,9 +18,7 @@ import {
   Status
 } from "./common/types";
 import { debounce } from "./decorators";
-import { exists } from "./fs/exists";
-import { readdir } from "./fs/readdir";
-import { stat } from "./fs/stat";
+import { exists, readdir, stat } from "./fs";
 import { configuration } from "./helpers/configuration";
 import { RemoteRepository } from "./remoteRepository";
 import { Repository } from "./repository";

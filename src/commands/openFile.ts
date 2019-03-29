@@ -1,4 +1,3 @@
-import * as fs from "fs";
 import {
   SourceControlResourceState,
   TextDocumentShowOptions,
@@ -7,6 +6,7 @@ import {
   window,
   workspace
 } from "vscode";
+import { exists, stat } from "../fs";
 import { Resource } from "../resource";
 import IncomingChangeNode from "../treeView/nodes/incomingChangeNode";
 import { fromSvnUri } from "../uri";
@@ -65,7 +65,10 @@ export class OpenFile extends Command {
     const preview = uris.length === 1 ? true : false;
     const activeTextEditor = window.activeTextEditor;
     for (const uri of uris) {
-      if (fs.existsSync(uri.fsPath) && fs.statSync(uri.fsPath).isDirectory()) {
+      if (
+        (await exists(uri.fsPath)) &&
+        (await stat(uri.fsPath)).isDirectory()
+      ) {
         continue;
       }
 

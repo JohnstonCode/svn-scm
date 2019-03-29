@@ -2,7 +2,7 @@
 
 import * as cp from "child_process";
 import { ChildProcess, SpawnOptions } from "child_process";
-import * as fs from "fs";
+import * as fs from "original-fs";
 import * as os from "os";
 import { type } from "os";
 import * as path from "path";
@@ -198,10 +198,10 @@ export function overrideNextShowInputBox(value: any) {
 
 const originalShowInputBox = window.showInputBox;
 
-window.showInputBox = (options?: any, token?: any) => {
+window.showInputBox = (...args: any[]) => {
   const next = overridesShowInputBox.shift();
   if (typeof next === "undefined") {
-    return originalShowInputBox.call(null, options, token);
+    return originalShowInputBox.call(null, args as any);
   }
   return new Promise((resolve, reject) => {
     resolve(next);
@@ -218,12 +218,11 @@ const originalShowQuickPick = window.showQuickPick;
 
 window.showQuickPick = (
   items: any[] | Thenable<any[]>,
-  options?: any,
-  token?: any
+  ...args: any[]
 ): Thenable<any | undefined> => {
   let next = overridesShowQuickPick.shift();
   if (typeof next === "undefined") {
-    return originalShowQuickPick.call(null, items, options, token);
+    return originalShowQuickPick.call(null, [items, ...args]);
   }
 
   if (typeof next === "number" && Array.isArray(items)) {

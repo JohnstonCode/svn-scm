@@ -2,7 +2,7 @@
   "name": "svn-scm",
   "displayName": "SVN",
   "description": "Integrated Subversion source control",
-  "version": "1.47.10",
+  "version": "1.47.12",
   "publisher": "johnstoncode",
   "engines": {
     "vscode": "^1.26.0"
@@ -36,7 +36,7 @@
     "vscode:prepublish": "npm run lint && npm run build",
     "compile": "npx tsc -watch -p ./",
     "postinstall": "node ./node_modules/vscode/bin/install",
-    "test": "node ./node_modules/vscode/bin/test",
+    "test": "node ./out/test/runTest.js",
     "tools:genReadme": "node ./out/tools/generateConfigSectionForReadme.js",
     "lint": "npx tslint -p ./",
     "lint:fix": "npx tslint --fix -p ./",
@@ -48,7 +48,7 @@
   "dependencies": {
     "is-utf8": "^0.2.1",
     "minimatch": "^3.0.4",
-    "semver": "^6.0.0",
+    "semver": "^5.7.0",
     "tmp": "0.1.0",
     "xml2js": "^0.4.19"
   },
@@ -58,7 +58,7 @@
     "@types/glob": "^7.1.1",
     "@types/istanbul": "^0.4.30",
     "@types/mocha": "^5.2.6",
-    "@types/node": "^11.11.8",
+    "@types/node": "^11.12.0",
     "@types/semver": "^5.5.0",
     "@types/tmp": "0.0.34",
     "@types/xml2js": "^0.4.3",
@@ -77,10 +77,11 @@
     "prettylint": "^1.0.0",
     "remap-istanbul": "^0.13.0",
     "semantic-release": "^15.13.3",
-    "semantic-release-vsce": "^2.2.7",
+    "semantic-release-vsce": "^2.2.8",
     "tslint": "^5.14.0",
-    "typescript": "~3.2.4",
-    "vscode": "^1.1.30"
+    "typescript": "^3.3.4000",
+    "vscode": "^1.1.33",
+    "vscode-test": "^0.1.5"
   },
   "config": {
     "commitizen": {
