@@ -10,7 +10,7 @@ export async function dumpSvnFile(
   revision: string,
   payload: string
 ): Promise<Uri> {
-  if (!await exists(tempdir)) {
+  if (!(await exists(tempdir))) {
     await mkdir(tempdir);
   }
   const fname = `r${revision}_${path.basename(snvUri.fsPath)}`;

@@ -33,7 +33,12 @@ export class SvnRI {
 
   @memoize
   get remoteFullPath(): Uri {
-    return Uri.parse(this.remoteRoot.toString() + "/" + this._path);
+    return Uri.parse(this.remoteRoot.toString(true) + "/" + this._path);
+  }
+
+  @memoize
+  get remotePath(): string {
+    return "/" + this._path;
   }
 
   @memoize
