@@ -126,6 +126,7 @@ export class Svn {
     if (cwd) {
       defaults.cwd = cwd;
     }
+    args = args.map(x => (/@/.test(x) && !/@\d+$/.test(x)) ? x + "@" : x);
     const process = cp.spawn(this.svnPath, args, defaults);
 
     const disposables: IDisposable[] = [];
