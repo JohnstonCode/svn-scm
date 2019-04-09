@@ -1,3 +1,10 @@
+## [1.47.13](https://github.com/JohnstonCode/svn-scm/compare/v1.47.12...v1.47.13) (2019-04-09)
+
+
+### Bug Fixes
+
+* Fixed bug when svn path contains @ ([#548](https://github.com/JohnstonCode/svn-scm/issues/548)) ([523d46b](https://github.com/JohnstonCode/svn-scm/commit/523d46b))
+
 ## [1.47.12](https://github.com/JohnstonCode/svn-scm/compare/v1.47.11...v1.47.12) (2019-03-29)
 
 
