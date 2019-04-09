@@ -46,7 +46,7 @@ export class Repository {
   }
 
   public async updateInfo() {
-    const result = await this.exec(["info", "--xml", this.root]);
+    const result = await this.exec(["info", "--xml", this.fixPegRevision(this.root)]);
     this._info = await parseInfoXml(result.stdout);
   }
 
@@ -60,6 +60,15 @@ export class Repository {
     return this.svn.exec(this.workspaceRoot, args, options);
   }
 
+  public fixPegRevision(file: string) {
+    // Fix Peg Revision Algorithm (http://svnbook.red-bean.com/en/1.8/svn.advanced.pegrevs.html)
+    if (/@/.test(file)) {
+      file += "@";
+    }
+
+    return file;
+  }
+
   public removeAbsolutePath(file: string) {
     file = fixPathSeparator(file);
 
@@ -69,12 +78,7 @@ export class Repository {
       file = ".";
     }
 
-    // Fix Peg Revision Algorithm (http://svnbook.red-bean.com/en/1.8/svn.advanced.pegrevs.html)
-    if (/@/.test(file)) {
-      file += "@";
-    }
-
-    return file;
+    return this.fixPegRevision(file);
   }
 
   public async getStatus(params: {
@@ -520,7 +524,7 @@ export class Repository {
       "-v"
     ];
     if (target !== undefined) {
-      args.push(target instanceof Uri ? target.toString(true) : target);
+      args.push(this.fixPegRevision(target instanceof Uri ? target.toString(true) : target));
     }
     const result = await this.exec(args);
 
