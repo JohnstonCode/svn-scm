@@ -189,3 +189,12 @@ export function unwrap<T>(maybeT?: T): T {
   }
   return maybeT;
 }
+
+export function fixPegRevision(file: string) {
+  // Fix Peg Revision Algorithm (http://svnbook.red-bean.com/en/1.8/svn.advanced.pegrevs.html)
+  if (/@/.test(file)) {
+    file += "@";
+  }
+
+  return file;
+}
