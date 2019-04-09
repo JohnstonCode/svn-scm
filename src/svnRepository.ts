@@ -19,7 +19,7 @@ import { parseSvnList } from "./listParser";
 import { parseSvnLog } from "./logParser";
 import { parseStatusXml } from "./statusParser";
 import { Svn } from "./svn";
-import { fixPathSeparator, unwrap, fixPegRevision } from "./util";
+import { fixPathSeparator, fixPegRevision, unwrap } from "./util";
 
 export class Repository {
   private _infoCache: { [index: string]: ISvnInfo } = {};
