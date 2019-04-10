@@ -1,4 +1,4 @@
-import { window, SourceControlResourceGroup } from "vscode";
+import { SourceControlResourceGroup, window } from "vscode";
 import { Command } from "./command";
 
 export class RevertAll extends Command {
@@ -8,11 +8,11 @@ export class RevertAll extends Command {
 
   public async execute(resourceGroup: SourceControlResourceGroup) {
     const resourceStates = resourceGroup.resourceStates;
-    
+
     if (resourceStates.length === 0) {
       return;
     }
-    
+
     const yes = "Yes I'm sure";
     const answer = await window.showWarningMessage(
       "Are you sure? This will wipe all local changes.",
@@ -23,9 +23,9 @@ export class RevertAll extends Command {
     if (answer !== yes) {
       return;
     }
-    
+
     const uris = resourceStates.map(resource => resource.resourceUri);
-    
+
     await this.runByRepository(uris, async (repository, resources) => {
       if (!repository) {
         return;

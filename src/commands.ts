@@ -34,13 +34,13 @@ import { Resolve } from "./commands/resolve";
 import { ResolveAll } from "./commands/resolveAll";
 import { Resolved } from "./commands/resolved";
 import { Revert } from "./commands/revert";
+import { RevertAll } from "./commands/revertAll";
 import { RevertChange } from "./commands/revertChange";
 import { RevertSelectedRanges } from "./commands/revertSelectedRanges";
 import { SwitchBranch } from "./commands/switchBranch";
 import { Update } from "./commands/update";
 import { Upgrade } from "./commands/upgrade";
 import { Model } from "./model";
-import { RevertAll } from "./commands/revertAll";
 
 export function registerCommands(model: Model, disposables: Disposable[]) {
   disposables.push(new GetModel(model));
