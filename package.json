@@ -295,7 +295,20 @@
       {
         "command": "svn.revert",
         "title": "Revert Selected File",
-        "category": "SVN"
+        "category": "SVN",
+        "icon": {
+          "light": "icons/light/clean.svg",
+          "dark": "icons/dark/clean.svg"
+        }
+      },
+      {
+        "command": "svn.revertAll",
+        "title": "Revert All Changes",
+        "category": "SVN",
+        "icon": {
+          "light": "icons/light/clean.svg",
+          "dark": "icons/dark/clean.svg"
+        }
       },
       {
         "command": "svn.update",
@@ -479,6 +492,10 @@
         },
         {
           "command": "svn.revertChange",
+          "when": "false"
+        },
+        {
+          "command": "svn.revertAll",
           "when": "false"
         },
         {
@@ -693,6 +710,16 @@
           "command": "svn.refreshRemoteChanges",
           "when": "config.svn.enabled && scmProvider == svn && scmResourceGroup == remotechanges",
           "group": "navigation"
+        },
+        {
+          "command": "svn.revertAll",
+          "when": "config.svn.enabled && scmProvider == svn && scmResourceGroup == changes",
+          "group": "navigation"
+        },
+        {
+          "command": "svn.revertAll",
+          "when": "config.svn.enabled && scmProvider == svn && scmResourceGroup == changes",
+          "group": "inline"
         }
       ],
       "scm/resourceState/context": [
@@ -760,6 +787,11 @@
           "command": "svn.revert",
           "when": "config.svn.enabled && scmProvider == svn && scmResourceGroup != unversioned && scmResourceGroup != external && scmResourceGroup != conflicts && scmResourceGroup != remotechanged",
           "group": "2_modification"
+        },
+        {
+          "command": "svn.revert",
+          "when": "config.svn.enabled && scmProvider == svn && scmResourceGroup != unversioned && scmResourceGroup != external && scmResourceGroup != conflicts && scmResourceGroup != remotechanged",
+          "group": "inline"
         },
         {
           "command": "svn.remove",
