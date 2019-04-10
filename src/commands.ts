@@ -40,6 +40,7 @@ import { SwitchBranch } from "./commands/switchBranch";
 import { Update } from "./commands/update";
 import { Upgrade } from "./commands/upgrade";
 import { Model } from "./model";
+import { RevertAll } from "./commands/revertAll";
 
 export function registerCommands(model: Model, disposables: Disposable[]) {
   disposables.push(new GetModel(model));
@@ -82,4 +83,5 @@ export function registerCommands(model: Model, disposables: Disposable[]) {
   disposables.push(new DeleteUnversioned());
   disposables.push(new OpenChangeHead());
   disposables.push(new OpenHeadFile());
+  disposables.push(new RevertAll());
 }
