@@ -1,3 +1,10 @@
+# [1.48.0](https://github.com/JohnstonCode/svn-scm/compare/v1.47.13...v1.48.0) (2019-04-10)
+
+
+### Features
+
+* Added revert and revert all command icons to SCM view ([#549](https://github.com/JohnstonCode/svn-scm/issues/549)) ([56a66d0](https://github.com/JohnstonCode/svn-scm/commit/56a66d0))
+
 ## [1.47.13](https://github.com/JohnstonCode/svn-scm/compare/v1.47.12...v1.47.13) (2019-04-09)
 
 
