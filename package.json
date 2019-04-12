@@ -81,7 +81,7 @@
     "tslint": "^5.14.0",
     "typescript": "^3.3.4000",
     "vscode": "^1.1.33",
-    "vscode-test": "^0.1.5"
+    "vscode-test": "^0.2.0"
   },
   "config": {
     "commitizen": {
