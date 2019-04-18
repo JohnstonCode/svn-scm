@@ -174,7 +174,7 @@ export async function deleteDirectory(dirPath: string): Promise<void> {
     (await readdir(dirPath)).forEach(async (entry: string) => {
       const entryPath = path.join(dirPath, entry);
       if ((await lstat(entryPath)).isDirectory()) {
-        deleteDirectory(entryPath);
+        await deleteDirectory(entryPath);
       } else {
         await unlink(entryPath);
       }
