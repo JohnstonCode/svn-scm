@@ -1,3 +1,10 @@
+## [1.48.1](https://github.com/JohnstonCode/svn-scm/compare/v1.48.0...v1.48.1) (2019-04-24)
+
+
+### Bug Fixes
+
+* Fixed deleting unversioned folders with nested files [#554](https://github.com/JohnstonCode/svn-scm/issues/554) ([#555](https://github.com/JohnstonCode/svn-scm/issues/555)) ([6cf322c](https://github.com/JohnstonCode/svn-scm/commit/6cf322c))
+
 # [1.48.0](https://github.com/JohnstonCode/svn-scm/compare/v1.47.13...v1.48.0) (2019-04-10)
 
 
