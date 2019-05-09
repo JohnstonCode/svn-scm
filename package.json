@@ -313,7 +313,11 @@
       {
         "command": "svn.update",
         "title": "Update",
-        "category": "SVN"
+        "category": "SVN",
+        "icon": {
+          "light": "icons/light/download.svg",
+          "dark": "icons/dark/download.svg"
+        }
       },
       {
         "command": "svn.patch",
@@ -713,6 +717,16 @@
         },
         {
           "command": "svn.refreshRemoteChanges",
+          "when": "config.svn.enabled && scmProvider == svn && scmResourceGroup == remotechanges",
+          "group": "navigation"
+        },
+        {
+          "command": "svn.update",
+          "when": "config.svn.enabled && scmProvider == svn && scmResourceGroup == remotechanges",
+          "group": "inline"
+        },
+        {
+          "command": "svn.update",
           "when": "config.svn.enabled && scmProvider == svn && scmResourceGroup == remotechanges",
           "group": "navigation"
         },
