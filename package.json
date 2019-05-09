@@ -71,7 +71,7 @@
     "istanbul": "^0.4.5",
     "jschardet": "^1.6.0",
     "mocha": "^6.1.4",
-    "mocha-junit-reporter": "^1.18.0",
+    "mocha-junit-reporter": "^1.22.0",
     "mocha-multi-reporters": "^1.1.7",
     "prettier": "^1.16.4",
     "prettylint": "^1.0.0",
