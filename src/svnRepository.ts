@@ -208,7 +208,7 @@ export class Repository {
       args.push("--force-log");
     }
 
-    let tmpFile: tmp.SynchrounousResult | undefined;
+    let tmpFile: tmp.FileResult | undefined;
 
     /**
      * For message with line break or non:

@@ -12,7 +12,7 @@ import { timeout } from "../util";
 
 tmp.setGracefulCleanup();
 
-const tempDirList: tmp.SynchrounousResult[] = [];
+const tempDirList: tmp.DirResult[] = [];
 
 export function getSvnUrl(uri: Uri) {
   const url = uri.toString();
@@ -22,8 +22,8 @@ export function getSvnUrl(uri: Uri) {
 
 export function spawn(
   command: string,
-  args?: string[],
-  options?: SpawnOptions
+  args: string[] = [],
+  options: SpawnOptions = {}
 ): ChildProcess {
   const proc = cp.spawn(command, args, options);
 
