@@ -34,6 +34,7 @@ import { Resolve } from "./commands/resolve";
 import { ResolveAll } from "./commands/resolveAll";
 import { Resolved } from "./commands/resolved";
 import { Revert } from "./commands/revert";
+import { RevertAll } from "./commands/revertAll";
 import { RevertChange } from "./commands/revertChange";
 import { RevertSelectedRanges } from "./commands/revertSelectedRanges";
 import { SwitchBranch } from "./commands/switchBranch";
@@ -82,4 +83,5 @@ export function registerCommands(model: Model, disposables: Disposable[]) {
   disposables.push(new DeleteUnversioned());
   disposables.push(new OpenChangeHead());
   disposables.push(new OpenHeadFile());
+  disposables.push(new RevertAll());
 }

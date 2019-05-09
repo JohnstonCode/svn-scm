@@ -86,6 +86,7 @@ Example:
 ```
 
 ## Settings
+Here is a table of settings with their default values. To change any of these, add the relevant Config key and value to your VSCode settings.json file.
 
 |Config|Description|Default|
 |-|-|-|

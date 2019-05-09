@@ -1,3 +1,24 @@
+## [1.48.1](https://github.com/JohnstonCode/svn-scm/compare/v1.48.0...v1.48.1) (2019-04-24)
+
+
+### Bug Fixes
+
+* Fixed deleting unversioned folders with nested files [#554](https://github.com/JohnstonCode/svn-scm/issues/554) ([#555](https://github.com/JohnstonCode/svn-scm/issues/555)) ([6cf322c](https://github.com/JohnstonCode/svn-scm/commit/6cf322c))
+
+# [1.48.0](https://github.com/JohnstonCode/svn-scm/compare/v1.47.13...v1.48.0) (2019-04-10)
+
+
+### Features
+
+* Added revert and revert all command icons to SCM view ([#549](https://github.com/JohnstonCode/svn-scm/issues/549)) ([56a66d0](https://github.com/JohnstonCode/svn-scm/commit/56a66d0))
+
+## [1.47.13](https://github.com/JohnstonCode/svn-scm/compare/v1.47.12...v1.47.13) (2019-04-09)
+
+
+### Bug Fixes
+
+* Fixed bug when svn path contains @ ([#548](https://github.com/JohnstonCode/svn-scm/issues/548)) ([523d46b](https://github.com/JohnstonCode/svn-scm/commit/523d46b))
+
 ## [1.47.12](https://github.com/JohnstonCode/svn-scm/compare/v1.47.11...v1.47.12) (2019-03-29)
 
 
