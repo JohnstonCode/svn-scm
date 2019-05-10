@@ -1,3 +1,10 @@
+## [1.48.2](https://github.com/JohnstonCode/svn-scm/compare/v1.48.1...v1.48.2) (2019-05-10)
+
+
+### Bug Fixes
+
+* Fixed inline commands for remote changes group ([#568](https://github.com/JohnstonCode/svn-scm/issues/568)) ([8940f6f](https://github.com/JohnstonCode/svn-scm/commit/8940f6f))
+
 ## [1.48.1](https://github.com/JohnstonCode/svn-scm/compare/v1.48.0...v1.48.1) (2019-04-24)
 
 
