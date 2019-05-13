@@ -453,13 +453,13 @@ export class Repository {
 
   public async patch(files: string[]) {
     files = files.map(file => this.removeAbsolutePath(file));
-    const result = await this.exec(["diff", ...files]);
+    const result = await this.exec(["diff", "--internal-diff", ...files]);
     const message = result.stdout;
     return message;
   }
 
   public async patchChangelist(changelistName: string) {
-    const result = await this.exec(["diff", "--changelist", changelistName]);
+    const result = await this.exec(["diff", "--internal-diff", "--changelist", changelistName]);
     const message = result.stdout;
     return message;
   }
