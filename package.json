@@ -48,6 +48,7 @@
   "dependencies": {
     "is-utf8": "^0.2.1",
     "minimatch": "^3.0.4",
+    "original-fs": "^1.0.0",
     "semver": "^5.7.0",
     "tmp": "0.1.0",
     "xml2js": "^0.4.19"
