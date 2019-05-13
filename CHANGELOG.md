@@ -1,3 +1,10 @@
+## [1.48.4](https://github.com/JohnstonCode/svn-scm/compare/v1.48.3...v1.48.4) (2019-05-13)
+
+
+### Bug Fixes
+
+* Diffs now use internal diff flag ([#572](https://github.com/JohnstonCode/svn-scm/issues/572)) ([42e514c](https://github.com/JohnstonCode/svn-scm/commit/42e514c)), closes [#558](https://github.com/JohnstonCode/svn-scm/issues/558)
+
 ## [1.48.3](https://github.com/JohnstonCode/svn-scm/compare/v1.48.2...v1.48.3) (2019-05-13)
 
 
