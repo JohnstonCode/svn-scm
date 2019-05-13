@@ -1,3 +1,10 @@
+## [1.48.3](https://github.com/JohnstonCode/svn-scm/compare/v1.48.2...v1.48.3) (2019-05-13)
+
+
+### Bug Fixes
+
+* Added origional-fs polyfil for remote vs code ([#571](https://github.com/JohnstonCode/svn-scm/issues/571)) ([9da6001](https://github.com/JohnstonCode/svn-scm/commit/9da6001)), closes [#561](https://github.com/JohnstonCode/svn-scm/issues/561)
+
 ## [1.48.2](https://github.com/JohnstonCode/svn-scm/compare/v1.48.1...v1.48.2) (2019-05-10)
 
 
