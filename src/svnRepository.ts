@@ -407,7 +407,7 @@ export class Repository {
 
   public async revert(files: string[]) {
     files = files.map(file => this.removeAbsolutePath(file));
-    const result = await this.exec(["revert", ...files]);
+    const result = await this.exec(["revert", "--depth", "infinity", ...files]);
     return result.stdout;
   }
 
