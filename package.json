@@ -70,7 +70,6 @@
     "glob": "^7.1.4",
     "iconv-lite": "^0.4.23",
     "istanbul": "^0.4.5",
-    "jschardet": "^2.1.0",
     "mocha": "^6.1.4",
     "mocha-junit-reporter": "^1.22.0",
     "mocha-multi-reporters": "^1.1.7",
