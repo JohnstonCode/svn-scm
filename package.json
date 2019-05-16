@@ -68,7 +68,6 @@
     "cz-conventional-changelog": "^2.1.0",
     "decache": "^4.5.1",
     "glob": "^7.1.4",
-    "iconv-lite": "^0.4.23",
     "istanbul": "^0.4.5",
     "mocha": "^6.1.4",
     "mocha-junit-reporter": "^1.22.0",
