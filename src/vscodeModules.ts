@@ -6,13 +6,21 @@ import * as vscode from "vscode";
 
 const appRoot = vscode.env.appRoot;
 
-// Try load only in VSCode node_modules, like .vsix files (without dev dependencies)
-module.paths = [
-  path.join(appRoot, "node_modules.asar"),
-  path.join(appRoot, "node_modules"), // VSCode < 1.21.0
-];
+function loadVSCodeModule(id: string) {
+  try {
+    return require(`${appRoot}/node_modules.asar/${id}`);
+  } catch (ea) {
+    // Ignore
+  }
 
-import * as iconv from "iconv-lite";
-import * as jschardet from "jschardet";
+  const baseDir = path.dirname(process.execPath);
+  try {
+    module.paths.unshift(`${baseDir}/node_modules`);
+    return require(id);
+  } catch (eb) {
+    vscode.window.showErrorMessage(`Missing dependency, go to "${baseDir}" and run: npm install ${id}`);
+  }
+}
 
-export { iconv, jschardet };
+export const iconv = loadVSCodeModule("iconv-lite") as typeof import("iconv-lite");
+export const jschardet = loadVSCodeModule("jschardet") as typeof import("jschardet");
