@@ -10,7 +10,7 @@
     "strict": true,
     "noImplicitThis": false,
     "noUnusedLocals": true,
-		"noUnusedParameters": true,
+    "noUnusedParameters": true,
     "noImplicitReturns": true
   },
   "include": ["src/**/*"],
