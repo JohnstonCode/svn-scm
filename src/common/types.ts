@@ -281,3 +281,10 @@ export interface ISvnLogEntry {
   msg: string;
   paths: ISvnLogEntryPath[];
 }
+
+export enum SvnDepth {
+  empty = "only the target itself",
+  files = "the target and any immediate file children thereof",
+  immediates = "the target and any immediate children thereof",
+  infinity = "the target and all of its descendants—full recursion"
+}

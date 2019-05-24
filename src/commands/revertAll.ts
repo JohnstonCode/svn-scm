@@ -1,5 +1,6 @@
 import { SourceControlResourceGroup, window } from "vscode";
 import { Command } from "./command";
+import { SvnDepth } from "../common/types";
 
 export class RevertAll extends Command {
   constructor() {
@@ -24,6 +25,14 @@ export class RevertAll extends Command {
       return;
     }
 
+    const picks: any[] = [];
+
+    for (let depth in SvnDepth) {
+      picks.push({ label: depth, description: SvnDepth[depth] });
+    }
+
+    const placeHolder = "Select revert depth";
+    const pick = await window.showQuickPick(picks, { placeHolder });
     const uris = resourceStates.map(resource => resource.resourceUri);
 
     await this.runByRepository(uris, async (repository, resources) => {
@@ -34,7 +43,7 @@ export class RevertAll extends Command {
       const paths = resources.map(resource => resource.fsPath);
 
       try {
-        await repository.revert(paths);
+        await repository.revert(paths, pick.label);
       } catch (error) {
         console.log(error);
         window.showErrorMessage("Unable to revert");
