@@ -1,22 +1,8 @@
-/**
- * Load local first, after load the from VSCode modules
- * == 0 - is svn-scm/out/node_modules
- * == 1 - is svn-scm/node_modules
- * == 2 - is vscode folder
- * >= 3 - parent folders of svn-scm
- */
-import * as vscode from "vscode";
-module.paths.splice(2, 0, `${vscode.env.appRoot}/node_modules.asar`);
-module.paths.splice(2, 0, `${vscode.env.appRoot}/node_modules`); // VSCode < 1.21.0
-
 import * as cp from "child_process";
 import { EventEmitter } from "events";
-import * as iconv from "iconv-lite";
 import isUtf8 = require("is-utf8");
-import * as jschardet from "jschardet";
 import * as proc from "process";
 import { Readable } from "stream";
-import { Uri, workspace } from "vscode";
 import {
   ConstructorPolicy,
   ICpOptions,
@@ -28,6 +14,7 @@ import { parseInfoXml } from "./infoParser";
 import SvnError from "./svnError";
 import { Repository } from "./svnRepository";
 import { dispose, IDisposable, toDisposable } from "./util";
+import { iconv, jschardet } from "./vscodeModules";
 
 export const svnErrorCodes: { [key: string]: string } = {
   AuthorizationFailed: "E170001",
@@ -182,8 +169,8 @@ export class Svn {
         if (!iconv.encodingExists(defaultEncoding)) {
           this.logOutput(
             "svn.default.encoding: Invalid Parameter: '" +
-              defaultEncoding +
-              "'.\n"
+            defaultEncoding +
+            "'.\n"
           );
         } else if (!isUtf8(stdout)) {
           encoding = defaultEncoding;

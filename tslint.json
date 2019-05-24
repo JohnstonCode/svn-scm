@@ -35,7 +35,7 @@
         ["Symbol", "Avoid using the `Symbol` type. Did you mean `symbol`?"]
       ]
     },
-    "import-blacklist": [true, "fs"]
+    "import-blacklist": [true, "fs", "iconv-lite", "jschardet"]
   },
   "rulesDirectory": [],
   "linterOptions": {
