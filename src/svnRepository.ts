@@ -8,7 +8,8 @@ import {
   IFileStatus,
   ISvnInfo,
   ISvnLogEntry,
-  Status
+  Status,
+  SvnDepth
 } from "./common/types";
 import { sequentialize } from "./decorators";
 import { exists, writeFile } from "./fs";
@@ -400,9 +401,9 @@ export class Repository {
     return true;
   }
 
-  public async revert(files: string[]) {
+  public async revert(files: string[], depth: SvnDepth) {
     files = files.map(file => this.removeAbsolutePath(file));
-    const result = await this.exec(["revert", ...files]);
+    const result = await this.exec(["revert", "--depth", depth, ...files]);
     return result.stdout;
   }
 
