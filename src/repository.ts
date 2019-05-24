@@ -23,6 +23,7 @@ import {
   Operation,
   RepositoryState,
   Status,
+  SvnDepth,
   SvnUriAction
 } from "./common/types";
 import { debounce, globalSequentialize, memoize, throttle } from "./decorators";
@@ -817,8 +818,8 @@ export class Repository implements IRemoteRepository {
     );
   }
 
-  public async revert(files: string[]) {
-    return this.run(Operation.Revert, () => this.repository.revert(files));
+  public async revert(files: string[], depth: SvnDepth) {
+    return this.run(Operation.Revert, () => this.repository.revert(files, depth));
   }
 
   public async info(path: string) {
