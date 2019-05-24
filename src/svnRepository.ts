@@ -250,6 +250,48 @@ export class Repository {
     return result.stdout;
   }
 
+  // TODO(JohnstonCode) move copied functionality from commits to own function
+  public async commitChangelist(message: string, changelistName: string) {
+    const args = ["commit", "--changelist", changelistName];
+
+    let tmpFile: tmp.FileResult | undefined;
+
+    /**
+     * For message with line break or non:
+     * \x00-\x7F -> ASCII
+     * \x80-\xFF -> Latin
+     * Use a file for commit message
+     */
+    if (/\n|[^\x00-\x7F\x80-\xFF]/.test(message)) {
+      tmp.setGracefulCleanup();
+
+      tmpFile = tmp.fileSync({
+        prefix: "svn-commit-message-"
+      });
+
+      await writeFile(tmpFile.name, message, "UTF-8");
+
+      args.push("-F", tmpFile.name);
+      args.push("--encoding", "UTF-8");
+    } else {
+      args.push("-m", message);
+    }
+
+    const result = await this.exec(args);
+
+    // Remove temporary file if exists
+    if (tmpFile) {
+      tmpFile.removeCallback();
+    }
+
+    const matches = result.stdout.match(/Committed revision (.*)\./i);
+    if (matches && matches[0]) {
+      return matches[0];
+    }
+
+    return result.stdout;
+  }
+
   public addFiles(files: string[]) {
     files = files.map(file => this.removeAbsolutePath(file));
     return this.exec(["add", ...files]);

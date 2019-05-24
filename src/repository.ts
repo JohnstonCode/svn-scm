@@ -814,6 +814,12 @@ export class Repository implements IRemoteRepository {
       this.repository.commitFiles(message, files)
     );
   }
+  
+  public async commitChangelist(message: string, changelistName: string) {
+    return this.run(Operation.Commit, () =>
+      this.repository.commitChangelist(message, changelistName)
+    );
+  }
 
   public async revert(files: string[], depth: SvnDepth) {
     return this.run(Operation.Revert, () => this.repository.revert(files, depth));

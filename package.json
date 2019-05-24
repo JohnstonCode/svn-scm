@@ -418,6 +418,11 @@
         "command": "svn.deleteUnversioned",
         "title": "Delete selected files",
         "category": "SVN"
+      },
+      {
+        "command": "svn.commitChangelist",
+        "title": "Commit changelist",
+        "category": "SVN"
       }
     ],
     "menus": {
@@ -738,6 +743,21 @@
           "command": "svn.revertAll",
           "when": "config.svn.enabled && scmProvider == svn && scmResourceGroup == changes",
           "group": "inline"
+        },
+        {
+          "command": "svn.revertAll",
+          "when": "config.svn.enabled && scmResourceGroup =~ /changelist-*/",
+          "group": "inline"
+        },
+        {
+          "command": "svn.revertAll",
+          "when": "config.svn.enabled && scmProvider == svn && scmResourceGroup =~ /changelist-*/",
+          "group": "navigation"
+        },
+        {
+          "command": "svn.commitChangelist",
+          "when": "config.svn.enabled && scmProvider == svn && scmResourceGroup =~ /changelist-*/",
+          "group": "navigation"
         }
       ],
       "scm/resourceState/context": [

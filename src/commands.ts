@@ -41,6 +41,7 @@ import { SwitchBranch } from "./commands/switchBranch";
 import { Update } from "./commands/update";
 import { Upgrade } from "./commands/upgrade";
 import { Model } from "./model";
+import { CommitChangelist } from "./commands/commitChangelist";
 
 export function registerCommands(model: Model, disposables: Disposable[]) {
   disposables.push(new GetModel(model));
@@ -84,4 +85,5 @@ export function registerCommands(model: Model, disposables: Disposable[]) {
   disposables.push(new OpenChangeHead());
   disposables.push(new OpenHeadFile());
   disposables.push(new RevertAll());
+  disposables.push(new CommitChangelist());
 }
