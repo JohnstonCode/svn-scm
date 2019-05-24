@@ -23,8 +23,8 @@ import {
   Operation,
   RepositoryState,
   Status,
-  SvnUriAction,
-  SvnDepth
+  SvnDepth,
+  SvnUriAction
 } from "./common/types";
 import { debounce, globalSequentialize, memoize, throttle } from "./decorators";
 import { configuration } from "./helpers/configuration";

@@ -1,6 +1,6 @@
 import { SourceControlResourceGroup, window } from "vscode";
-import { Command } from "./command";
 import { SvnDepth } from "../common/types";
+import { Command } from "./command";
 
 export class RevertAll extends Command {
   constructor() {
@@ -27,8 +27,10 @@ export class RevertAll extends Command {
 
     const picks: any[] = [];
 
-    for (let depth in SvnDepth) {
-      picks.push({ label: depth, description: SvnDepth[depth] });
+    for (const depth in SvnDepth) {
+      if (SvnDepth.hasOwnProperty(depth)) {
+        picks.push({ label: depth, description: SvnDepth[depth] });
+      }
     }
 
     const placeHolder = "Select revert depth";
