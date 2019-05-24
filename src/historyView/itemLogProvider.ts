@@ -11,7 +11,7 @@ import {
   Uri,
   window
 } from "vscode";
-import { ISvnLogEntry, Status } from "../common/types";
+import { ISvnLogEntry } from "../common/types";
 import { Model } from "../model";
 import { tempdir } from "../tempFiles";
 import { dispose, unwrap } from "../util";
@@ -128,7 +128,7 @@ export class ItemLogProvider
           return; // do not refresh if diff was called
         }
         const repo = this.model.getRepository(uri);
-        if (repo !== undefined) {
+        if (repo !== null) {
           try {
             const info = await repo.getInfo(uri.fsPath);
             this.currentItem = {
@@ -154,7 +154,6 @@ export class ItemLogProvider
   public async getTreeItem(element: ILogTreeItem): Promise<TreeItem> {
     let ti: TreeItem;
     if (element.kind === LogTreeItemKind.Commit) {
-      const cached = unwrap(this.currentItem);
       const commit = element.data as ISvnLogEntry;
       ti = new TreeItem(getCommitLabel(commit), TreeItemCollapsibleState.None);
       ti.iconPath = getCommitIcon(commit.author);

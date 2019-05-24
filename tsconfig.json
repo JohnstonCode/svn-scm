@@ -5,10 +5,13 @@
     "module": "commonjs",
     "outDir": "./out",
     "typeRoots": ["./node_modules/@types"],
-    "strict": true,
-    "experimentalDecorators": true,
     "sourceMap": true,
-    "noImplicitThis": false
+    "experimentalDecorators": true,
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "allowUnreachableCode": false
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules"]

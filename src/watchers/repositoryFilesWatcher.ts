@@ -1,4 +1,4 @@
-import { Event, EventEmitter, Uri, workspace } from "vscode";
+import { Event, Uri, workspace } from "vscode";
 import { anyEvent, filterEvent, IDisposable, isDescendant } from "../util";
 
 export class RepositoryFilesWatcher implements IDisposable {

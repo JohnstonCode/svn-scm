@@ -14,8 +14,7 @@ import {
   ConstructorPolicy,
   IModelChangeEvent,
   IOpenRepository,
-  RepositoryState,
-  Status
+  RepositoryState
 } from "./common/types";
 import { debounce } from "./decorators";
 import { exists, readdir, stat } from "./fs";
@@ -315,11 +314,13 @@ export class Model implements IDisposable {
     return RemoteRepository.open(this.svn, uri);
   }
 
-  public getRepository(hint: any) {
+  public getRepository(hint: any): Repository | null {
     const liveRepository = this.getOpenRepository(hint);
     if (liveRepository && liveRepository.repository) {
       return liveRepository.repository;
     }
+
+    return null;
   }
 
   public getOpenRepository(hint: any): IOpenRepository | undefined {
@@ -378,19 +379,22 @@ export class Model implements IDisposable {
     return undefined;
   }
 
-  public async getRepositoryFromUri(uri: Uri) {
+  public async getRepositoryFromUri(uri: Uri): Promise<Repository | null> {
     for (const liveRepository of this.openRepositories) {
       const repository = liveRepository.repository;
 
       try {
         const path = normalizePath(uri.fsPath);
-        const info = await repository.info(path);
+
+        await repository.info(path);
 
         return repository;
       } catch (error) {
         console.error();
       }
     }
+
+    return null;
   }
 
   private open(repository: Repository): void {

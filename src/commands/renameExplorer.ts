@@ -9,7 +9,11 @@ export class RenameExplorer extends Command {
     super("svn.renameExplorer", { repository: true });
   }
 
-  public async execute(repository: Repository, mainUri?: Uri, allUris?: Uri[]) {
+  public async execute(
+    repository: Repository,
+    mainUri?: Uri,
+    _allUris?: Uri[]
+  ) {
     if (!mainUri) {
       return;
     }

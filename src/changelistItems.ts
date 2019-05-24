@@ -13,7 +13,7 @@ export function getChangelistPickOptions(
   const picks: QuickPickItem[] = [];
 
   picks.push(new NewChangeListItem());
-  repository.changelists.forEach((group, changelist) => {
+  repository.changelists.forEach((group, _changelist) => {
     if (group.resourceStates.length) {
       picks.push(new ChangeListItem(group));
     }
@@ -119,7 +119,7 @@ export async function inputCommitChangelist(repository: Repository) {
 export function patchChangelistOptions(repository: Repository) {
   const picks: QuickPickItem[] = [];
 
-  repository.changelists.forEach((group, changelist) => {
+  repository.changelists.forEach((group, _changelist) => {
     if (group.resourceStates.length) {
       picks.push(new ChangeListItem(group));
     }

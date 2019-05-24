@@ -27,7 +27,7 @@ import {
 } from "./util";
 
 async function init(
-  context: ExtensionContext,
+  _context: ExtensionContext,
   outputChannel: OutputChannel,
   disposables: Disposable[]
 ) {

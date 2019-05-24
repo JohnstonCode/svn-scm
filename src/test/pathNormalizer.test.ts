@@ -7,7 +7,6 @@
 
 // The module 'assert' provides assertion methods from node
 import * as assert from "assert";
-import * as path from "path";
 import { PathNormalizer, ResourceKind } from "../pathNormalizer";
 import { Uri } from "vscode";
 import { ISvnInfo } from "../common/types";

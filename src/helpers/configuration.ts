@@ -4,7 +4,6 @@ import {
   ConfigurationChangeEvent,
   Event,
   EventEmitter,
-  Uri,
   workspace,
   WorkspaceConfiguration
 } from "vscode";

@@ -60,7 +60,6 @@ export function cpErrorHandler(
 
 export class Svn {
   private svnPath: string;
-  private version: string;
   private lastCwd: string = "";
 
   private _onOutput = new EventEmitter();
@@ -70,7 +69,6 @@ export class Svn {
 
   constructor(options: ISvnOptions) {
     this.svnPath = options.svnPath;
-    this.version = options.version;
   }
 
   private logOutput(output: string): void {
