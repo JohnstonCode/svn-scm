@@ -434,7 +434,7 @@ export class Repository {
   }
 
   public async pullIncomingChange(path: string): Promise<string> {
-    const args = ["update", path];
+    const args = ["update", "--parents", path];
 
     const result = await this.exec(args);
 
