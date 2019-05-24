@@ -1,3 +1,10 @@
+## [1.48.6](https://github.com/JohnstonCode/svn-scm/compare/v1.48.5...v1.48.6) (2019-05-24)
+
+
+### Bug Fixes
+
+* Able to revert folders with children ([#577](https://github.com/JohnstonCode/svn-scm/issues/577)) ([9bf7683](https://github.com/JohnstonCode/svn-scm/commit/9bf7683))
+
 ## [1.48.5](https://github.com/JohnstonCode/svn-scm/compare/v1.48.4...v1.48.5) (2019-05-21)
 
 
