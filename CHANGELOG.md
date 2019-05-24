@@ -1,3 +1,10 @@
+## [1.48.5](https://github.com/JohnstonCode/svn-scm/compare/v1.48.4...v1.48.5) (2019-05-21)
+
+
+### Bug Fixes
+
+* Show alert to work with code-server ([#579](https://github.com/JohnstonCode/svn-scm/issues/579)) ([605b321](https://github.com/JohnstonCode/svn-scm/commit/605b321))
+
 ## [1.48.4](https://github.com/JohnstonCode/svn-scm/compare/v1.48.3...v1.48.4) (2019-05-13)
 
 

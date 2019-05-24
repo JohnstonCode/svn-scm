@@ -2,7 +2,7 @@
   "name": "svn-scm",
   "displayName": "SVN",
   "description": "Integrated Subversion source control",
-  "version": "1.48.4",
+  "version": "1.48.5",
   "publisher": "johnstoncode",
   "engines": {
     "vscode": "^1.26.0"
@@ -68,7 +68,6 @@
     "cz-conventional-changelog": "^2.1.0",
     "decache": "^4.5.1",
     "glob": "^7.1.4",
-    "iconv-lite": "^0.4.23",
     "istanbul": "^0.4.5",
     "mocha": "^6.1.4",
     "mocha-junit-reporter": "^1.22.0",
