@@ -31,19 +31,19 @@ export default class SvnDecorationProvider implements DecorationProvider {
     this.collectDecorationData(this.repository.unversioned, newDecorations);
     this.collectDecorationData(this.repository.conflicts, newDecorations);
 
-    this.repository.changelists.forEach((group, changelist) => {
+    this.repository.changelists.forEach((group, _changelist) => {
       this.collectDecorationData(group, newDecorations);
     });
 
     const uris: Uri[] = [];
-    newDecorations.forEach((value, uriString) => {
+    newDecorations.forEach((_value, uriString) => {
       if (this.decorations.has(uriString)) {
         this.decorations.delete(uriString);
       } else {
         uris.push(Uri.parse(uriString));
       }
     });
-    this.decorations.forEach((value, uriString) => {
+    this.decorations.forEach((_value, uriString) => {
       uris.push(Uri.parse(uriString));
     });
     this.decorations = newDecorations;

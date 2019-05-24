@@ -46,7 +46,11 @@ export class Repository {
   }
 
   public async updateInfo() {
-    const result = await this.exec(["info", "--xml", fixPegRevision(this.root)]);
+    const result = await this.exec([
+      "info",
+      "--xml",
+      fixPegRevision(this.root)
+    ]);
     this._info = await parseInfoXml(result.stdout);
   }
 
@@ -158,11 +162,7 @@ export class Repository {
     return this._infoCache[file];
   }
 
-  public async show(
-    file: string | Uri,
-    revision?: string,
-    options: ICpOptions = {}
-  ): Promise<string> {
+  public async show(file: string | Uri, revision?: string): Promise<string> {
     const args = ["cat"];
     let target: string;
     if (file instanceof Uri) {
@@ -316,7 +316,7 @@ export class Repository {
       promises.push(
         new Promise<string[]>(async resolve => {
           try {
-            const trunkExists = await this.exec([
+            await this.exec([
               "ls",
               repoUrl + "/" + trunkLayout,
               "--depth",
@@ -380,13 +380,8 @@ export class Repository {
     const newBranch = repoUrl + "/" + name;
     const info = await this.getInfo();
     const currentBranch = info.url;
-    const result = await this.exec([
-      "copy",
-      currentBranch,
-      newBranch,
-      "-m",
-      commitMessage
-    ]);
+
+    await this.exec(["copy", currentBranch, newBranch, "-m", commitMessage]);
 
     await this.switchBranch(name);
 
@@ -459,7 +454,12 @@ export class Repository {
   }
 
   public async patchChangelist(changelistName: string) {
-    const result = await this.exec(["diff", "--internal-diff", "--changelist", changelistName]);
+    const result = await this.exec([
+      "diff",
+      "--internal-diff",
+      "--changelist",
+      changelistName
+    ]);
     const message = result.stdout;
     return message;
   }
@@ -515,7 +515,9 @@ export class Repository {
       "-v"
     ];
     if (target !== undefined) {
-      args.push(fixPegRevision(target instanceof Uri ? target.toString(true) : target));
+      args.push(
+        fixPegRevision(target instanceof Uri ? target.toString(true) : target)
+      );
     }
     const result = await this.exec(args);
 

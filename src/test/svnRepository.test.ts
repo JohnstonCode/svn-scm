@@ -26,7 +26,7 @@ suite("Svn Repository Tests", () => {
       "/tpm",
       ConstructorPolicy.LateInit
     );
-    repository.exec = async (args: string[], options?: ICpOptions) => {
+    repository.exec = async (_args: string[], _options?: ICpOptions) => {
       return {
         exitCode: 1,
         stderr: "",
@@ -49,7 +49,7 @@ suite("Svn Repository Tests", () => {
       "/tpm",
       ConstructorPolicy.LateInit
     );
-    repository.exec = async (args: string[], options?: ICpOptions) => {
+    repository.exec = async (args: string[], _options?: ICpOptions) => {
       assert.equal(args[0].includes("rename"), true);
       assert.equal(args[1].includes("test.php"), true);
       assert.equal(args[2].includes("tester.php"), true);

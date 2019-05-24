@@ -10,7 +10,8 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noImplicitReturns": true
+    "noImplicitReturns": true,
+    "allowUnreachableCode": false
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules"]

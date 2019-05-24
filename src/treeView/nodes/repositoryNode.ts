@@ -1,5 +1,5 @@
 import * as path from "path";
-import { TreeItem, TreeItemCollapsibleState, window } from "vscode";
+import { TreeItem, TreeItemCollapsibleState } from "vscode";
 import { Repository } from "../../repository";
 import { getIconUri } from "../../uri";
 import SvnProvider from "../dataProviders/svnProvider";
@@ -12,7 +12,7 @@ export default class RepositoryNode implements BaseNode {
     private svnProvider: SvnProvider
   ) {
     repository.onDidChangeStatus(() => {
-      svnProvider.update(this);
+      this.svnProvider.update(this);
     });
   }
 

@@ -119,7 +119,7 @@ export class RepoLogProvider
     this._dispose.push(
       commands.registerCommand("svn.repolog.refresh", this.refresh, this)
     );
-    this.model.onDidChangeRepository(async (e: IModelChangeEvent) => {
+    this.model.onDidChangeRepository(async (_e: IModelChangeEvent) => {
       return this.refresh();
       // TODO refresh only required repo, need to pass element === getChildren()
     });
@@ -152,7 +152,7 @@ export class RepoLogProvider
       return;
     }
     const repo = this.model.getRepository(repoLike);
-    if (repo === undefined) {
+    if (repo === null) {
       try {
         let uri: Uri;
         if (repoLike.startsWith("^")) {
@@ -407,14 +407,14 @@ export class RepoLogProvider
       return transform(
         Array.from(this.logCache.entries())
           .sort(
-            ([lk, lv], [rk, rv]): number => {
+            ([_lk, lv], [_rk, rv]): number => {
               if (lv.persisted.userAdded !== rv.persisted.userAdded) {
                 return lv.persisted.userAdded ? 1 : -1;
               }
               return lv.order - rv.order;
             }
           )
-          .map(([k, v]) => new SvnPath(k)),
+          .map(([k, _v]) => new SvnPath(k)),
         LogTreeItemKind.Repo
       );
     } else if (element.kind === LogTreeItemKind.Repo) {

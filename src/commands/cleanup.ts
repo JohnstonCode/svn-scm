@@ -1,4 +1,3 @@
-import { Model } from "../model";
 import { Repository } from "../repository";
 import { Command } from "./command";
 

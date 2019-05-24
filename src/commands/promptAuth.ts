@@ -1,6 +1,5 @@
 import { window } from "vscode";
 import { IAuth } from "../common/types";
-import { Repository } from "../repository";
 import { Command } from "./command";
 
 export class PromptAuth extends Command {

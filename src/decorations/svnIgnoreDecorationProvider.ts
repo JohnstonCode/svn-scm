@@ -47,6 +47,7 @@ export default class SvnIgnoreDecorationProvider implements DecorationProvider {
           color: new ThemeColor("gitDecoration.ignoredResourceForeground")
         } as DecorationData;
       }
+      return;
     });
   }
 

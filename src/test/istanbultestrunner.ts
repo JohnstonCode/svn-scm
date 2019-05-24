@@ -89,7 +89,7 @@ export function run(testsRoot: string, clb: Function): any {
 
       mocha
         .run()
-        .on("fail", function(test, err): void {
+        .on("fail", function(_test, _err): void {
           failureCount++;
         })
         .on("end", function(): void {
@@ -179,7 +179,7 @@ class CoverageRunner {
 
     // Hook the process exit event to handle reporting
     // Only report coverage if the process is exiting successfully
-    process.on("exit", code => {
+    process.on("exit", _code => {
       self.reportCoverage();
     });
   }

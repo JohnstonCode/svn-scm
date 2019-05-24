@@ -185,6 +185,8 @@ export abstract class Command implements Disposable {
 
       return repository.getResourceFromFile(uri);
     }
+
+    return;
   }
 
   protected async _openResource(
@@ -286,6 +288,8 @@ export abstract class Command implements Disposable {
           ref: against
         });
     }
+
+    return;
   }
 
   protected getRightResource(
@@ -312,6 +316,8 @@ export abstract class Command implements Disposable {
           ref: against
         });
     }
+
+    return;
   }
 
   private getTitle(resource: Resource, against?: string): string {

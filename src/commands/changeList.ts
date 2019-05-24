@@ -1,4 +1,4 @@
-import { commands, SourceControlResourceState, Uri, window } from "vscode";
+import { commands, Uri, window } from "vscode";
 import { inputSwitchChangelist } from "../changelistItems";
 import { Model } from "../model";
 import { Resource } from "../resource";
@@ -64,7 +64,7 @@ export class ChangeList extends Command {
     const paths = uris.map(uri => uri.fsPath);
     let canRemove = false;
 
-    repository.changelists.forEach((group, changelist) => {
+    repository.changelists.forEach((group, _changelist) => {
       if (
         group.resourceStates.some(state => {
           return paths.some(path => {
@@ -77,6 +77,8 @@ export class ChangeList extends Command {
         canRemove = true;
         return false;
       }
+
+      return;
     });
 
     const changelistName = await inputSwitchChangelist(repository, canRemove);

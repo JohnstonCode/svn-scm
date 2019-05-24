@@ -3,8 +3,7 @@ import {
   Event,
   EventEmitter,
   TreeDataProvider,
-  TreeItem,
-  window
+  TreeItem
 } from "vscode";
 import { Model } from "../../model";
 import BaseNode from "../nodes/baseNode";

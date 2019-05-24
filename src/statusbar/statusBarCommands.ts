@@ -1,4 +1,4 @@
-import { Command, Disposable, Event, EventEmitter } from "vscode";
+import { Command, Disposable, Event } from "vscode";
 import { Repository } from "../repository";
 import { anyEvent } from "../util";
 import { CheckoutStatusBar } from "./checkoutStatusBar";
@@ -10,7 +10,7 @@ export class StatusBarCommands {
 
   private disposables: Disposable[] = [];
 
-  constructor(private repository: Repository) {
+  constructor(repository: Repository) {
     this.checkoutStatusBar = new CheckoutStatusBar(repository);
     this.syncStatusBar = new SyncStatusBar(repository);
 

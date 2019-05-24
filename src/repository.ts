@@ -131,7 +131,7 @@ export class Repository implements IRemoteRepository {
     this.changes.resourceStates = [];
     this.unversioned.resourceStates = [];
     this.conflicts.resourceStates = [];
-    this.changelists.forEach((group, changelist) => {
+    this.changelists.forEach((group, _changelist) => {
       group.resourceStates = [];
     });
 
@@ -360,6 +360,8 @@ export class Repository implements IRemoteRepository {
     } else if (actionForDeletedFiles === "prompt") {
       return await commands.executeCommand("svn.promptRemove", ...uris);
     }
+
+    return;
   }
 
   @debounce(1000)
@@ -380,7 +382,7 @@ export class Repository implements IRemoteRepository {
     }
   }
 
-  private onFSChange(uri: Uri): void {
+  private onFSChange(_uri: Uri): void {
     const autorefresh = configuration.get<boolean>("autorefresh");
 
     if (!autorefresh) {
@@ -431,7 +433,6 @@ export class Repository implements IRemoteRepository {
   public async updateModelState(checkRemoteChanges: boolean = false) {
     const changes: any[] = [];
     const unversioned: any[] = [];
-    const external: any[] = [];
     const conflicts: any[] = [];
     const changelists: Map<string, Resource[]> = new Map();
     const remoteChanges: any[] = [];
@@ -589,15 +590,11 @@ export class Repository implements IRemoteRepository {
 
     const prevChangelistsSize = this.changelists.size;
 
-    this.changelists.forEach((group, changelist) => {
+    this.changelists.forEach((group, _changelist) => {
       group.resourceStates = [];
     });
 
     const counts = [this.changes, this.conflicts];
-
-    const ignoreOnCommitList = configuration.get<string[]>(
-      "sourceControl.ignoreOnCommit"
-    );
 
     const ignoreOnStatusCountList = configuration.get<string[]>(
       "sourceControl.ignoreOnStatusCount"

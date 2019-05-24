@@ -30,6 +30,8 @@ export function getBranchName(folder: string): IBranchItem | undefined {
       };
     }
   }
+
+  return;
 }
 
 export async function selectBranch(
@@ -102,4 +104,6 @@ export async function selectBranch(
 
     return newBranch;
   }
+
+  return;
 }

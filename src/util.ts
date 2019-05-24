@@ -126,10 +126,10 @@ export function hasSupportToDecorationProvider() {
 
 try {
   const fake = {
-    onDidChangeDecorations: (value: any): any => toDisposable(() => {}),
-    provideDecoration: (uri: any, token: any): any => {}
+    onDidChangeDecorations: (_value: any): any => toDisposable(() => {}),
+    provideDecoration: (_uri: any, _token: any): any => {}
   };
-  const disposable = window.registerDecorationProvider(fake);
+  window.registerDecorationProvider(fake);
   hasDecorationProvider = true;
   // disposable.dispose(); // Not dispose to prevent: Cannot read property 'provideDecoration' of undefined
 } catch (error) {}

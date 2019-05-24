@@ -6,7 +6,7 @@ export class AddToIgnoreExplorer extends Command {
     super("svn.addToIgnoreExplorer");
   }
 
-  public async execute(mainUri?: Uri, allUris?: Uri[]) {
+  public async execute(_mainUri?: Uri, allUris?: Uri[]) {
     if (!allUris || allUris.length === 0) {
       return;
     }

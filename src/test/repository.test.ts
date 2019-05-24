@@ -75,7 +75,7 @@ suite("Repository Tests", () => {
   });
 
   test("Try get current branch name", async () => {
-    const repository: Repository | undefined = model.getRepository(
+    const repository: Repository | null = model.getRepository(
       checkoutDir.fsPath
     );
     if (!repository) {
@@ -88,7 +88,7 @@ suite("Repository Tests", () => {
 
   test("Try commit file", async function() {
     this.timeout(60000);
-    const repository: Repository | undefined = model.getRepository(
+    const repository: Repository | null = model.getRepository(
       checkoutDir.fsPath
     );
     if (!repository) {
@@ -125,7 +125,7 @@ suite("Repository Tests", () => {
 
     await model.tryOpenRepository(newCheckoutDir.fsPath);
 
-    const newRepository: Repository | undefined = model.getRepository(
+    const newRepository: Repository | null = model.getRepository(
       newCheckoutDir.fsPath
     );
     if (!newRepository) {

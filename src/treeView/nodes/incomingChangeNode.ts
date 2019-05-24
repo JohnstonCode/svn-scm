@@ -1,4 +1,3 @@
-import * as fs from "original-fs";
 import * as path from "path";
 import { TreeItem, TreeItemCollapsibleState, Uri } from "vscode";
 import { Repository } from "../../repository";
@@ -63,6 +62,9 @@ export default class IncomingChangeNode implements BaseNode {
             new Resource(this.uri, this.type, undefined, "none", true)
           ]
         };
+      default:
+        console.error(`No command returned for type ${this.type}`);
+        return;
     }
   }
 }
