@@ -20,6 +20,7 @@ import { parseSvnLog } from "./logParser";
 import { parseStatusXml } from "./statusParser";
 import { Svn } from "./svn";
 import { fixPathSeparator, fixPegRevision, unwrap } from "./util";
+import * as semver from "semver";
 
 export class Repository {
   private _infoCache: { [index: string]: ISvnInfo } = {};
@@ -46,7 +47,11 @@ export class Repository {
   }
 
   public async updateInfo() {
-    const result = await this.exec(["info", "--xml", fixPegRevision(this.root)]);
+    const result = await this.exec([
+      "info",
+      "--xml",
+      fixPegRevision(this.root)
+    ]);
     this._info = await parseInfoXml(result.stdout);
   }
 
@@ -434,7 +439,11 @@ export class Repository {
   }
 
   public async pullIncomingChange(path: string): Promise<string> {
-    const args = ["update", "--parents", path];
+    const args = ["update", path];
+
+    if (semver.satisfies(this.svn.version, ">= 1.7.0")) {
+      args.push("--parents");
+    }
 
     const result = await this.exec(args);
 
@@ -459,7 +468,12 @@ export class Repository {
   }
 
   public async patchChangelist(changelistName: string) {
-    const result = await this.exec(["diff", "--internal-diff", "--changelist", changelistName]);
+    const result = await this.exec([
+      "diff",
+      "--internal-diff",
+      "--changelist",
+      changelistName
+    ]);
     const message = result.stdout;
     return message;
   }
@@ -515,7 +529,9 @@ export class Repository {
       "-v"
     ];
     if (target !== undefined) {
-      args.push(fixPegRevision(target instanceof Uri ? target.toString(true) : target));
+      args.push(
+        fixPegRevision(target instanceof Uri ? target.toString(true) : target)
+      );
     }
     const result = await this.exec(args);
 

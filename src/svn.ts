@@ -60,7 +60,7 @@ export function cpErrorHandler(
 
 export class Svn {
   private svnPath: string;
-  private version: string;
+  private _version: string;
   private lastCwd: string = "";
 
   private _onOutput = new EventEmitter();
@@ -68,9 +68,13 @@ export class Svn {
     return this._onOutput;
   }
 
+  get version(): string {
+    return this._version;
+  }
+
   constructor(options: ISvnOptions) {
     this.svnPath = options.svnPath;
-    this.version = options.version;
+    this._version = options.version;
   }
 
   private logOutput(output: string): void {
@@ -169,8 +173,8 @@ export class Svn {
         if (!iconv.encodingExists(defaultEncoding)) {
           this.logOutput(
             "svn.default.encoding: Invalid Parameter: '" +
-            defaultEncoding +
-            "'.\n"
+              defaultEncoding +
+              "'.\n"
           );
         } else if (!isUtf8(stdout)) {
           encoding = defaultEncoding;
