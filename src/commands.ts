@@ -42,6 +42,8 @@ import { Update } from "./commands/update";
 import { Upgrade } from "./commands/upgrade";
 import { Model } from "./model";
 import { CommitChangelist } from "./commands/commitChangelist";
+import { OpenResourceGroupFiles } from "./commands/openResourceGroupFiles";
+import { OpenResourceGroupFilesAndCloseOthers } from "./commands/openResourceGroupFilesAndCloseOthers";
 
 export function registerCommands(model: Model, disposables: Disposable[]) {
   disposables.push(new GetModel(model));
@@ -86,4 +88,6 @@ export function registerCommands(model: Model, disposables: Disposable[]) {
   disposables.push(new OpenHeadFile());
   disposables.push(new RevertAll());
   disposables.push(new CommitChangelist());
+  disposables.push(new OpenResourceGroupFiles());
+  disposables.push(new OpenResourceGroupFilesAndCloseOthers());
 }

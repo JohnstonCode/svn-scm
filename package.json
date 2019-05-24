@@ -423,6 +423,16 @@
         "command": "svn.commitChangelist",
         "title": "Commit changelist",
         "category": "SVN"
+      },
+      {
+        "command": "svn.openResourceGroupFiles",
+        "title": "Open all files",
+        "category": "SVN"
+      },
+      {
+        "command": "svn.openResourceGroupFilesAndCloseOthers",
+        "title": "Open all files and close others",
+        "category": "SVN"
       }
     ],
     "menus": {
@@ -581,6 +591,18 @@
         },
         {
           "command": "svn.itemlog.copymsg",
+          "when": "false"
+        },
+        {
+          "command": "svn.commitChangelist",
+          "when": "false"
+        },
+        {
+          "command": "svn.openResourceGroupFiles",
+          "when": "false"
+        },
+        {
+          "command": "svn.openResourceGroupFilesAndCloseOthers",
           "when": "false"
         }
       ],
@@ -756,6 +778,16 @@
         },
         {
           "command": "svn.commitChangelist",
+          "when": "config.svn.enabled && scmProvider == svn && scmResourceGroup =~ /changelist-*/",
+          "group": "navigation"
+        },
+        {
+          "command": "svn.openResourceGroupFiles",
+          "when": "config.svn.enabled && scmProvider == svn && scmResourceGroup =~ /changelist-*/",
+          "group": "navigation"
+        },
+        {
+          "command": "svn.openResourceGroupFilesAndCloseOthers",
           "when": "config.svn.enabled && scmProvider == svn && scmResourceGroup =~ /changelist-*/",
           "group": "navigation"
         }
