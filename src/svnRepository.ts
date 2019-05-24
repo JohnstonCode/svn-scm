@@ -1,4 +1,5 @@
 import * as path from "path";
+import * as semver from "semver";
 import * as tmp from "tmp";
 import { Uri, workspace } from "vscode";
 import {
@@ -20,7 +21,6 @@ import { parseSvnLog } from "./logParser";
 import { parseStatusXml } from "./statusParser";
 import { Svn } from "./svn";
 import { fixPathSeparator, fixPegRevision, unwrap } from "./util";
-import * as semver from "semver";
 
 export class Repository {
   private _infoCache: { [index: string]: ISvnInfo } = {};
