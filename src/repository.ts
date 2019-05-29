@@ -27,6 +27,7 @@ import {
   SvnUriAction
 } from "./common/types";
 import { debounce, globalSequentialize, memoize, throttle } from "./decorators";
+import { exists } from "./fs";
 import { configuration } from "./helpers/configuration";
 import OperationsImpl from "./operationsImpl";
 import { PathNormalizer } from "./pathNormalizer";
@@ -950,6 +951,11 @@ export class Repository implements IRemoteRepository {
       } catch (err) {
         if (err.svnErrorCode === svnErrorCodes.NotASvnRepository) {
           this.state = RepositoryState.Disposed;
+        }
+
+        const rootExists = await exists(this.workspaceRoot);
+        if (!rootExists) {
+          await commands.executeCommand("svn.close", this);
         }
 
         throw err;
