@@ -157,7 +157,7 @@ export class Model implements IDisposable {
   @debounce(500)
   private eventuallyScanPossibleSvnRepositories(): void {
     for (const path of this.possibleSvnRepositoryPaths) {
-      this.tryOpenRepository(path);
+      this.tryOpenRepository(path, 1);
     }
 
     this.possibleSvnRepositoryPaths.clear();
@@ -172,6 +172,19 @@ export class Model implements IDisposable {
     }
 
     repository.statusExternal
+      .map(r => path.join(repository.workspaceRoot, r.path))
+      .forEach(p => this.eventuallyScanPossibleSvnRepository(p));
+  }
+
+  private scanIgnored(repository: Repository): void {
+    const shouldScan =
+      configuration.get<boolean>("detectIgnored") === true;
+
+    if (!shouldScan) {
+      return;
+    }
+
+    repository.statusIgnored
       .map(r => path.join(repository.workspaceRoot, r.path))
       .forEach(p => this.eventuallyScanPossibleSvnRepository(p));
   }
@@ -335,6 +348,15 @@ export class Model implements IDisposable {
             return false;
           }
         }
+        for (const ignored of liveRepository.repository.statusIgnored) {
+          const ignoredPath = path.join(
+            liveRepository.repository.workspaceRoot,
+            ignored.path
+          );
+          if (isDescendant(ignoredPath, hint.fsPath)) {
+            return false;
+          }
+        }
 
         return true;
       });
@@ -390,8 +412,10 @@ export class Model implements IDisposable {
 
     const statusListener = repository.onDidChangeStatus(() => {
       this.scanExternals(repository);
+      this.scanIgnored(repository);
     });
     this.scanExternals(repository);
+    this.scanIgnored(repository);
 
     const dispose = () => {
       disappearListener.dispose();

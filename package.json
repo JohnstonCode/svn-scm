@@ -1031,6 +1031,11 @@
           "default": true,
           "description": "Controls whether to automatically detect svn externals."
         },
+        "svn.detectIgnored": {
+          "type": "boolean",
+          "default": true,
+          "description": "Controls whether to automatically detect svn on ignored folders."
+        },
         "svn.sourceControl.combineExternalIfSameServer": {
           "type": "boolean",
           "default": false,
