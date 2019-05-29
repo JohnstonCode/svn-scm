@@ -1,3 +1,10 @@
+# [1.49.0](https://github.com/JohnstonCode/svn-scm/compare/v1.48.6...v1.49.0) (2019-05-29)
+
+
+### Features
+
+* Allow to scan repository on ignored folders (close [#570](https://github.com/JohnstonCode/svn-scm/issues/570)) ([#586](https://github.com/JohnstonCode/svn-scm/issues/586)) ([be7069d](https://github.com/JohnstonCode/svn-scm/commit/be7069d))
+
 ## [1.48.6](https://github.com/JohnstonCode/svn-scm/compare/v1.48.5...v1.48.6) (2019-05-24)
 
 
