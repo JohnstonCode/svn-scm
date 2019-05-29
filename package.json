@@ -2,7 +2,7 @@
   "name": "svn-scm",
   "displayName": "SVN",
   "description": "Integrated Subversion source control",
-  "version": "1.48.6",
+  "version": "1.49.0",
   "publisher": "johnstoncode",
   "engines": {
     "vscode": "^1.26.0"
@@ -1030,6 +1030,11 @@
           "type": "boolean",
           "default": true,
           "description": "Controls whether to automatically detect svn externals."
+        },
+        "svn.detectIgnored": {
+          "type": "boolean",
+          "default": true,
+          "description": "Controls whether to automatically detect svn on ignored folders."
         },
         "svn.sourceControl.combineExternalIfSameServer": {
           "type": "boolean",

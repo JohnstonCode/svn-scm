@@ -17,7 +17,7 @@ import {
   RepositoryState
 } from "./common/types";
 import { debounce } from "./decorators";
-import { exists, readdir, stat } from "./fs";
+import { readdir, stat } from "./fs";
 import { configuration } from "./helpers/configuration";
 import { RemoteRepository } from "./remoteRepository";
 import { Repository } from "./repository";
@@ -29,6 +29,7 @@ import {
   filterEvent,
   IDisposable,
   isDescendant,
+  isSvnFolder,
   normalizePath
 } from "./util";
 import { matchAll } from "./util/globMatch";
@@ -156,7 +157,7 @@ export class Model implements IDisposable {
   @debounce(500)
   private eventuallyScanPossibleSvnRepositories(): void {
     for (const path of this.possibleSvnRepositoryPaths) {
-      this.tryOpenRepository(path);
+      this.tryOpenRepository(path, 1);
     }
 
     this.possibleSvnRepositoryPaths.clear();
@@ -171,6 +172,19 @@ export class Model implements IDisposable {
     }
 
     repository.statusExternal
+      .map(r => path.join(repository.workspaceRoot, r.path))
+      .forEach(p => this.eventuallyScanPossibleSvnRepository(p));
+  }
+
+  private scanIgnored(repository: Repository): void {
+    const shouldScan =
+      configuration.get<boolean>("detectIgnored") === true;
+
+    if (!shouldScan) {
+      return;
+    }
+
+    repository.statusIgnored
       .map(r => path.join(repository.workspaceRoot, r.path))
       .forEach(p => this.eventuallyScanPossibleSvnRepository(p));
   }
@@ -219,34 +233,9 @@ export class Model implements IDisposable {
       return;
     }
 
-    let isSvnFolder = false;
+    const checkParent = level === 0;
 
-    try {
-      isSvnFolder = await exists(path + "/.svn");
-    } catch (error) {
-      // error
-    }
-
-    // If open only a subpath.
-    if (!isSvnFolder && level === 0) {
-      const pathParts = path.split(/[\\/]/);
-      while (pathParts.length > 0) {
-        pathParts.pop();
-        const topPath = pathParts.join("/") + "/.svn";
-
-        try {
-          isSvnFolder = await exists(topPath);
-        } catch (error) {
-          // error
-        }
-
-        if (isSvnFolder) {
-          break;
-        }
-      }
-    }
-
-    if (isSvnFolder) {
+    if (isSvnFolder(path, checkParent)) {
       // Config based on folder path
       const resourceConfig = workspace.getConfiguration("svn", Uri.file(path));
 
@@ -359,6 +348,15 @@ export class Model implements IDisposable {
             return false;
           }
         }
+        for (const ignored of liveRepository.repository.statusIgnored) {
+          const ignoredPath = path.join(
+            liveRepository.repository.workspaceRoot,
+            ignored.path
+          );
+          if (isDescendant(ignoredPath, hint.fsPath)) {
+            return false;
+          }
+        }
 
         return true;
       });
@@ -414,8 +412,10 @@ export class Model implements IDisposable {
 
     const statusListener = repository.onDidChangeStatus(() => {
       this.scanExternals(repository);
+      this.scanIgnored(repository);
     });
     this.scanExternals(repository);
+    this.scanIgnored(repository);
 
     const dispose = () => {
       disappearListener.dispose();

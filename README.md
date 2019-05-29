@@ -112,6 +112,7 @@ Here is a table of settings with their default values. To change any of these, a
 |`svn.sourceControl.ignoreOnCommit`|Changelists to ignore on commit|`["ignore-on-commit"]`|
 |`svn.sourceControl.ignoreOnStatusCount`|Changelists to ignore on status count|`["ignore-on-commit"]`|
 |`svn.detectExternals`|Controls whether to automatically detect svn externals.|`true`|
+|`svn.detectIgnored`|Controls whether to automatically detect svn on ignored folders.|`true`|
 |`svn.sourceControl.combineExternalIfSameServer`|Combine the svn external in the main if is from the same server.|`false`|
 |`svn.sourceControl.countUnversioned`|Allow to count unversioned files in status count|`true`|
 |`svn.log.length`|Number of commit messages to log|`50`|
