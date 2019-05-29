@@ -198,3 +198,22 @@ export function fixPegRevision(file: string) {
 
   return file;
 }
+
+export async function isSvnFolder(dir: string, checkParent: boolean = true): Promise<boolean> {
+
+  const result = await exists(`${dir}/.svn`);
+
+  if (result || !checkParent) {
+    return result;
+  }
+
+  const parent = path.dirname(dir);
+
+  // For windows: the `path.dirname("c:")` return `c:`
+  // For empty or doted dir, return "."
+  if (parent === dir || parent === ".") {
+    return false;
+  }
+
+  return await isSvnFolder(parent, true);
+}
