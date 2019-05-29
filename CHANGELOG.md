@@ -1,3 +1,10 @@
+# [1.50.0](https://github.com/JohnstonCode/svn-scm/compare/v1.49.0...v1.50.0) (2019-05-29)
+
+
+### Features
+
+* Automatic close repository when folder not exists ([#587](https://github.com/JohnstonCode/svn-scm/issues/587)) ([83d81d2](https://github.com/JohnstonCode/svn-scm/commit/83d81d2))
+
 # [1.49.0](https://github.com/JohnstonCode/svn-scm/compare/v1.48.6...v1.49.0) (2019-05-29)
 
 
