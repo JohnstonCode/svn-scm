@@ -112,7 +112,6 @@ export class SyncStatusBar {
     } else {
       command = "svn.update";
       tooltip = "Update Revision";
-      text = `Updated`;
     }
 
     return {
