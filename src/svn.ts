@@ -1,6 +1,5 @@
 import * as cp from "child_process";
 import { EventEmitter } from "events";
-import isUtf8 = require("is-utf8");
 import * as proc from "process";
 import { Readable } from "stream";
 import {
@@ -9,12 +8,13 @@ import {
   IExecutionResult,
   ISvnOptions
 } from "./common/types";
+import * as encodeUtil from "./encoding";
 import { configuration } from "./helpers/configuration";
 import { parseInfoXml } from "./infoParser";
 import SvnError from "./svnError";
 import { Repository } from "./svnRepository";
 import { dispose, IDisposable, toDisposable } from "./util";
-import { iconv, jschardet } from "./vscodeModules";
+import { iconv } from "./vscodeModules";
 
 export const svnErrorCodes: { [key: string]: string } = {
   AuthorizationFailed: "E170001",
@@ -102,8 +102,13 @@ export class Svn {
     // Force non interactive environment
     args.push("--non-interactive");
 
-    let encoding = options.encoding || "";
+    let encoding: string | undefined | null = options.encoding;
     delete options.encoding;
+
+    // SVN with '--xml' always return 'UTF-8', and jschardet detects this encoding: 'TIS-620'
+    if (args.includes("--xml")) {
+      encoding = "utf8";
+    }
 
     const defaults: cp.SpawnOptions = {
       env: proc.env
@@ -156,35 +161,20 @@ export class Svn {
 
     dispose(disposables);
 
-    // SVN with '--xml' always return 'UTF-8', and jschardet detects this encoding: 'TIS-620'
-    if (args.includes("--xml")) {
-      encoding = "utf8";
-    } else if (encoding === "") {
-      encoding = "utf8"; // Initial encoding
+    if (!encoding) {
+      encoding = encodeUtil.detectEncoding(stdout);
+    }
 
-      const defaultEncoding = configuration.get<string>("default.encoding");
-      if (defaultEncoding) {
-        if (!iconv.encodingExists(defaultEncoding)) {
-          this.logOutput(
-            "svn.default.encoding: Invalid Parameter: '" +
-            defaultEncoding +
-            "'.\n"
-          );
-        } else if (!isUtf8(stdout)) {
-          encoding = defaultEncoding;
-        }
-      } else {
-        jschardet.MacCyrillicModel.mTypicalPositiveRatio += 0.001;
+    // if not detected
+    if (!encoding) {
+      encoding = configuration.get<string>("default.encoding");
+    }
 
-        const encodingGuess = jschardet.detect(stdout);
-
-        if (
-          encodingGuess.confidence > 0.8 &&
-          iconv.encodingExists(encodingGuess.encoding)
-        ) {
-          encoding = encodingGuess.encoding;
-        }
+    if (!iconv.encodingExists(encoding)) {
+      if (encoding) {
+        console.warn(`SVN: The encoding "${encoding}" is invalid`);
       }
+      encoding = "utf8";
     }
 
     const decodedStdout = iconv.decode(stdout, encoding);

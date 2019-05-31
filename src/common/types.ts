@@ -190,7 +190,7 @@ export enum PropStatus {
 
 export interface ICpOptions extends SpawnOptions {
   cwd?: string;
-  encoding?: string;
+  encoding?: string | null;
   log?: boolean;
   username?: string;
   password?: string;
