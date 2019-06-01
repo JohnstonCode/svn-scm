@@ -1,3 +1,10 @@
+## [1.50.1](https://github.com/JohnstonCode/svn-scm/compare/v1.50.0...v1.50.1) (2019-06-01)
+
+
+### Bug Fixes
+
+* Fixed encoding detection for gutter (close [#526](https://github.com/JohnstonCode/svn-scm/issues/526)) ([#590](https://github.com/JohnstonCode/svn-scm/issues/590)) ([22e40f9](https://github.com/JohnstonCode/svn-scm/commit/22e40f9))
+
 # [1.50.0](https://github.com/JohnstonCode/svn-scm/compare/v1.49.0...v1.50.0) (2019-05-29)
 
 
