@@ -46,7 +46,6 @@
     "style-check": "npx prettylint src/**/*.ts"
   },
   "dependencies": {
-    "is-utf8": "^0.2.1",
     "minimatch": "^3.0.4",
     "original-fs": "^1.0.0",
     "semver": "^6.0.0",

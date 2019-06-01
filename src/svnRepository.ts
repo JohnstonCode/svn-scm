@@ -12,6 +12,7 @@ import {
   SvnDepth
 } from "./common/types";
 import { sequentialize } from "./decorators";
+import * as encodeUtil from "./encoding";
 import { exists, writeFile } from "./fs";
 import { getBranchName } from "./helpers/branch";
 import { configuration } from "./helpers/configuration";
@@ -20,7 +21,12 @@ import { parseSvnList } from "./listParser";
 import { parseSvnLog } from "./logParser";
 import { parseStatusXml } from "./statusParser";
 import { Svn } from "./svn";
-import { fixPathSeparator, fixPegRevision, unwrap } from "./util";
+import {
+  fixPathSeparator,
+  fixPegRevision,
+  normalizePath,
+  unwrap
+} from "./util";
 
 export class Repository {
   private _infoCache: { [index: string]: ISvnInfo } = {};
@@ -165,20 +171,23 @@ export class Repository {
 
   public async show(file: string | Uri, revision?: string): Promise<string> {
     const args = ["cat"];
-    let target: string;
+
+    let uri: Uri;
+    let filePath: string;
+
     if (file instanceof Uri) {
-      target = file.toString(true);
+      uri = file;
+      filePath = file.toString(true);
     } else {
-      target = file;
+      uri = Uri.file(file);
+      filePath = file;
     }
+
+    let target: string = this.removeAbsolutePath(filePath);
     if (revision) {
       args.push("-r", revision);
-      if (
-        typeof file === "string" &&
-        !["BASE", "COMMITTED", "PREV"].includes(revision.toUpperCase())
-      ) {
+      if (["BASE", "COMMITTED", "PREV"].includes(revision.toUpperCase())) {
         const info = await this.getInfo();
-        target = this.removeAbsolutePath(target);
         target = info.url + "/" + target.replace(/\\/g, "/");
         // TODO move to SvnRI
       }
@@ -186,13 +195,44 @@ export class Repository {
 
     args.push(target);
 
-    let encoding = "utf8";
-    if (typeof file === "string") {
-      const uri = Uri.file(file);
-      file = this.removeAbsolutePath(file);
-      encoding = workspace
-        .getConfiguration("files", uri)
-        .get<string>("encoding", encoding);
+    /**
+     * ENCODE DETECTION
+     * if TextDocuments exists and autoGuessEncoding is true,
+     * try detect current encoding of content
+     */
+    const configs = workspace.getConfiguration("files", uri);
+
+    let encoding: string | undefined | null = configs.get("encoding");
+    let autoGuessEncoding: boolean = configs.get<boolean>(
+      "autoGuessEncoding",
+      false
+    );
+
+    const textDocument = workspace.textDocuments.find(
+      doc => normalizePath(doc.uri.fsPath) === normalizePath(filePath)
+    );
+
+    if (textDocument) {
+      // Load encoding by languageId
+      const languageConfigs = workspace.getConfiguration(
+        `[${textDocument.languageId}]`,
+        uri
+      );
+      if (languageConfigs["files.encoding"] !== undefined) {
+        encoding = languageConfigs["files.encoding"];
+      }
+      if (languageConfigs["files.autoGuessEncoding"] !== undefined) {
+        autoGuessEncoding = languageConfigs["files.autoGuessEncoding"];
+      }
+
+      if (autoGuessEncoding) {
+        // The `getText` return a `utf-8` string
+        const buffer = Buffer.from(textDocument.getText(), "utf-8");
+        const detectedEncoding = encodeUtil.detectEncoding(buffer);
+        if (detectedEncoding) {
+          encoding = detectedEncoding;
+        }
+      }
     }
 
     const result = await this.exec(args, { encoding });
