@@ -1,3 +1,10 @@
+## [1.50.3](https://github.com/JohnstonCode/svn-scm/compare/v1.50.2...v1.50.3) (2019-06-03)
+
+
+### Bug Fixes
+
+* Fixed diff gutter cache (close [#483](https://github.com/JohnstonCode/svn-scm/issues/483)) ([#596](https://github.com/JohnstonCode/svn-scm/issues/596)) ([620b701](https://github.com/JohnstonCode/svn-scm/commit/620b701))
+
 ## [1.50.2](https://github.com/JohnstonCode/svn-scm/compare/v1.50.1...v1.50.2) (2019-06-03)
 
 
