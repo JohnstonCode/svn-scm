@@ -1,3 +1,10 @@
+## [1.50.2](https://github.com/JohnstonCode/svn-scm/compare/v1.50.1...v1.50.2) (2019-06-03)
+
+
+### Bug Fixes
+
+* Fixed diff for files with "@" (close [#223](https://github.com/JohnstonCode/svn-scm/issues/223)) ([#595](https://github.com/JohnstonCode/svn-scm/issues/595)) ([ee41f49](https://github.com/JohnstonCode/svn-scm/commit/ee41f49))
+
 ## [1.50.1](https://github.com/JohnstonCode/svn-scm/compare/v1.50.0...v1.50.1) (2019-06-01)
 
 
