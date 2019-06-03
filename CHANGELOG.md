@@ -1,3 +1,10 @@
+# [1.51.0](https://github.com/JohnstonCode/svn-scm/compare/v1.50.5...v1.51.0) (2019-06-03)
+
+
+### Features
+
+* Added support to pick a previous commit message (close [#358](https://github.com/JohnstonCode/svn-scm/issues/358)) ([#599](https://github.com/JohnstonCode/svn-scm/issues/599)) ([b179bd0](https://github.com/JohnstonCode/svn-scm/commit/b179bd0))
+
 ## [1.50.5](https://github.com/JohnstonCode/svn-scm/compare/v1.50.4...v1.50.5) (2019-06-03)
 
 
