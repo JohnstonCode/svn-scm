@@ -18,14 +18,18 @@ export class CommitWithMessage extends Command {
       return;
     }
 
-    const message = await inputCommitMessage(repository.inputBox.value, false);
-    if (message === undefined) {
-      return;
-    }
-
     const filePaths = choice.resourceGroup.resourceStates.map(state => {
       return state.resourceUri.fsPath;
     });
+
+    const message = await inputCommitMessage(
+      repository.inputBox.value,
+      false,
+      filePaths
+    );
+    if (message === undefined) {
+      return;
+    }
 
     // If files is renamed, the commit need previous file
     choice.resourceGroup.resourceStates.forEach(state => {

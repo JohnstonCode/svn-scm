@@ -15,6 +15,7 @@ import SvnDecorations from "./decorations/svnDecorations";
 import { configuration } from "./helpers/configuration";
 import { ItemLogProvider } from "./historyView/itemLogProvider";
 import { RepoLogProvider } from "./historyView/repoLogProvider";
+import * as messages from "./messages";
 import { Model } from "./model";
 import { Svn } from "./svn";
 import { SvnContentProvider } from "./svnContentProvider";
@@ -77,6 +78,7 @@ async function init(
   disposables.push(
     toDisposable(() => svn.onOutput.removeListener("log", onOutput))
   );
+  disposables.push(toDisposable(messages.dispose));
 }
 
 async function _activate(context: ExtensionContext, disposables: Disposable[]) {
@@ -171,5 +173,5 @@ export async function activate(context: ExtensionContext) {
 
 // this method is called when your extension is deactivated
 /* tslint:disable:no-empty */
-function deactivate() {}
+function deactivate() { }
 exports.deactivate = deactivate;

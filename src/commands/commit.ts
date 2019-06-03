@@ -53,7 +53,11 @@ export class Commit extends Command {
       }
 
       try {
-        const message = await inputCommitMessage(repository.inputBox.value);
+        const message = await inputCommitMessage(
+          repository.inputBox.value,
+          true,
+          paths
+        );
 
         if (message === undefined) {
           return;
