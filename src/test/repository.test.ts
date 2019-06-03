@@ -109,7 +109,7 @@ suite("Repository Tests", () => {
     assert.equal(repository.changes.resourceStates.length, 1);
 
     const message = await repository.commitFiles("First Commit", [file]);
-    assert.ok(/Committed revision (.*)\./i.test(message));
+    assert.ok(/1 file commited: revision (.*)\./i.test(message));
 
     assert.equal(repository.changes.resourceStates.length, 0);
 
