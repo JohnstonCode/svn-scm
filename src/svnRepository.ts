@@ -186,7 +186,7 @@ export class Repository {
     let target: string = this.removeAbsolutePath(filePath);
     if (revision) {
       args.push("-r", revision);
-      if (["BASE", "COMMITTED", "PREV"].includes(revision.toUpperCase())) {
+      if (!["BASE", "COMMITTED", "PREV"].includes(revision.toUpperCase())) {
         const info = await this.getInfo();
         target = info.url + "/" + target.replace(/\\/g, "/");
         // TODO move to SvnRI
