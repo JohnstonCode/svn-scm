@@ -8,7 +8,6 @@ export class PickCommitMessage extends Command {
   }
 
   public async execute(repository: Repository) {
-
     const logs = await repository.log("HEAD", "0", 20);
 
     if (!logs.length) {
@@ -18,7 +17,9 @@ export class PickCommitMessage extends Command {
     const picks: QuickPickItem[] = logs.map(l => {
       return {
         label: l.msg,
-        description: `r${l.revision} | ${l.author} | ${new Date(l.date).toLocaleString()}`
+        description: `r${l.revision} | ${l.author} | ${new Date(
+          l.date
+        ).toLocaleString()}`
       };
     });
 
