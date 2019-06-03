@@ -1,3 +1,10 @@
+# [1.52.0](https://github.com/JohnstonCode/svn-scm/compare/v1.51.0...v1.52.0) (2019-06-03)
+
+
+### Features
+
+* Allow multi-line commit messages (close [#471](https://github.com/JohnstonCode/svn-scm/issues/471)) ([#589](https://github.com/JohnstonCode/svn-scm/issues/589)) ([bb06651](https://github.com/JohnstonCode/svn-scm/commit/bb06651))
+
 # [1.51.0](https://github.com/JohnstonCode/svn-scm/compare/v1.50.5...v1.51.0) (2019-06-03)
 
 
