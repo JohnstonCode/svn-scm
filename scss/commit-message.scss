@@ -1,0 +1,54 @@
+
+// Color
+// ––––––––––––––––––––––––––––––––––––––––––––––––––
+// Default Colors
+// @import "../node_modules/milligram/src/_Color.sass";
+
+// Use vscode variables for color
+$color-initial: var(--vscode-button-foreground) !default;
+$color-primary: var(--vscode-button-background) !default;
+$color-secondary: var(--vscode-button-hoverBackground) !default;
+$color-tertiary: var(--vscode-editor-background) !default;
+$color-quaternary: var(--vscode-dropdown-border) !default;
+$color-quinary: #e1e1e1 !default;
+
+// Form
+@import "../node_modules/milligram/src/_Base.sass";
+// @import "../node_modules/milligram/src/_Blockquote.sass";
+@import "../node_modules/milligram/src/_Button.sass";
+// @import "../node_modules/milligram/src/_Code.sass";
+// @import "../node_modules/milligram/src/_Divider.sass";
+@import "../node_modules/milligram/src/_Form.sass";
+@import "../node_modules/milligram/src/_Grid.sass";
+// @import "../node_modules/milligram/src/_Link.sass";
+@import "../node_modules/milligram/src/_List.sass";
+@import "../node_modules/milligram/src/_Spacing.sass";
+// @import "../node_modules/milligram/src/_Table.sass";
+@import "../node_modules/milligram/src/_Typography.sass";
+// @import "../node_modules/milligram/src/_Image.sass";
+@import "../node_modules/milligram/src/_Utility.sass";
+
+body {
+    background-color: var(--vscode-editor-background);
+    color: var(--vscode-editor-foreground);
+    font-family: var(--vscode-font-family);
+    font-size: var(--vscode-font-size);
+    font-weight: var(--vscode-font-weight);
+}
+
+input[type='email'],
+input[type='number'],
+input[type='password'],
+input[type='search'],
+input[type='tel'],
+input[type='text'],
+input[type='url'],
+textarea,
+select {
+    background-color: var(--vscode-input-background);
+    color: var(--vscode-input-foreground);
+}
+
+::placeholder {
+  color: var(--vscode-input-placeholderForeground);
+}

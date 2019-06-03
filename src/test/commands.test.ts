@@ -155,7 +155,9 @@ suite("Commands Tests", () => {
 
     const resource = repository.changes.resourceStates[0];
 
-    testUtil.overrideNextShowInputBox("Second Commit");
+    setTimeout(() => {
+      commands.executeCommand("svn.forceCommitMessageTest", "Second Commit");
+    }, 1000);
     await commands.executeCommand("svn.commit", resource);
 
     assert.equal(repository.changes.resourceStates.length, 0);

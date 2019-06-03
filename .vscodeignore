@@ -4,13 +4,16 @@
 .vscode/**
 **/*.map
 **/*.ts
+build.yml
 coverage/**
 coverconfig.json
 jsconfig.json
 out/test/**
 out/tools/**
 package-lock.json
+scss/**
 src/**
+test-reports
 test/**
 tsconfig.json
 tslint.json
