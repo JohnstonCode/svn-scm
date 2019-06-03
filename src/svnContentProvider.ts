@@ -68,19 +68,30 @@ export class SvnContentProvider
       await eventToPromise(onDidFocusWindow);
     }
 
-    Object.keys(this.cache).forEach(key => {
+    // Don't check if no has repository changes
+    if (this.changedRepositoryRoots.size === 0) {
+      return;
+    }
+
+    // Use copy to allow new items in parallel
+    const roots = Array.from(this.changedRepositoryRoots);
+    this.changedRepositoryRoots.clear();
+
+    const keys = Object.keys(this.cache);
+
+    cacheLoop:
+    for (const key of keys) {
       const uri = this.cache[key].uri;
       const fsPath = uri.fsPath;
 
-      for (const root of this.changedRepositoryRoots) {
+      for (const root of roots) {
         if (isDescendant(root, fsPath)) {
           this._onDidChange.fire(uri);
-          return;
+          continue cacheLoop;
         }
       }
-    });
+    }
 
-    this.changedRepositoryRoots.clear();
   }
 
   public async provideTextDocumentContent(uri: Uri): Promise<string> {
