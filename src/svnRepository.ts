@@ -284,11 +284,11 @@ export class Repository {
 
     const matches = result.stdout.match(/Committed revision (.*)\./i);
     if (matches && matches[0]) {
-      const sendedFiles = (result.stdout.match(/(Sending\s+)/g) || []).length;
+      const sendedFiles = (result.stdout.match(/(Sending|Adding|Deleting)\s+/g) || []).length;
 
       const filesMessage = `${sendedFiles} ${sendedFiles === 1 ? "file" : "files"} commited`;
 
-      return `${filesMessage}: revision ${matches[1]}`;
+      return `${filesMessage}: revision ${matches[1]}.`;
     }
 
     return result.stdout;
