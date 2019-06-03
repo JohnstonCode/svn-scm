@@ -1,3 +1,10 @@
+## [1.50.4](https://github.com/JohnstonCode/svn-scm/compare/v1.50.3...v1.50.4) (2019-06-03)
+
+
+### Bug Fixes
+
+* Fixed changelists for externals (close [#569](https://github.com/JohnstonCode/svn-scm/issues/569)) ([#597](https://github.com/JohnstonCode/svn-scm/issues/597)) ([3aa381f](https://github.com/JohnstonCode/svn-scm/commit/3aa381f))
+
 ## [1.50.3](https://github.com/JohnstonCode/svn-scm/compare/v1.50.2...v1.50.3) (2019-06-03)
 
 
