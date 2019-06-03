@@ -378,8 +378,19 @@ export class Model implements IDisposable {
   }
 
   public async getRepositoryFromUri(uri: Uri): Promise<Repository | null> {
-    for (const liveRepository of this.openRepositories) {
+
+    // Sort by path length (First external and ignored over root)
+    const open = this.openRepositories.sort(
+      (a, b) => b.repository.workspaceRoot.length - a.repository.workspaceRoot.length
+    );
+
+    for (const liveRepository of open) {
       const repository = liveRepository.repository;
+
+      // Ignore path is not child (fix for multiple externals)
+      if (!isDescendant(repository.workspaceRoot, uri.fsPath)) {
+        continue;
+      }
 
       try {
         const path = normalizePath(uri.fsPath);
@@ -388,7 +399,7 @@ export class Model implements IDisposable {
 
         return repository;
       } catch (error) {
-        console.error();
+        // Ignore
       }
     }
 
