@@ -1,3 +1,10 @@
+## [1.50.5](https://github.com/JohnstonCode/svn-scm/compare/v1.50.4...v1.50.5) (2019-06-03)
+
+
+### Bug Fixes
+
+* Improved commit message notification (close [#545](https://github.com/JohnstonCode/svn-scm/issues/545)) ([#598](https://github.com/JohnstonCode/svn-scm/issues/598)) ([b5f3488](https://github.com/JohnstonCode/svn-scm/commit/b5f3488))
+
 ## [1.50.4](https://github.com/JohnstonCode/svn-scm/compare/v1.50.3...v1.50.4) (2019-06-03)
 
 
