@@ -23,6 +23,7 @@ import { OpenResourceHead } from "./commands/openResourceHead";
 import { Patch } from "./commands/patch";
 import { PatchAll } from "./commands/patchAll";
 import { PatchChangeList } from "./commands/patchChangeList";
+import { PickCommitMessage } from "./commands/pickCommitMessage";
 import { PromptAuth } from "./commands/promptAuth";
 import { PromptRemove } from "./commands/promptRemove";
 import { PullIncommingChange } from "./commands/pullIncomingChange";
@@ -84,4 +85,5 @@ export function registerCommands(model: Model, disposables: Disposable[]) {
   disposables.push(new OpenChangeHead());
   disposables.push(new OpenHeadFile());
   disposables.push(new RevertAll());
+  disposables.push(new PickCommitMessage());
 }

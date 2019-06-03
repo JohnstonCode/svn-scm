@@ -417,6 +417,15 @@
         "command": "svn.deleteUnversioned",
         "title": "Delete selected files",
         "category": "SVN"
+      },
+      {
+        "command": "svn.pickCommitMessage",
+        "title": "Pick a previous commit message",
+        "category": "SVN",
+        "icon": {
+          "light": "icons/light/icon-history.svg",
+          "dark": "icons/dark/icon-history.svg"
+        }
       }
     ],
     "menus": {
@@ -576,6 +585,10 @@
         {
           "command": "svn.itemlog.copymsg",
           "when": "false"
+        },
+        {
+          "command": "svn.pickCommitMessage",
+          "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
         }
       ],
       "view/title": [
@@ -668,6 +681,11 @@
         },
         {
           "command": "svn.refresh",
+          "group": "navigation",
+          "when": "config.svn.enabled && scmProvider == svn"
+        },
+        {
+          "command": "svn.pickCommitMessage",
           "group": "navigation",
           "when": "config.svn.enabled && scmProvider == svn"
         },
