@@ -24,6 +24,7 @@ import { Svn } from "./svn";
 import {
   fixPathSeparator,
   fixPegRevision,
+  isDescendant,
   normalizePath,
   unwrap
 } from "./util";
@@ -183,10 +184,17 @@ export class Repository {
       filePath = file;
     }
 
-    let target: string = this.removeAbsolutePath(filePath);
+    const isChild = uri.scheme === "file" && isDescendant(this.workspaceRoot, uri.fsPath);
+
+    let target: string = filePath;
+
+    if (isChild) {
+      target = this.removeAbsolutePath(target);
+    }
+
     if (revision) {
       args.push("-r", revision);
-      if (!["BASE", "COMMITTED", "PREV"].includes(revision.toUpperCase())) {
+      if (isChild && !["BASE", "COMMITTED", "PREV"].includes(revision.toUpperCase())) {
         const info = await this.getInfo();
         target = info.url + "/" + target.replace(/\\/g, "/");
         // TODO move to SvnRI
