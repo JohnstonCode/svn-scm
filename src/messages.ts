@@ -1,5 +1,6 @@
 import * as path from "path";
 import { commands, Uri, ViewColumn, WebviewPanel, window } from "vscode";
+import { Model } from "./model";
 
 export function noChangesToCommit() {
   return window.showInformationMessage("There are no changes to commit.");
@@ -77,12 +78,15 @@ async function showCommitInput(message?: string, filePaths?: string[]) {
     ${beforeForm}
     <form>
       <fieldset>
+        <div class="float-right">
+          <a href="#" id="pickCommitMessage">Pick a previous commit message</a>
+        </div>
         <label for="message">Commit message</label>
-          <textarea id="message" rows="5" placeholder="Message (press Ctrl+Enter to commit)"></textarea>
-          <button id="commit" class="button-primary">Commit</button>
-          <div class="float-right">
-            <button id="cancel" class="button button-outline">Cancel</button>
-          </div>
+        <textarea id="message" rows="3" placeholder="Message (press Ctrl+Enter to commit)"></textarea>
+        <button id="commit" class="button-primary">Commit</button>
+        <div class="float-right">
+          <button id="cancel" class="button button-outline">Cancel</button>
+        </div>
       </fieldset>
     </form>
   </section>
@@ -92,6 +96,7 @@ async function showCommitInput(message?: string, filePaths?: string[]) {
     const txtMessage = document.getElementById("message");
     const btnCommit = document.getElementById("commit");
     const btnCancel = document.getElementById("cancel");
+    const linkPickCommitMessage = document.getElementById("pickCommitMessage");
 
     // load current message
     txtMessage.value = ${JSON.stringify(message)};
@@ -116,10 +121,33 @@ async function showCommitInput(message?: string, filePaths?: string[]) {
       }
     });
 
+    // Auto resize the height of message
+    txtMessage.addEventListener("input", function(e) {
+      txtMessage.style.height = "auto";
+      txtMessage.style.height = (txtMessage.scrollHeight) + "px";
+    });
+
     window.addEventListener("load", function() {
       setTimeout(() => {
         txtMessage.focus();
       }, 1000);
+    });
+
+    linkPickCommitMessage.addEventListener("click", function() {
+      vscode.postMessage({
+        command: "pickCommitMessage"
+      });
+    });
+
+    // Message from VSCode
+    window.addEventListener("message", function(event) {
+      const message = event.data;
+      switch (message.command) {
+        case "setMessage":
+          txtMessage.value = message.message;
+          txtMessage.dispatchEvent(new Event("input"));
+          break;
+      }
     });
   </script>
 </body>
@@ -132,12 +160,32 @@ async function showCommitInput(message?: string, filePaths?: string[]) {
       resolve(undefined);
     });
 
+    const pickCommitMessage = async () => {
+      let repository;
+
+      if (filePaths && filePaths[0]) {
+        const model = (await commands.executeCommand("svn.getModel", "")) as Model;
+        repository = await model.getRepositoryFromUri(Uri.file(filePaths[0]));
+      }
+
+      const message = await commands.executeCommand("svn.pickCommitMessage", repository);
+      if (message !== undefined) {
+        panel.webview.postMessage({
+          command: "setMessage",
+          message
+        });
+      }
+    };
+
     // On button click
     panel.webview.onDidReceiveMessage(message => {
       switch (message.command) {
         case "commit":
           resolve(message.message);
           panel.dispose();
+          break;
+        case "pickCommitMessage":
+          pickCommitMessage();
           break;
         default:
           resolve(undefined);
