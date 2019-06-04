@@ -1,3 +1,10 @@
+## [1.52.2](https://github.com/JohnstonCode/svn-scm/compare/v1.52.1...v1.52.2) (2019-06-04)
+
+
+### Bug Fixes
+
+* Allow pick commit on multi-line messages ([#601](https://github.com/JohnstonCode/svn-scm/issues/601)) ([269d781](https://github.com/JohnstonCode/svn-scm/commit/269d781))
+
 ## [1.52.1](https://github.com/JohnstonCode/svn-scm/compare/v1.52.0...v1.52.1) (2019-06-04)
 
 
