@@ -1,3 +1,10 @@
+## [1.52.1](https://github.com/JohnstonCode/svn-scm/compare/v1.52.0...v1.52.1) (2019-06-04)
+
+
+### Bug Fixes
+
+* Fixed "failed to open path" for remote (close [#593](https://github.com/JohnstonCode/svn-scm/issues/593)) ([#600](https://github.com/JohnstonCode/svn-scm/issues/600)) ([c9190aa](https://github.com/JohnstonCode/svn-scm/commit/c9190aa))
+
 # [1.52.0](https://github.com/JohnstonCode/svn-scm/compare/v1.51.0...v1.52.0) (2019-06-03)
 
 
