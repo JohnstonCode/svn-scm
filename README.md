@@ -63,14 +63,14 @@ Please use a dedicated extension like [blamer-vs](https://marketplace.visualstud
 
 ## Experimental
 
-### * SVN Status in File Explorer (See #34)
+### * SVN Status in File Explorer (See [#34](https://github.com/JohnstonCode/svn-scm/issues/34))
 How to enable:
 * Open the file: `<vscode path>\resources\app\product.json`
 * Find `extensionAllowedProposedApi`
 * Append `"johnstoncode.svn-scm"` in the array
 
 Example:
-```json
+```js
 // FROM
 {
   "extensionAllowedProposedApi": [
@@ -91,6 +91,7 @@ Here is a table of settings with their default values. To change any of these, a
 |Config|Description|Default|
 |-|-|-|
 |`svn.enabled`|Whether svn is enabled|`true`|
+|`svn.enableProposedApi`|Allow usage of proposed APIs of VSCode. set 'product' to auto-edit product.json, set 'argument' to allow with start argument, set 'none' to not prompt|`null`|
 |`svn.autorefresh`|Whether auto refreshing is enabled|`true`|
 |`svn.decorations.enabled`|Controls if SVN contributes colors and badges to the explorer and the open (VSCode \>= 1.18 with proposed-api)|`true`|
 |`svn.path`|Path to the svn executable|`null`|
@@ -126,3 +127,5 @@ Here is a table of settings with their default values. To change any of these, a
 |`svn.remoteChanges.checkFrequency`|Set the interval in seconds to check changed files on remote repository and show in statusbar. 0 to disable|`300`|
 |`svn.sourceControl.hideUnversioned`|Hide unversioned files in Source Control UI|`false`|
 |`svn.refresh.remoteChanges`|Refresh remote changes on refresh command|`false`|
+|`svn.sourceControl.changesLeftClick`|Set left click functionality on changes resource state|`"open diff"`|
+|`svn.gravatars.enabled`|Use garavatar icons in log viewers|`true`|

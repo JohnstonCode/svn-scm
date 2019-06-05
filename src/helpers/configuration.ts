@@ -2,6 +2,7 @@
 
 import {
   ConfigurationChangeEvent,
+  ConfigurationTarget,
   Event,
   EventEmitter,
   workspace,
@@ -37,8 +38,8 @@ class Configuration {
     return this.configuration.get<T>(section, defaultValue!);
   }
 
-  public update(section: string, value: any): Thenable<void> {
-    return this.configuration.update(section, value);
+  public update(section: string, value: any, configurationTarget?: ConfigurationTarget | boolean): Thenable<void> {
+    return this.configuration.update(section, value, configurationTarget);
   }
 
   public inspect(section: string) {

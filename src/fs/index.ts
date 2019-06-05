@@ -1,3 +1,4 @@
+export { access } from "./access";
 export { exists } from "./exists";
 export { lstat } from "./lstat";
 export { mkdir } from "./mkdir";

@@ -17,6 +17,7 @@ import { ItemLogProvider } from "./historyView/itemLogProvider";
 import { RepoLogProvider } from "./historyView/repoLogProvider";
 import * as messages from "./messages";
 import { Model } from "./model";
+import { checkProposedApi } from "./proposed";
 import { Svn } from "./svn";
 import { SvnContentProvider } from "./svnContentProvider";
 import { SvnFinder } from "./svnFinder";
@@ -79,6 +80,8 @@ async function init(
     toDisposable(() => svn.onOutput.removeListener("log", onOutput))
   );
   disposables.push(toDisposable(messages.dispose));
+
+  checkProposedApi();
 }
 
 async function _activate(context: ExtensionContext, disposables: Disposable[]) {
