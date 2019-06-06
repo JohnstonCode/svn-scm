@@ -38,7 +38,11 @@ class Configuration {
     return this.configuration.get<T>(section, defaultValue!);
   }
 
-  public update(section: string, value: any, configurationTarget?: ConfigurationTarget | boolean): Thenable<void> {
+  public update(
+    section: string,
+    value: any,
+    configurationTarget?: ConfigurationTarget | boolean
+  ): Thenable<void> {
     return this.configuration.update(section, value, configurationTarget);
   }
 
