@@ -1,3 +1,10 @@
+# [1.53.0](https://github.com/JohnstonCode/svn-scm/compare/v1.52.2...v1.53.0) (2019-06-07)
+
+
+### Features
+
+* Added option to enable proposed features ([#602](https://github.com/JohnstonCode/svn-scm/issues/602)) ([3eedbb5](https://github.com/JohnstonCode/svn-scm/commit/3eedbb5))
+
 ## [1.52.2](https://github.com/JohnstonCode/svn-scm/compare/v1.52.1...v1.52.2) (2019-06-04)
 
 
