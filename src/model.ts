@@ -87,6 +87,13 @@ export class Model implements IDisposable {
     })() as unknown) as Model;
   }
 
+  public openRepositoriesSorted(): IOpenRepository[] {
+    // Sort by path length (First external and ignored over root)
+    return this.openRepositories.sort(
+      (a, b) => b.repository.workspaceRoot.length - a.repository.workspaceRoot.length
+    );
+  }
+
   private onDidChangeConfiguration(): void {
     const enabled = configuration.get<boolean>("enabled") === true;
 
@@ -332,7 +339,7 @@ export class Model implements IDisposable {
     }
 
     if (hint instanceof Uri) {
-      return this.openRepositories.find(liveRepository => {
+      return this.openRepositoriesSorted().find(liveRepository => {
         if (
           !isDescendant(liveRepository.repository.workspaceRoot, hint.fsPath)
         ) {
@@ -379,12 +386,7 @@ export class Model implements IDisposable {
 
   public async getRepositoryFromUri(uri: Uri): Promise<Repository | null> {
 
-    // Sort by path length (First external and ignored over root)
-    const open = this.openRepositories.sort(
-      (a, b) => b.repository.workspaceRoot.length - a.repository.workspaceRoot.length
-    );
-
-    for (const liveRepository of open) {
+    for (const liveRepository of this.openRepositoriesSorted()) {
       const repository = liveRepository.repository;
 
       // Ignore path is not child (fix for multiple externals)

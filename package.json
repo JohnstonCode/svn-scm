@@ -913,6 +913,20 @@
           "description": "Whether svn is enabled",
           "default": true
         },
+        "svn.enableProposedApi": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            null,
+            "product",
+            "argument",
+            "none"
+          ],
+          "description": "Allow usage of proposed APIs of VSCode. set 'product' to auto-edit product.json, set 'argument' to allow with start argument, set 'none' to not prompt",
+          "default": null
+        },
         "svn.autorefresh": {
           "type": "boolean",
           "description": "Whether auto refreshing is enabled",
