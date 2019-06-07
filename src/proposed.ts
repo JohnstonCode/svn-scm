@@ -36,7 +36,7 @@ async function promptProposedApi() {
   const argument = "Yes, with start argument";
   const none = "No";
   const choice = await window.showWarningMessage(
-    `Do you like to enable proposed features for SVN?
+    `Would you like to enable proposed features for SVN?
     More info [here](https://github.com/JohnstonCode/svn-scm#experimental)`,
     product,
     argument,
@@ -99,7 +99,7 @@ async function enableProposedProduct() {
 
   await writeFile(productPath, JSON.stringify(productJson, null, 2));
 
-  const message = "SVN proposed features enabled, please, close the VSCode and open again";
+  const message = "SVN proposed features enabled, please restart VSCode";
 
   window.showInformationMessage(message);
 }
@@ -116,8 +116,8 @@ async function enableProposedArgument() {
   packageJson.enableProposedApi = true;
   await writeFile(packagePath, JSON.stringify(packageJson, null, 2));
 
-  const message = `SVN proposed features enabled, please,
-    close the VSCode and run with: --enable-proposed-api johnstoncode.svn-scm`;
+  const message = `SVN proposed features enabled,
+    please close the VSCode and run with: --enable-proposed-api johnstoncode.svn-scm`;
 
   window.showInformationMessage(message);
 }
