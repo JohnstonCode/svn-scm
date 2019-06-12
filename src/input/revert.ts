@@ -45,10 +45,14 @@ export async function checkAndPromptDepth(
     if (uri.scheme !== "file") {
       continue;
     }
-    const stat = await lstat(uri.fsPath);
-    if (stat.isDirectory()) {
-      hasDirectory = true;
-      break;
+    try {
+      const stat = await lstat(uri.fsPath);
+      if (stat.isDirectory()) {
+        hasDirectory = true;
+        break;
+      }
+    } catch (error) {
+      // ignore
     }
   }
 
