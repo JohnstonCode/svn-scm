@@ -816,8 +816,10 @@ export class Repository implements IRemoteRepository {
     );
   }
 
-  public async revert(files: string[], depth: SvnDepth) {
-    return this.run(Operation.Revert, () => this.repository.revert(files, depth));
+  public async revert(files: string[], depth: keyof typeof SvnDepth) {
+    return this.run(Operation.Revert, () =>
+      this.repository.revert(files, depth)
+    );
   }
 
   public async info(path: string) {
