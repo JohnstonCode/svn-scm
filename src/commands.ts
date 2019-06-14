@@ -37,7 +37,6 @@ import { Resolved } from "./commands/resolved";
 import { Revert } from "./commands/revert";
 import { RevertAll } from "./commands/revertAll";
 import { RevertChange } from "./commands/revertChange";
-import { RevertExplorer } from "./commands/revertExplorer";
 import { RevertSelectedRanges } from "./commands/revertSelectedRanges";
 import { SwitchBranch } from "./commands/switchBranch";
 import { Update } from "./commands/update";
@@ -87,5 +86,4 @@ export function registerCommands(model: Model, disposables: Disposable[]) {
   disposables.push(new OpenHeadFile());
   disposables.push(new RevertAll());
   disposables.push(new PickCommitMessage());
-  disposables.push(new RevertExplorer());
 }

@@ -184,8 +184,7 @@ export class Repository {
       filePath = file;
     }
 
-    const isChild =
-      uri.scheme === "file" && isDescendant(this.workspaceRoot, uri.fsPath);
+    const isChild = uri.scheme === "file" && isDescendant(this.workspaceRoot, uri.fsPath);
 
     let target: string = filePath;
 
@@ -195,10 +194,7 @@ export class Repository {
 
     if (revision) {
       args.push("-r", revision);
-      if (
-        isChild &&
-        !["BASE", "COMMITTED", "PREV"].includes(revision.toUpperCase())
-      ) {
+      if (isChild && !["BASE", "COMMITTED", "PREV"].includes(revision.toUpperCase())) {
         const info = await this.getInfo();
         target = info.url + "/" + target.replace(/\\/g, "/");
         // TODO move to SvnRI
@@ -296,13 +292,9 @@ export class Repository {
 
     const matches = result.stdout.match(/Committed revision (.*)\./i);
     if (matches && matches[0]) {
-      const sendedFiles = (
-        result.stdout.match(/(Sending|Adding|Deleting)\s+/g) || []
-      ).length;
+      const sendedFiles = (result.stdout.match(/(Sending|Adding|Deleting)\s+/g) || []).length;
 
-      const filesMessage = `${sendedFiles} ${
-        sendedFiles === 1 ? "file" : "files"
-      } commited`;
+      const filesMessage = `${sendedFiles} ${sendedFiles === 1 ? "file" : "files"} commited`;
 
       return `${filesMessage}: revision ${matches[1]}.`;
     }
@@ -461,7 +453,7 @@ export class Repository {
     return true;
   }
 
-  public async revert(files: string[], depth: keyof typeof SvnDepth) {
+  public async revert(files: string[], depth: SvnDepth) {
     files = files.map(file => this.removeAbsolutePath(file));
     const result = await this.exec(["revert", "--depth", depth, ...files]);
     return result.stdout;

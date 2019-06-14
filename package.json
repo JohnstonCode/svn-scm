@@ -305,15 +305,6 @@
         }
       },
       {
-        "command": "svn.revertExplorer",
-        "title": "Revert with SVN",
-        "category": "SVN",
-        "icon": {
-          "light": "icons/light/clean.svg",
-          "dark": "icons/dark/clean.svg"
-        }
-      },
-      {
         "command": "svn.revertAll",
         "title": "Revert All Changes",
         "category": "SVN",
@@ -491,10 +482,6 @@
         {
           "command": "svn.revert",
           "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
-        },
-        {
-          "command": "svn.revertExplorer",
-          "when": "false"
         },
         {
           "command": "svn.update",
@@ -914,11 +901,6 @@
         {
           "command": "svn.changelist",
           "group": "9_svn",
-          "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
-        },
-        {
-          "command": "svn.revertExplorer",
-          "group": "7_modification",
           "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
         }
       ]
