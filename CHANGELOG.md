@@ -1,3 +1,10 @@
+# [1.54.0](https://github.com/JohnstonCode/svn-scm/compare/v1.53.0...v1.54.0) (2019-06-14)
+
+
+### Features
+
+* Added support to revert from explorer (close [#606](https://github.com/JohnstonCode/svn-scm/issues/606)) ([#608](https://github.com/JohnstonCode/svn-scm/issues/608)) ([02c983b](https://github.com/JohnstonCode/svn-scm/commit/02c983b))
+
 # [1.53.0](https://github.com/JohnstonCode/svn-scm/compare/v1.52.2...v1.53.0) (2019-06-07)
 
 
