@@ -1,20 +1,22 @@
-import { SourceControlResourceState, window } from "vscode";
+import { Uri, window } from "vscode";
 import { checkAndPromptDepth, confirmRevert } from "../input/revert";
 import { Command } from "./command";
 
-export class Revert extends Command {
+export class RevertExplorer extends Command {
   constructor() {
-    super("svn.revert");
+    super("svn.revertExplorer");
   }
 
-  public async execute(...resourceStates: SourceControlResourceState[]) {
-    const selection = await this.getResourceStates(resourceStates);
-
-    if (selection.length === 0 || !(await confirmRevert())) {
+  public async execute(_mainUri?: Uri, allUris?: Uri[]) {
+    if (!allUris) {
       return;
     }
 
-    const uris = selection.map(resource => resource.resourceUri);
+    const uris = allUris;
+    if (uris.length === 0 || !(await confirmRevert())) {
+      return;
+    }
+
     const depth = await checkAndPromptDepth(uris);
 
     if (!depth) {
