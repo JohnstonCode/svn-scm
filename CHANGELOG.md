@@ -1,3 +1,10 @@
+## [1.54.1](https://github.com/JohnstonCode/svn-scm/compare/v1.54.0...v1.54.1) (2019-06-17)
+
+
+### Bug Fixes
+
+* Fixed config scope for svn.path (close [#616](https://github.com/JohnstonCode/svn-scm/issues/616)) ([#614](https://github.com/JohnstonCode/svn-scm/issues/614)) ([7feabc2](https://github.com/JohnstonCode/svn-scm/commit/7feabc2))
+
 # [1.54.0](https://github.com/JohnstonCode/svn-scm/compare/v1.53.0...v1.54.0) (2019-06-14)
 
 
