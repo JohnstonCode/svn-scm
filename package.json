@@ -962,7 +962,7 @@
           ],
           "description": "Path to the svn executable",
           "default": null,
-          "isExecutable": true
+          "scope": "machine"
         },
         "svn.defaultCheckoutDirectory": {
           "type": "string",
