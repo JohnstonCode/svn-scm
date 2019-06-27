@@ -99,6 +99,14 @@ export class Svn {
       args.push("--password", options.password);
     }
 
+    if (options.username || options.password) {
+      // Configuration format: FILE:SECTION:OPTION=[VALUE]
+      // Disable password store
+      args.push("--config-option", "config:auth:password-stores=");
+      // Disable store auth credentials
+      args.push("--config-option", "servers:global:store-auth-creds=no");
+    }
+
     // Force non interactive environment
     args.push("--non-interactive");
 
