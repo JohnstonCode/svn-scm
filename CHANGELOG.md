@@ -1,3 +1,10 @@
+## [1.54.2](https://github.com/JohnstonCode/svn-scm/compare/v1.54.1...v1.54.2) (2019-06-27)
+
+
+### Bug Fixes
+
+* Fixed prompts for login constantly (close [#552](https://github.com/JohnstonCode/svn-scm/issues/552)) ([#620](https://github.com/JohnstonCode/svn-scm/issues/620)) ([7b733ac](https://github.com/JohnstonCode/svn-scm/commit/7b733ac))
+
 ## [1.54.1](https://github.com/JohnstonCode/svn-scm/compare/v1.54.0...v1.54.1) (2019-06-17)
 
 
