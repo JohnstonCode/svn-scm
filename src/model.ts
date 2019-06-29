@@ -242,7 +242,7 @@ export class Model implements IDisposable {
 
     const checkParent = level === 0;
 
-    if (isSvnFolder(path, checkParent)) {
+    if (await isSvnFolder(path, checkParent)) {
       // Config based on folder path
       const resourceConfig = workspace.getConfiguration("svn", Uri.file(path));
 
