@@ -1,3 +1,10 @@
+## [1.54.3](https://github.com/JohnstonCode/svn-scm/compare/v1.54.2...v1.54.3) (2019-07-01)
+
+
+### Bug Fixes
+
+* Commit icon for undefined author ([#626](https://github.com/JohnstonCode/svn-scm/issues/626)) ([85c07e4](https://github.com/JohnstonCode/svn-scm/commit/85c07e4))
+
 ## [1.54.2](https://github.com/JohnstonCode/svn-scm/compare/v1.54.1...v1.54.2) (2019-06-27)
 
 
