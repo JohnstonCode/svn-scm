@@ -199,7 +199,7 @@ export function getCommitIcon(
   size: number = 16
 ): Uri | { light: Uri; dark: Uri } {
   if (
-    !configuration.get("gravatars.enabled", true) as boolean ||
+    (!configuration.get("gravatars.enabled", true) as boolean) ||
     author === undefined
   ) {
     return getIconObject("icon-commit");
