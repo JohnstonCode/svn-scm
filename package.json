@@ -76,7 +76,7 @@
     "mocha-junit-reporter": "^1.22.0",
     "mocha-multi-reporters": "^1.1.7",
     "node-sass": "^4.12.0",
-    "prettier": "^1.17.1",
+    "prettier": "^1.18.2",
     "prettylint": "^1.0.0",
     "remap-istanbul": "^0.13.0",
     "semantic-release": "^15.13.13",
