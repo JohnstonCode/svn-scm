@@ -406,14 +406,12 @@ export class RepoLogProvider
     if (element === undefined) {
       return transform(
         Array.from(this.logCache.entries())
-          .sort(
-            ([_lk, lv], [_rk, rv]): number => {
-              if (lv.persisted.userAdded !== rv.persisted.userAdded) {
-                return lv.persisted.userAdded ? 1 : -1;
-              }
-              return lv.order - rv.order;
+          .sort(([_lk, lv], [_rk, rv]): number => {
+            if (lv.persisted.userAdded !== rv.persisted.userAdded) {
+              return lv.persisted.userAdded ? 1 : -1;
             }
-          )
+            return lv.order - rv.order;
+          })
           .map(([k, _v]) => new SvnPath(k)),
         LogTreeItemKind.Repo
       );
