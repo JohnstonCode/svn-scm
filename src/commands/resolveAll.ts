@@ -16,9 +16,7 @@ export class ResolveAll extends Command {
     }
 
     for (const conflict of conflicts) {
-      const placeHolder = `Select conflict option for ${
-        conflict.resourceUri.path
-      }`;
+      const placeHolder = `Select conflict option for ${conflict.resourceUri.path}`;
       const picks = getConflictPickOptions();
 
       const choice = await window.showQuickPick(picks, { placeHolder });
