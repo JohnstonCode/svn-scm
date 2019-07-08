@@ -57,7 +57,7 @@
   },
   "devDependencies": {
     "@semantic-release/changelog": "^3.0.2",
-    "@semantic-release/git": "^7.0.8",
+    "@semantic-release/git": "^7.0.16",
     "@types/glob": "^7.1.1",
     "@types/istanbul": "^0.4.30",
     "@types/mocha": "^5.2.6",
