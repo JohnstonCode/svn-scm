@@ -27,6 +27,7 @@ jobs:
           verbose: false
           command: 'custom'
           customCommand: 'i'
+        condition: and(succeeded(), ne(variables['CacheRestored'], 'true'))
       - task: 1ESLighthouseEng.PipelineArtifactCaching.SaveCacheV1.SaveCache@1
         inputs:
           keyfile: '**/package-lock.json, !**/node_modules/**/package-lock.json, !**/.*/**/package-lock.json'
