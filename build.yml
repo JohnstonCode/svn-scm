@@ -19,7 +19,7 @@ jobs:
       - task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreCacheV1.RestoreCache@1
         inputs:
           keyfile: '**/package-lock.json, !**/node_modules/**/package-lock.json, !**/.*/**/package-lock.json'
-          targetfolder: '**/node_modules, !**/node_modules/**/node_modules, !**/.*/**/node_modules'
+          targetfolder: '**/node_modules, !**/node_modules/**/node_modules, !**/.*/**/node_modules, !**/.vscode-test'
           vstsFeed: '$(Npm-Cache)'
       - task: Npm@1
         displayName: 'Install dependencies'
@@ -31,7 +31,7 @@ jobs:
       - task: 1ESLighthouseEng.PipelineArtifactCaching.SaveCacheV1.SaveCache@1
         inputs:
           keyfile: '**/package-lock.json, !**/node_modules/**/package-lock.json, !**/.*/**/package-lock.json'
-          targetfolder: '**/node_modules, !**/node_modules/**/node_modules, !**/.*/**/node_modules'
+          targetfolder: '**/node_modules, !**/node_modules/**/node_modules, !**/.*/**/node_modules, !**/.vscode-test'
           vstsFeed: '$(Npm-Cache)'
       - task: Npm@1
         displayName: 'Compile sources'
