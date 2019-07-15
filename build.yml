@@ -16,6 +16,11 @@ jobs:
         displayName: 'Use Node 8.x'
         inputs:
           versionSpec: 8.x
+      - task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreAndSaveCacheV1.RestoreAndSaveCache@1
+        inputs:
+          keyfile: '**/package-lock.lock, !**/node_modules/**/package-lock.lock, !**/.*/**/package-lock.lock'
+          targetfolder: '**/node_modules, !**/node_modules/**/node_modules'
+          vstsFeed: '$(ArtifactFeed)'
       - task: Npm@1
         displayName: 'Install dependencies'
         inputs:
