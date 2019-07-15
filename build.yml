@@ -36,23 +36,6 @@ jobs:
           command: custom
           verbose: false
           customCommand: 'run test --silent'
-      - task: PublishTestResults@2
-        displayName: 'Publish Test Results'
-        inputs:
-          testResultsFormat: 'JUnit'
-          testResultsFiles: 'test-reports/*.xml'
-          mergeTestResults: true
-          testRunTitle: '$(Agent.OS) $(Agent.JobName)'
-      - task: PublishCodeCoverageResults@1
-        displayName: 'Publish Code Coverage to Azure'
-        inputs:
-          codeCoverageTool: Cobertura
-          summaryFileLocation: '$(System.DefaultWorkingDirectory)/coverage/cobertura-coverage.xml'
-          reportDirectory: '$(System.DefaultWorkingDirectory)/coverage/lcov-report'
-      - script: node_modules\.bin\codecov --disable=gcov
-        displayName: 'Publish Code Coverage to Codecov'
-        env:
-          CODECOV_TOKEN: $(codecovToken)
   - job: macOS
     strategy:
       matrix:
@@ -90,23 +73,6 @@ jobs:
           command: custom
           verbose: false
           customCommand: 'run test --silent'
-      - task: PublishTestResults@2
-        displayName: 'Publish Test Results'
-        inputs:
-          testResultsFormat: 'JUnit'
-          testResultsFiles: 'test-reports/*.xml'
-          mergeTestResults: true
-          testRunTitle: '$(Agent.OS) $(Agent.JobName)'
-      - task: PublishCodeCoverageResults@1
-        displayName: 'Publish Code Coverage to Azure'
-        inputs:
-          codeCoverageTool: Cobertura
-          summaryFileLocation: '$(System.DefaultWorkingDirectory)/coverage/cobertura-coverage.xml'
-          reportDirectory: '$(System.DefaultWorkingDirectory)/coverage/lcov-report'
-      - script: node_modules/.bin/codecov --disable=gcov
-        displayName: 'Publish Code Coverage to Codecov'
-        env:
-          CODECOV_TOKEN: $(codecovToken)
   - job: Linux
     strategy:
       matrix:
