@@ -26,7 +26,7 @@ jobs:
         inputs:
           verbose: false
           command: 'custom'
-          customCommand: 'ci'
+          customCommand: 'i'
       - task: Npm@1
         displayName: 'Compile sources'
         inputs:
@@ -85,7 +85,7 @@ jobs:
         inputs:
           verbose: false
           command: 'custom'
-          customCommand: 'ci'
+          customCommand: 'i'
       - task: Npm@1
         displayName: 'Compile sources'
         inputs:
@@ -144,7 +144,7 @@ jobs:
         inputs:
           verbose: false
           command: 'custom'
-          customCommand: 'ci'
+          customCommand: 'i'
       - task: Npm@1
         displayName: 'Lint check'
         inputs:
