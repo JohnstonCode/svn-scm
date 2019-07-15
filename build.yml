@@ -37,7 +37,7 @@ jobs:
         displayName: 'Enable full coverage'
       - task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreAndSaveCacheV1.RestoreAndSaveCache@1
         inputs:
-          keyfile: '**/.vscode-test/vscode-*'
+          keyfile: '**/.vscode-test/**/resources/app/package.json'
           targetfolder: '**/.vscode-test'
           vstsFeed: '$(Npm-Cache)'
       - task: Npm@1
