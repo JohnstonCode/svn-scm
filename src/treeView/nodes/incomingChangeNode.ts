@@ -46,7 +46,9 @@ export default class IncomingChangeNode implements BaseNode {
         return {
           command: "svn.openChangeHead",
           title: "Open Changes with HEAD",
-          arguments: [this.uri]
+          arguments: [
+            new Resource(this.uri, this.type, undefined, "none", true)
+          ]
         };
       case "deleted":
         return {
