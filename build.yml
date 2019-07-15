@@ -46,7 +46,7 @@ jobs:
         inputs:
           command: custom
           verbose: false
-          customCommand: 'run test'
+          customCommand: 'run test --silent'
       - task: PublishTestResults@2
         displayName: 'Publish Test Results'
         inputs:
