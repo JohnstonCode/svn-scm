@@ -16,17 +16,12 @@ jobs:
         displayName: 'Use Node 8.x'
         inputs:
           versionSpec: 8.x
-      - task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreAndSaveCacheV1.RestoreAndSaveCache@1
-        inputs:
-          keyfile: '**/package-lock.json, !**/node_modules/**/package-lock.json, !**/.*/**/package-lock.json'
-          targetfolder: '**/node_modules, !**/node_modules/**/node_modules'
-          vstsFeed: '$(Npm-Cache)'
       - task: Npm@1
         displayName: 'Install dependencies'
         inputs:
           verbose: false
           command: 'custom'
-          customCommand: 'i'
+          customCommand: 'ci'
       - task: Npm@1
         displayName: 'Compile sources'
         inputs:
@@ -35,11 +30,6 @@ jobs:
           customCommand: 'run build'
       - bash: sed -i.bak 's/"\*"//g' package.json
         displayName: 'Enable full coverage'
-      - task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreAndSaveCacheV1.RestoreAndSaveCache@1
-        inputs:
-          keyfile: '**/.vscode-test/**/resources/app/package.json'
-          targetfolder: '**/.vscode-test'
-          vstsFeed: '$(Npm-Cache)'
       - task: Npm@1
         displayName: 'Run tests'
         inputs:
@@ -80,17 +70,12 @@ jobs:
         displayName: 'Use Node 8.x'
         inputs:
           versionSpec: 8.x
-      - task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreAndSaveCacheV1.RestoreAndSaveCache@1
-        inputs:
-          keyfile: '**/package-lock.json, !**/node_modules/**/package-lock.json, !**/.*/**/package-lock.json'
-          targetfolder: '**/node_modules, !**/node_modules/**/node_modules'
-          vstsFeed: '$(Npm-Cache)'
       - task: Npm@1
         displayName: 'Install dependencies'
         inputs:
           verbose: false
           command: 'custom'
-          customCommand: 'i'
+          customCommand: 'ci'
       - task: Npm@1
         displayName: 'Compile sources'
         inputs:
@@ -139,17 +124,12 @@ jobs:
         displayName: 'Use Node 8.x'
         inputs:
           versionSpec: 8.x
-      - task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreAndSaveCacheV1.RestoreAndSaveCache@1
-        inputs:
-          keyfile: '**/package-lock.json, !**/node_modules/**/package-lock.json, !**/.*/**/package-lock.json'
-          targetfolder: '**/node_modules, !**/node_modules/**/node_modules'
-          vstsFeed: '$(Npm-Cache)'
       - task: Npm@1
         displayName: 'Install dependencies'
         inputs:
           verbose: false
           command: 'custom'
-          customCommand: 'i'
+          customCommand: 'ci'
       - task: Npm@1
         displayName: 'Lint check'
         inputs:
