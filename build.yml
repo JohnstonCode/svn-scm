@@ -45,7 +45,7 @@ jobs:
         inputs:
           keyfile: '**/package-lock.json, !**/node_modules/**/package-lock.json, !**/.*/**/package-lock.json'
           targetfolder: '**/.vscode-test, !**/node_modules/**/.vscode-test'
-          vstsFeed: '$(ArtifactFeed)'
+          vstsFeed: '$(Npm-Cache)'
       - task: Npm@1
         displayName: 'Run tests'
         inputs:
