@@ -26,7 +26,7 @@ jobs:
         inputs:
           verbose: false
           command: 'custom'
-          customCommand: 'ci'
+          customCommand: 'i'
         condition: and(succeeded(), ne(variables['CacheRestored'], 'true'))
       - task: 1ESLighthouseEng.PipelineArtifactCaching.SaveCacheV1.SaveCache@1
         inputs:
