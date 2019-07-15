@@ -41,17 +41,12 @@ jobs:
           customCommand: 'run build'
       - bash: sed -i.bak 's/"\*"//g' package.json
         displayName: 'Enable full coverage'
-      - task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreAndSaveCacheV1.RestoreAndSaveCache@1
-        inputs:
-          keyfile: '**/package-lock.json, !**/node_modules/**/package-lock.json, !**/.*/**/package-lock.json'
-          targetfolder: '**/.vscode-test, !**/node_modules/**/.vscode-test'
-          vstsFeed: '$(Npm-Cache)'
       - task: Npm@1
         displayName: 'Run tests'
         inputs:
           command: custom
           verbose: false
-          customCommand: 'run test --silent'
+          customCommand: 'run test'
       - task: PublishTestResults@2
         displayName: 'Publish Test Results'
         inputs:
