@@ -20,7 +20,7 @@ jobs:
         inputs:
           keyfile: '**/package-lock.json, !**/node_modules/**/package-lock.json, !**/.*/**/package-lock.json'
           targetfolder: '**/node_modules, !**/node_modules/**/node_modules'
-          vstsFeed: '$(c918ebc3-85eb-450b-a761-5693d074ebed)'
+          vstsFeed: '$(Npm-Cache)'
       - task: Npm@1
         displayName: 'Install dependencies'
         inputs:
@@ -79,7 +79,7 @@ jobs:
         inputs:
           keyfile: '**/package-lock.json, !**/node_modules/**/package-lock.json, !**/.*/**/package-lock.json'
           targetfolder: '**/node_modules, !**/node_modules/**/node_modules'
-          vstsFeed: '$(c918ebc3-85eb-450b-a761-5693d074ebed)'
+          vstsFeed: '$(Npm-Cache)'
       - task: Npm@1
         displayName: 'Install dependencies'
         inputs:
@@ -138,7 +138,7 @@ jobs:
         inputs:
           keyfile: '**/package-lock.json, !**/node_modules/**/package-lock.json, !**/.*/**/package-lock.json'
           targetfolder: '**/node_modules, !**/node_modules/**/node_modules'
-          vstsFeed: '$(c918ebc3-85eb-450b-a761-5693d074ebed)'
+          vstsFeed: '$(Npm-Cache)'
       - task: Npm@1
         displayName: 'Install dependencies'
         inputs:
