@@ -79,6 +79,7 @@
     "remap-istanbul": "^0.13.0",
     "semantic-release": "^15.13.13",
     "semantic-release-vsce": "^2.2.8",
+    "source-map-support": "^0.5.12",
     "tslint": "^5.16.0",
     "typescript": "^3.4.5",
     "vscode-test": "^1.0.0"
