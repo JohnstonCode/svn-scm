@@ -1,3 +1,10 @@
+## [1.54.4](https://github.com/JohnstonCode/svn-scm/compare/v1.54.3...v1.54.4) (2019-07-15)
+
+
+### Bug Fixes
+
+* Fixes single click diff on incoming change tree ([#643](https://github.com/JohnstonCode/svn-scm/issues/643)) ([da854b9](https://github.com/JohnstonCode/svn-scm/commit/da854b9))
+
 ## [1.54.3](https://github.com/JohnstonCode/svn-scm/compare/v1.54.2...v1.54.3) (2019-07-01)
 
 
