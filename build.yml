@@ -16,6 +16,7 @@ jobs:
         displayName: 'Use Node 8.x'
         inputs:
           versionSpec: 8.x
+      - script: npm i -g npm@6
       - task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreCacheV1.RestoreCache@1
         inputs:
           keyfile: '**/package-lock.json, !**/node_modules/**/package-lock.json, !**/.*/**/package-lock.json'
