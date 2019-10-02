@@ -124,6 +124,12 @@ export class Svn {
     if (cwd) {
       defaults.cwd = cwd;
     }
+
+    defaults.env = Object.assign({}, proc.env, options.env || {}, {
+      LC_ALL: "en_US.UTF-8",
+      LANG: "en_US.UTF-8"
+    });
+
     const process = cp.spawn(this.svnPath, args, defaults);
 
     const disposables: IDisposable[] = [];
