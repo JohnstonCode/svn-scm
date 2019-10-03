@@ -1,3 +1,10 @@
+## [1.54.5](https://github.com/JohnstonCode/svn-scm/compare/v1.54.4...v1.54.5) (2019-10-02)
+
+
+### Bug Fixes
+
+* Force locale to en_US.UTF-8 (close [#660](https://github.com/JohnstonCode/svn-scm/issues/660)) ([#667](https://github.com/JohnstonCode/svn-scm/issues/667)) ([05396cb](https://github.com/JohnstonCode/svn-scm/commit/05396cb))
+
 ## [1.54.4](https://github.com/JohnstonCode/svn-scm/compare/v1.54.3...v1.54.4) (2019-07-15)
 
 
