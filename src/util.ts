@@ -88,22 +88,23 @@ export function normalizePath(file: string) {
   return file;
 }
 
+function isWindowsPath(path: string): boolean {
+  return /^[a-zA-Z]:\\/.test(path);
+}
+
 export function isDescendant(parent: string, descendant: string): boolean {
-  parent = parent.replace(/[\\\/]/g, path.sep);
-  descendant = descendant.replace(/[\\\/]/g, path.sep);
-
-  // IF Windows
-  if (path.sep === "\\") {
-    parent = parent.replace(/^\\/, "").toLowerCase();
-    descendant = descendant.replace(/^\\/, "").toLowerCase();
-  }
-
   if (parent === descendant) {
     return true;
   }
 
   if (parent.charAt(parent.length - 1) !== path.sep) {
     parent += path.sep;
+  }
+
+  // Windows is case insensitive
+  if (isWindowsPath(parent)) {
+    parent = parent.toLowerCase();
+    descendant = descendant.toLowerCase();
   }
 
   return descendant.startsWith(parent);
@@ -171,14 +172,16 @@ export function isReadOnly(operation: Operation): boolean {
  */
 export async function deleteDirectory(dirPath: string): Promise<void> {
   if ((await exists(dirPath)) && (await lstat(dirPath)).isDirectory()) {
-    await Promise.all((await readdir(dirPath)).map(async (entry: string) => {
-      const entryPath = path.join(dirPath, entry);
-      if ((await lstat(entryPath)).isDirectory()) {
-        await deleteDirectory(entryPath);
-      } else {
-        await unlink(entryPath);
-      }
-    }));
+    await Promise.all(
+      (await readdir(dirPath)).map(async (entry: string) => {
+        const entryPath = path.join(dirPath, entry);
+        if ((await lstat(entryPath)).isDirectory()) {
+          await deleteDirectory(entryPath);
+        } else {
+          await unlink(entryPath);
+        }
+      })
+    );
     await rmdir(dirPath);
   }
 }
@@ -199,8 +202,10 @@ export function fixPegRevision(file: string) {
   return file;
 }
 
-export async function isSvnFolder(dir: string, checkParent: boolean = true): Promise<boolean> {
-
+export async function isSvnFolder(
+  dir: string,
+  checkParent: boolean = true
+): Promise<boolean> {
   const result = await exists(`${dir}/.svn`);
 
   if (result || !checkParent) {
