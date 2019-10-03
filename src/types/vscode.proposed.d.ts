@@ -423,28 +423,6 @@ declare module "vscode" {
 
   //#region André: debug
 
-  /**
-   * Represents a debug adapter executable and optional arguments passed to it.
-   */
-  export class DebugAdapterExecutable {
-    /**
-     * The command path of the debug adapter executable.
-     * A command must be either an absolute path or the name of an executable looked up via the PATH environment variable.
-     * The special value 'node' will be mapped to VS Code's built-in node runtime.
-     */
-    readonly command: string;
-
-    /**
-     * Optional arguments passed to the debug adapter executable.
-     */
-    readonly args: string[];
-
-    /**
-     * Create a new debug adapter specification.
-     */
-    constructor(command: string, args?: string[]);
-  }
-
   export interface DebugConfigurationProvider {
     /**
      * This optional method is called just before a debug adapter is started to determine its executable path and arguments.
@@ -573,28 +551,19 @@ declare module "vscode" {
     commentingRanges?: Range[];
   }
 
-  export enum CommentThreadCollapsibleState {
-    /**
-     * Determines an item is collapsed
-     */
-    Collapsed = 0,
-    /**
-     * Determines an item is expanded
-     */
-    Expanded = 1
-  }
+  export enum CommentThreadCollapsibleState {}
 
   interface CommentThread {
     threadId: string;
     resource: Uri;
     range: Range;
-    comments: Comment[];
-    collapsibleState?: CommentThreadCollapsibleState;
+    comments: readonly Comment[];
+    collapsibleState: CommentThreadCollapsibleState;
   }
 
   interface Comment {
     commentId: string;
-    body: MarkdownString;
+    body: string | MarkdownString;
     userName: string;
     gravatar: string;
     command?: Command;
@@ -793,19 +762,6 @@ declare module "vscode" {
   }
 
   export namespace window {
-    /**
-     * The currently active terminal or `undefined`. The active terminal is the one that
-     * currently has focus or most recently had focus.
-     */
-    export const activeTerminal: Terminal | undefined;
-
-    /**
-     * An [event](#Event) which fires when the [active terminal](#window.activeTerminal)
-     * has changed. *Note* that the event also fires when the active terminal changes
-     * to `undefined`.
-     */
-    export const onDidChangeActiveTerminal: Event<Terminal | undefined>;
-
     /**
      * Create a [TerminalRenderer](#TerminalRenderer).
      *
