@@ -22,7 +22,7 @@ export async function promptDepth() {
 
   for (const depth in SvnDepth) {
     if (SvnDepth.hasOwnProperty(depth)) {
-      picks.push({ label: depth, description: SvnDepth[depth] });
+      picks.push({ label: depth, description: (SvnDepth as any)[depth] });
     }
   }
 
