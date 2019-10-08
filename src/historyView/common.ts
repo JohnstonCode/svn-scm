@@ -220,8 +220,11 @@ export function getCommitIcon(
 }
 
 export function getCommitLabel(commit: ISvnLogEntry): string {
-  const fstLine = commit.msg.split(/\r?\n/, 1)[0];
-  return `${fstLine} • r${commit.revision}`;
+  let commitMsg = "<blank>";
+  if (commit.msg) {
+    commitMsg = commit.msg.split(/\r?\n/, 1)[0];
+  }
+  return `${commitMsg} • r${commit.revision}`;
 }
 
 export function getCommitToolTip(commit: ISvnLogEntry): string {
