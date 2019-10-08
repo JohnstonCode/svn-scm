@@ -1,3 +1,10 @@
+## [1.54.6](https://github.com/JohnstonCode/svn-scm/compare/v1.54.5...v1.54.6) (2019-10-08)
+
+
+### Bug Fixes
+
+* Fixed 'split' of undefined (close [#611](https://github.com/JohnstonCode/svn-scm/issues/611)) ([#678](https://github.com/JohnstonCode/svn-scm/issues/678)) ([d6d3369](https://github.com/JohnstonCode/svn-scm/commit/d6d3369))
+
 ## [1.54.5](https://github.com/JohnstonCode/svn-scm/compare/v1.54.4...v1.54.5) (2019-10-02)
 
 
