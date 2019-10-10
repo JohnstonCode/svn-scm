@@ -88,6 +88,11 @@
       "path": "cz-conventional-changelog"
     }
   },
+  "greenkeeper": {
+    "ignore": [
+      "@types/vscode"
+    ]
+  },
   "contributes": {
     "viewsContainers": {
       "activitybar": [
