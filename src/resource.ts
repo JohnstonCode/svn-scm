@@ -1,7 +1,6 @@
 import * as path from "path";
 import {
   Command,
-  DecorationData,
   SourceControlResourceDecorations,
   SourceControlResourceState,
   ThemeColor,
@@ -10,7 +9,6 @@ import {
 import { PropStatus, Status } from "./common/types";
 import { memoize } from "./decorators";
 import { configuration } from "./helpers/configuration";
-import { hasSupportToDecorationProvider } from "./util";
 
 const iconsRootPath = path.join(__dirname, "..", "icons");
 
@@ -74,20 +72,11 @@ export class Resource implements SourceControlResourceState {
 
   get decorations(): SourceControlResourceDecorations {
     // TODO@joh, still requires restart/redraw in the SCM viewlet
-    const decorations =
-      hasSupportToDecorationProvider() &&
-      configuration.get<boolean>("decorations.enabled");
-    const light = !decorations
-      ? { iconPath: this.getIconPath("light") }
-      : undefined;
-    const dark = !decorations
-      ? { iconPath: this.getIconPath("dark") }
-      : undefined;
+    const light = { iconPath: this.getIconPath("light") };
+    const dark = { iconPath: this.getIconPath("dark") };
     const tooltip = this.tooltip;
     const strikeThrough = this.strikeThrough;
     const faded = this.faded;
-    const letter = this.letter;
-    const color = this.color;
 
     return {
       strikeThrough,
@@ -95,9 +84,6 @@ export class Resource implements SourceControlResourceState {
       tooltip,
       light,
       dark,
-      letter,
-      color,
-      source: "svn.resource"
     };
   }
 
@@ -239,28 +225,5 @@ export class Resource implements SourceControlResourceState {
       default:
         return 1;
     }
-  }
-
-  get resourceDecoration(): DecorationData | undefined {
-    const title = this.tooltip;
-    const abbreviation = this.letter;
-    const color = this.color;
-    const priority = this.priority;
-    const decoration: DecorationData = {
-      bubble: true,
-      source: "svn.resource",
-      title,
-      abbreviation,
-      color,
-      priority
-    };
-
-    /**
-     * @note Set letter in explorer for VSCode >= 1.27
-     * In VSCode 1.27 has renamed the abbreviation to letter
-     */
-    (decoration as any).letter = abbreviation;
-
-    return decoration;
   }
 }
