@@ -59,7 +59,7 @@
     "@types/glob": "^7.1.1",
     "@types/istanbul": "^0.4.30",
     "@types/mocha": "^5.2.6",
-    "@types/node": "^12.7.10",
+    "@types/node": "8.9.5",
     "@types/semver": "^6.0.0",
     "@types/tmp": "0.1.0",
     "@types/vscode": "1.26.0",
@@ -90,6 +90,7 @@
   },
   "greenkeeper": {
     "ignore": [
+      "@types/node",
       "@types/vscode"
     ]
   },
