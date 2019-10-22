@@ -9,7 +9,7 @@ import {
   Uri,
   ViewColumn,
   window,
-  workspace,
+  workspace
 } from "vscode";
 import { ICommandOptions, Status, SvnUriAction } from "../common/types";
 import { exists, readFile, stat, unlink } from "../fs";
