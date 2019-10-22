@@ -870,7 +870,7 @@
           "command": "svn.openChangeHead",
           "group": "navigation",
           "when": "config.svn.enabled && svnOpenRepositoryCount != 0 && svnActiveEditorHasChanges && !isInDiffEditor && resourceScheme == file"
-        },
+        }
       ],
       "explorer/context": [
         {
