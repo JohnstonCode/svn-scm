@@ -61,30 +61,6 @@ If you use [TortoiseSVN](https://tortoisesvn.net/), make sure the option
 
 Please use a dedicated extension like [blamer-vs](https://marketplace.visualstudio.com/items?itemName=beaugust.blamer-vs)
 
-## Experimental
-
-### * SVN Status in File Explorer (See [#34](https://github.com/JohnstonCode/svn-scm/issues/34))
-How to enable:
-* Open the file: `<vscode path>\resources\app\product.json`
-* Find `extensionAllowedProposedApi`
-* Append `"johnstoncode.svn-scm"` in the array
-
-Example:
-```js
-// FROM
-{
-  "extensionAllowedProposedApi": [
-    "ms-vsliveshare.vsliveshare"
-  ]
-}
-// TO
-{
-  "extensionAllowedProposedApi": [
-    "ms-vsliveshare.vsliveshare", "johnstoncode.svn-scm"
-  ]
-}
-```
-
 ## Settings
 Here is a table of settings with their default values. To change any of these, add the relevant Config key and value to your VSCode settings.json file.
 
