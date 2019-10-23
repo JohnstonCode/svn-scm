@@ -154,6 +154,17 @@ export async function checkIfFile(
   return true;
 }
 
+export function getLimit(): number {
+  const limit = Number.parseInt(
+    configuration.get<string>("log.length") || "50",
+    10
+  );
+  if (isNaN(limit) || limit <= 0) {
+    throw new Error("Invalid log.length setting value");
+  }
+  return limit;
+}
+
 /// @note: cached.svnTarget should be valid
 export async function fetchMore(cached: ICachedLog) {
   let rfrom = cached.persisted.commitFrom;
@@ -173,17 +184,6 @@ export async function fetchMore(cached: ICachedLog) {
     cached.isComplete = true;
   }
   entries.push(...moreCommits);
-}
-
-export function getLimit(): number {
-  const limit = Number.parseInt(
-    configuration.get<string>("log.length") || "50",
-    10
-  );
-  if (isNaN(limit) || limit <= 0) {
-    throw new Error("Invalid log.length setting value");
-  }
-  return limit;
 }
 
 const gravatarCache: Map<string, Uri> = new Map();
