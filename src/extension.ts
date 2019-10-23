@@ -175,6 +175,6 @@ export async function activate(context: ExtensionContext) {
 }
 
 // this method is called when your extension is deactivated
-/* tslint:disable:no-empty */
-function deactivate() { }
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+function deactivate() {}
 exports.deactivate = deactivate;

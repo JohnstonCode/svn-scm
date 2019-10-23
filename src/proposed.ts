@@ -7,28 +7,7 @@ import { hasSupportToDecorationProvider } from "./util";
 enum ProposedType {
   PRODUCT = "product",
   ARGUMENT = "argument",
-  NONE = "none",
-}
-
-export async function checkProposedApi() {
-
-  if (hasSupportToDecorationProvider()) {
-    return;
-  }
-
-  let status: ProposedType | null | undefined = null;
-  status = configuration.get<ProposedType | null>("enableProposedApi", null);
-
-  if (!status) {
-    status = await promptProposedApi();
-  }
-
-  try {
-    setProposedApi(status);
-  } catch (error) {
-    console.error(error);
-    await window.showErrorMessage("Failed to configure proposed features for SVN");
-  }
+  NONE = "none"
 }
 
 async function promptProposedApi() {
@@ -55,44 +34,30 @@ async function promptProposedApi() {
   return undefined;
 }
 
-export async function setProposedApi(status?: ProposedType) {
-  switch (status) {
-    case ProposedType.PRODUCT:
-      enableProposedProduct();
-      break;
-    case ProposedType.ARGUMENT:
-      enableProposedArgument();
-      break;
-    case ProposedType.NONE:
-      break;
-  }
-
-  if (status) {
-    configuration.update("enableProposedApi", status, ConfigurationTarget.Global);
-  }
-}
-
 async function enableProposedProduct() {
   const productPath = env.appRoot + "/product.json";
 
-  if (!await exists(productPath)) {
+  if (!(await exists(productPath))) {
     window.showErrorMessage(`Can't find the "product.json" of VSCode.`);
     return;
   }
-  if (!await access(productPath, fs.constants.W_OK)) {
+  if (!(await access(productPath, fs.constants.W_OK))) {
     window.showErrorMessage(`The "product.json" of VSCode is not writable.
       Please, append "johnstoncode.svn-scm" on "extensionAllowedProposedApi" array`);
     return;
   }
 
   const productJson = require(productPath) as {
-    extensionAllowedProposedApi: string[],
+    extensionAllowedProposedApi: string[];
     [key: string]: any;
   };
 
-  productJson.extensionAllowedProposedApi = productJson.extensionAllowedProposedApi || [];
+  productJson.extensionAllowedProposedApi =
+    productJson.extensionAllowedProposedApi || [];
 
-  if (productJson.extensionAllowedProposedApi.includes("johnstoncode.svn-scm")) {
+  if (
+    productJson.extensionAllowedProposedApi.includes("johnstoncode.svn-scm")
+  ) {
     return;
   }
   productJson.extensionAllowedProposedApi.push("johnstoncode.svn-scm");
@@ -107,6 +72,7 @@ async function enableProposedProduct() {
 async function enableProposedArgument() {
   const packagePath = __dirname + "/../package.json";
 
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const packageJson = require(packagePath);
 
   if (!packageJson || packageJson.enableProposedApi !== false) {
@@ -120,4 +86,47 @@ async function enableProposedArgument() {
     please close the VSCode and run with: --enable-proposed-api johnstoncode.svn-scm`;
 
   window.showInformationMessage(message);
+}
+
+export async function setProposedApi(status?: ProposedType) {
+  switch (status) {
+    case ProposedType.PRODUCT:
+      enableProposedProduct();
+      break;
+    case ProposedType.ARGUMENT:
+      enableProposedArgument();
+      break;
+    case ProposedType.NONE:
+      break;
+  }
+
+  if (status) {
+    configuration.update(
+      "enableProposedApi",
+      status,
+      ConfigurationTarget.Global
+    );
+  }
+}
+
+export async function checkProposedApi() {
+  if (hasSupportToDecorationProvider()) {
+    return;
+  }
+
+  let status: ProposedType | null | undefined = null;
+  status = configuration.get<ProposedType | null>("enableProposedApi", null);
+
+  if (!status) {
+    status = await promptProposedApi();
+  }
+
+  try {
+    setProposedApi(status);
+  } catch (error) {
+    console.error(error);
+    await window.showErrorMessage(
+      "Failed to configure proposed features for SVN"
+    );
+  }
 }
