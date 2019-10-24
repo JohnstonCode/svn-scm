@@ -18,7 +18,7 @@ function processEntry(
   }
 
   const wcStatus: IWcStatus = {
-    locked: !!entry.wcStatus.wcLocked && entry.wcStatus.wcLocked === "true",
+    locked: !!entry.wcStatus.wcLocked && entry.wcStatus.wcLocked === "true" || !!(entry.reposStatus && entry.reposStatus.lock),
     switched: !!entry.wcStatus.switched && entry.wcStatus.switched === "true"
   };
 
