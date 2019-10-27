@@ -1,0 +1,3 @@
+**/vscode.proposed.d.ts
+src/test/**/*.ts
+src/tools/**/*.ts

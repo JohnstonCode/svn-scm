@@ -10,6 +10,21 @@ export interface IDisposable {
 export function done<T>(promise: Promise<T>): Promise<void> {
   return promise.then<void>(() => void 0);
 }
+
+export function dispose(disposables: any[]): any[] {
+  disposables.forEach(disposable => disposable.dispose());
+
+  return [];
+}
+
+export function toDisposable(dispose: () => void): IDisposable {
+  return { dispose };
+}
+
+export function combinedDisposable(disposables: IDisposable[]): IDisposable {
+  return toDisposable(() => dispose(disposables));
+}
+
 export function anyEvent<T>(...events: Array<Event<T>>): Event<T> {
   return (listener: any, thisArgs = null, disposables?: any) => {
     const result = combinedDisposable(
@@ -34,20 +49,6 @@ export function filterEvent<T>(
       null,
       disposables
     );
-}
-
-export function dispose(disposables: any[]): any[] {
-  disposables.forEach(disposable => disposable.dispose());
-
-  return [];
-}
-
-export function combinedDisposable(disposables: IDisposable[]): IDisposable {
-  return toDisposable(() => dispose(disposables));
-}
-
-export function toDisposable(dispose: () => void): IDisposable {
-  return { dispose };
 }
 
 export function onceEvent<T>(event: Event<T>): Event<T> {
@@ -171,14 +172,16 @@ export function isReadOnly(operation: Operation): boolean {
  */
 export async function deleteDirectory(dirPath: string): Promise<void> {
   if ((await exists(dirPath)) && (await lstat(dirPath)).isDirectory()) {
-    await Promise.all((await readdir(dirPath)).map(async (entry: string) => {
-      const entryPath = path.join(dirPath, entry);
-      if ((await lstat(entryPath)).isDirectory()) {
-        await deleteDirectory(entryPath);
-      } else {
-        await unlink(entryPath);
-      }
-    }));
+    await Promise.all(
+      (await readdir(dirPath)).map(async (entry: string) => {
+        const entryPath = path.join(dirPath, entry);
+        if ((await lstat(entryPath)).isDirectory()) {
+          await deleteDirectory(entryPath);
+        } else {
+          await unlink(entryPath);
+        }
+      })
+    );
     await rmdir(dirPath);
   }
 }
@@ -199,8 +202,10 @@ export function fixPegRevision(file: string) {
   return file;
 }
 
-export async function isSvnFolder(dir: string, checkParent: boolean = true): Promise<boolean> {
-
+export async function isSvnFolder(
+  dir: string,
+  checkParent: boolean = true
+): Promise<boolean> {
   const result = await exists(`${dir}/.svn`);
 
   if (result || !checkParent) {
