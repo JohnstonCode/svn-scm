@@ -13,7 +13,7 @@ import { exists, lstat } from "../fs";
 import { configuration } from "../helpers/configuration";
 import { IRemoteRepository } from "../remoteRepository";
 import { SvnRI } from "../svnRI";
-import { dumpSvnFile } from "../tempFiles";
+import { createTempSvnRevisionFile } from "../tempFiles";
 
 export enum LogTreeItemKind {
   Repo = 1,
@@ -263,7 +263,7 @@ async function downloadFile(
     window.showErrorMessage("Failed to open path");
     throw e;
   }
-  return dumpSvnFile(arg, revision, out);
+  return createTempSvnRevisionFile(arg, revision, out);
 }
 
 export async function openDiff(
@@ -293,7 +293,7 @@ export async function openFileRemote(
     window.showErrorMessage("Failed to open path");
     return;
   }
-  const localUri = await dumpSvnFile(arg, against, out);
+  const localUri = await createTempSvnRevisionFile(arg, against, out);
   const opts: TextDocumentShowOptions = {
     preview: true
   };
