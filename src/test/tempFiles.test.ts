@@ -6,6 +6,10 @@ import * as os from "os";
 import { join } from "path";
 import { createTempSvnRevisionFile } from "../tempFiles";
 
+/*
+On windows node will return the temp fir in the C drive as 'C:\'
+where url.fspath will start with 'c:\'
+*/
 let osTmpDir = os.tmpdir();
 osTmpDir = osTmpDir[0].toLowerCase() + osTmpDir.substr(1);
 const tempRevisionPath = join(
