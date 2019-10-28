@@ -64,6 +64,7 @@ jobs:
         if: startsWith(matrix.os, 'ubuntu') && matrix.version == '' && github.ref == 'refs/heads/master' && github.repository == 'JohnstonCode/svn-scm'
         run: npm run semantic-release
         env:
+          GITHUB_TOKEN: ${{ secrets.githubToken }}
           VSCE_TOKEN: ${{ secrets.vsceToken }}
           GH_TOKEN: ${{ secrets.githubToken }}
           GIT_AUTHOR_EMAIL: ${{ secrets.gitEmail }}
