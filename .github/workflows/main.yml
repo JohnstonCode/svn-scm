@@ -41,5 +41,7 @@ jobs:
       - name: Run tests
         env:
           CODE_VERSION: ''
-        run: npm run test --silent
+        run: npm run test
+      - name: output error
+        run: cat /home/runner/.npm/_logs/*
       
