@@ -45,5 +45,6 @@ jobs:
       - name: Run tests
         env:
           CODE_VERSION: ''
+          DISPLAY: :10
         run: npm run test
       
