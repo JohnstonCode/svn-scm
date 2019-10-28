@@ -17,7 +17,7 @@ export async function createTempSvnRevisionFile(
 
   const fname = `r${revision}_${path.basename(snvUri.fsPath)}`;
   const hash = crypto.createHash("md5");
-  const data = hash.update(snvUri.fsPath);
+  const data = hash.update(svnUri.fsPath);
   const filePathHash = data.digest("hex");
 
   if (!(await exists(path.join(tempdir, filePathHash)))) {

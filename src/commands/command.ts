@@ -67,8 +67,6 @@ export abstract class Command implements Disposable {
         "svn.getModel",
         ""
       )) as Model;
-      let result;
-
       const repository = model.getRepository(args[0]);
       let repositoryPromise;
 
@@ -80,7 +78,7 @@ export abstract class Command implements Disposable {
         repositoryPromise = model.pickRepository();
       }
 
-      result = repositoryPromise.then(repository => {
+      const result = repositoryPromise.then(repository => {
         if (!repository) {
           return Promise.resolve();
         }
