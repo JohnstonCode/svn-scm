@@ -41,7 +41,5 @@ jobs:
       - name: Run tests
         env:
           CODE_VERSION: ''
-        run: npm run test
-      - name: output error
-        run: cat /home/runner/.npm/_logs/*
+        run: npm run test && cat /home/runner/.npm/_logs/*
       
