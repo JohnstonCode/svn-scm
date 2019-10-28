@@ -34,12 +34,12 @@ jobs:
       - name: Compile sources
         run: npm run build
       
-#       - name: Enable full coverage
-#         run: sed -i.bak 's/"\*"//g' package.json
-#         shell: bash
+      - name: Enable full coverage
+        run: sed -i.bak 's/"\*"//g' package.json
+        shell: bash
       
       - name: Run tests
         env:
-          CODE_VERSION: 'insiders'
+          CODE_VERSION: ''
         run: npm run test
       
