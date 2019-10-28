@@ -6,6 +6,13 @@ import * as os from "os";
 import { join } from "path";
 import { createTempSvnRevisionFile } from "../tempFiles";
 
+const tempRevisionPath = join(
+  os.tmpdir(),
+  "vscode-svn",
+  "1181ae15a77d83ac0b077051dfed21ed",
+  "r30_test.js"
+);
+
 suite("Test temp file creation", () => {
   test("Temp files matches expected", async () => {
     const svnUri = Uri.parse("http://example.com/svn/test/trunk/test.js");
@@ -14,11 +21,6 @@ suite("Test temp file creation", () => {
       svnUri,
       "30",
       "test content"
-    );
-    const tempRevisionPath = join(
-      os.tmpdir(),
-      "0a6ac614807951f8ffb8a639b0d16299",
-      "r30_test.js"
     );
 
     assert.equal(revisionUri.fsPath, tempRevisionPath);
@@ -29,7 +31,6 @@ suite("Test temp file creation", () => {
 
     await createTempSvnRevisionFile(svnUri, "30", "test content");
 
-    const tempRevisionPath = join(os.tmpdir(), "hash", "r30_test.js");
     assert.ok(await exists(tempRevisionPath));
   });
 
