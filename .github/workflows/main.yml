@@ -1,4 +1,4 @@
-name: CI
+name: build
 
 on:
   pull_request:
@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    name: ${{ matrix.os }}
+    name: ${{ matrix.os }} ${{ matrix.version }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
