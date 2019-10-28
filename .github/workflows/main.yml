@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  pull_request:
+    branches: 
+      - master
+
+jobs:
+  build:
+    name: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macOS-10.14, windows-2019, ubuntu-16.04]
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v1
+        with:
+          fetch-depth: 1
+
+      - name: Setup Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: '10.x'
+          
+      - name: Environment (common)
+        run: |
+          echo ::set-env name=CODE_VERSION::
+         
+      - name: Install Dependencies
+        run: npm ci
+      
+      - name: Lint files
+        if: startsWith(matrix.os, 'ubuntu')
+        run: npm run style-check
+
+      - name: Compile sources
+        run: npm run build
+      
+      - name: Enable full coverage
+        run: sed -i.bak 's/"\*"//g' package.json
+        shell: bash
+      
+      - name: Run tests
+        run: run test --silent
+      
