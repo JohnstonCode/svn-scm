@@ -49,3 +49,9 @@ jobs:
           DISPLAY: ':99.0'
         run: npm run test
       
+      - name: Publish Code Coverage to Codecov
+        if: startsWith(matrix.os, 'ubuntu') && matrix.version == ''
+        run: node_modules/.bin/codecov --disable=gcov
+        env:
+          CODECOV_TOKEN: ${{ secrets.codecovToken }}
+      
