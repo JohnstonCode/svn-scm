@@ -30,7 +30,7 @@ jobs:
           node-version: '10.x'
          
       - name: Install Dependencies
-        run: npm ci || npm ci
+        run: 'npm ci || npm ci'
       
       - name: Lint files
         if: startsWith(matrix.os, 'ubuntu')
