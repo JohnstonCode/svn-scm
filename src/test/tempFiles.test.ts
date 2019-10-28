@@ -6,8 +6,11 @@ import * as os from "os";
 import { join } from "path";
 import { createTempSvnRevisionFile } from "../tempFiles";
 
+
+let osTmpDir = os.tmpdir();
+osTmpDir = osTmpDir[0].toLowerCase() + osTmpDir.substr(1);
 const tempRevisionPath = join(
-  os.tmpdir(),
+    osTmpDir,
   "vscode-svn",
   "1181ae15a77d83ac0b077051dfed21ed",
   "r30_test.js"
