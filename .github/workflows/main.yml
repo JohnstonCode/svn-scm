@@ -70,4 +70,3 @@ jobs:
           GIT_COMMITTER_EMAIL: ${{ secrets.gitEmail }}
           GIT_AUTHOR_NAME: ${{ secrets.gitName }}
           GIT_COMMITTER_NAME: ${{ secrets.gitName }}
-      
