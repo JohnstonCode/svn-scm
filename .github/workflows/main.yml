@@ -12,6 +12,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-16.04, macOS-10.14, windows-2019]
+        version: ['1.26.0', '', 'insiders']
 
     steps:
       - name: Clone repository
@@ -44,7 +45,7 @@ jobs:
 
       - name: Run tests
         env:
-          CODE_VERSION: ''
+          CODE_VERSION: ${{ matrix.version }}
           DISPLAY: ':99.0'
         run: npm run test
       
