@@ -31,6 +31,7 @@ jobs:
          
       - name: Install Dependencies
         run: 'npm ci || npm ci'
+        shell: bash
       
       - name: Lint files
         if: startsWith(matrix.os, 'ubuntu')
