@@ -11,7 +11,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macOS-10.14, windows-2019]
+        os: [macOS-10.14, ubuntu-18.04, windows-2019]
 
     steps:
       - name: Clone repository
