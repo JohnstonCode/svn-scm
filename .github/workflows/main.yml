@@ -23,10 +23,6 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: '10.x'
-          
-      - name: Environment (common)
-        run: |
-          echo ::set-env name=CODE_VERSION::
          
       - name: Install Dependencies
         run: npm ci
@@ -43,5 +39,7 @@ jobs:
         shell: bash
       
       - name: Run tests
+        env:
+          CODE_VERSION: ''
         run: npm run test --silent
       
