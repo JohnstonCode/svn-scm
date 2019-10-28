@@ -197,7 +197,7 @@ async function showCommitInput(message?: string, filePaths?: string[]) {
     panel.reveal(ViewColumn.Active, false);
   });
 
-  return await promise;
+  return promise;
 }
 
 export async function inputCommitMessage(
