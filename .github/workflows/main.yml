@@ -59,7 +59,7 @@ jobs:
           CODECOV_TOKEN: ${{ secrets.codecovToken }}
       
       - name: Release
-        if: startsWith(matrix.os, 'ubuntu') && matrix.version == '' && github.ref == 'refs/heads/master' && github.repository == 'johnstoncode/svn-scm'
+        if: startsWith(matrix.os, 'ubuntu') && matrix.version == '' && github.ref == 'refs/heads/master' && github.repository == 'JohnstonCode/svn-scm'
         run: npm run semantic-release
         env:
           VSCE_TOKEN: ${{ secrets. vsceToken }}
