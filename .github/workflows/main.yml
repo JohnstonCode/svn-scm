@@ -43,5 +43,5 @@ jobs:
         shell: bash
       
       - name: Run tests
-        run: run test --silent
+        run: npm run test --silent
       
