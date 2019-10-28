@@ -38,6 +38,10 @@ jobs:
         run: sed -i.bak 's/"\*"//g' package.json
         shell: bash
       
+      - name: Start xvfb
+        if: startsWith(matrix.os, 'ubuntu')
+        run: set -e /usr/bin/Xvfb :10 -ac >> /tmp/Xvfb.out 2>&1 & disown -ar
+
       - name: Run tests
         env:
           CODE_VERSION: ''
