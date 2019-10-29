@@ -1,3 +1,10 @@
+## [1.54.9](https://github.com/JohnstonCode/svn-scm/compare/v1.54.8...v1.54.9) (2019-10-29)
+
+
+### Bug Fixes
+
+* Fix release ([c95f24b](https://github.com/JohnstonCode/svn-scm/commit/c95f24b))
+
 ## [1.54.8](https://github.com/JohnstonCode/svn-scm/compare/v1.54.7...v1.54.8) (2019-10-29)
 
 
