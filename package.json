@@ -28,7 +28,9 @@
     "svn",
     "subversion"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "*"
+  ],
   "main": "./out/extension",
   "scripts": {
     "build:css": "node-sass scss/ -o css/ --output-style compressed",
