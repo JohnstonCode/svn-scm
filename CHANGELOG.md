@@ -1,3 +1,10 @@
+## [1.54.8](https://github.com/JohnstonCode/svn-scm/compare/v1.54.7...v1.54.8) (2019-10-29)
+
+
+### Bug Fixes
+
+* diff files now have unique paths ([#694](https://github.com/JohnstonCode/svn-scm/issues/694)) ([0ff8666](https://github.com/JohnstonCode/svn-scm/commit/0ff8666))
+
 ## [1.54.7](https://github.com/JohnstonCode/svn-scm/compare/v1.54.6...v1.54.7) (2019-10-28)
 
 
