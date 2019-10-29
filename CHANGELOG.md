@@ -1,3 +1,10 @@
+## [1.54.10](https://github.com/JohnstonCode/svn-scm/compare/v1.54.9...v1.54.10) (2019-10-29)
+
+
+### Bug Fixes
+
+* Readded activation event ([#705](https://github.com/JohnstonCode/svn-scm/issues/705)) ([17edca5](https://github.com/JohnstonCode/svn-scm/commit/17edca5))
+
 ## [1.54.9](https://github.com/JohnstonCode/svn-scm/compare/v1.54.8...v1.54.9) (2019-10-29)
 
 
