@@ -60,6 +60,10 @@ jobs:
         env:
           CODECOV_TOKEN: ${{ secrets.codecovToken }}
       
+      - name: Revert package.json
+        if: startsWith(matrix.os, 'ubuntu') && matrix.version == '' && github.ref == 'refs/heads/master' && github.repository == 'JohnstonCode/svn-scm'
+        run: mv package.json.bak package.json
+      
       - name: Release
         if: startsWith(matrix.os, 'ubuntu') && matrix.version == '' && github.ref == 'refs/heads/master' && github.repository == 'JohnstonCode/svn-scm'
         run: npm run semantic-release
