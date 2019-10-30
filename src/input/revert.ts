@@ -57,7 +57,7 @@ export async function checkAndPromptDepth(
   }
 
   if (hasDirectory) {
-    return await promptDepth();
+    return promptDepth();
   }
 
   return defaultDepth;

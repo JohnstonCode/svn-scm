@@ -23,9 +23,7 @@ export function dispose() {
 }
 
 async function showCommitInput(message?: string, filePaths?: string[]) {
-
   const promise = new Promise<string>(resolve => {
-
     // Close previous commit message input
     if (panel) {
       panel.dispose();
@@ -37,14 +35,18 @@ async function showCommitInput(message?: string, filePaths?: string[]) {
       panel.dispose();
     };
 
-    panel = window.createWebviewPanel("svnCommitMessage", "Commit Message", {
-      preserveFocus: false,
-      viewColumn: ViewColumn.Active
-    },
+    panel = window.createWebviewPanel(
+      "svnCommitMessage",
+      "Commit Message",
+      {
+        preserveFocus: false,
+        viewColumn: ViewColumn.Active
+      },
       {
         enableScripts: true,
         retainContextWhenHidden: true
-      });
+      }
+    );
 
     const styleUri = Uri.file(
       path.join(__dirname, "..", "css", "commit-message.css")
@@ -164,11 +166,17 @@ async function showCommitInput(message?: string, filePaths?: string[]) {
       let repository;
 
       if (filePaths && filePaths[0]) {
-        const model = (await commands.executeCommand("svn.getModel", "")) as Model;
+        const model = (await commands.executeCommand(
+          "svn.getModel",
+          ""
+        )) as Model;
         repository = await model.getRepositoryFromUri(Uri.file(filePaths[0]));
       }
 
-      const message = await commands.executeCommand("svn.pickCommitMessage", repository);
+      const message = await commands.executeCommand(
+        "svn.pickCommitMessage",
+        repository
+      );
       if (message !== undefined) {
         panel.webview.postMessage({
           command: "setMessage",
@@ -197,7 +205,7 @@ async function showCommitInput(message?: string, filePaths?: string[]) {
     panel.reveal(ViewColumn.Active, false);
   });
 
-  return await promise;
+  return promise;
 }
 
 export async function inputCommitMessage(

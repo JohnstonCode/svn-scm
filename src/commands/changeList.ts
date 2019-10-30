@@ -26,9 +26,7 @@ export class ChangeList extends Command {
 
     const model = (await commands.executeCommand("svn.getModel", "")) as Model;
 
-    const promiseArray = uris.map(
-      async uri => await model.getRepositoryFromUri(uri)
-    );
+    const promiseArray = uris.map(async uri => model.getRepositoryFromUri(uri));
     let repositories = await Promise.all(promiseArray);
     repositories = repositories.filter(repository => repository);
 
