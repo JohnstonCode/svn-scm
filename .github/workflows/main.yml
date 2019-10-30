@@ -68,7 +68,7 @@ jobs:
           node_modules/.bin/vsce package -o svn-scm.vsix
 
       - name: Upload artifact
-        if: startsWith(matrix.os, 'ubuntu') && matrix.version == ''
+        if: startsWith(matrix.os, 'ubuntu') && matrix.version == '' && github.event == 'pull_request'
         uses: actions/upload-artifact@v1
         with:
           name: svn-scm.vsix
