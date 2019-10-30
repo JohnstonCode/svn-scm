@@ -64,7 +64,7 @@ jobs:
       - name: Release
         if: startsWith(matrix.os, 'ubuntu') && matrix.version == '' && github.ref == 'refs/heads/master' && github.repository == 'JohnstonCode/svn-scm'
         run: |
-          mv package.json.bak package.json
+          git checkout package.json
           npm run semantic-release
         env:
           VSCE_TOKEN: ${{ secrets.vsceToken }}
