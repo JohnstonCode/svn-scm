@@ -12,6 +12,7 @@ jobs:
   build:
     name: ${{ matrix.os }} ${{ matrix.version }}
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
@@ -59,10 +60,12 @@ jobs:
         run: node_modules/.bin/codecov --disable=gcov
         env:
           CODECOV_TOKEN: ${{ secrets.codecovToken }}
-      
+
       - name: Release
         if: startsWith(matrix.os, 'ubuntu') && matrix.version == '' && github.ref == 'refs/heads/master' && github.repository == 'JohnstonCode/svn-scm'
-        run: npm run semantic-release
+        run: |
+          git checkout package.json
+          npm run semantic-release
         env:
           VSCE_TOKEN: ${{ secrets.vsceToken }}
           GH_TOKEN: ${{ secrets.githubToken }}
