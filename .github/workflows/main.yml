@@ -62,11 +62,13 @@ jobs:
           CODECOV_TOKEN: ${{ secrets.codecovToken }}
 
       - name: Prepare artifact
+        if: startsWith(matrix.os, 'ubuntu') && matrix.version == ''
         run: |
           git checkout package.json
           node_modules/.bin/vsce package -o svn-scm.vsix
 
       - name: Upload artifact
+        if: startsWith(matrix.os, 'ubuntu') && matrix.version == ''
         uses: actions/upload-artifact@v1
         with:
           name: svn-scm.vsix
