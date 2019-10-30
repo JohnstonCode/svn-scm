@@ -10,7 +10,7 @@ coverconfig.json
 jsconfig.json
 out/test/**
 out/tools/**
-package-lock.json
+package-lock.json*
 scss/**
 src/**
 test-reports
