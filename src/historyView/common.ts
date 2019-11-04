@@ -13,7 +13,7 @@ import { exists, lstat } from "../fs";
 import { configuration } from "../helpers/configuration";
 import { IRemoteRepository } from "../remoteRepository";
 import { SvnRI } from "../svnRI";
-import { dumpSvnFile } from "../tempFiles";
+import { createTempSvnRevisionFile } from "../tempFiles";
 
 export enum LogTreeItemKind {
   Repo = 1,
@@ -154,6 +154,17 @@ export async function checkIfFile(
   return true;
 }
 
+export function getLimit(): number {
+  const limit = Number.parseInt(
+    configuration.get<string>("log.length") || "50",
+    10
+  );
+  if (isNaN(limit) || limit <= 0) {
+    throw new Error("Invalid log.length setting value");
+  }
+  return limit;
+}
+
 /// @note: cached.svnTarget should be valid
 export async function fetchMore(cached: ICachedLog) {
   let rfrom = cached.persisted.commitFrom;
@@ -173,17 +184,6 @@ export async function fetchMore(cached: ICachedLog) {
     cached.isComplete = true;
   }
   entries.push(...moreCommits);
-}
-
-export function getLimit(): number {
-  const limit = Number.parseInt(
-    configuration.get<string>("log.length") || "50",
-    10
-  );
-  if (isNaN(limit) || limit <= 0) {
-    throw new Error("Invalid log.length setting value");
-  }
-  return limit;
 }
 
 const gravatarCache: Map<string, Uri> = new Map();
@@ -263,7 +263,7 @@ async function downloadFile(
     window.showErrorMessage("Failed to open path");
     throw e;
   }
-  return dumpSvnFile(arg, revision, out);
+  return createTempSvnRevisionFile(arg, revision, out);
 }
 
 export async function openDiff(
@@ -293,7 +293,7 @@ export async function openFileRemote(
     window.showErrorMessage("Failed to open path");
     return;
   }
-  const localUri = await dumpSvnFile(arg, against, out);
+  const localUri = await createTempSvnRevisionFile(arg, against, out);
   const opts: TextDocumentShowOptions = {
     preview: true
   };

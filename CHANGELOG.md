@@ -1,3 +1,31 @@
+## [1.54.11](https://github.com/JohnstonCode/svn-scm/compare/v1.54.9...v1.54.11) (2019-10-29)
+
+
+### Bug Fixes
+
+* Readded activation event
+
+## [1.54.9](https://github.com/JohnstonCode/svn-scm/compare/v1.54.8...v1.54.9) (2019-10-29)
+
+
+### Bug Fixes
+
+* Fix release ([c95f24b](https://github.com/JohnstonCode/svn-scm/commit/c95f24b))
+
+## [1.54.8](https://github.com/JohnstonCode/svn-scm/compare/v1.54.7...v1.54.8) (2019-10-29)
+
+
+### Bug Fixes
+
+* diff files now have unique paths ([#694](https://github.com/JohnstonCode/svn-scm/issues/694)) ([0ff8666](https://github.com/JohnstonCode/svn-scm/commit/0ff8666))
+
+## [1.54.7](https://github.com/JohnstonCode/svn-scm/compare/v1.54.6...v1.54.7) (2019-10-28)
+
+
+### Bug Fixes
+
+* checking for lock field when parsing xml entries ([#693](https://github.com/JohnstonCode/svn-scm/issues/693)) ([5cb1413](https://github.com/JohnstonCode/svn-scm/commit/5cb1413))
+
 ## [1.54.6](https://github.com/JohnstonCode/svn-scm/compare/v1.54.5...v1.54.6) (2019-10-08)
 
 

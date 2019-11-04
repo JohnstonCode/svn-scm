@@ -161,6 +161,7 @@ export interface IEntry {
   reposStatus?: {
     props: string;
     item: string;
+    lock?: object;
   };
 }
 
