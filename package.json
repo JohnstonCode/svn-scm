@@ -369,6 +369,20 @@
         "category": "SVN"
       },
       {
+        "command": "svn.revertChange",
+        "title": "Revert Change",
+        "category": "SVN",
+        "icon": {
+          "light": "icons/light/clean.svg",
+          "dark": "icons/dark/clean.svg"
+        }
+      },
+      {
+        "command": "svn.revertSelectedRanges",
+        "title": "Revert Selected Ranges",
+        "category": "SVN"
+      },
+      {
         "command": "svn.close",
         "title": "Close repository",
         "category": "SVN"
@@ -514,8 +528,16 @@
           "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
         },
         {
+          "command": "svn.revertChange",
+          "when": "false"
+        },
+        {
           "command": "svn.revertAll",
           "when": "false"
+        },
+        {
+          "command": "svn.revertSelectedRanges",
+          "when": "config.svn.enabled && svnOpenRepositoryCount != 0 && svnHasSupportToRegisterDiffCommand == 1"
         },
         {
           "command": "svn.close",
@@ -854,6 +876,10 @@
         }
       ],
       "scm/change/title": [
+        {
+          "command": "svn.revertChange",
+          "when": "config.svn.enabled && originalResourceScheme == svn"
+        }
       ],
       "editor/title": [
         {
@@ -870,6 +896,11 @@
           "command": "svn.openChangeHead",
           "group": "navigation",
           "when": "config.svn.enabled && svnOpenRepositoryCount != 0 && svnActiveEditorHasChanges && !isInDiffEditor && resourceScheme == file"
+        },
+        {
+          "command": "svn.revertSelectedRanges",
+          "group": "2_svn@3",
+          "when": "config.svn.enabled && svnOpenRepositoryCount != 0 && isInDiffEditor && resourceScheme != merge-conflicts.conflicts-diff && svnHasSupportToRegisterDiffCommand == 1"
         }
       ],
       "explorer/context": [

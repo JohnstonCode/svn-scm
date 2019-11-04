@@ -6,19 +6,23 @@ import {
   Range,
   SourceControlResourceState,
   TextDocumentShowOptions,
+  TextEditor,
   Uri,
   ViewColumn,
   window,
-  workspace
+  workspace,
+  WorkspaceEdit
 } from "vscode";
-import { ICommandOptions, Status, SvnUriAction } from "../common/types";
+import { ICommandOptions, Status, SvnUriAction, LineChange } from "../common/types";
 import { exists, readFile, stat, unlink } from "../fs";
 import { inputIgnoreList } from "../ignoreitems";
+import { applyLineChanges } from "../lineChanges";
 import { Model } from "../model";
 import { Repository } from "../repository";
 import { Resource } from "../resource";
 import IncomingChangeNode from "../treeView/nodes/incomingChangeNode";
 import { fromSvnUri, toSvnUri } from "../uri";
+import { hasSupportToRegisterDiffCommand } from "../util";
 
 export abstract class Command implements Disposable {
   private _disposable?: Disposable;
@@ -29,6 +33,14 @@ export abstract class Command implements Disposable {
 
       this._disposable = commands.registerCommand(commandName, command);
 
+      return;
+    }
+
+    if (options.diff && hasSupportToRegisterDiffCommand()) {
+      this._disposable = (commands as any).registerDiffInformationCommand(
+        commandName,
+        (...args: any[]) => this.execute(...args)
+      );
       return;
     }
 
@@ -54,8 +66,6 @@ export abstract class Command implements Disposable {
         "svn.getModel",
         ""
       )) as Model;
-      let result;
-
       const repository = model.getRepository(args[0]);
       let repositoryPromise;
 
@@ -67,7 +77,7 @@ export abstract class Command implements Disposable {
         repositoryPromise = model.pickRepository();
       }
 
-      result = repositoryPromise.then(repository => {
+      const result = repositoryPromise.then(repository => {
         if (!repository) {
           return Promise.resolve();
         }
@@ -416,6 +426,40 @@ export abstract class Command implements Disposable {
       console.error(error);
       window.showErrorMessage("Unable to patch");
     }
+  }
+
+  protected async _revertChanges(
+    textEditor: TextEditor,
+    changes: LineChange[]
+  ): Promise<void> {
+    const modifiedDocument = textEditor.document;
+    const modifiedUri = modifiedDocument.uri;
+
+    if (modifiedUri.scheme !== "file") {
+      return;
+    }
+
+    const originalUri = toSvnUri(modifiedUri, SvnUriAction.SHOW, {
+      ref: "BASE"
+    });
+    const originalDocument = await workspace.openTextDocument(originalUri);
+
+    const result = applyLineChanges(
+      originalDocument,
+      modifiedDocument,
+      changes
+    );
+    const edit = new WorkspaceEdit();
+    edit.replace(
+      modifiedUri,
+      new Range(
+        new Position(0, 0),
+        modifiedDocument.lineAt(modifiedDocument.lineCount - 1).range.end
+      ),
+      result
+    );
+    workspace.applyEdit(edit);
+    await modifiedDocument.save();
   }
 
   protected async addToIgnore(uris: Uri[]): Promise<void> {

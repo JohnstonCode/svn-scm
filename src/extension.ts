@@ -21,6 +21,7 @@ import { SvnContentProvider } from "./svnContentProvider";
 import { SvnFinder } from "./svnFinder";
 import SvnProvider from "./treeView/dataProviders/svnProvider";
 import {
+  hasSupportToRegisterDiffCommand,
   toDisposable
 } from "./util";
 
@@ -55,6 +56,12 @@ async function init(
 
   disposables.push(new CheckActiveEditor(model));
   disposables.push(new OpenRepositoryCount(model));
+
+  commands.executeCommand(
+    "setContext",
+    "svnHasSupportToRegisterDiffCommand",
+    hasSupportToRegisterDiffCommand() ? "1" : "0"
+  );
 
   outputChannel.appendLine(`Using svn "${info.version}" from "${info.path}"`);
 
