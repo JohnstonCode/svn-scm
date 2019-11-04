@@ -27,7 +27,6 @@ import { Repository } from "../repository";
 import { Resource } from "../resource";
 import IncomingChangeNode from "../treeView/nodes/incomingChangeNode";
 import { fromSvnUri, toSvnUri } from "../uri";
-import { hasSupportToRegisterDiffCommand } from "../util";
 
 export abstract class Command implements Disposable {
   private _disposable?: Disposable;
@@ -38,14 +37,6 @@ export abstract class Command implements Disposable {
 
       this._disposable = commands.registerCommand(commandName, command);
 
-      return;
-    }
-
-    if (options.diff && hasSupportToRegisterDiffCommand()) {
-      this._disposable = (commands as any).registerDiffInformationCommand(
-        commandName,
-        (...args: any[]) => this.execute(...args)
-      );
       return;
     }
 

@@ -1,5 +1,5 @@
 import * as path from "path";
-import { Event, commands } from "vscode";
+import { Event } from "vscode";
 import { Operation } from "./common/types";
 import { exists, lstat, readdir, rmdir, unlink } from "./fs";
 
@@ -117,20 +117,6 @@ export function camelcase(name: string) {
     })
     .replace(/[\s\-]+/g, "");
 }
-
-let hasRegisterDiffCommand = false;
-export function hasSupportToRegisterDiffCommand() {
-  return hasRegisterDiffCommand;
-}
-
-try {
-  const disposable = (commands as any).registerDiffInformationCommand(
-    "svn.testDiff",
-    () => {}
-  );
-  hasRegisterDiffCommand = true;
-  disposable.dispose();
-} catch (error) {}
 
 export function timeout(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));

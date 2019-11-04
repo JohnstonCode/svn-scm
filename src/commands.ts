@@ -38,7 +38,6 @@ import { Revert } from "./commands/revert";
 import { RevertAll } from "./commands/revertAll";
 import { RevertChange } from "./commands/revertChange";
 import { RevertExplorer } from "./commands/revertExplorer";
-import { RevertSelectedRanges } from "./commands/revertSelectedRanges";
 import { SwitchBranch } from "./commands/switchBranch";
 import { Update } from "./commands/update";
 import { Upgrade } from "./commands/upgrade";
@@ -77,7 +76,6 @@ export function registerCommands(model: Model, disposables: Disposable[]) {
   disposables.push(new AddToIgnoreExplorer());
   disposables.push(new RenameExplorer());
   disposables.push(new Upgrade());
-  disposables.push(new RevertSelectedRanges());
   disposables.push(new OpenChangePrev());
   disposables.push(new PromptRemove());
   disposables.push(new Checkout());
