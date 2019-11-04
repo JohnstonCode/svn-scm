@@ -11,8 +11,10 @@ jsconfig.json
 out/test/**
 out/tools/**
 package-lock.json
+package.json.bak
 scss/**
 src/**
+svn-scm.vsix
 test-reports
 test/**
 tsconfig.json

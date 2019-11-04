@@ -203,5 +203,5 @@ export async function isSvnFolder(
     return false;
   }
 
-  return await isSvnFolder(parent, true);
+  return isSvnFolder(parent, true);
 }

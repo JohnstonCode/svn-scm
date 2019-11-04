@@ -358,9 +358,9 @@ export class Repository implements IRemoteRepository {
     }
 
     if (actionForDeletedFiles === "remove") {
-      return await this.removeFiles(uris.map(uri => uri.fsPath), false);
+      return this.removeFiles(uris.map(uri => uri.fsPath), false);
     } else if (actionForDeletedFiles === "prompt") {
-      return await commands.executeCommand("svn.promptRemove", ...uris);
+      return commands.executeCommand("svn.promptRemove", ...uris);
     }
 
     return;
@@ -451,7 +451,7 @@ export class Repository implements IRemoteRepository {
 
     const statuses =
       (await this.retryRun(async () => {
-        return await this.repository.getStatus({
+        return this.repository.getStatus({
           includeIgnored: true,
           includeExternals: combineExternal,
           checkRemoteChanges
