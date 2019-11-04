@@ -13,7 +13,12 @@ import {
   workspace,
   WorkspaceEdit
 } from "vscode";
-import { ICommandOptions, Status, SvnUriAction, LineChange } from "../common/types";
+import {
+  ICommandOptions,
+  Status,
+  SvnUriAction,
+  LineChange
+} from "../common/types";
 import { exists, readFile, stat, unlink } from "../fs";
 import { inputIgnoreList } from "../ignoreitems";
 import { applyLineChanges } from "../lineChanges";
