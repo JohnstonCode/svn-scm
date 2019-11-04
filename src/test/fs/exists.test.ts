@@ -1,22 +1,21 @@
-import * as assert from "assert";
 import { exists } from "../../fs/exists";
-import { newTempDir, destroyAllTempPaths } from "../testUtil";
+import { newTempDir } from "../testUtil";
 import { writeFileSync } from "fs";
 import { join } from "path";
 
-suite("Test async exists wrapper", () => {
-    suiteTeardown(() => {
-        destroyAllTempPaths();
+describe("Test async exists wrapper", () => {
+    afterAll(() => {
+        // destroyAllTempPaths();
     });
 
     test("Dir does exist", async () => {
         const fullpath = newTempDir("test-dir");
 
-        assert.ok((await exists(fullpath)));
+        expect(await exists(fullpath)).toBeTruthy();
     });
 
     test("Dir does not exist", async () => {
-        assert.strictEqual((await exists('/tmp/thisfiledoesnotexsist')), false);
+        expect(await exists('/tmp/thisfiledoesnotexsist')).toBe(false);
     });
 
     test("File does exist", async () => {
@@ -24,10 +23,10 @@ suite("Test async exists wrapper", () => {
         const filePath = join(testDirPath, 'testfile.txt');
         writeFileSync(filePath, 'test');
 
-        assert.ok((await exists(filePath)));
+        expect(await exists(filePath)).toBeTruthy();
     });
 
     test("File does not exist", async () => {
-        assert.strictEqual((await exists('/tmp/thisfiledoesnotexsist.txt')), false);
+        expect(await exists('/tmp/thisfiledoesnotexsist.txt')).toBe(false);
     });
 });

@@ -1,34 +1,61 @@
-//
-// PLEASE DO NOT MODIFY / DELETE UNLESS YOU KNOW WHAT YOU ARE DOING
-//
-// This file is providing the test runner to use when running extension tests.
-// By default the test runner in use is Mocha based.
+import { runCLI, ResultsObject } from "jest";
+import * as path from "path";
 
-import * as IstanbulTestRunner from "./istanbultestrunner";
+const projectRootPath = path.resolve(__dirname, "../../out");
+const testDirectory = path.resolve(__dirname, "../test");
 
-const testRunner = IstanbulTestRunner;
+console.log(projectRootPath);
+console.log(testDirectory);
 
-const mochaOpts: Mocha.MochaOptions = {
-  ui: "tdd", // the TDD UI is being used in extension.test.ts (suite, test, etc.)
-  useColors: true, // colored output from test results,
-  timeout: 30000, // default timeout: 10 seconds
-  retries: 1,
-  reporter: "mocha-multi-reporters",
-  reporterOptions: {
-    reporterEnabled: "spec, mocha-junit-reporter",
-    mochaJunitReporterReporterOptions: {
-      mochaFile: __dirname + "/../../test-reports/extension_tests.xml",
-      suiteTitleSeparatedBy: ": "
-    }
-  }
+const jestConfig = {
+  roots: [testDirectory],
+  runInBand: true,
+  testEnvironment: testDirectory + "/test-runner/jest-vscode-environment.js",
+  setupTestFrameworkScriptFile:
+    testDirectory + "/test-runner/jest-vscode-framework-setup.js",
+  collectCoverage: true,
+  coverageDirectory: path.resolve(__dirname, "../../coverage"),
+  collectCoverageFrom: ["**/*.js", "!test/**/*", "!**/common/**/*"],
+  moduleFileExtensions: ["js", "jsx", "json", "ts", "tsx"]
 };
 
-testRunner.configure(
-  mochaOpts,
-  // Coverage configuration options
-  {
-    coverConfig: "../../coverconfig.json"
-  }
-);
+export async function run(): Promise<void> {
+  forwardStdoutStderrStreams();
 
-module.exports = testRunner;
+  return new Promise(async (resolve, reject) => {
+    try {
+      const { results } = await runCLI(jestConfig as any, [projectRootPath]);
+      const failures = collectTestFailures(results);
+
+      if (failures.length > 0) {
+        reject(new Error(`${failures}`));
+      }
+
+      resolve();
+    } catch (err) {
+      reject(err);
+    }
+  });
+}
+
+function collectTestFailures(results: ResultsObject) {
+  const failures = results.testResults.reduce<string[]>((acc, testResult) => {
+    if (testResult.failureMessage) {
+      acc.push(testResult.failureMessage);
+    }
+
+    return acc;
+  }, []);
+
+  return failures;
+}
+
+function forwardStdoutStderrStreams() {
+  const logger = (line: string) => {
+    console.log(line);
+    return true;
+  };
+
+  process.stdout.write = logger;
+  process.stderr.write = logger;
+}

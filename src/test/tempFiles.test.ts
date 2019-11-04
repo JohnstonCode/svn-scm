@@ -1,4 +1,3 @@
-import * as assert from "assert";
 import { Uri } from "vscode";
 import { exists } from "../fs/exists";
 import { readFile } from "../fs/read_file";
@@ -19,7 +18,7 @@ const tempRevisionPath = join(
   "r30_test.js"
 );
 
-suite("Test temp file creation", () => {
+describe("Test temp file creation", () => {
   test("Temp files matches expected", async () => {
     const svnUri = Uri.parse("http://example.com/svn/test/trunk/test.js");
 
@@ -29,7 +28,7 @@ suite("Test temp file creation", () => {
       "test content"
     );
 
-    assert.equal(revisionUri.fsPath, tempRevisionPath);
+    expect(revisionUri.fsPath).toBe(tempRevisionPath);
   });
 
   test("Temp file is created", async () => {
@@ -37,7 +36,7 @@ suite("Test temp file creation", () => {
 
     await createTempSvnRevisionFile(svnUri, "30", "test content");
 
-    assert.ok(await exists(tempRevisionPath));
+    expect(await exists(tempRevisionPath)).toBeTruthy();
   });
 
   test("Temp contents are correct", async () => {
@@ -49,6 +48,8 @@ suite("Test temp file creation", () => {
       "test content"
     );
 
-    assert.equal(await readFile(revisionUri.fsPath), "test content");
+    expect((await readFile(revisionUri.fsPath)).toString()).toBe(
+      "test content"
+    );
   });
 });

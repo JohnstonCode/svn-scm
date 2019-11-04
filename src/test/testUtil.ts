@@ -1,5 +1,3 @@
-/* tslint:disable */
-
 import * as cp from "child_process";
 import { ChildProcess, SpawnOptions } from "child_process";
 import * as fs from "original-fs";
