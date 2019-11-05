@@ -12,11 +12,7 @@ const jestConfig = {
   runInBand: true,
   testEnvironment: testDirectory + "/test-runner/jest-vscode-environment.js",
   setupTestFrameworkScriptFile:
-    testDirectory + "/test-runner/jest-vscode-framework-setup.js",
-  collectCoverage: true,
-  coverageDirectory: path.resolve(__dirname, "../../coverage"),
-  collectCoverageFrom: ["**/*.js", "!test/**/*", "!**/common/**/*"],
-  moduleFileExtensions: ["js", "jsx", "json", "ts", "tsx"]
+    testDirectory + "/test-runner/jest-vscode-framework-setup.js"
 };
 
 export async function run(): Promise<void> {
