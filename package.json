@@ -57,6 +57,7 @@
     "@semantic-release/changelog": "^3.0.4",
     "@semantic-release/git": "^7.0.16",
     "@types/glob": "^7.1.1",
+    "@types/jest": "^23.3.14",
     "@types/node": "8.9.5",
     "@types/semver": "^6.0.0",
     "@types/tmp": "0.1.0",

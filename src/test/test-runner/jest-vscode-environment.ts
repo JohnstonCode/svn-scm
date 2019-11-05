@@ -13,7 +13,7 @@ class VsCodeEnvironment extends NodeEnvironment {
 
   public async teardown() {
     this.global.vscode = {};
-    return await super.teardown();
+    return super.teardown();
   }
 
   public runScript(script: any) {
