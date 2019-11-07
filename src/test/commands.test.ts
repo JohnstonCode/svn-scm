@@ -136,7 +136,6 @@ suite("Commands Tests", () => {
   });
 
   test("Commit Selected File", async function() {
-    this.timeout(5000);
     const repository = model.getRepository(checkoutDir) as Repository;
 
     await commands.executeCommand("svn.refresh");
@@ -160,7 +159,6 @@ suite("Commands Tests", () => {
   });
 
   test("New Branch", async function() {
-    this.timeout(5000);
     testUtil.overrideNextShowQuickPick(0);
     testUtil.overrideNextShowQuickPick(1);
     testUtil.overrideNextShowInputBox("test");
