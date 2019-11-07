@@ -41,10 +41,6 @@ jobs:
       - name: Compile sources
         run: npm run build
       
-      - name: Enable full coverage
-        run: sed -i.bak 's/"\*"//g' package.json
-        shell: bash
-      
       - name: Start xvfb
         if: startsWith(matrix.os, 'ubuntu')
         run: /usr/bin/Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
@@ -54,17 +50,10 @@ jobs:
           CODE_VERSION: ${{ matrix.version }}
           DISPLAY: ':99.0'
         run: npm run test
-      
-      - name: Publish Code Coverage to Codecov
-        if: startsWith(matrix.os, 'ubuntu') && matrix.version == ''
-        run: node_modules/.bin/codecov --disable=gcov
-        env:
-          CODECOV_TOKEN: ${{ secrets.codecovToken }}
 
       - name: Prepare artifact
         if: startsWith(matrix.os, 'ubuntu') && matrix.version == ''
         run: |
-          git checkout package.json
           node_modules/.bin/vsce package -o svn-scm.vsix
 
       - name: Upload artifact
