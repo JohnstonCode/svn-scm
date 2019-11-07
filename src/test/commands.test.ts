@@ -1,24 +1,27 @@
-import { Uri, commands } from "vscode";
-import { Model } from "../model";
-import * as testUtil from "./testUtil";
-import * as path from "path";
+import * as assert from "assert";
 import * as fs from "original-fs";
-import { Repository } from "../repository";
+import * as path from "path";
+import { commands, Uri } from "vscode";
 import { ISvnResourceGroup } from "../common/types";
+import { Model } from "../model";
+import { Repository } from "../repository";
+import * as testUtil from "./testUtil";
 import { timeout } from "../util";
 
-describe("Commands Tests", () => {
+suite("Commands Tests", () => {
   let repoUri: Uri;
   let checkoutDir: Uri;
   let model: Model;
 
-  beforeAll(async () => {
+  suiteSetup(async () => {
     await testUtil.activeExtension();
+
     repoUri = await testUtil.createRepoServer();
     await testUtil.createStandardLayout(testUtil.getSvnUrl(repoUri));
     checkoutDir = await testUtil.createRepoCheckout(
       testUtil.getSvnUrl(repoUri) + "/trunk"
     );
+
     model = (await commands.executeCommand(
       "svn.getModel",
       checkoutDir
@@ -27,9 +30,9 @@ describe("Commands Tests", () => {
     await model.tryOpenRepository(checkoutDir.fsPath);
   });
 
-  afterAll(() => {
+  suiteTeardown(() => {
     model.openRepositories.forEach(repository => repository.dispose());
-    // testUtil.destroyAllTempPaths();
+    testUtil.destroyAllTempPaths();
   });
 
   test("File Open", async function() {
@@ -43,15 +46,15 @@ describe("Commands Tests", () => {
     const repository = model.getRepository(checkoutDir) as Repository;
 
     await commands.executeCommand("svn.refresh");
-    expect(repository.unversioned.resourceStates.length).toBe(1);
-    expect(repository.changes.resourceStates.length).toBe(0);
+    assert.equal(repository.unversioned.resourceStates.length, 1);
+    assert.equal(repository.changes.resourceStates.length, 0);
 
     const resource = repository.unversioned.resourceStates[0];
 
     await commands.executeCommand("svn.add", resource);
 
-    expect(repository.unversioned.resourceStates.length).toBe(0);
-    expect(repository.changes.resourceStates.length).toBe(1);
+    assert.equal(repository.unversioned.resourceStates.length, 0);
+    assert.equal(repository.changes.resourceStates.length, 1);
   });
 
   test("Commit File", async function() {
@@ -91,7 +94,7 @@ describe("Commands Tests", () => {
     const repository = model.getRepository(checkoutDir) as Repository;
 
     await commands.executeCommand("svn.refresh");
-    expect(repository.changes.resourceStates.length).toBe(1);
+    assert.equal(repository.changes.resourceStates.length, 1);
 
     const resource = repository.changes.resourceStates[0];
 
@@ -103,7 +106,7 @@ describe("Commands Tests", () => {
     const repository = model.getRepository(checkoutDir) as Repository;
 
     await commands.executeCommand("svn.refresh");
-    expect(repository.changes.resourceStates.length).toBe(1);
+    assert.equal(repository.changes.resourceStates.length, 1);
 
     const resource = repository.changes.resourceStates[0];
 
@@ -111,7 +114,7 @@ describe("Commands Tests", () => {
     testUtil.overrideNextShowInputBox("changelist-test");
 
     await commands.executeCommand("svn.changelist", resource);
-    expect(repository.changelists.has("changelist-test")).toBeTruthy();
+    assert.ok(repository.changelists.has("changelist-test"));
   });
 
   test("Remove Changelist", async function() {
@@ -125,7 +128,7 @@ describe("Commands Tests", () => {
     testUtil.overrideNextShowQuickPick(3);
 
     await commands.executeCommand("svn.changelist", resource);
-    expect(group.resourceStates.length).toBe(0);
+    assert.equal(group.resourceStates.length, 0);
   });
 
   test("Show Patch", async function() {
@@ -136,7 +139,7 @@ describe("Commands Tests", () => {
     const repository = model.getRepository(checkoutDir) as Repository;
 
     await commands.executeCommand("svn.refresh");
-    expect(repository.changes.resourceStates.length).toBe(1);
+    assert.equal(repository.changes.resourceStates.length, 1);
 
     const resource = repository.changes.resourceStates[0];
 
@@ -145,7 +148,7 @@ describe("Commands Tests", () => {
     }, 1000);
     await commands.executeCommand("svn.commit", resource);
 
-    expect(repository.changes.resourceStates.length).toBe(0);
+    assert.equal(repository.changes.resourceStates.length, 0);
   });
 
   test("Commit File", async function() {
@@ -156,6 +159,7 @@ describe("Commands Tests", () => {
   });
 
   test("New Branch", async function() {
+    this.timeout(5000);
     testUtil.overrideNextShowQuickPick(0);
     testUtil.overrideNextShowQuickPick(1);
     testUtil.overrideNextShowInputBox("test");
@@ -166,10 +170,11 @@ describe("Commands Tests", () => {
     await timeout(2000);
 
     const repository = model.getRepository(checkoutDir) as Repository;
-    expect(await repository.getCurrentBranch()).toBe("branches/test");
+    assert.equal(await repository.getCurrentBranch(), "branches/test");
   });
 
   test("Switch Branch", async function() {
+    this.timeout(5000);
     testUtil.overrideNextShowQuickPick(2);
     await commands.executeCommand("svn.switchBranch");
 
@@ -177,6 +182,6 @@ describe("Commands Tests", () => {
     await timeout(2000);
 
     const repository = model.getRepository(checkoutDir) as Repository;
-    expect(await repository.getCurrentBranch()).toBe("trunk");
+    assert.equal(await repository.getCurrentBranch(), "trunk");
   });
 });

@@ -1,57 +1,37 @@
-import { runCLI, ResultsObject } from "jest";
-import * as path from "path";
+import * as path from 'path';
+import * as Mocha from 'mocha';
+import * as glob from 'glob';
 
-const projectRootPath = path.resolve(__dirname, "../../out");
-const testDirectory = path.resolve(__dirname, "../test");
+export function run(): Promise<void> {
+	// Create the mocha test
+	const mocha = new Mocha({
+		ui: 'tdd',
+	});
+	mocha.useColors(true);
+	
+	const testsRoot = path.resolve(__dirname, '..');
 
-console.log(projectRootPath);
-console.log(testDirectory);
+	return new Promise((c, e) => {
+		glob('**/**.test.js', { cwd: testsRoot }, (err, files) => {
+			if (err) {
+				return e(err);
+			}
 
-const jestConfig = {
-  roots: [testDirectory],
-  runInBand: true,
-  testEnvironment: testDirectory + "/test-runner/jest-vscode-environment.js",
-  setupTestFrameworkScriptFile:
-    testDirectory + "/test-runner/jest-vscode-framework-setup.js"
-};
+			// Add files to the test suite
+			files.forEach(f => mocha.addFile(path.resolve(testsRoot, f)));
 
-export async function run(): Promise<void> {
-  forwardStdoutStderrStreams();
-
-  return new Promise(async (resolve, reject) => {
-    try {
-      const { results } = await runCLI(jestConfig as any, [projectRootPath]);
-      const failures = collectTestFailures(results);
-
-      if (failures.length > 0) {
-        reject(new Error(`${failures}`));
-      }
-
-      resolve();
-    } catch (err) {
-      reject(err);
-    }
-  });
-}
-
-function collectTestFailures(results: ResultsObject) {
-  const failures = results.testResults.reduce<string[]>((acc, testResult) => {
-    if (testResult.failureMessage) {
-      acc.push(testResult.failureMessage);
-    }
-
-    return acc;
-  }, []);
-
-  return failures;
-}
-
-function forwardStdoutStderrStreams() {
-  const logger = (line: string) => {
-    console.log(line);
-    return true;
-  };
-
-  process.stdout.write = logger;
-  process.stderr.write = logger;
+			try {
+				// Run the mocha test
+				mocha.run(failures => {
+					if (failures > 0) {
+						e(new Error(`${failures} tests failed.`));
+					} else {
+						c();
+					}
+				});
+			} catch (err) {
+				e(err);
+			}
+		});
+	});
 }

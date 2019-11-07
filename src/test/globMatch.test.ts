@@ -1,20 +1,22 @@
+import * as assert from "assert";
 import { matchAll, match } from "../util/globMatch";
 
-describe("Glob match testing", () => {
+suite("Glob match testing", () => {
   test("Test single match", () => {
     const matcher = match("**/*.js");
 
-    expect(matcher.match("test/tester.js")).toBeTruthy();
-    expect(matcher.match("tester/testing/test/tester.js")).toBeTruthy();
+    assert.ok(matcher.match("test/tester.js"));
+    assert.ok(matcher.match("tester/testing/test/tester.js"));
   });
 
   test("Test Multiple Matches", () => {
     const patterns = ["**/.git", "**/.hg", "**/vendor", "**/node_modules"];
 
-    expect(matchAll(".git/test", patterns)).toBe(false);
-    expect(matchAll(".hg/test", patterns)).toBe(false);
-    expect(matchAll("vendor/test", patterns)).toBe(false);
-    expect(matchAll("project/test/node_modules/test/index.js", patterns)).toBe(
+    assert.strictEqual(matchAll(".git/test", patterns), false);
+    assert.strictEqual(matchAll(".hg/test", patterns), false);
+    assert.strictEqual(matchAll("vendor/test", patterns), false);
+    assert.strictEqual(
+      matchAll("project/test/node_modules/test/index.js", patterns),
       false
     );
   });

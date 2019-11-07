@@ -1,15 +1,20 @@
+import * as assert from "assert";
 import { ConstructorPolicy, ICpOptions, ISvnOptions } from "../common/types";
 import { Svn } from "../svn";
 import { Repository } from "../svnRepository";
 
-describe("Svn Repository Tests", () => {
+suite("Svn Repository Tests", () => {
   let svn: Svn | null;
   const options = {
     svnPath: "svn",
     version: "1.9"
   } as ISvnOptions;
 
-  afterAll(() => {
+  suiteSetup(async () => {
+    // svn = new Svn(options);
+  });
+
+  suiteTeardown(() => {
     svn = null;
   });
 
@@ -31,9 +36,9 @@ describe("Svn Repository Tests", () => {
 
     const status = await repository.getStatus({});
 
-    expect(status[0].path).toBe("test.php");
-    expect(status[1].path).toBe("newfiletester.php");
-    expect(status[2].path).toBe("added.php");
+    assert.equal(status[0].path, "test.php");
+    assert.equal(status[1].path, "newfiletester.php");
+    assert.equal(status[2].path, "added.php");
   });
 
   test("Test rename", async () => {
@@ -45,9 +50,9 @@ describe("Svn Repository Tests", () => {
       ConstructorPolicy.LateInit
     );
     repository.exec = async (args: string[], _options?: ICpOptions) => {
-      expect(args[0].includes("rename")).toBeTruthy();
-      expect(args[1].includes("test.php")).toBeTruthy();
-      expect(args[2].includes("tester.php")).toBeTruthy();
+      assert.equal(args[0].includes("rename"), true);
+      assert.equal(args[1].includes("test.php"), true);
+      assert.equal(args[2].includes("tester.php"), true);
 
       return {
         exitCode: 1,

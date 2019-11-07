@@ -1,3 +1,4 @@
+import * as assert from "assert";
 import * as fs from "original-fs";
 import * as path from "path";
 import { commands, Uri, window, workspace } from "vscode";
@@ -5,12 +6,12 @@ import { Model } from "../model";
 import { Repository } from "../repository";
 import * as testUtil from "./testUtil";
 
-describe("Repository Tests", () => {
+suite("Repository Tests", () => {
   let repoUri: Uri;
   let checkoutDir: Uri;
   let model: Model;
 
-  beforeAll(async () => {
+  suiteSetup(async () => {
     await testUtil.activeExtension();
 
     repoUri = await testUtil.createRepoServer();
@@ -25,40 +26,40 @@ describe("Repository Tests", () => {
     )) as Model;
   });
 
-  afterAll(() => {
+  suiteTeardown(() => {
     model.openRepositories.forEach(repository => repository.dispose());
-    // testUtil.destroyAllTempPaths();
+    testUtil.destroyAllTempPaths();
   });
 
   test("Empty Open Repository", async function() {
-    expect(model.repositories.length).toBe(0);
+    assert.equal(model.repositories.length, 0);
   });
 
   test("Try Open Repository", async function() {
     await model.tryOpenRepository(checkoutDir.fsPath);
-    expect(model.repositories.length).toBe(1);
+    assert.equal(model.repositories.length, 1);
   });
 
   test("Try Open Repository Again", async () => {
     await model.tryOpenRepository(checkoutDir.fsPath);
-    expect(model.repositories.length).toBe(1);
+    assert.equal(model.repositories.length, 1);
   });
 
   test("Try get repository from Uri", () => {
     const repository = model.getRepository(checkoutDir);
-    expect(repository).toBeTruthy();
+    assert.ok(repository);
   });
 
   test("Try get repository from string", () => {
     const repository = model.getRepository(checkoutDir.fsPath);
-    expect(repository).toBeTruthy();
+    assert.ok(repository);
   });
 
   test("Try get repository from repository", () => {
     const repository = model.getRepository(checkoutDir.fsPath);
     const repository2 = model.getRepository(repository);
-    expect(repository2).toBeTruthy();
-    expect(repository).toBe(repository2);
+    assert.ok(repository2);
+    assert.equal(repository, repository2);
   });
 
   test("Try get current branch name", async () => {
@@ -70,10 +71,11 @@ describe("Repository Tests", () => {
     }
 
     const name = await repository.getCurrentBranch();
-    expect(name).toBe("trunk");
+    assert.equal(name, "trunk");
   });
 
-  test("Try commit file", async () => {
+  test("Try commit file", async function() {
+    this.timeout(60000);
     const repository: Repository | null = model.getRepository(
       checkoutDir.fsPath
     );
@@ -81,7 +83,7 @@ describe("Repository Tests", () => {
       return;
     }
 
-    expect(repository.changes.resourceStates.length).toBe(0);
+    assert.equal(repository.changes.resourceStates.length, 0);
 
     const file = path.join(checkoutDir.fsPath, "new.txt");
 
@@ -92,18 +94,19 @@ describe("Repository Tests", () => {
 
     await repository.addFiles([file]);
 
-    expect(repository.changes.resourceStates.length).toBe(1);
+    assert.equal(repository.changes.resourceStates.length, 1);
 
     const message = await repository.commitFiles("First Commit", [file]);
-    expect(/1 file commited: revision (.*)\./i.test(message)).toBeTruthy();
+    assert.ok(/1 file commited: revision (.*)\./i.test(message));
 
-    expect(repository.changes.resourceStates.length).toBe(0);
+    assert.equal(repository.changes.resourceStates.length, 0);
 
     const remoteContent = await repository.show(file, "HEAD");
-    expect(remoteContent).toBe("test");
-  }, 60000);
+    assert.equal(remoteContent, "test");
+  });
 
-  test("Try switch branch", async () => {
+  test("Try switch branch", async function() {
+    this.timeout(60000);
     const newCheckoutDir = await testUtil.createRepoCheckout(
       testUtil.getSvnUrl(repoUri) + "/trunk"
     );
@@ -116,11 +119,11 @@ describe("Repository Tests", () => {
     if (!newRepository) {
       return;
     }
-    expect(newRepository).toBeTruthy();
+    assert.ok(newRepository);
 
     await newRepository.newBranch("branches/test");
     const currentBranch = await newRepository.getCurrentBranch();
 
-    expect(currentBranch).toBe("branches/test");
-  }, 60000);
+    assert.equal(currentBranch, "branches/test");
+  });
 });

@@ -1,8 +1,9 @@
+import * as assert from "assert";
 import { PathNormalizer, ResourceKind } from "../pathNormalizer";
 import { Uri } from "vscode";
 import { ISvnInfo } from "../common/types";
 
-describe("SVN URLs parsing", () => {
+suite("SVN URLs parsing", () => {
   const ri1 = {
     repository: {
       root: "svn://somedomain.x.org/public/devs"
@@ -14,26 +15,36 @@ describe("SVN URLs parsing", () => {
   };
   const nm1 = new PathNormalizer(ri1 as ISvnInfo);
 
+  suiteSetup(async () => {
+    // do nothing
+  });
+
+  suiteTeardown(async () => {
+    // do nothing
+  });
+
   test("somedomain", function() {
-    expect(nm1.branchRoot.toString()).toBe(Uri.parse(ri1.url).toString());
-    expect(nm1.repoRoot.toString()).toBe(
+    assert.equal(nm1.branchRoot.toString(), Uri.parse(ri1.url).toString());
+    assert.equal(
+      nm1.repoRoot.toString(),
       Uri.parse(ri1.repository.root).toString()
     );
-
     if (!nm1.checkoutRoot) {
       throw new Error("impossible");
     }
-    expect(nm1.checkoutRoot.toString()).toBe(
+    assert.equal(
+      nm1.checkoutRoot.toString(),
       Uri.file(ri1.wcInfo.wcrootAbspath).toString()
     );
     const x1 = nm1.parse("/d1/f1");
-    expect(x1.remoteFullPath.toString()).toBe(ri1.repository.root + "/d1/f1");
+    assert.equal(x1.remoteFullPath.toString(), ri1.repository.root + "/d1/f1");
     if (!x1.localFullPath) {
       throw new Error("impossible");
     }
-    expect(x1.localFullPath.toString()).toBe("file:///home/d1/f1");
+    assert.equal(x1.localFullPath.toString(), "file:///home/d1/f1");
     const x2 = nm1.parse("/branches/features/F1/dir/file.c");
-    expect(x2.localFullPath!.toString()).toBe(
+    assert.equal(
+      x2.localFullPath!.toString(),
       "file:///home/user/dev/mypero/dir/file.c"
     );
   });
@@ -53,17 +64,18 @@ describe("SVN URLs parsing", () => {
     const p1 = nm2.parse(
       "/foo/drupal-7/trunk/drupal/sites/all/themes/foo_theme/scss/foo-pdf.scss"
     );
-    expect(p1.localFullPath!.path).toBe(
+    assert.equal(
+      p1.localFullPath!.path,
       "/home/dev-mi/projects/drupal/foo/drupal/sites/all/themes/foo_theme/scss/foo-pdf.scss"
     );
 
     const p2 = nm2.parse("drupal/sites", ResourceKind.LocalRelative);
-    expect(p2.remoteFullPath.path).toBe("/foo/drupal-7/trunk/drupal/sites");
+    assert.equal(p2.remoteFullPath.path, "/foo/drupal-7/trunk/drupal/sites");
     const p3 = nm2.parse(
       "/home/dev-mi/projects/drupal/foo/drupal",
       ResourceKind.LocalFull
     );
-    expect(p3.remoteFullPath.path).toBe("/foo/drupal-7/trunk/drupal");
+    assert.equal(p3.remoteFullPath.path, "/foo/drupal-7/trunk/drupal");
   });
 
   const ri3 = {
@@ -79,7 +91,7 @@ describe("SVN URLs parsing", () => {
 
   test("rootbranch", function() {
     const p4 = nm3.parse("/file.c");
-    expect(p4.localFullPath!.path).toBe("/home/user/svn/file.c");
+    assert.equal(p4.localFullPath!.path, "/home/user/svn/file.c");
   });
 
   const ri4 = {
@@ -96,7 +108,7 @@ describe("SVN URLs parsing", () => {
   if (process.platform == "win32") {
     test("winpath", function() {
       const p4 = nm4.parse("/trunk/file.c");
-      expect(p4.localFullPath!.fsPath).toBe("x:\\work\\rootd\\file.c");
+      assert.equal(p4.localFullPath!.fsPath, "x:\\work\\rootd\\file.c");
     });
   }
 });
