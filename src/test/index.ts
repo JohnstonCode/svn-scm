@@ -1,34 +1,39 @@
-//
-// PLEASE DO NOT MODIFY / DELETE UNLESS YOU KNOW WHAT YOU ARE DOING
-//
-// This file is providing the test runner to use when running extension tests.
-// By default the test runner in use is Mocha based.
+import * as path from "path";
+import * as Mocha from "mocha";
+import * as glob from "glob";
 
-import * as IstanbulTestRunner from "./istanbultestrunner";
+export function run(): Promise<void> {
+  // Create the mocha test
+  const mocha = new Mocha({
+    ui: "tdd",
+    timeout: 30000, // default timeout: 10 seconds
+    retries: 1
+  });
+  mocha.useColors(true);
 
-const testRunner = IstanbulTestRunner;
+  const testsRoot = path.resolve(__dirname, "..");
 
-const mochaOpts: Mocha.MochaOptions = {
-  ui: "tdd", // the TDD UI is being used in extension.test.ts (suite, test, etc.)
-  useColors: true, // colored output from test results,
-  timeout: 30000, // default timeout: 10 seconds
-  retries: 1,
-  reporter: "mocha-multi-reporters",
-  reporterOptions: {
-    reporterEnabled: "spec, mocha-junit-reporter",
-    mochaJunitReporterReporterOptions: {
-      mochaFile: __dirname + "/../../test-reports/extension_tests.xml",
-      suiteTitleSeparatedBy: ": "
-    }
-  }
-};
+  return new Promise((c, e) => {
+    glob("**/**.test.js", { cwd: testsRoot }, (err, files) => {
+      if (err) {
+        return e(err);
+      }
 
-testRunner.configure(
-  mochaOpts,
-  // Coverage configuration options
-  {
-    coverConfig: "../../coverconfig.json"
-  }
-);
+      // Add files to the test suite
+      files.forEach(f => mocha.addFile(path.resolve(testsRoot, f)));
 
-module.exports = testRunner;
+      try {
+        // Run the mocha test
+        mocha.run(failures => {
+          if (failures > 0) {
+            e(new Error(`${failures} tests failed.`));
+          } else {
+            c();
+          }
+        });
+      } catch (err) {
+        e(err);
+      }
+    });
+  });
+}

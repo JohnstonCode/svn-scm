@@ -1,15 +1,4 @@
-/* tslint:disable */
-
-//
-// Note: This example test is leveraging the Mocha test framework.
-// Please refer to their documentation on https://mochajs.org/ for help.
-//
-
-// The module 'assert' provides assertion methods from node
 import * as assert from "assert";
-
-// You can import and use all API from the 'vscode' module
-// as well as import your extension to test it
 import * as fs from "original-fs";
 import * as path from "path";
 import { commands, Uri } from "vscode";
@@ -19,7 +8,6 @@ import { Repository } from "../repository";
 import * as testUtil from "./testUtil";
 import { timeout } from "../util";
 
-// Defines a Mocha test suite to group tests of similar kind together
 suite("Commands Tests", () => {
   let repoUri: Uri;
   let checkoutDir: Uri;
@@ -185,6 +173,7 @@ suite("Commands Tests", () => {
   });
 
   test("Switch Branch", async function() {
+    this.timeout(5000);
     testUtil.overrideNextShowQuickPick(2);
     await commands.executeCommand("svn.switchBranch");
 

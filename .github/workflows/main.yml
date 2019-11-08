@@ -16,8 +16,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-16.04, macOS-10.14, windows-2019]
-        version: ['1.26.0', '', 'insiders']
+        os: [ubuntu-16.04, macOS-latest, windows-2019]
+        version: ['', 'insiders']
 
     steps:
       - name: Clone repository
@@ -29,7 +29,25 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: '10.x'
-         
+
+      - name: Npm cache Posix
+        if: startsWith(matrix.os, 'ubuntu') || startsWith(matrix.os, 'macOS')
+        uses: actions/cache@v1
+        with:
+          path: ~/.npm
+          key: posix-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            posix-node-
+
+      - name: Npm cache Windows
+        if: startsWith(matrix.os, 'windows')
+        uses: actions/cache@v1
+        with:
+          path: ~\AppData\Roaming\npm-cache
+          key: ${{ runner.os }}-node-${{ hashFiles('**\package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
       - name: Install Dependencies
         run: 'npm ci || npm ci'
         shell: bash
@@ -41,10 +59,6 @@ jobs:
       - name: Compile sources
         run: npm run build
       
-      - name: Enable full coverage
-        run: sed -i.bak 's/"\*"//g' package.json
-        shell: bash
-      
       - name: Start xvfb
         if: startsWith(matrix.os, 'ubuntu')
         run: /usr/bin/Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
@@ -54,17 +68,10 @@ jobs:
           CODE_VERSION: ${{ matrix.version }}
           DISPLAY: ':99.0'
         run: npm run test
-      
-      - name: Publish Code Coverage to Codecov
-        if: startsWith(matrix.os, 'ubuntu') && matrix.version == ''
-        run: node_modules/.bin/codecov --disable=gcov
-        env:
-          CODECOV_TOKEN: ${{ secrets.codecovToken }}
 
       - name: Prepare artifact
         if: startsWith(matrix.os, 'ubuntu') && matrix.version == ''
         run: |
-          git checkout package.json
           node_modules/.bin/vsce package -o svn-scm.vsix
 
       - name: Upload artifact
