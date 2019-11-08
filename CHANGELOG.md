@@ -1,3 +1,15 @@
+# [2.0.0](https://github.com/JohnstonCode/svn-scm/compare/v1.54.11...v2.0.0) (2019-11-08)
+
+
+### Bug Fixes
+
+* Removed proposed api ([#690](https://github.com/JohnstonCode/svn-scm/issues/690)) ([7fb3966](https://github.com/JohnstonCode/svn-scm/commit/7fb3966))
+
+
+### BREAKING CHANGES
+
+* Removed proposed api functionallity (#675)
+
 ## [1.54.11](https://github.com/JohnstonCode/svn-scm/compare/v1.54.9...v1.54.11) (2019-10-29)
 
 
