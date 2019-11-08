@@ -29,7 +29,25 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: '10.x'
-         
+
+      - name: Npm cache Posix
+        if: startsWith(matrix.os, 'ubuntu') || startsWith(matrix.os, 'macOS')
+        uses: actions/cache@v1
+        with:
+          path: ~/.npm
+          key: posix-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            posix-node-
+
+      - name: Npm cache Windows
+        if: startsWith(matrix.os, 'windows')
+        uses: actions/cache@v1
+        with:
+          path: ~\AppData\Roaming\npm-cache
+          key: ${{ runner.os }}-node-${{ hashFiles('**\package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
       - name: Install Dependencies
         run: 'npm ci || npm ci'
         shell: bash
