@@ -35,9 +35,9 @@ jobs:
         uses: actions/cache@v1
         with:
           path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          key: posix-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-node-
+            posix-node-
 
       - name: Npm cache Windows
         if: startsWith(matrix.os, 'windows')
