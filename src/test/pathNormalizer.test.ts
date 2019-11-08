@@ -1,17 +1,8 @@
-/* tslint:disable */
-
-//
-// Note: This example test is leveraging the Mocha test framework.
-// Please refer to their documentation on https://mochajs.org/ for help.
-//
-
-// The module 'assert' provides assertion methods from node
 import * as assert from "assert";
 import { PathNormalizer, ResourceKind } from "../pathNormalizer";
 import { Uri } from "vscode";
 import { ISvnInfo } from "../common/types";
 
-// Defines a Mocha test suite to group tests of similar kind together
 suite("SVN URLs parsing", () => {
   const ri1 = {
     repository: {
