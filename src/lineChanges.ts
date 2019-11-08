@@ -1,4 +1,5 @@
-import { LineChange, Range, TextDocument } from "vscode";
+import { Range, TextDocument } from "vscode";
+import { LineChange } from "./common/types";
 
 export function applyLineChanges(
   original: TextDocument,

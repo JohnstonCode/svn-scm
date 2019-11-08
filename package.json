@@ -373,11 +373,6 @@
         }
       },
       {
-        "command": "svn.revertSelectedRanges",
-        "title": "Revert Selected Ranges",
-        "category": "SVN"
-      },
-      {
         "command": "svn.close",
         "title": "Close repository",
         "category": "SVN"
@@ -529,10 +524,6 @@
         {
           "command": "svn.revertAll",
           "when": "false"
-        },
-        {
-          "command": "svn.revertSelectedRanges",
-          "when": "config.svn.enabled && svnOpenRepositoryCount != 0 && svnHasSupportToRegisterDiffCommand == 1"
         },
         {
           "command": "svn.close",
@@ -891,11 +882,6 @@
           "command": "svn.openChangeHead",
           "group": "navigation",
           "when": "config.svn.enabled && svnOpenRepositoryCount != 0 && svnActiveEditorHasChanges && !isInDiffEditor && resourceScheme == file"
-        },
-        {
-          "command": "svn.revertSelectedRanges",
-          "group": "2_svn@3",
-          "when": "config.svn.enabled && svnOpenRepositoryCount != 0 && isInDiffEditor && resourceScheme != merge-conflicts.conflicts-diff && svnHasSupportToRegisterDiffCommand == 1"
         }
       ],
       "explorer/context": [

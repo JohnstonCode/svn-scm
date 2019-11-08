@@ -2,7 +2,6 @@ import * as path from "path";
 import {
   commands,
   Disposable,
-  LineChange,
   Position,
   Range,
   SourceControlResourceState,
@@ -14,7 +13,12 @@ import {
   workspace,
   WorkspaceEdit
 } from "vscode";
-import { ICommandOptions, Status, SvnUriAction } from "../common/types";
+import {
+  ICommandOptions,
+  Status,
+  SvnUriAction,
+  LineChange
+} from "../common/types";
 import { exists, readFile, stat, unlink } from "../fs";
 import { inputIgnoreList } from "../ignoreitems";
 import { applyLineChanges } from "../lineChanges";
@@ -23,7 +27,6 @@ import { Repository } from "../repository";
 import { Resource } from "../resource";
 import IncomingChangeNode from "../treeView/nodes/incomingChangeNode";
 import { fromSvnUri, toSvnUri } from "../uri";
-import { hasSupportToRegisterDiffCommand } from "../util";
 
 export abstract class Command implements Disposable {
   private _disposable?: Disposable;
@@ -34,14 +37,6 @@ export abstract class Command implements Disposable {
 
       this._disposable = commands.registerCommand(commandName, command);
 
-      return;
-    }
-
-    if (options.diff && hasSupportToRegisterDiffCommand()) {
-      this._disposable = commands.registerDiffInformationCommand(
-        commandName,
-        (...args: any[]) => this.execute(...args)
-      );
       return;
     }
 

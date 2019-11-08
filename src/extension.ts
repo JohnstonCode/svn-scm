@@ -11,20 +11,16 @@ import { registerCommands } from "./commands";
 import { ConstructorPolicy } from "./common/types";
 import { CheckActiveEditor } from "./contexts/checkActiveEditor";
 import { OpenRepositoryCount } from "./contexts/openRepositoryCount";
-import SvnDecorations from "./decorations/svnDecorations";
 import { configuration } from "./helpers/configuration";
 import { ItemLogProvider } from "./historyView/itemLogProvider";
 import { RepoLogProvider } from "./historyView/repoLogProvider";
 import * as messages from "./messages";
 import { Model } from "./model";
-import { checkProposedApi } from "./proposed";
 import { Svn } from "./svn";
 import { SvnContentProvider } from "./svnContentProvider";
 import { SvnFinder } from "./svnFinder";
 import SvnProvider from "./treeView/dataProviders/svnProvider";
 import {
-  hasSupportToDecorationProvider,
-  hasSupportToRegisterDiffCommand,
   toDisposable
 } from "./util";
 
@@ -60,18 +56,6 @@ async function init(
   disposables.push(new CheckActiveEditor(model));
   disposables.push(new OpenRepositoryCount(model));
 
-  // First, check the vscode has support to DecorationProvider
-  if (hasSupportToDecorationProvider()) {
-    const decoration = new SvnDecorations(model);
-    disposables.push(decoration);
-  }
-
-  commands.executeCommand(
-    "setContext",
-    "svnHasSupportToRegisterDiffCommand",
-    hasSupportToRegisterDiffCommand() ? "1" : "0"
-  );
-
   outputChannel.appendLine(`Using svn "${info.version}" from "${info.path}"`);
 
   const onOutput = (str: string) => outputChannel.append(str);
@@ -80,8 +64,6 @@ async function init(
     toDisposable(() => svn.onOutput.removeListener("log", onOutput))
   );
   disposables.push(toDisposable(messages.dispose));
-
-  checkProposedApi();
 }
 
 async function _activate(context: ExtensionContext, disposables: Disposable[]) {

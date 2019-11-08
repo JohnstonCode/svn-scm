@@ -1,5 +1,5 @@
 import * as path from "path";
-import { commands, Event, window } from "vscode";
+import { Event } from "vscode";
 import { Operation } from "./common/types";
 import { exists, lstat, readdir, rmdir, unlink } from "./fs";
 
@@ -117,37 +117,6 @@ export function camelcase(name: string) {
     })
     .replace(/[\s\-]+/g, "");
 }
-
-/* tslint:disable:no-empty */
-
-let hasDecorationProvider = false;
-export function hasSupportToDecorationProvider() {
-  return hasDecorationProvider;
-}
-
-try {
-  const fake = {
-    onDidChangeDecorations: (_value: any): any => toDisposable(() => {}),
-    provideDecoration: (_uri: any, _token: any): any => {}
-  };
-  window.registerDecorationProvider(fake);
-  hasDecorationProvider = true;
-  // disposable.dispose(); // Not dispose to prevent: Cannot read property 'provideDecoration' of undefined
-} catch (error) {}
-
-let hasRegisterDiffCommand = false;
-export function hasSupportToRegisterDiffCommand() {
-  return hasRegisterDiffCommand;
-}
-
-try {
-  const disposable = commands.registerDiffInformationCommand(
-    "svn.testDiff",
-    () => {}
-  );
-  hasRegisterDiffCommand = true;
-  disposable.dispose();
-} catch (error) {}
 
 export function timeout(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));

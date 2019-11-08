@@ -289,3 +289,10 @@ export enum SvnDepth {
   immediates = "the target and any immediate children thereof",
   infinity = "the target and all of its descendants—full recursion"
 }
+
+export interface LineChange {
+  readonly originalStartLineNumber: number;
+  readonly originalEndLineNumber: number;
+  readonly modifiedStartLineNumber: number;
+  readonly modifiedEndLineNumber: number;
+}
