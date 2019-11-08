@@ -48,9 +48,10 @@ async function showCommitInput(message?: string, filePaths?: string[]) {
       }
     );
 
-    const styleUri = Uri.file(
+    const stylePathOnDisk = Uri.file(
       path.join(__dirname, "..", "css", "commit-message.css")
     ).with({ scheme: "vscode-resource" });
+    const styleUri = panel.webview.asWebviewUri(stylePathOnDisk);
 
     let beforeForm = "";
     if (filePaths && filePaths.length) {
@@ -72,6 +73,13 @@ async function showCommitInput(message?: string, filePaths?: string[]) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!--
+  Use a content security policy to only allow loading images from https or from our extension directory,
+  and only allow scripts that have a specific nonce.
+  -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${panel.webview.cspSource} https:; script-src ${panel.webview.cspSource}; style-src ${panel.webview.cspSource};">
+
   <title>Commit Message</title>
   <link rel="stylesheet" href="${styleUri}">
 </head>
