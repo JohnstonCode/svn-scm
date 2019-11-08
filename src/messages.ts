@@ -50,7 +50,7 @@ async function showCommitInput(message?: string, filePaths?: string[]) {
 
     const stylePathOnDisk = Uri.file(
       path.join(__dirname, "..", "css", "commit-message.css")
-    ).with({ scheme: "vscode-resource" });
+    );
     const styleUri = panel.webview.asWebviewUri(stylePathOnDisk);
 
     let beforeForm = "";
