@@ -40,7 +40,7 @@
     "lint": "eslint \"src/**/*.ts\"",
     "semantic-release": "semantic-release",
     "style-check": "npx prettylint src/**/*.ts",
-    "test": "npm run build && webpack --mode production && node ./out/test/runTest.js",
+    "test": "npm run build && webpack --mode development && node ./out/test/runTest.js",
     "tools:genReadme": "node ./out/tools/generateConfigSectionForReadme.js",
     "vscode:prepublish": "npm run build:css && webpack --mode production",
     "webpack": "webpack --mode development",
