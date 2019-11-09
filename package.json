@@ -31,7 +31,7 @@
   "activationEvents": [
     "*"
   ],
-  "main": "./dist/extension.js",
+  "main": "./dist/extension",
   "scripts": {
     "build:css": "node-sass scss/ -o css/ --output-style compressed",
     "build:ts": "npx tsc -p ./",
@@ -40,7 +40,7 @@
     "lint": "eslint \"src/**/*.ts\"",
     "semantic-release": "semantic-release",
     "style-check": "npx prettylint src/**/*.ts",
-    "test": "npm run build && node ./out/test/runTest.js",
+    "test": "npm run build && && webpack --mode production && node ./out/test/runTest.js",
     "tools:genReadme": "node ./out/tools/generateConfigSectionForReadme.js",
     "vscode:prepublish": "npm run build:css && webpack --mode production",
     "webpack": "webpack --mode development",
