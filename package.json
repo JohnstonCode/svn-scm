@@ -31,22 +31,25 @@
   "activationEvents": [
     "*"
   ],
-  "main": "./out/extension",
+  "main": "./dist/extension",
   "scripts": {
     "build:css": "node-sass scss/ -o css/ --output-style compressed",
     "build:ts": "npx tsc -p ./",
     "build": "npm run build:ts && npm run build:css",
-    "compile": "npx tsc -watch -p ./",
     "lint:fix": "npm run lint -- --fix",
     "lint": "eslint \"src/**/*.ts\"",
     "semantic-release": "semantic-release",
     "style-check": "npx prettylint src/**/*.ts",
-    "test": "node ./out/test/runTest.js",
+    "test": "npm run build && node ./out/test/runTest.js",
     "tools:genReadme": "node ./out/tools/generateConfigSectionForReadme.js",
-    "vscode:prepublish": "npm run lint && npm run build",
-    "watch:css": "npm run build:css -- -w"
+    "vscode:prepublish": "npm run build:css && webpack --mode production",
+    "webpack": "webpack --mode development",
+    "watch:css": "npm run build:css -- -w",
+    "watch": "webpack --mode development --watch"
   },
   "dependencies": {
+    "iconv-lite": "^0.5.0",
+    "jschardet": "1.6.0",
     "minimatch": "^3.0.4",
     "original-fs": "^1.0.0",
     "semver": "^6.0.0",
@@ -75,8 +78,11 @@
     "prettylint": "^1.0.0",
     "semantic-release": "^15.13.25",
     "semantic-release-vsce": "^2.2.8",
+    "ts-loader": "^6.2.1",
     "typescript": "^3.4.5",
-    "vscode-test": "^1.0.0"
+    "vscode-test": "^1.0.0",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.10"
   },
   "config": {
     "commitizen": {

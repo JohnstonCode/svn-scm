@@ -1,4 +1,4 @@
-import { jschardet } from "./vscodeModules";
+import * as jschardet from "jschardet";
 
 jschardet.Constants.MINIMUM_THRESHOLD = 0.2;
 jschardet.MacCyrillicModel.mTypicalPositiveRatio += 0.001;

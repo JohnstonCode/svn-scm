@@ -14,7 +14,7 @@ import { parseInfoXml } from "./infoParser";
 import SvnError from "./svnError";
 import { Repository } from "./svnRepository";
 import { dispose, IDisposable, toDisposable } from "./util";
-import { iconv } from "./vscodeModules";
+import * as iconv from "iconv-lite";
 
 export const svnErrorCodes: { [key: string]: string } = {
   AuthorizationFailed: "E170001",
