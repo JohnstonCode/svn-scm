@@ -58,10 +58,10 @@
     "@semantic-release/git": "^7.0.16",
     "@types/glob": "^7.1.1",
     "@types/mocha": "^5.2.7",
-    "@types/node": "8.9.5",
+    "@types/node": "^12.11.7",
     "@types/semver": "^6.0.0",
     "@types/tmp": "0.1.0",
-    "@types/vscode": "1.26.0",
+    "@types/vscode": "1.40.0",
     "@types/xml2js": "^0.4.4",
     "@typescript-eslint/eslint-plugin": "^2.5.0",
     "@typescript-eslint/parser": "^2.5.0",
@@ -85,8 +85,7 @@
   },
   "greenkeeper": {
     "ignore": [
-      "@types/node",
-      "@types/vscode"
+      "@types/node"
     ]
   },
   "contributes": {
