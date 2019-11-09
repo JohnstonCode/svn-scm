@@ -5,7 +5,7 @@ import {
   TreeDataProvider,
   TreeItem
 } from "vscode";
-import { Model } from "../../model";
+import { SourceControlManager } from "../../source_control_manager";
 import BaseNode from "../nodes/baseNode";
 import RepositoryNode from "../nodes/repositoryNode";
 
@@ -16,7 +16,7 @@ export default class SvnProvider implements TreeDataProvider<BaseNode> {
   public onDidChangeTreeData: Event<BaseNode | undefined> = this
     ._onDidChangeTreeData.event;
 
-  constructor(private model: Model) {
+  constructor(private sourceControlManager: SourceControlManager) {
     commands.registerCommand("svn.treeview.refreshProvider", () =>
       this.refresh()
     );
@@ -31,7 +31,7 @@ export default class SvnProvider implements TreeDataProvider<BaseNode> {
   }
 
   public async getChildren(element?: BaseNode): Promise<BaseNode[]> {
-    if (!this.model || this.model.openRepositories.length === 0) {
+    if (!this.sourceControlManager || this.sourceControlManager.openRepositories.length === 0) {
       return Promise.resolve([]);
     }
 
@@ -39,7 +39,7 @@ export default class SvnProvider implements TreeDataProvider<BaseNode> {
       return element.getChildren();
     }
 
-    const repositories = this.model.openRepositories.map(repository => {
+    const repositories = this.sourceControlManager.openRepositories.map(repository => {
       return new RepositoryNode(repository.repository, this);
     });
 

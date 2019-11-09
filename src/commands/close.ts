@@ -1,5 +1,5 @@
 import { commands } from "vscode";
-import { Model } from "../model";
+import { SourceControlManager } from "../source_control_manager";
 import { Repository } from "../repository";
 import { Command } from "./command";
 
@@ -9,8 +9,8 @@ export class Close extends Command {
   }
 
   public async execute(repository: Repository) {
-    const model = (await commands.executeCommand("svn.getModel", "")) as Model;
+    const sourceControlManager = (await commands.executeCommand("svn.getSourceControlManager", "")) as SourceControlManager;
 
-    model.close(repository);
+    sourceControlManager.close(repository);
   }
 }
