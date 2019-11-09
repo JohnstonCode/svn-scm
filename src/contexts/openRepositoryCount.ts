@@ -8,8 +8,16 @@ export class OpenRepositoryCount implements IDisposable {
 
   constructor(private sourceControlManager: SourceControlManager) {
     // When repository Opened or closed
-    sourceControlManager.onDidOpenRepository(this.checkOpened, this, this.disposables);
-    sourceControlManager.onDidCloseRepository(this.checkOpened, this, this.disposables);
+    sourceControlManager.onDidOpenRepository(
+      this.checkOpened,
+      this,
+      this.disposables
+    );
+    sourceControlManager.onDidCloseRepository(
+      this.checkOpened,
+      this,
+      this.disposables
+    );
 
     this.checkOpened();
   }

@@ -9,7 +9,10 @@ export class Close extends Command {
   }
 
   public async execute(repository: Repository) {
-    const sourceControlManager = (await commands.executeCommand("svn.getSourceControlManager", "")) as SourceControlManager;
+    const sourceControlManager = (await commands.executeCommand(
+      "svn.getSourceControlManager",
+      ""
+    )) as SourceControlManager;
 
     sourceControlManager.close(repository);
   }

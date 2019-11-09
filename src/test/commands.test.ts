@@ -31,7 +31,9 @@ suite("Commands Tests", () => {
   });
 
   suiteTeardown(() => {
-    sourceControlManager.openRepositories.forEach(repository => repository.dispose());
+    sourceControlManager.openRepositories.forEach(repository =>
+      repository.dispose()
+    );
     testUtil.destroyAllTempPaths();
   });
 
@@ -43,7 +45,9 @@ suite("Commands Tests", () => {
   });
 
   test("Add File", async function() {
-    const repository = sourceControlManager.getRepository(checkoutDir) as Repository;
+    const repository = sourceControlManager.getRepository(
+      checkoutDir
+    ) as Repository;
 
     await commands.executeCommand("svn.refresh");
     assert.equal(repository.unversioned.resourceStates.length, 1);
@@ -58,7 +62,9 @@ suite("Commands Tests", () => {
   });
 
   test("Commit File", async function() {
-    const repository = sourceControlManager.getRepository(checkoutDir) as Repository;
+    const repository = sourceControlManager.getRepository(
+      checkoutDir
+    ) as Repository;
     repository.inputBox.value = "First Commit";
 
     await commands.executeCommand("svn.commitWithMessage");
@@ -91,7 +97,9 @@ suite("Commands Tests", () => {
   });
 
   test("Open Diff (Double click o source control)", async function() {
-    const repository = sourceControlManager.getRepository(checkoutDir) as Repository;
+    const repository = sourceControlManager.getRepository(
+      checkoutDir
+    ) as Repository;
 
     await commands.executeCommand("svn.refresh");
     assert.equal(repository.changes.resourceStates.length, 1);
@@ -103,7 +111,9 @@ suite("Commands Tests", () => {
   });
 
   test("Add Changelist", async function() {
-    const repository = sourceControlManager.getRepository(checkoutDir) as Repository;
+    const repository = sourceControlManager.getRepository(
+      checkoutDir
+    ) as Repository;
 
     await commands.executeCommand("svn.refresh");
     assert.equal(repository.changes.resourceStates.length, 1);
@@ -118,7 +128,9 @@ suite("Commands Tests", () => {
   });
 
   test("Remove Changelist", async function() {
-    const repository = sourceControlManager.getRepository(checkoutDir) as Repository;
+    const repository = sourceControlManager.getRepository(
+      checkoutDir
+    ) as Repository;
 
     const group = repository.changelists.get(
       "changelist-test"
@@ -136,7 +148,9 @@ suite("Commands Tests", () => {
   });
 
   test("Commit Selected File", async function() {
-    const repository = sourceControlManager.getRepository(checkoutDir) as Repository;
+    const repository = sourceControlManager.getRepository(
+      checkoutDir
+    ) as Repository;
 
     await commands.executeCommand("svn.refresh");
     assert.equal(repository.changes.resourceStates.length, 1);
@@ -152,7 +166,9 @@ suite("Commands Tests", () => {
   });
 
   test("Commit File", async function() {
-    const repository = sourceControlManager.getRepository(checkoutDir) as Repository;
+    const repository = sourceControlManager.getRepository(
+      checkoutDir
+    ) as Repository;
     repository.inputBox.value = "First Commit";
 
     await commands.executeCommand("svn.commitWithMessage");
@@ -168,7 +184,9 @@ suite("Commands Tests", () => {
     // Wait run updateRemoteChangedFiles
     await timeout(2000);
 
-    const repository = sourceControlManager.getRepository(checkoutDir) as Repository;
+    const repository = sourceControlManager.getRepository(
+      checkoutDir
+    ) as Repository;
     assert.equal(await repository.getCurrentBranch(), "branches/test");
   });
 
@@ -180,7 +198,9 @@ suite("Commands Tests", () => {
     // Wait run updateRemoteChangedFiles
     await timeout(2000);
 
-    const repository = sourceControlManager.getRepository(checkoutDir) as Repository;
+    const repository = sourceControlManager.getRepository(
+      checkoutDir
+    ) as Repository;
     assert.equal(await repository.getCurrentBranch(), "trunk");
   });
 });

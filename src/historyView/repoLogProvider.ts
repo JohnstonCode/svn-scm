@@ -119,10 +119,12 @@ export class RepoLogProvider
     this._dispose.push(
       commands.registerCommand("svn.repolog.refresh", this.refresh, this)
     );
-    this.sourceControlManager.onDidChangeRepository(async (_e: RepositoryChangeEvent) => {
-      return this.refresh();
-      // TODO refresh only required repo, need to pass element === getChildren()
-    });
+    this.sourceControlManager.onDidChangeRepository(
+      async (_e: RepositoryChangeEvent) => {
+        return this.refresh();
+        // TODO refresh only required repo, need to pass element === getChildren()
+      }
+    );
   }
 
   public dispose() {
@@ -170,7 +172,9 @@ export class RepoLogProvider
         if (rev !== "HEAD" && isNaN(parseInt(rev, 10))) {
           throw new Error("erroneous revision");
         }
-        const remRepo = await this.sourceControlManager.getRemoteRepository(uri);
+        const remRepo = await this.sourceControlManager.getRemoteRepository(
+          uri
+        );
         item.repo = remRepo;
         item.svnTarget = uri;
       } catch (e) {

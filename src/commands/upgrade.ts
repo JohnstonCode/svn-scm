@@ -29,10 +29,15 @@ export class Upgrade extends Command {
       no,
       neverShowAgain
     );
-    const sourceControlManager = (await commands.executeCommand("svn.getSourceControlManager", "")) as SourceControlManager;
+    const sourceControlManager = (await commands.executeCommand(
+      "svn.getSourceControlManager",
+      ""
+    )) as SourceControlManager;
 
     if (choice === yes) {
-      const upgraded = await sourceControlManager.upgradeWorkingCopy(folderPath);
+      const upgraded = await sourceControlManager.upgradeWorkingCopy(
+        folderPath
+      );
 
       if (upgraded) {
         window.showInformationMessage(`Working copy "${folderPath}" upgraded`);

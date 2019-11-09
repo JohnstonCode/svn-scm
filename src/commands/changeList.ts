@@ -24,9 +24,14 @@ export class ChangeList extends Command {
       return;
     }
 
-    const sourceControlManager = (await commands.executeCommand("svn.getSourceControlManager", "")) as SourceControlManager;
+    const sourceControlManager = (await commands.executeCommand(
+      "svn.getSourceControlManager",
+      ""
+    )) as SourceControlManager;
 
-    const promiseArray = uris.map(async uri => sourceControlManager.getRepositoryFromUri(uri));
+    const promiseArray = uris.map(async uri =>
+      sourceControlManager.getRepositoryFromUri(uri)
+    );
     let repositories = await Promise.all(promiseArray);
     repositories = repositories.filter(repository => repository);
 

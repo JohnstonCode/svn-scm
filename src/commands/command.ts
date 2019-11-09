@@ -68,7 +68,9 @@ export abstract class Command implements Disposable {
       if (repository) {
         repositoryPromise = Promise.resolve(repository);
       } else if (sourceControlManager.repositories.length === 1) {
-        repositoryPromise = Promise.resolve(sourceControlManager.repositories[0]);
+        repositoryPromise = Promise.resolve(
+          sourceControlManager.repositories[0]
+        );
       } else {
         repositoryPromise = sourceControlManager.pickRepository();
       }
@@ -123,7 +125,10 @@ export abstract class Command implements Disposable {
     const resources = arg instanceof Uri ? [arg] : arg;
     const isSingleResource = arg instanceof Uri;
 
-    const sourceControlManager = (await commands.executeCommand("svn.getSourceControlManager", "")) as SourceControlManager;
+    const sourceControlManager = (await commands.executeCommand(
+      "svn.getSourceControlManager",
+      ""
+    )) as SourceControlManager;
 
     const groups: Array<{ repository: Repository; resources: Uri[] }> = [];
 
