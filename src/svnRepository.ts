@@ -56,8 +56,7 @@ export class Repository {
   public async updateInfo() {
     const result = await this.exec([
       "info",
-      "--xml",
-      fixPegRevision(this.root)
+      "--xml"
     ]);
     this._info = await parseInfoXml(result.stdout);
   }
