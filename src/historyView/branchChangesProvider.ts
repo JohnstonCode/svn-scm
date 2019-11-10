@@ -2,17 +2,19 @@ import {
   TreeDataProvider,
   Disposable,
   TreeItem,
-  Event,
-  commands
+  commands,
+  EventEmitter
 } from "vscode";
 import { Model } from "../model";
-import { ISvnPathChange, Status } from "../common/types";
+import { ISvnPathChange, Status, IModelChangeEvent } from "../common/types";
 import { openDiff, getIconObject } from "./common";
 import { dispose } from "../util";
 
 export class BranchChangesProvider
   implements TreeDataProvider<ISvnPathChange>, Disposable {
   private _dispose: Disposable[] = [];
+  private _onDidChangeTreeData = new EventEmitter<ISvnPathChange | undefined>();
+  public readonly onDidChangeTreeData = this._onDidChangeTreeData.event;
 
   constructor(private model: Model) {
     this._dispose.push(
@@ -22,6 +24,14 @@ export class BranchChangesProvider
         this
       )
     );
+
+    this._dispose.push(
+      commands.registerCommand("svn.branchchanges.refresh", this.refresh, this)
+    );
+
+    this.model.onDidChangeRepository(async (_e: IModelChangeEvent) => {
+      return this.refresh();
+    });
   }
 
   dispose() {
@@ -51,7 +61,12 @@ export class BranchChangesProvider
       tooltip: `${element.oldPath}@r${element.oldRevision} → ${element.newPath}@r${element.newRevision}`
     };
   }
+
   getChildren(element?: ISvnPathChange): Promise<ISvnPathChange[]> {
+    return this.refresh(element, false);
+  }
+
+  public async refresh(element?: ISvnPathChange, refresh: boolean = true): Promise<ISvnPathChange[]> {
     if (element !== undefined) {
       return Promise.resolve([]);
     }
@@ -62,9 +77,15 @@ export class BranchChangesProvider
       changes.push(repo.getChanges());
     }
 
-    return Promise.all(changes).then(value =>
+    const result = await Promise.all(changes).then(value =>
       value.reduce((prev, curr) => prev.concat(curr), [])
     );
+
+    if (refresh)
+    {
+      this._onDidChangeTreeData.fire();
+    }
+    return result;
   }
 
   public async openDiffCmd(element: ISvnPathChange) {
