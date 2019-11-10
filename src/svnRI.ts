@@ -33,6 +33,7 @@ export class SvnRI {
     return Uri.file(
       path.join(
         this.checkoutRoot.path,
+        this.fromRepoToBranch,
         path.relative(this.fromRepoToBranch, this._path)
       )
     );
