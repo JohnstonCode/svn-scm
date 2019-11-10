@@ -14,6 +14,16 @@ export class BranchChangesProvider
   implements TreeDataProvider<ISvnPathChange>, Disposable {
   private _dispose: Disposable[] = [];
 
+  constructor(private model: Model) {
+    this._dispose.push(
+      commands.registerCommand(
+        "svn.branchchanges.openDiff",
+        this.openDiffCmd,
+        this
+      )
+    );
+  }
+
   dispose() {
     dispose(this._dispose);
   }
@@ -71,15 +81,5 @@ export class BranchChangesProvider
         element.newPath
       );
     }
-  }
-
-  constructor(private model: Model) {
-    this._dispose.push(
-      commands.registerCommand(
-        "svn.branchchanges.openDiff",
-        this.openDiffCmd,
-        this
-      )
-    );
   }
 }
