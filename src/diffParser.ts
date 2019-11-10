@@ -16,8 +16,8 @@ export async function parseDiffXml(content: string): Promise<ISvnPath[]> {
       (err, result) => {
         if (
           err ||
-          typeof result.paths === "undefined" ||
-          typeof result.paths.path === "undefined"
+          !result.paths ||
+          !result.paths.path
         ) {
           reject();
         }

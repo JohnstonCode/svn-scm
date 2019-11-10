@@ -10,7 +10,8 @@ import {
   ISvnLogEntry,
   Status,
   SvnDepth,
-  ISvnPathChange
+  ISvnPathChange,
+  ISvnPath
 } from "./common/types";
 import { sequentialize } from "./decorators";
 import * as encodeUtil from "./encoding";
@@ -233,7 +234,12 @@ export class Repository {
       "--summarize"
     ];
     result = await this.exec(args);
-    const paths = await parseDiffXml(result.stdout);
+    let paths: ISvnPath[];
+    try {
+      paths = await parseDiffXml(result.stdout);
+    } catch (err) {
+      return [];
+    }
 
     const changes: ISvnPathChange[] = [];
 
