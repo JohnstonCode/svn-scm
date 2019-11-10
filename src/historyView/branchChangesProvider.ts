@@ -70,7 +70,6 @@ export class BranchChangesProvider
     element?: ISvnPathChange,
     fire: boolean = true
   ): Promise<ISvnPathChange[]> {
-    console.log('refresh');
     if (element !== undefined) {
       return Promise.resolve([]);
     }
