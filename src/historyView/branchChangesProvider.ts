@@ -28,8 +28,6 @@ export class BranchChangesProvider
     dispose(this._dispose);
   }
 
-  onDidChangeTreeData?: Event<ISvnPathChange> | undefined;
-
   getTreeItem(element: ISvnPathChange): TreeItem | Thenable<TreeItem> {
     let iconName: string = "";
     if (element.item === Status.ADDED) {
