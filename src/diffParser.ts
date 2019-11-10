@@ -17,9 +17,13 @@ export async function parseDiffXml(content: string): Promise<ISvnPath[]> {
         if (
           err ||
           typeof result.paths === "undefined" ||
-          !Array.isArray(result.paths.path)
+          typeof result.paths.path === "undefined"
         ) {
           reject();
+        }
+
+        if (!Array.isArray(result.paths.path)) {
+          result.paths.path = [result.paths.path];
         }
 
         resolve(result.paths.path);
