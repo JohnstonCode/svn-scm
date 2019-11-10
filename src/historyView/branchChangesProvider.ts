@@ -6,7 +6,7 @@ import {
   EventEmitter
 } from "vscode";
 import { Model } from "../model";
-import { ISvnPathChange, Status, IModelChangeEvent } from "../common/types";
+import { ISvnPathChange, Status } from "../common/types";
 import { openDiff, getIconObject, openFileRemote } from "./common";
 import { dispose } from "../util";
 
@@ -26,12 +26,14 @@ export class BranchChangesProvider
     );
 
     this._dispose.push(
-      commands.registerCommand("svn.branchchanges.refresh", this.refresh, this)
+      commands.registerCommand(
+        "svn.branchchanges.refresh",
+        () => this._onDidChangeTreeData.fire(),
+        this
+      )
     );
 
-    this.model.onDidChangeRepository(async (_e: IModelChangeEvent) => {
-      return this.refresh();
-    });
+    this.model.onDidChangeRepository(() => this._onDidChangeTreeData.fire());
   }
 
   dispose() {
@@ -63,13 +65,6 @@ export class BranchChangesProvider
   }
 
   getChildren(element?: ISvnPathChange): Promise<ISvnPathChange[]> {
-    return this.refresh(element, false);
-  }
-
-  public async refresh(
-    element?: ISvnPathChange,
-    fire: boolean = true
-  ): Promise<ISvnPathChange[]> {
     if (element !== undefined) {
       return Promise.resolve([]);
     }
@@ -80,14 +75,9 @@ export class BranchChangesProvider
       changes.push(repo.getChanges());
     }
 
-    const result = await Promise.all(changes).then(value =>
+    return Promise.all(changes).then(value =>
       value.reduce((prev, curr) => prev.concat(curr), [])
     );
-
-    if (fire) {
-      this._onDidChangeTreeData.fire();
-    }
-    return result;
   }
 
   public async openDiffCmd(element: ISvnPathChange) {
