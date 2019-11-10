@@ -221,6 +221,7 @@ export class Repository {
     }
 
     // Now, diff the source branch at the latest merged revision with the current branch's revision
+    await this.update();
     const info = await this.getInfo();
     args = [
       "diff",

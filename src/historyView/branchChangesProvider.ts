@@ -7,7 +7,7 @@ import {
 } from "vscode";
 import { Model } from "../model";
 import { ISvnPathChange, Status, IModelChangeEvent } from "../common/types";
-import { openDiff, getIconObject } from "./common";
+import { openDiff, getIconObject, openFileRemote } from "./common";
 import { dispose } from "../util";
 
 export class BranchChangesProvider
@@ -66,7 +66,10 @@ export class BranchChangesProvider
     return this.refresh(element, false);
   }
 
-  public async refresh(element?: ISvnPathChange, refresh: boolean = true): Promise<ISvnPathChange[]> {
+  public async refresh(
+    element?: ISvnPathChange,
+    fire: boolean = true
+  ): Promise<ISvnPathChange[]> {
     if (element !== undefined) {
       return Promise.resolve([]);
     }
@@ -81,8 +84,7 @@ export class BranchChangesProvider
       value.reduce((prev, curr) => prev.concat(curr), [])
     );
 
-    if (refresh)
-    {
+    if (fire) {
       this._onDidChangeTreeData.fire();
     }
     return result;
@@ -99,6 +101,9 @@ export class BranchChangesProvider
         element.newRevision,
         element.newPath
       );
+    }
+    if (element.item === Status.ADDED) {
+      return openFileRemote(repo, element.newPath, element.newRevision);
     }
   }
 }
