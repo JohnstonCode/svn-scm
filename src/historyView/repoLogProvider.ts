@@ -292,8 +292,7 @@ export class RepoLogProvider
         if (revs.length === 2) {
           prevRev = revs[1];
         } else {
-          window.showWarningMessage("Cannot find previous commit");
-          return;
+          return this.openFileLocal(element);
         }
       }
     }
