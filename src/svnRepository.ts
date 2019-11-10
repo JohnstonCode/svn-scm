@@ -145,7 +145,8 @@ export class Repository {
   public async getInfo(
     file: string = "",
     revision?: string,
-    skipCache: boolean = false
+    skipCache: boolean = false,
+    isUrl: boolean = false
   ): Promise<ISvnInfo> {
     if (!skipCache && this._infoCache[file]) {
       return this._infoCache[file];
@@ -157,7 +158,7 @@ export class Repository {
       args.push("-r", revision);
     }
 
-    if (file) {
+    if (file && !isUrl) {
       file = fixPathSeparator(file);
       args.push(file);
     }
@@ -221,8 +222,8 @@ export class Repository {
     }
 
     // Now, diff the source branch at the latest merged revision with the current branch's revision
-    await this.update();
-    const info = await this.getInfo();
+    let info = await this.getInfo();
+    info = await this.getInfo(info.url, undefined, undefined, true);
     args = [
       "diff",
       `${copyFromUrl}@${latestMergedRevision}`,
