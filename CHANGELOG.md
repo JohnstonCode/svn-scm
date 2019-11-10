@@ -1,3 +1,10 @@
+## [2.0.1](https://github.com/JohnstonCode/svn-scm/compare/v2.0.0...v2.0.1) (2019-11-10)
+
+
+### Bug Fixes
+
+* Stop retrieving info of repo root ([#728](https://github.com/JohnstonCode/svn-scm/issues/728)) ([12e584b](https://github.com/JohnstonCode/svn-scm/commit/12e584b))
+
 # [2.0.0](https://github.com/JohnstonCode/svn-scm/compare/v1.54.11...v2.0.0) (2019-11-08)
 
 
