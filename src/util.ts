@@ -90,6 +90,10 @@ export function normalizePath(file: string) {
 }
 
 export function isDescendant(parent: string, descendant: string): boolean {
+  if (parent.trim() === "" || descendant.trim() === "") {
+    return false;
+  }
+
   parent = parent.replace(/[\\\/]/g, path.sep);
   descendant = descendant.replace(/[\\\/]/g, path.sep);
 

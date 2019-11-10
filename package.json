@@ -115,6 +115,11 @@
           "id": "itemlog",
           "name": "File History",
           "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
+        },
+        {
+          "id": "branchchanges",
+          "name": "Branch Changes",
+          "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
         }
       ]
     },
@@ -190,6 +195,11 @@
         "command": "svn.itemlog.copymsg",
         "category": "SVN",
         "title": "Copy message to clipboard"
+      },
+      {
+        "command": "svn.branchchanges.openDiff",
+        "category": "SVN",
+        "title": "Open diff"
       },
       {
         "command": "svn.checkout",
@@ -590,6 +600,10 @@
         },
         {
           "command": "svn.itemlog.copymsg",
+          "when": "false"
+        },
+        {
+          "command": "svn.branchchanges.openDiff",
           "when": "false"
         },
         {

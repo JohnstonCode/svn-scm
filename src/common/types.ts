@@ -53,6 +53,24 @@ export interface ISvnInfo {
   };
 }
 
+export interface ISvnPath {
+  props: PropStatus;
+  kind: SvnKindType;
+  item: Status;
+  _: string;
+}
+
+export interface ISvnPathChange {
+  oldPath: Uri;
+  newPath: Uri;
+  oldRevision: string;
+  newRevision: string;
+  props: PropStatus;
+  kind: SvnKindType;
+  item: Status;
+  repo: Uri;
+}
+
 export interface ISvnListItem {
   kind: SvnKindType;
   name: string;
@@ -91,6 +109,7 @@ export enum RepositoryState {
 export enum Operation {
   Add = "Add",
   AddChangelist = "AddChangelist",
+  Changes = "Changes",
   CleanUp = "CleanUp",
   Commit = "Commit",
   CurrentBranch = "CurrentBranch",
@@ -272,6 +291,8 @@ export interface ISvnLogEntryPath {
   action: string;
   /** "file" | "dir" e.g. */
   kind: string;
+  copyfromPath?: string;
+  copyfromRev?: string;
 }
 
 /** produced by svn log */
