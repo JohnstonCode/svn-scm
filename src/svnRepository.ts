@@ -159,8 +159,10 @@ export class Repository {
       args.push("-r", revision);
     }
 
-    if (file && !isUrl) {
-      file = fixPathSeparator(file);
+    if (file) {
+      if (!isUrl) {
+        file = fixPathSeparator(file);
+      }
       args.push(file);
     }
 
