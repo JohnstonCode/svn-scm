@@ -224,7 +224,7 @@ export class Repository {
 
     // Now, diff the source branch at the latest merged revision with the current branch's revision
     let info = await this.getInfo();
-    info = await this.getInfo(info.url, undefined, undefined, true);
+    info = await this.getInfo(info.url, undefined, true, true);
     args = [
       "diff",
       `${copyFromUrl}@${latestMergedRevision}`,
