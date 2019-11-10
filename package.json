@@ -202,6 +202,15 @@
         "title": "Open diff"
       },
       {
+        "command": "svn.branchchanges.refresh",
+        "category": "SVN",
+        "title": "Refresh branch changes",
+        "icon": {
+          "dark": "icons/dark/refresh.svg",
+          "light": "icons/light/refresh.svg"
+        }
+      },
+      {
         "command": "svn.checkout",
         "title": "Checkout",
         "category": "SVN"
@@ -607,6 +616,10 @@
           "when": "false"
         },
         {
+          "command": "svn.branchchanges.refresh",
+          "when": "false"
+        },
+        {
           "command": "svn.pickCommitMessage",
           "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
         }
@@ -630,6 +643,11 @@
         {
           "command": "svn.itemlog.refresh",
           "when": "view == itemlog",
+          "group": "navigation"
+        },
+        {
+          "command": "svn.branchchanges.refresh",
+          "when": "view == branchchanges",
           "group": "navigation"
         }
       ],
