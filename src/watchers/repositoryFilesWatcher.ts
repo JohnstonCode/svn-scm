@@ -34,7 +34,6 @@ export class RepositoryFilesWatcher implements IDisposable {
     if (!workspace.getWorkspaceFolder(Uri.parse(root))) {
       const repoWatcher = watch(
         join(root, ".svn"),
-        { recursive: true },
         (event, filename) => {
           if (event === "change") {
             _onRepoChange.fire(Uri.parse(filename));
