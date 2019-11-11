@@ -200,18 +200,22 @@ export class Repository {
     if (
       typeof copyCommitPath.copyfromRev === "undefined" ||
       typeof copyCommitPath.copyfromPath === "undefined" ||
+      typeof copyCommitPath._ === "undefined" ||
       copyCommitPath.copyfromRev.trim().length === 0 ||
-      copyCommitPath.copyfromPath.trim().length === 0
+      copyCommitPath.copyfromPath.trim().length === 0 ||
+      copyCommitPath._.trim().length === 0
     ) {
       return [];
     }
 
     const copyFromPath = copyCommitPath.copyfromPath;
     const copyFromRev = copyCommitPath.copyfromRev;
+    const copyToPath = copyCommitPath._;
     const copyFromUrl = this.info.repository.root + copyFromPath;
+    const copyToUrl = this.info.repository.root + copyToPath;
 
     // Get last merge revision from path that this branch was copied from.
-    args = ["mergeinfo", "--show-revs=merged", copyFromUrl];
+    args = ["mergeinfo", "--show-revs=merged", copyFromUrl, copyToUrl];
     result = await this.exec(args);
     const revisions = result.stdout.trim().split("\n");
     let latestMergedRevision: string = "";
@@ -225,12 +229,11 @@ export class Repository {
     }
 
     // Now, diff the source branch at the latest merged revision with the current branch's revision
-    let info = await this.getInfo();
-    info = await this.getInfo(info.url, undefined, true, true);
+    const info = await this.getInfo(copyToUrl, undefined, true, true);
     args = [
       "diff",
       `${copyFromUrl}@${latestMergedRevision}`,
-      info.url,
+      copyToUrl,
       "--ignore-properties",
       "--xml",
       "--summarize"
@@ -249,7 +252,7 @@ export class Repository {
     for (const path of paths) {
       changes.push({
         oldPath: Uri.parse(path._),
-        newPath: Uri.parse(path._.replace(copyFromUrl, info.url)),
+        newPath: Uri.parse(path._.replace(copyFromUrl, copyToUrl)),
         oldRevision: latestMergedRevision.replace("r", ""),
         newRevision: info.revision,
         item: path.item,
