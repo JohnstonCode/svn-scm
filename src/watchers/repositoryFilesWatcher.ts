@@ -1,4 +1,7 @@
-import { Event, Uri, workspace } from "vscode";
+import { Event, Uri, workspace, EventEmitter } from "vscode";
+import { watch } from "fs";
+import { exists } from "../fs";
+import { join } from "path";
 import { anyEvent, filterEvent, IDisposable, isDescendant } from "../util";
 
 export class RepositoryFilesWatcher implements IDisposable {
@@ -21,6 +24,41 @@ export class RepositoryFilesWatcher implements IDisposable {
 
   constructor(readonly root: string) {
     const fsWatcher = workspace.createFileSystemWatcher("**");
+    const _onRepoChange = new EventEmitter<Uri>();
+    const _onRepoCreate = new EventEmitter<Uri>();
+    const _onRepoDelete = new EventEmitter<Uri>();
+    let onRepoChange: Event<Uri> | undefined;
+    let onRepoCreate: Event<Uri> | undefined;
+    let onRepoDelete: Event<Uri> | undefined;
+
+    if (
+      typeof workspace.workspaceFolders !== "undefined" &&
+      !workspace.workspaceFolders.filter(w => isDescendant(w.uri.fsPath, root))
+        .length
+    ) {
+      const repoWatcher = watch(join(root, ".svn"), (event, filename) => {
+        if (event === "change") {
+          _onRepoChange.fire(Uri.parse(filename));
+        } else if (event === "rename") {
+          exists(filename).then(doesExist => {
+            if (doesExist) {
+              _onRepoCreate.fire(Uri.parse(filename));
+            } else {
+              _onRepoDelete.fire(Uri.parse(filename));
+            }
+          });
+        }
+      });
+
+      repoWatcher.on("error", error => {
+        throw error;
+      });
+
+      onRepoChange = _onRepoChange.event;
+      onRepoCreate = _onRepoCreate.event;
+      onRepoDelete = _onRepoDelete.event;
+    }
+
     this.disposables.push(fsWatcher);
 
     const isTmp = (uri: Uri) => /[\\\/]\.svn[\\\/]tmp/.test(uri.path);
@@ -56,6 +94,12 @@ export class RepositoryFilesWatcher implements IDisposable {
     this.onDidSvnChange = filterEvent(this.onDidChange, ignoreWorkspace);
     this.onDidSvnCreate = filterEvent(this.onDidCreate, ignoreWorkspace);
     this.onDidSvnDelete = filterEvent(this.onDidDelete, ignoreWorkspace);
+
+    if (onRepoChange && onRepoCreate && onRepoDelete) {
+      this.onDidSvnChange = onRepoChange;
+      this.onDidSvnCreate = onRepoCreate;
+      this.onDidSvnDelete = onRepoDelete;
+    }
 
     this.onDidSvnAny = anyEvent(
       this.onDidSvnChange,

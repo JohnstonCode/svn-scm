@@ -24,7 +24,8 @@ import {
   RepositoryState,
   Status,
   SvnDepth,
-  SvnUriAction
+  SvnUriAction,
+  ISvnPathChange
 } from "./common/types";
 import { debounce, globalSequentialize, memoize, throttle } from "./decorators";
 import { exists } from "./fs";
@@ -865,6 +866,10 @@ export class Repository implements IRemoteRepository {
     return this.run(Operation.Info, () =>
       this.repository.getInfo(path, revision, true)
     );
+  }
+
+  public async getChanges(): Promise<ISvnPathChange[]> {
+    return this.run(Operation.Changes, () => this.repository.getChanges());
   }
 
   public async finishCheckout() {

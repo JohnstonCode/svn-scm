@@ -115,6 +115,11 @@
           "id": "itemlog",
           "name": "File History",
           "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
+        },
+        {
+          "id": "branchchanges",
+          "name": "Branch Changes",
+          "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
         }
       ]
     },
@@ -190,6 +195,20 @@
         "command": "svn.itemlog.copymsg",
         "category": "SVN",
         "title": "Copy message to clipboard"
+      },
+      {
+        "command": "svn.branchchanges.openDiff",
+        "category": "SVN",
+        "title": "Open diff"
+      },
+      {
+        "command": "svn.branchchanges.refresh",
+        "category": "SVN",
+        "title": "Refresh branch changes",
+        "icon": {
+          "dark": "icons/dark/refresh.svg",
+          "light": "icons/light/refresh.svg"
+        }
       },
       {
         "command": "svn.checkout",
@@ -593,6 +612,14 @@
           "when": "false"
         },
         {
+          "command": "svn.branchchanges.openDiff",
+          "when": "false"
+        },
+        {
+          "command": "svn.branchchanges.refresh",
+          "when": "false"
+        },
+        {
           "command": "svn.pickCommitMessage",
           "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
         }
@@ -616,6 +643,11 @@
         {
           "command": "svn.itemlog.refresh",
           "when": "view == itemlog",
+          "group": "navigation"
+        },
+        {
+          "command": "svn.branchchanges.refresh",
+          "when": "view == branchchanges",
           "group": "navigation"
         }
       ],
