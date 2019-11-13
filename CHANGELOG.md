@@ -1,3 +1,10 @@
+# [2.1.0](https://github.com/JohnstonCode/svn-scm/compare/v2.0.2...v2.1.0) (2019-11-13)
+
+
+### Features
+
+* Added Branches tree view ([#729](https://github.com/JohnstonCode/svn-scm/issues/729)) ([cecd185](https://github.com/JohnstonCode/svn-scm/commit/cecd185))
+
 ## [2.0.2](https://github.com/JohnstonCode/svn-scm/compare/v2.0.1...v2.0.2) (2019-11-11)
 
 
