@@ -1,3 +1,10 @@
+## [2.1.1](https://github.com/JohnstonCode/svn-scm/compare/v2.1.0...v2.1.1) (2019-11-14)
+
+
+### Bug Fixes
+
+* Fix cwd when running svn commands for remoteRepository ([#738](https://github.com/JohnstonCode/svn-scm/issues/738)) ([2c0dd2d](https://github.com/JohnstonCode/svn-scm/commit/2c0dd2d))
+
 # [2.1.0](https://github.com/JohnstonCode/svn-scm/compare/v2.0.2...v2.1.0) (2019-11-13)
 
 
