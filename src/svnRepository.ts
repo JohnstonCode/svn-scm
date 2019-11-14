@@ -62,8 +62,9 @@ export class Repository {
     const result = await this.exec([
       "info",
       "--xml",
-      fixPegRevision(this.workspaceRoot)
+      fixPegRevision(this.workspaceRoot ? this.workspaceRoot : this.root)
     ]);
+
     this._info = await parseInfoXml(result.stdout);
   }
 
