@@ -1,3 +1,10 @@
+## [2.1.2](https://github.com/JohnstonCode/svn-scm/compare/v2.1.1...v2.1.2) (2019-11-15)
+
+
+### Bug Fixes
+
+* Debounce repo watcher ([#742](https://github.com/JohnstonCode/svn-scm/issues/742)) ([a34b79b](https://github.com/JohnstonCode/svn-scm/commit/a34b79b))
+
 ## [2.1.1](https://github.com/JohnstonCode/svn-scm/compare/v2.1.0...v2.1.1) (2019-11-14)
 
 
