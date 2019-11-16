@@ -1,3 +1,10 @@
+## [2.1.3](https://github.com/JohnstonCode/svn-scm/compare/v2.1.2...v2.1.3) (2019-11-16)
+
+
+### Bug Fixes
+
+* Added check for jschardet constants ([#745](https://github.com/JohnstonCode/svn-scm/issues/745)) ([7594012](https://github.com/JohnstonCode/svn-scm/commit/7594012))
+
 ## [2.1.2](https://github.com/JohnstonCode/svn-scm/compare/v2.1.1...v2.1.2) (2019-11-15)
 
 
