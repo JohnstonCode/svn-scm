@@ -5,7 +5,7 @@ import {
   commands,
   EventEmitter
 } from "vscode";
-import { Model } from "../model";
+import { SourceControlManager } from "../source_control_manager";
 import { ISvnPathChange, Status } from "../common/types";
 import { openDiff, getIconObject, openFileRemote } from "./common";
 import { dispose } from "../util";
@@ -16,7 +16,7 @@ export class BranchChangesProvider
   private _onDidChangeTreeData = new EventEmitter<ISvnPathChange | undefined>();
   public readonly onDidChangeTreeData = this._onDidChangeTreeData.event;
 
-  constructor(private model: Model) {
+  constructor(private model: SourceControlManager) {
     this._dispose.push(
       commands.registerCommand(
         "svn.branchchanges.openDiff",

@@ -87,7 +87,7 @@ export enum SvnKindType {
   DIR = "dir"
 }
 
-export interface IModelChangeEvent {
+export interface RepositoryChangeEvent {
   repository: Repository;
   uri: Uri;
 }

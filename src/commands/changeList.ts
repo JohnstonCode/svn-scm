@@ -1,6 +1,6 @@
 import { commands, Uri, window } from "vscode";
 import { inputSwitchChangelist } from "../changelistItems";
-import { Model } from "../model";
+import { SourceControlManager } from "../source_control_manager";
 import { Resource } from "../resource";
 import { normalizePath } from "../util";
 import { Command } from "./command";
@@ -24,9 +24,14 @@ export class ChangeList extends Command {
       return;
     }
 
-    const model = (await commands.executeCommand("svn.getModel", "")) as Model;
+    const sourceControlManager = (await commands.executeCommand(
+      "svn.getSourceControlManager",
+      ""
+    )) as SourceControlManager;
 
-    const promiseArray = uris.map(async uri => model.getRepositoryFromUri(uri));
+    const promiseArray = uris.map(async uri =>
+      sourceControlManager.getRepositoryFromUri(uri)
+    );
     let repositories = await Promise.all(promiseArray);
     repositories = repositories.filter(repository => repository);
 

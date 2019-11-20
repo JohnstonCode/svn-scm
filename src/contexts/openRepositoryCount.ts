@@ -1,15 +1,23 @@
 import { commands, Disposable } from "vscode";
 import { debounce } from "../decorators";
-import { Model } from "../model";
+import { SourceControlManager } from "../source_control_manager";
 import { IDisposable } from "../util";
 
 export class OpenRepositoryCount implements IDisposable {
   private disposables: Disposable[] = [];
 
-  constructor(private model: Model) {
+  constructor(private sourceControlManager: SourceControlManager) {
     // When repository Opened or closed
-    model.onDidOpenRepository(this.checkOpened, this, this.disposables);
-    model.onDidCloseRepository(this.checkOpened, this, this.disposables);
+    sourceControlManager.onDidOpenRepository(
+      this.checkOpened,
+      this,
+      this.disposables
+    );
+    sourceControlManager.onDidCloseRepository(
+      this.checkOpened,
+      this,
+      this.disposables
+    );
 
     this.checkOpened();
   }
@@ -19,7 +27,7 @@ export class OpenRepositoryCount implements IDisposable {
     commands.executeCommand(
       "setContext",
       "svnOpenRepositoryCount",
-      `${this.model.repositories.length}`
+      `${this.sourceControlManager.repositories.length}`
     );
   }
 
