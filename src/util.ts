@@ -90,6 +90,10 @@ export function normalizePath(file: string) {
 }
 
 export function isDescendant(parent: string, descendant: string): boolean {
+  if (parent.trim() === "" || descendant.trim() === "") {
+    return false;
+  }
+
   parent = parent.replace(/[\\\/]/g, path.sep);
   descendant = descendant.replace(/[\\\/]/g, path.sep);
 
@@ -128,6 +132,7 @@ export function isReadOnly(operation: Operation): boolean {
     case Operation.Log:
     case Operation.Show:
     case Operation.Info:
+    case Operation.Changes:
       return true;
     default:
       return false;

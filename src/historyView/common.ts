@@ -268,16 +268,17 @@ async function downloadFile(
 
 export async function openDiff(
   repo: IRemoteRepository,
-  arg: Uri,
+  arg1: Uri,
   r1: string,
-  r2: string
+  r2: string,
+  arg2?: Uri
 ) {
-  const uri1 = await downloadFile(repo, arg, r1);
-  const uri2 = await downloadFile(repo, arg, r2);
+  const uri1 = await downloadFile(repo, arg1, r1);
+  const uri2 = await downloadFile(repo, arg2 || arg1, r2);
   const opts: TextDocumentShowOptions = {
     preview: true
   };
-  const title = `${path.basename(arg.path)} (${r1} : ${r2})`;
+  const title = `${path.basename(arg1.path)} (${r1} : ${r2})`;
   return commands.executeCommand<void>("vscode.diff", uri1, uri2, title, opts);
 }
 

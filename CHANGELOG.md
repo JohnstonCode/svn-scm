@@ -1,3 +1,45 @@
+## [2.1.3](https://github.com/JohnstonCode/svn-scm/compare/v2.1.2...v2.1.3) (2019-11-16)
+
+
+### Bug Fixes
+
+* Added check for jschardet constants ([#745](https://github.com/JohnstonCode/svn-scm/issues/745)) ([7594012](https://github.com/JohnstonCode/svn-scm/commit/7594012))
+
+## [2.1.2](https://github.com/JohnstonCode/svn-scm/compare/v2.1.1...v2.1.2) (2019-11-15)
+
+
+### Bug Fixes
+
+* Debounce repo watcher ([#742](https://github.com/JohnstonCode/svn-scm/issues/742)) ([a34b79b](https://github.com/JohnstonCode/svn-scm/commit/a34b79b))
+
+## [2.1.1](https://github.com/JohnstonCode/svn-scm/compare/v2.1.0...v2.1.1) (2019-11-14)
+
+
+### Bug Fixes
+
+* Fix cwd when running svn commands for remoteRepository ([#738](https://github.com/JohnstonCode/svn-scm/issues/738)) ([2c0dd2d](https://github.com/JohnstonCode/svn-scm/commit/2c0dd2d))
+
+# [2.1.0](https://github.com/JohnstonCode/svn-scm/compare/v2.0.2...v2.1.0) (2019-11-13)
+
+
+### Features
+
+* Added Branches tree view ([#729](https://github.com/JohnstonCode/svn-scm/issues/729)) ([cecd185](https://github.com/JohnstonCode/svn-scm/commit/cecd185))
+
+## [2.0.2](https://github.com/JohnstonCode/svn-scm/compare/v2.0.1...v2.0.2) (2019-11-11)
+
+
+### Bug Fixes
+
+* Fixed CSP policy for commit page ([#733](https://github.com/JohnstonCode/svn-scm/issues/733)) ([6996ff0](https://github.com/JohnstonCode/svn-scm/commit/6996ff0))
+
+## [2.0.1](https://github.com/JohnstonCode/svn-scm/compare/v2.0.0...v2.0.1) (2019-11-10)
+
+
+### Bug Fixes
+
+* Stop retrieving info of repo root ([#728](https://github.com/JohnstonCode/svn-scm/issues/728)) ([12e584b](https://github.com/JohnstonCode/svn-scm/commit/12e584b))
+
 # [2.0.0](https://github.com/JohnstonCode/svn-scm/compare/v1.54.11...v2.0.0) (2019-11-08)
 
 

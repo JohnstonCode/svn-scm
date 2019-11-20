@@ -20,9 +20,8 @@ import { Svn } from "./svn";
 import { SvnContentProvider } from "./svnContentProvider";
 import { SvnFinder } from "./svnFinder";
 import SvnProvider from "./treeView/dataProviders/svnProvider";
-import {
-  toDisposable
-} from "./util";
+import { toDisposable } from "./util";
+import { BranchChangesProvider } from "./historyView/branchChangesProvider";
 
 async function init(
   _context: ExtensionContext,
@@ -53,8 +52,12 @@ async function init(
   disposables.push(itemLogProvider);
   window.registerTreeDataProvider("itemlog", itemLogProvider);
 
-  disposables.push(new CheckActiveEditor(sourceControlManager));
-  disposables.push(new OpenRepositoryCount(sourceControlManager));
+  const branchChangesProvider = new BranchChangesProvider(model);
+  disposables.push(branchChangesProvider);
+  window.registerTreeDataProvider("branchchanges", branchChangesProvider);
+
+  disposables.push(new CheckActiveEditor(model));
+  disposables.push(new OpenRepositoryCount(model));
 
   outputChannel.appendLine(`Using svn "${info.version}" from "${info.path}"`);
 
