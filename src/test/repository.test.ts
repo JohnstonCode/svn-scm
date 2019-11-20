@@ -2,14 +2,14 @@ import * as assert from "assert";
 import * as fs from "original-fs";
 import * as path from "path";
 import { commands, Uri, window, workspace } from "vscode";
-import { Model } from "../model";
+import { SourceControlManager } from "../source_control_manager";
 import { Repository } from "../repository";
 import * as testUtil from "./testUtil";
 
 suite("Repository Tests", () => {
   let repoUri: Uri;
   let checkoutDir: Uri;
-  let model: Model;
+  let sourceControlManager: SourceControlManager;
 
   suiteSetup(async () => {
     await testUtil.activeExtension();
@@ -20,50 +20,52 @@ suite("Repository Tests", () => {
       testUtil.getSvnUrl(repoUri) + "/trunk"
     );
 
-    model = (await commands.executeCommand(
-      "svn.getModel",
+    sourceControlManager = (await commands.executeCommand(
+      "svn.getSourceControlManager",
       checkoutDir
-    )) as Model;
+    )) as SourceControlManager;
   });
 
   suiteTeardown(() => {
-    model.openRepositories.forEach(repository => repository.dispose());
+    sourceControlManager.openRepositories.forEach(repository =>
+      repository.dispose()
+    );
     testUtil.destroyAllTempPaths();
   });
 
   test("Empty Open Repository", async function() {
-    assert.equal(model.repositories.length, 0);
+    assert.equal(sourceControlManager.repositories.length, 0);
   });
 
   test("Try Open Repository", async function() {
-    await model.tryOpenRepository(checkoutDir.fsPath);
-    assert.equal(model.repositories.length, 1);
+    await sourceControlManager.tryOpenRepository(checkoutDir.fsPath);
+    assert.equal(sourceControlManager.repositories.length, 1);
   });
 
   test("Try Open Repository Again", async () => {
-    await model.tryOpenRepository(checkoutDir.fsPath);
-    assert.equal(model.repositories.length, 1);
+    await sourceControlManager.tryOpenRepository(checkoutDir.fsPath);
+    assert.equal(sourceControlManager.repositories.length, 1);
   });
 
   test("Try get repository from Uri", () => {
-    const repository = model.getRepository(checkoutDir);
+    const repository = sourceControlManager.getRepository(checkoutDir);
     assert.ok(repository);
   });
 
   test("Try get repository from string", () => {
-    const repository = model.getRepository(checkoutDir.fsPath);
+    const repository = sourceControlManager.getRepository(checkoutDir.fsPath);
     assert.ok(repository);
   });
 
   test("Try get repository from repository", () => {
-    const repository = model.getRepository(checkoutDir.fsPath);
-    const repository2 = model.getRepository(repository);
+    const repository = sourceControlManager.getRepository(checkoutDir.fsPath);
+    const repository2 = sourceControlManager.getRepository(repository);
     assert.ok(repository2);
     assert.equal(repository, repository2);
   });
 
   test("Try get current branch name", async () => {
-    const repository: Repository | null = model.getRepository(
+    const repository: Repository | null = sourceControlManager.getRepository(
       checkoutDir.fsPath
     );
     if (!repository) {
@@ -76,7 +78,7 @@ suite("Repository Tests", () => {
 
   test("Try commit file", async function() {
     this.timeout(60000);
-    const repository: Repository | null = model.getRepository(
+    const repository: Repository | null = sourceControlManager.getRepository(
       checkoutDir.fsPath
     );
     if (!repository) {
@@ -111,9 +113,9 @@ suite("Repository Tests", () => {
       testUtil.getSvnUrl(repoUri) + "/trunk"
     );
 
-    await model.tryOpenRepository(newCheckoutDir.fsPath);
+    await sourceControlManager.tryOpenRepository(newCheckoutDir.fsPath);
 
-    const newRepository: Repository | null = model.getRepository(
+    const newRepository: Repository | null = sourceControlManager.getRepository(
       newCheckoutDir.fsPath
     );
     if (!newRepository) {
