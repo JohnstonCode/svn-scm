@@ -70,7 +70,7 @@ jobs:
         run: npm run test
 
       - name: Prepare artifact
-        if: startsWith(matrix.os, 'ubuntu') && matrix.version == '' && github.event_name == 'pull_request
+        if: startsWith(matrix.os, 'ubuntu') && matrix.version == '' && github.event_name == 'pull_request'
         run: |
           node_modules/.bin/vsce package -o svn-scm.vsix
 
