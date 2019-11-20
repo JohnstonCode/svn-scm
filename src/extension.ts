@@ -52,12 +52,12 @@ async function init(
   disposables.push(itemLogProvider);
   window.registerTreeDataProvider("itemlog", itemLogProvider);
 
-  const branchChangesProvider = new BranchChangesProvider(model);
+  const branchChangesProvider = new BranchChangesProvider(sourceControlManager);
   disposables.push(branchChangesProvider);
   window.registerTreeDataProvider("branchchanges", branchChangesProvider);
 
-  disposables.push(new CheckActiveEditor(model));
-  disposables.push(new OpenRepositoryCount(model));
+  disposables.push(new CheckActiveEditor(sourceControlManager));
+  disposables.push(new OpenRepositoryCount(sourceControlManager));
 
   outputChannel.appendLine(`Using svn "${info.version}" from "${info.path}"`);
 
