@@ -1,15 +1,15 @@
 import { commands, Disposable, window } from "vscode";
 import { Status } from "../common/types";
 import { debounce } from "../decorators";
-import { Model } from "../model";
+import { SourceControlManager } from "../source_control_manager";
 import { IDisposable } from "../util";
 
 export class CheckActiveEditor implements IDisposable {
   private disposables: Disposable[] = [];
 
-  constructor(private model: Model) {
+  constructor(private sourceControlManager: SourceControlManager) {
     // When repository update, like update
-    model.onDidChangeStatusRepository(
+    sourceControlManager.onDidChangeStatusRepository(
       this.checkHasChangesOnActiveEditor,
       this,
       this.disposables
@@ -37,7 +37,7 @@ export class CheckActiveEditor implements IDisposable {
     }
     const uri = window.activeTextEditor.document.uri;
 
-    const repository = this.model.getRepository(uri);
+    const repository = this.sourceControlManager.getRepository(uri);
     if (!repository) {
       return false;
     }

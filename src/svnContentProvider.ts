@@ -10,11 +10,11 @@ import {
 import {
   ICache,
   ICacheRow,
-  IModelChangeEvent,
+  RepositoryChangeEvent,
   SvnUriAction
 } from "./common/types";
 import { debounce, throttle } from "./decorators";
-import { Model } from "./model";
+import { SourceControlManager } from "./source_control_manager";
 import { fromSvnUri } from "./uri";
 import {
   eventToPromise,
@@ -38,9 +38,9 @@ export class SvnContentProvider
   private cache: ICache = Object.create(null);
   private disposables: Disposable[] = [];
 
-  constructor(private model: Model) {
+  constructor(private sourceControlManager: SourceControlManager) {
     this.disposables.push(
-      model.onDidChangeRepository(this.onDidChangeRepository, this),
+      sourceControlManager.onDidChangeRepository(this.onDidChangeRepository, this),
       workspace.registerTextDocumentContentProvider("svn", this)
     );
 
@@ -48,7 +48,7 @@ export class SvnContentProvider
     this.disposables.push(toDisposable(() => clearInterval(interval)));
   }
 
-  private onDidChangeRepository({ repository }: IModelChangeEvent): void {
+  private onDidChangeRepository({ repository }: RepositoryChangeEvent): void {
     this.changedRepositoryRoots.add(repository.root);
     this.eventuallyFireChangeEvents();
   }
@@ -98,7 +98,7 @@ export class SvnContentProvider
     try {
       const { fsPath, action, extra } = fromSvnUri(uri);
 
-      const repository = this.model.getRepository(fsPath);
+      const repository = this.sourceControlManager.getRepository(fsPath);
 
       if (!repository) {
         return "";
