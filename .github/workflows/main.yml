@@ -70,7 +70,7 @@ jobs:
         run: npm run test
 
       - name: Prepare artifact
-        if: startsWith(matrix.os, 'ubuntu') && matrix.version == ''
+        if: startsWith(matrix.os, 'ubuntu') && matrix.version == '' && github.event_name == 'pull_request
         run: |
           node_modules/.bin/vsce package -o svn-scm.vsix
 
@@ -86,6 +86,7 @@ jobs:
         run: npm run semantic-release
         env:
           VSCE_TOKEN: ${{ secrets.vsceToken }}
+          GITHUB_TOKEN: ${{ secrets.githubToken }}
           GH_TOKEN: ${{ secrets.githubToken }}
           GIT_AUTHOR_EMAIL: ${{ secrets.gitEmail }}
           GIT_COMMITTER_EMAIL: ${{ secrets.gitEmail }}
