@@ -1128,7 +1128,7 @@
         },
         "svn.conflicts.autoResolve": {
           "type": "boolean",
-          "description": "Set file to status resolved after fix conflictss",
+          "description": "Set file to status resolved after fix conflicts",
           "default": false
         },
         "svn.update.ignoreExternals": {
