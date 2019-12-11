@@ -11,7 +11,7 @@ import { CommitWithMessage } from "./commands/commitWithMessage";
 import { DeleteUnversioned } from "./commands/deleteUnversioned";
 import { FileOpen } from "./commands/fileOpen";
 import { FinishCheckout } from "./commands/finishCheckout";
-import { GetModel } from "./commands/getModel";
+import { GetSourceControlManager } from "./commands/get_source_control_manager";
 import { Log } from "./commands/log";
 import { OpenChangeBase } from "./commands/openChangeBase";
 import { OpenChangeHead } from "./commands/openChangeHead";
@@ -38,14 +38,13 @@ import { Revert } from "./commands/revert";
 import { RevertAll } from "./commands/revertAll";
 import { RevertChange } from "./commands/revertChange";
 import { RevertExplorer } from "./commands/revertExplorer";
-import { RevertSelectedRanges } from "./commands/revertSelectedRanges";
 import { SwitchBranch } from "./commands/switchBranch";
 import { Update } from "./commands/update";
 import { Upgrade } from "./commands/upgrade";
-import { Model } from "./model";
+import { SourceControlManager } from "./source_control_manager";
 
-export function registerCommands(model: Model, disposables: Disposable[]) {
-  disposables.push(new GetModel(model));
+export function registerCommands(sourceControlManager: SourceControlManager, disposables: Disposable[]) {
+  disposables.push(new GetSourceControlManager(sourceControlManager));
   disposables.push(new FileOpen());
   disposables.push(new OpenFile());
   disposables.push(new PromptAuth());
@@ -77,7 +76,6 @@ export function registerCommands(model: Model, disposables: Disposable[]) {
   disposables.push(new AddToIgnoreExplorer());
   disposables.push(new RenameExplorer());
   disposables.push(new Upgrade());
-  disposables.push(new RevertSelectedRanges());
   disposables.push(new OpenChangePrev());
   disposables.push(new PromptRemove());
   disposables.push(new Checkout());

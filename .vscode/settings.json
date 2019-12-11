@@ -1,3 +1,6 @@
 // Place your settings in this file to overwrite default and user settings.
 {
+  "prettier.semi": true,
+  "prettier.singleQuote": false,
+  "prettier.trailingComma": "none"
 }

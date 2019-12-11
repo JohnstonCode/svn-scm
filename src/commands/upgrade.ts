@@ -1,6 +1,6 @@
 import { commands, window } from "vscode";
 import { configuration } from "../helpers/configuration";
-import { Model } from "../model";
+import { SourceControlManager } from "../source_control_manager";
 import { fixPathSeparator } from "../util";
 import { Command } from "./command";
 
@@ -29,14 +29,19 @@ export class Upgrade extends Command {
       no,
       neverShowAgain
     );
-    const model = (await commands.executeCommand("svn.getModel", "")) as Model;
+    const sourceControlManager = (await commands.executeCommand(
+      "svn.getSourceControlManager",
+      ""
+    )) as SourceControlManager;
 
     if (choice === yes) {
-      const upgraded = await model.upgradeWorkingCopy(folderPath);
+      const upgraded = await sourceControlManager.upgradeWorkingCopy(
+        folderPath
+      );
 
       if (upgraded) {
         window.showInformationMessage(`Working copy "${folderPath}" upgraded`);
-        model.tryOpenRepository(folderPath);
+        sourceControlManager.tryOpenRepository(folderPath);
       } else {
         window.showErrorMessage(
           `Error on upgrading working copy "${folderPath}". See log for more detail`

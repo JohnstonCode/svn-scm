@@ -2,10 +2,10 @@
   "name": "svn-scm",
   "displayName": "SVN",
   "description": "Integrated Subversion source control",
-  "version": "1.54.4",
+  "version": "2.1.3",
   "publisher": "johnstoncode",
   "engines": {
-    "vscode": "^1.31.0"
+    "vscode": "^1.40.0"
   },
   "private": true,
   "enableProposedApi": false,
@@ -37,8 +37,8 @@
     "build:ts": "npx tsc -p ./",
     "build": "npm run build:ts && npm run build:css",
     "compile": "npx tsc -watch -p ./",
-    "lint:fix": "npx tslint --fix -p ./",
-    "lint": "npx tslint -p ./",
+    "lint:fix": "npm run lint -- --fix",
+    "lint": "eslint \"src/**/*.ts\"",
     "semantic-release": "semantic-release",
     "style-check": "npx prettylint src/**/*.ts",
     "test": "node ./out/test/runTest.js",
@@ -57,29 +57,24 @@
     "@semantic-release/changelog": "^3.0.4",
     "@semantic-release/git": "^7.0.16",
     "@types/glob": "^7.1.1",
-    "@types/istanbul": "^0.4.30",
-    "@types/mocha": "^5.2.6",
-    "@types/node": "^12.0.12",
+    "@types/mocha": "^5.2.7",
+    "@types/node": "^12.11.7",
     "@types/semver": "^6.0.0",
     "@types/tmp": "0.1.0",
-    "@types/vscode": "^1.26.0",
+    "@types/vscode": "1.40.0",
     "@types/xml2js": "^0.4.4",
-    "codecov": "^3.4.0",
+    "@typescript-eslint/eslint-plugin": "^2.5.0",
+    "@typescript-eslint/parser": "^2.5.0",
     "decache": "^4.5.1",
+    "eslint": "^6.5.1",
     "glob": "^7.1.4",
-    "istanbul": "^0.4.5",
     "milligram": "^1.3.0",
-    "mocha": "^6.1.4",
-    "mocha-junit-reporter": "^1.22.0",
-    "mocha-multi-reporters": "^1.1.7",
+    "mocha": "^6.2.2",
     "node-sass": "^4.12.0",
     "prettier": "^1.18.2",
     "prettylint": "^1.0.0",
-    "remap-istanbul": "^0.13.0",
-    "semantic-release": "^15.13.13",
+    "semantic-release": "^15.13.25",
     "semantic-release-vsce": "^2.2.8",
-    "source-map-support": "^0.5.12",
-    "tslint": "^5.16.0",
     "typescript": "^3.4.5",
     "vscode-test": "^1.0.0"
   },
@@ -87,6 +82,11 @@
     "commitizen": {
       "path": "cz-conventional-changelog"
     }
+  },
+  "greenkeeper": {
+    "ignore": [
+      "@types/node"
+    ]
   },
   "contributes": {
     "viewsContainers": {
@@ -114,6 +114,11 @@
         {
           "id": "itemlog",
           "name": "File History",
+          "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
+        },
+        {
+          "id": "branchchanges",
+          "name": "Branch Changes",
           "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
         }
       ]
@@ -190,6 +195,20 @@
         "command": "svn.itemlog.copymsg",
         "category": "SVN",
         "title": "Copy message to clipboard"
+      },
+      {
+        "command": "svn.branchchanges.openDiff",
+        "category": "SVN",
+        "title": "Open diff"
+      },
+      {
+        "command": "svn.branchchanges.refresh",
+        "category": "SVN",
+        "title": "Refresh branch changes",
+        "icon": {
+          "dark": "icons/dark/refresh.svg",
+          "light": "icons/light/refresh.svg"
+        }
       },
       {
         "command": "svn.checkout",
@@ -372,11 +391,6 @@
         }
       },
       {
-        "command": "svn.revertSelectedRanges",
-        "title": "Revert Selected Ranges",
-        "category": "SVN"
-      },
-      {
         "command": "svn.close",
         "title": "Close repository",
         "category": "SVN"
@@ -530,10 +544,6 @@
           "when": "false"
         },
         {
-          "command": "svn.revertSelectedRanges",
-          "when": "config.svn.enabled && svnOpenRepositoryCount != 0 && svnHasSupportToRegisterDiffCommand == 1"
-        },
-        {
           "command": "svn.close",
           "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
         },
@@ -602,6 +612,14 @@
           "when": "false"
         },
         {
+          "command": "svn.branchchanges.openDiff",
+          "when": "false"
+        },
+        {
+          "command": "svn.branchchanges.refresh",
+          "when": "false"
+        },
+        {
           "command": "svn.pickCommitMessage",
           "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
         }
@@ -625,6 +643,11 @@
         {
           "command": "svn.itemlog.refresh",
           "when": "view == itemlog",
+          "group": "navigation"
+        },
+        {
+          "command": "svn.branchchanges.refresh",
+          "when": "view == branchchanges",
           "group": "navigation"
         }
       ],
@@ -890,11 +913,6 @@
           "command": "svn.openChangeHead",
           "group": "navigation",
           "when": "config.svn.enabled && svnOpenRepositoryCount != 0 && svnActiveEditorHasChanges && !isInDiffEditor && resourceScheme == file"
-        },
-        {
-          "command": "svn.revertSelectedRanges",
-          "group": "2_svn@3",
-          "when": "config.svn.enabled && svnOpenRepositoryCount != 0 && isInDiffEditor && resourceScheme != merge-conflicts.conflicts-diff && svnHasSupportToRegisterDiffCommand == 1"
         }
       ],
       "explorer/context": [
@@ -1110,7 +1128,7 @@
         },
         "svn.conflicts.autoResolve": {
           "type": "boolean",
-          "description": "Set file to status resolved after fix conflictss",
+          "description": "Set file to status resolved after fix conflicts",
           "default": false
         },
         "svn.update.ignoreExternals": {

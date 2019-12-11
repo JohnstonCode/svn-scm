@@ -1,5 +1,5 @@
 import * as path from "path";
-import { commands, Event, window } from "vscode";
+import { Event } from "vscode";
 import { Operation } from "./common/types";
 import { exists, lstat, readdir, rmdir, unlink } from "./fs";
 
@@ -10,6 +10,21 @@ export interface IDisposable {
 export function done<T>(promise: Promise<T>): Promise<void> {
   return promise.then<void>(() => void 0);
 }
+
+export function dispose(disposables: any[]): any[] {
+  disposables.forEach(disposable => disposable.dispose());
+
+  return [];
+}
+
+export function toDisposable(dispose: () => void): IDisposable {
+  return { dispose };
+}
+
+export function combinedDisposable(disposables: IDisposable[]): IDisposable {
+  return toDisposable(() => dispose(disposables));
+}
+
 export function anyEvent<T>(...events: Array<Event<T>>): Event<T> {
   return (listener: any, thisArgs = null, disposables?: any) => {
     const result = combinedDisposable(
@@ -34,20 +49,6 @@ export function filterEvent<T>(
       null,
       disposables
     );
-}
-
-export function dispose(disposables: any[]): any[] {
-  disposables.forEach(disposable => disposable.dispose());
-
-  return [];
-}
-
-export function combinedDisposable(disposables: IDisposable[]): IDisposable {
-  return toDisposable(() => dispose(disposables));
-}
-
-export function toDisposable(dispose: () => void): IDisposable {
-  return { dispose };
 }
 
 export function onceEvent<T>(event: Event<T>): Event<T> {
@@ -89,6 +90,10 @@ export function normalizePath(file: string) {
 }
 
 export function isDescendant(parent: string, descendant: string): boolean {
+  if (parent.trim() === "" || descendant.trim() === "") {
+    return false;
+  }
+
   parent = parent.replace(/[\\\/]/g, path.sep);
   descendant = descendant.replace(/[\\\/]/g, path.sep);
 
@@ -117,37 +122,6 @@ export function camelcase(name: string) {
     .replace(/[\s\-]+/g, "");
 }
 
-/* tslint:disable:no-empty */
-
-let hasDecorationProvider = false;
-export function hasSupportToDecorationProvider() {
-  return hasDecorationProvider;
-}
-
-try {
-  const fake = {
-    onDidChangeDecorations: (_value: any): any => toDisposable(() => {}),
-    provideDecoration: (_uri: any, _token: any): any => {}
-  };
-  window.registerDecorationProvider(fake);
-  hasDecorationProvider = true;
-  // disposable.dispose(); // Not dispose to prevent: Cannot read property 'provideDecoration' of undefined
-} catch (error) {}
-
-let hasRegisterDiffCommand = false;
-export function hasSupportToRegisterDiffCommand() {
-  return hasRegisterDiffCommand;
-}
-
-try {
-  const disposable = commands.registerDiffInformationCommand(
-    "svn.testDiff",
-    () => {}
-  );
-  hasRegisterDiffCommand = true;
-  disposable.dispose();
-} catch (error) {}
-
 export function timeout(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -158,6 +132,7 @@ export function isReadOnly(operation: Operation): boolean {
     case Operation.Log:
     case Operation.Show:
     case Operation.Info:
+    case Operation.Changes:
       return true;
     default:
       return false;
@@ -171,14 +146,16 @@ export function isReadOnly(operation: Operation): boolean {
  */
 export async function deleteDirectory(dirPath: string): Promise<void> {
   if ((await exists(dirPath)) && (await lstat(dirPath)).isDirectory()) {
-    await Promise.all((await readdir(dirPath)).map(async (entry: string) => {
-      const entryPath = path.join(dirPath, entry);
-      if ((await lstat(entryPath)).isDirectory()) {
-        await deleteDirectory(entryPath);
-      } else {
-        await unlink(entryPath);
-      }
-    }));
+    await Promise.all(
+      (await readdir(dirPath)).map(async (entry: string) => {
+        const entryPath = path.join(dirPath, entry);
+        if ((await lstat(entryPath)).isDirectory()) {
+          await deleteDirectory(entryPath);
+        } else {
+          await unlink(entryPath);
+        }
+      })
+    );
     await rmdir(dirPath);
   }
 }
@@ -199,8 +176,10 @@ export function fixPegRevision(file: string) {
   return file;
 }
 
-export async function isSvnFolder(dir: string, checkParent: boolean = true): Promise<boolean> {
-
+export async function isSvnFolder(
+  dir: string,
+  checkParent: boolean = true
+): Promise<boolean> {
   const result = await exists(`${dir}/.svn`);
 
   if (result || !checkParent) {
@@ -215,5 +194,5 @@ export async function isSvnFolder(dir: string, checkParent: boolean = true): Pro
     return false;
   }
 
-  return await isSvnFolder(parent, true);
+  return isSvnFolder(parent, true);
 }

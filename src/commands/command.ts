@@ -2,7 +2,6 @@ import * as path from "path";
 import {
   commands,
   Disposable,
-  LineChange,
   Position,
   Range,
   SourceControlResourceState,
@@ -14,16 +13,20 @@ import {
   workspace,
   WorkspaceEdit
 } from "vscode";
-import { ICommandOptions, Status, SvnUriAction } from "../common/types";
+import {
+  ICommandOptions,
+  Status,
+  SvnUriAction,
+  LineChange
+} from "../common/types";
 import { exists, readFile, stat, unlink } from "../fs";
 import { inputIgnoreList } from "../ignoreitems";
 import { applyLineChanges } from "../lineChanges";
-import { Model } from "../model";
+import { SourceControlManager } from "../source_control_manager";
 import { Repository } from "../repository";
 import { Resource } from "../resource";
 import IncomingChangeNode from "../treeView/nodes/incomingChangeNode";
 import { fromSvnUri, toSvnUri } from "../uri";
-import { hasSupportToRegisterDiffCommand } from "../util";
 
 export abstract class Command implements Disposable {
   private _disposable?: Disposable;
@@ -34,14 +37,6 @@ export abstract class Command implements Disposable {
 
       this._disposable = commands.registerCommand(commandName, command);
 
-      return;
-    }
-
-    if (options.diff && hasSupportToRegisterDiffCommand()) {
-      this._disposable = commands.registerDiffInformationCommand(
-        commandName,
-        (...args: any[]) => this.execute(...args)
-      );
       return;
     }
 
@@ -63,24 +58,24 @@ export abstract class Command implements Disposable {
 
   private createRepositoryCommand(method: Function): (...args: any[]) => any {
     const result = async (...args: any[]) => {
-      const model = (await commands.executeCommand(
-        "svn.getModel",
+      const sourceControlManager = (await commands.executeCommand(
+        "svn.getSourceControlManager",
         ""
-      )) as Model;
-      let result;
-
-      const repository = model.getRepository(args[0]);
+      )) as SourceControlManager;
+      const repository = sourceControlManager.getRepository(args[0]);
       let repositoryPromise;
 
       if (repository) {
         repositoryPromise = Promise.resolve(repository);
-      } else if (model.repositories.length === 1) {
-        repositoryPromise = Promise.resolve(model.repositories[0]);
+      } else if (sourceControlManager.repositories.length === 1) {
+        repositoryPromise = Promise.resolve(
+          sourceControlManager.repositories[0]
+        );
       } else {
-        repositoryPromise = model.pickRepository();
+        repositoryPromise = sourceControlManager.pickRepository();
       }
 
-      result = repositoryPromise.then(repository => {
+      const result = repositoryPromise.then(repository => {
         if (!repository) {
           return Promise.resolve();
         }
@@ -130,12 +125,15 @@ export abstract class Command implements Disposable {
     const resources = arg instanceof Uri ? [arg] : arg;
     const isSingleResource = arg instanceof Uri;
 
-    const model = (await commands.executeCommand("svn.getModel", "")) as Model;
+    const sourceControlManager = (await commands.executeCommand(
+      "svn.getSourceControlManager",
+      ""
+    )) as SourceControlManager;
 
     const groups: Array<{ repository: Repository; resources: Uri[] }> = [];
 
     for (const resource of resources) {
-      const repository = model.getRepository(resource);
+      const repository = sourceControlManager.getRepository(resource);
 
       if (!repository) {
         console.warn("Could not find Svn repository for ", resource);
@@ -173,11 +171,11 @@ export abstract class Command implements Disposable {
     }
 
     if (uri.scheme === "file") {
-      const model = (await commands.executeCommand(
-        "svn.getModel",
+      const sourceControlManager = (await commands.executeCommand(
+        "svn.getSourceControlManager",
         ""
-      )) as Model;
-      const repository = model.getRepository(uri);
+      )) as SourceControlManager;
+      const repository = sourceControlManager.getRepository(uri);
 
       if (!repository) {
         return undefined;

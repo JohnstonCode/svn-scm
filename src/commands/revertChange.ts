@@ -1,5 +1,6 @@
-import { LineChange, Uri, window } from "vscode";
+import { Uri, window } from "vscode";
 import { Command } from "./command";
+import { LineChange } from "../common/types";
 
 export class RevertChange extends Command {
   constructor() {

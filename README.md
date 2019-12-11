@@ -4,14 +4,13 @@
 [![Installs](https://vsmarketplacebadge.apphb.com/installs-short/johnstoncode.svn-scm.svg)](https://marketplace.visualstudio.com/items?itemName=johnstoncode.svn-scm)
 [![Ratings](https://vsmarketplacebadge.apphb.com/rating-short/johnstoncode.svn-scm.svg)](https://marketplace.visualstudio.com/items?itemName=johnstoncode.svn-scm)
 
-[![Build Status](https://dev.azure.com/johnstoncode/Svn-scm/_apis/build/status/svn-scm?branchName=master)](https://dev.azure.com/johnstoncode/Svn-scm/_build/latest?definitionId=1&branchName=master)
+<!-- [![Build Status](https://github.com/JohnstonCode/svn-scm/workflows/build/badge.svg)](https://github.com/JohnstonCode/svn-scm/actions) -->
 [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
 
 [![Dependencies Status](https://david-dm.org/JohnstonCode/svn-scm/status.svg)](https://david-dm.org/JohnstonCode/svn-scm)
 [![DevDependencies Status](https://david-dm.org/JohnstonCode/svn-scm/dev-status.svg)](https://david-dm.org/JohnstonCode/svn-scm?type=dev)
 [![Greenkeeper badge](https://badges.greenkeeper.io/JohnstonCode/svn-scm.svg)](https://greenkeeper.io/)
 
-[![codecov](https://codecov.io/gh/JohnstonCode/svn-scm/branch/master/graph/badge.svg)](https://codecov.io/gh/JohnstonCode/svn-scm)
 [![Known Vulnerabilities](https://snyk.io/test/github/JohnstonCode/svn-scm/badge.svg)](https://snyk.io/test/github/JohnstonCode/svn-scm)
 
 [![CodeFactor](https://www.codefactor.io/repository/github/johnstoncode/svn-scm/badge)](https://www.codefactor.io/repository/github/johnstoncode/svn-scm)
@@ -61,30 +60,6 @@ If you use [TortoiseSVN](https://tortoisesvn.net/), make sure the option
 
 Please use a dedicated extension like [blamer-vs](https://marketplace.visualstudio.com/items?itemName=beaugust.blamer-vs)
 
-## Experimental
-
-### * SVN Status in File Explorer (See [#34](https://github.com/JohnstonCode/svn-scm/issues/34))
-How to enable:
-* Open the file: `<vscode path>\resources\app\product.json`
-* Find `extensionAllowedProposedApi`
-* Append `"johnstoncode.svn-scm"` in the array
-
-Example:
-```js
-// FROM
-{
-  "extensionAllowedProposedApi": [
-    "ms-vsliveshare.vsliveshare"
-  ]
-}
-// TO
-{
-  "extensionAllowedProposedApi": [
-    "ms-vsliveshare.vsliveshare", "johnstoncode.svn-scm"
-  ]
-}
-```
-
 ## Settings
 Here is a table of settings with their default values. To change any of these, add the relevant Config key and value to your VSCode settings.json file.
 
@@ -118,7 +93,7 @@ Here is a table of settings with their default values. To change any of these, a
 |`svn.sourceControl.countUnversioned`|Allow to count unversioned files in status count|`true`|
 |`svn.log.length`|Number of commit messages to log|`50`|
 |`svn.showOutput`|Show the output window when the extension starts|`false`|
-|`svn.conflicts.autoResolve`|Set file to status resolved after fix conflictss|`false`|
+|`svn.conflicts.autoResolve`|Set file to status resolved after fix conflicts|`false`|
 |`svn.update.ignoreExternals`|Set to ignore externals definitions on update (add --ignore-externals)|`true`|
 |`svn.delete.actionForDeletedFiles`|When a file is deleted, what SVN should do? `none` - Do nothing, `prompt` - Ask the action, `remove` - automatically remove from SVN|`"prompt"`|
 |`svn.delete.ignoredRulesForDeletedFiles`|Ignored files/rules for `svn.delete.actionForDeletedFiles`(Ex.: file.txt or \*\*/\*.txt)|`[]`|

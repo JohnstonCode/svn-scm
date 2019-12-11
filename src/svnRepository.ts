@@ -9,7 +9,9 @@ import {
   ISvnInfo,
   ISvnLogEntry,
   Status,
-  SvnDepth
+  SvnDepth,
+  ISvnPathChange,
+  ISvnPath
 } from "./common/types";
 import { sequentialize } from "./decorators";
 import * as encodeUtil from "./encoding";
@@ -28,9 +30,12 @@ import {
   normalizePath,
   unwrap
 } from "./util";
+import { parseDiffXml } from "./diffParser";
 
 export class Repository {
-  private _infoCache: { [index: string]: ISvnInfo } = {};
+  private _infoCache: {
+    [index: string]: ISvnInfo;
+  } = {};
   private _info?: ISvnInfo;
 
   public username?: string;
@@ -57,8 +62,9 @@ export class Repository {
     const result = await this.exec([
       "info",
       "--xml",
-      fixPegRevision(this.root)
+      fixPegRevision(this.workspaceRoot ? this.workspaceRoot : this.root)
     ]);
+
     this._info = await parseInfoXml(result.stdout);
   }
 
@@ -141,7 +147,8 @@ export class Repository {
   public async getInfo(
     file: string = "",
     revision?: string,
-    skipCache: boolean = false
+    skipCache: boolean = false,
+    isUrl: boolean = false
   ): Promise<ISvnInfo> {
     if (!skipCache && this._infoCache[file]) {
       return this._infoCache[file];
@@ -154,7 +161,9 @@ export class Repository {
     }
 
     if (file) {
-      file = fixPathSeparator(file);
+      if (!isUrl) {
+        file = fixPathSeparator(file);
+      }
       args.push(file);
     }
 
@@ -168,6 +177,93 @@ export class Repository {
     }, 2 * 60 * 1000);
 
     return this._infoCache[file];
+  }
+
+  public async getChanges(): Promise<ISvnPathChange[]> {
+    // First, check to see if this branch was copied from somewhere.
+    let args = [
+      "log",
+      "-r1:HEAD",
+      "--stop-on-copy",
+      "--xml",
+      "--with-all-revprops",
+      "--verbose"
+    ];
+    let result = await this.exec(args);
+    const entries = await parseSvnLog(result.stdout);
+
+    if (entries.length === 0 || entries[0].paths.length === 0) {
+      return [];
+    }
+
+    const copyCommitPath = entries[0].paths[0];
+
+    if (
+      typeof copyCommitPath.copyfromRev === "undefined" ||
+      typeof copyCommitPath.copyfromPath === "undefined" ||
+      typeof copyCommitPath._ === "undefined" ||
+      copyCommitPath.copyfromRev.trim().length === 0 ||
+      copyCommitPath.copyfromPath.trim().length === 0 ||
+      copyCommitPath._.trim().length === 0
+    ) {
+      return [];
+    }
+
+    const copyFromPath = copyCommitPath.copyfromPath;
+    const copyFromRev = copyCommitPath.copyfromRev;
+    const copyToPath = copyCommitPath._;
+    const copyFromUrl = this.info.repository.root + copyFromPath;
+    const copyToUrl = this.info.repository.root + copyToPath;
+
+    // Get last merge revision from path that this branch was copied from.
+    args = ["mergeinfo", "--show-revs=merged", copyFromUrl, copyToUrl];
+    result = await this.exec(args);
+    const revisions = result.stdout.trim().split("\n");
+    let latestMergedRevision: string = "";
+
+    if (revisions.length) {
+      latestMergedRevision = revisions[revisions.length - 1];
+    }
+
+    if (latestMergedRevision.trim().length === 0) {
+      latestMergedRevision = copyFromRev;
+    }
+
+    // Now, diff the source branch at the latest merged revision with the current branch's revision
+    const info = await this.getInfo(copyToUrl, undefined, true, true);
+    args = [
+      "diff",
+      `${copyFromUrl}@${latestMergedRevision}`,
+      copyToUrl,
+      "--ignore-properties",
+      "--xml",
+      "--summarize"
+    ];
+    result = await this.exec(args);
+    let paths: ISvnPath[];
+    try {
+      paths = await parseDiffXml(result.stdout);
+    } catch (err) {
+      return [];
+    }
+
+    const changes: ISvnPathChange[] = [];
+
+    // Now, we have all the files that this branch changed.
+    for (const path of paths) {
+      changes.push({
+        oldPath: Uri.parse(path._),
+        newPath: Uri.parse(path._.replace(copyFromUrl, copyToUrl)),
+        oldRevision: latestMergedRevision.replace("r", ""),
+        newRevision: info.revision,
+        item: path.item,
+        props: path.props,
+        kind: path.kind,
+        repo: Uri.parse(this.info.repository.root)
+      });
+    }
+
+    return changes;
   }
 
   public async show(file: string | Uri, revision?: string): Promise<string> {

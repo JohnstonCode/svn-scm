@@ -12,7 +12,7 @@ import {
   window
 } from "vscode";
 import { ISvnLogEntry } from "../common/types";
-import { Model } from "../model";
+import { SourceControlManager } from "../source_control_manager";
 import { tempdir } from "../tempFiles";
 import { dispose, unwrap } from "../util";
 import {
@@ -43,7 +43,7 @@ export class ItemLogProvider
   private currentItem?: ICachedLog;
   private _dispose: Disposable[] = [];
 
-  constructor(private model: Model) {
+  constructor(private sourceControlManager: SourceControlManager) {
     window.onDidChangeActiveTextEditor(this.editorChanged, this);
     this._dispose.push(
       commands.registerCommand(
@@ -127,7 +127,7 @@ export class ItemLogProvider
         if (uri.path.startsWith(tempdir)) {
           return; // do not refresh if diff was called
         }
-        const repo = this.model.getRepository(uri);
+        const repo = this.sourceControlManager.getRepository(uri);
         if (repo !== null) {
           try {
             const info = await repo.getInfo(uri.fsPath);

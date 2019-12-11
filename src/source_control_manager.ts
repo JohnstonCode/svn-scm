@@ -12,7 +12,7 @@ import {
 } from "vscode";
 import {
   ConstructorPolicy,
-  IModelChangeEvent,
+  RepositoryChangeEvent,
   IOpenRepository,
   RepositoryState
 } from "./common/types";
@@ -34,7 +34,7 @@ import {
 } from "./util";
 import { matchAll } from "./util/globMatch";
 
-export class Model implements IDisposable {
+export class SourceControlManager implements IDisposable {
   private _onDidOpenRepository = new EventEmitter<Repository>();
   public readonly onDidOpenRepository: Event<Repository> = this
     ._onDidOpenRepository.event;
@@ -43,8 +43,8 @@ export class Model implements IDisposable {
   public readonly onDidCloseRepository: Event<Repository> = this
     ._onDidCloseRepository.event;
 
-  private _onDidChangeRepository = new EventEmitter<IModelChangeEvent>();
-  public readonly onDidChangeRepository: Event<IModelChangeEvent> = this
+  private _onDidChangeRepository = new EventEmitter<RepositoryChangeEvent>();
+  public readonly onDidChangeRepository: Event<RepositoryChangeEvent> = this
     ._onDidChangeRepository.event;
 
   private _onDidChangeStatusRepository = new EventEmitter<Repository>();
@@ -79,18 +79,19 @@ export class Model implements IDisposable {
       this
     );
 
-    return ((async (): Promise<Model> => {
+    return ((async (): Promise<SourceControlManager> => {
       if (this.enabled) {
         await this.enable();
       }
       return this;
-    })() as unknown) as Model;
+    })() as unknown) as SourceControlManager;
   }
 
   public openRepositoriesSorted(): IOpenRepository[] {
     // Sort by path length (First external and ignored over root)
     return this.openRepositories.sort(
-      (a, b) => b.repository.workspaceRoot.length - a.repository.workspaceRoot.length
+      (a, b) =>
+        b.repository.workspaceRoot.length - a.repository.workspaceRoot.length
     );
   }
 
@@ -184,8 +185,7 @@ export class Model implements IDisposable {
   }
 
   private scanIgnored(repository: Repository): void {
-    const shouldScan =
-      configuration.get<boolean>("detectIgnored") === true;
+    const shouldScan = configuration.get<boolean>("detectIgnored") === true;
 
     if (!shouldScan) {
       return;
@@ -385,7 +385,6 @@ export class Model implements IDisposable {
   }
 
   public async getRepositoryFromUri(uri: Uri): Promise<Repository | null> {
-
     for (const liveRepository of this.openRepositoriesSorted()) {
       const repository = liveRepository.repository;
 
@@ -413,6 +412,7 @@ export class Model implements IDisposable {
       repository.onDidChangeState,
       state => state === RepositoryState.Disposed
     );
+    // eslint-disable-next-line @typescript-eslint/no-use-before-define
     const disappearListener = onDidDisappearRepository(() => dispose());
 
     const changeListener = repository.onDidChangeRepository(uri =>
@@ -438,6 +438,7 @@ export class Model implements IDisposable {
       repository.dispose();
 
       this.openRepositories = this.openRepositories.filter(
+        // eslint-disable-next-line @typescript-eslint/no-use-before-define
         e => e !== openRepository
       );
       this._onDidCloseRepository.fire(repository);

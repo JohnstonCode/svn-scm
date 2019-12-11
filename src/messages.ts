@@ -1,6 +1,6 @@
 import * as path from "path";
 import { commands, Uri, ViewColumn, WebviewPanel, window } from "vscode";
-import { Model } from "./model";
+import { SourceControlManager } from "./source_control_manager";
 
 export function noChangesToCommit() {
   return window.showInformationMessage("There are no changes to commit.");
@@ -23,9 +23,7 @@ export function dispose() {
 }
 
 async function showCommitInput(message?: string, filePaths?: string[]) {
-
   const promise = new Promise<string>(resolve => {
-
     // Close previous commit message input
     if (panel) {
       panel.dispose();
@@ -37,18 +35,23 @@ async function showCommitInput(message?: string, filePaths?: string[]) {
       panel.dispose();
     };
 
-    panel = window.createWebviewPanel("svnCommitMessage", "Commit Message", {
-      preserveFocus: false,
-      viewColumn: ViewColumn.Active
-    },
+    panel = window.createWebviewPanel(
+      "svnCommitMessage",
+      "Commit Message",
+      {
+        preserveFocus: false,
+        viewColumn: ViewColumn.Active
+      },
       {
         enableScripts: true,
         retainContextWhenHidden: true
-      });
+      }
+    );
 
-    const styleUri = Uri.file(
+    const stylePathOnDisk = Uri.file(
       path.join(__dirname, "..", "css", "commit-message.css")
-    ).with({ scheme: "vscode-resource" });
+    );
+    const styleUri = panel.webview.asWebviewUri(stylePathOnDisk);
 
     let beforeForm = "";
     if (filePaths && filePaths.length) {
@@ -70,6 +73,13 @@ async function showCommitInput(message?: string, filePaths?: string[]) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!--
+  Use a content security policy to only allow loading images from https or from our extension directory,
+  and only allow scripts that have a specific nonce.
+  -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${panel.webview.cspSource} https:; script-src ${panel.webview.cspSource} 'unsafe-inline'; style-src ${panel.webview.cspSource};">
+
   <title>Commit Message</title>
   <link rel="stylesheet" href="${styleUri}">
 </head>
@@ -164,11 +174,17 @@ async function showCommitInput(message?: string, filePaths?: string[]) {
       let repository;
 
       if (filePaths && filePaths[0]) {
-        const model = (await commands.executeCommand("svn.getModel", "")) as Model;
-        repository = await model.getRepositoryFromUri(Uri.file(filePaths[0]));
+        const sourceControlManager = (await commands.executeCommand(
+          "svn.getSourceControlManager",
+          ""
+        )) as SourceControlManager;
+        repository = await sourceControlManager.getRepositoryFromUri(Uri.file(filePaths[0]));
       }
 
-      const message = await commands.executeCommand("svn.pickCommitMessage", repository);
+      const message = await commands.executeCommand(
+        "svn.pickCommitMessage",
+        repository
+      );
       if (message !== undefined) {
         panel.webview.postMessage({
           command: "setMessage",
@@ -197,7 +213,7 @@ async function showCommitInput(message?: string, filePaths?: string[]) {
     panel.reveal(ViewColumn.Active, false);
   });
 
-  return await promise;
+  return promise;
 }
 
 export async function inputCommitMessage(
