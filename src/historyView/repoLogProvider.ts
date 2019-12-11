@@ -37,7 +37,8 @@ import {
   openDiff,
   openFileRemote,
   SvnPath,
-  transform
+  transform,
+  getCommitDescription
 } from "./common";
 
 function getActionIcon(action: string) {
@@ -377,6 +378,7 @@ export class RepoLogProvider
         getCommitLabel(commit),
         TreeItemCollapsibleState.Collapsed
       );
+      ti.description = getCommitDescription(commit);
       ti.tooltip = getCommitToolTip(commit);
       ti.iconPath = getCommitIcon(commit.author);
       ti.contextValue = "commit";
@@ -385,6 +387,7 @@ export class RepoLogProvider
       const pathElem = element.data as ISvnLogEntryPath;
       const basename = path.basename(pathElem._);
       ti = new TreeItem(basename, TreeItemCollapsibleState.None);
+      ti.description = path.dirname(pathElem._);
       const cached = this.getCached(element);
       const nm = cached.repo.getPathNormalizer();
       ti.tooltip = nm.parse(pathElem._).relativeFromBranch;

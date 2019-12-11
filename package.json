@@ -47,6 +47,7 @@
     "watch:css": "npm run build:css -- -w"
   },
   "dependencies": {
+    "date-fns": "^2.8.1",
     "minimatch": "^3.0.4",
     "original-fs": "^1.0.0",
     "semver": "^6.0.0",
