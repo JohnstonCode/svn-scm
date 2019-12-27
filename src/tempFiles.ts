@@ -31,8 +31,7 @@ export async function createTempSvnRevisionFile(
   if (encoding) {
     const encodedPayload = iconv.encode(payload, encoding);
     await writeFile(fpath, encodedPayload);
-  }
-  else {
+  } else {
     await writeFile(fpath, payload);
   }
   return Uri.file(fpath);
