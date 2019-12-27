@@ -1,3 +1,10 @@
+# [2.2.0](https://github.com/JohnstonCode/svn-scm/compare/v2.1.3...v2.2.0) (2019-12-27)
+
+
+### Features
+
+* Added pretty descriptions to treeview ([#759](https://github.com/JohnstonCode/svn-scm/issues/759)) ([73de872](https://github.com/JohnstonCode/svn-scm/commit/73de872))
+
 ## [2.1.3](https://github.com/JohnstonCode/svn-scm/compare/v2.1.2...v2.1.3) (2019-11-16)
 
 
