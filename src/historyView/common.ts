@@ -1,4 +1,5 @@
 import { createHash } from "crypto";
+import { formatDistanceToNow } from "date-fns";
 import * as path from "path";
 import {
   commands,
@@ -219,12 +220,18 @@ export function getCommitIcon(
   return gravatar;
 }
 
+export function getCommitDescription(commit: ISvnLogEntry): string {
+  const relativeDate = formatDistanceToNow(Date.parse(commit.date), {
+    addSuffix: true
+  });
+  return `r${commit.revision}, ${relativeDate} by ${commit.author}`;
+}
+
 export function getCommitLabel(commit: ISvnLogEntry): string {
-  let commitMsg = "<blank>";
-  if (commit.msg) {
-    commitMsg = commit.msg.split(/\r?\n/, 1)[0];
+  if (!commit.msg) {
+    return "<blank>";
   }
-  return `${commitMsg} • r${commit.revision}`;
+  return commit.msg.split(/\r?\n/, 1)[0];
 }
 
 export function getCommitToolTip(commit: ISvnLogEntry): string {
