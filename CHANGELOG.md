@@ -1,3 +1,24 @@
+# [2.3.0](https://github.com/JohnstonCode/svn-scm/compare/v2.2.1...v2.3.0) (2020-01-01)
+
+
+### Features
+
+* New svn icon ([#758](https://github.com/JohnstonCode/svn-scm/issues/758)) ([c1c20b4](https://github.com/JohnstonCode/svn-scm/commit/c1c20b4))
+
+## [2.2.1](https://github.com/JohnstonCode/svn-scm/compare/v2.2.0...v2.2.1) (2019-12-27)
+
+
+### Bug Fixes
+
+* Temp files are encoded using default encoding setting ([#765](https://github.com/JohnstonCode/svn-scm/issues/765)) ([6c2748a](https://github.com/JohnstonCode/svn-scm/commit/6c2748a))
+
+# [2.2.0](https://github.com/JohnstonCode/svn-scm/compare/v2.1.3...v2.2.0) (2019-12-27)
+
+
+### Features
+
+* Added pretty descriptions to treeview ([#759](https://github.com/JohnstonCode/svn-scm/issues/759)) ([73de872](https://github.com/JohnstonCode/svn-scm/commit/73de872))
+
 ## [2.1.3](https://github.com/JohnstonCode/svn-scm/compare/v2.1.2...v2.1.3) (2019-11-16)
 
 
