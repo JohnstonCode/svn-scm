@@ -29,7 +29,8 @@ import {
   LogTreeItemKind,
   openDiff,
   openFileRemote,
-  transform
+  transform,
+  getCommitDescription
 } from "./common";
 
 export class ItemLogProvider
@@ -156,6 +157,7 @@ export class ItemLogProvider
     if (element.kind === LogTreeItemKind.Commit) {
       const commit = element.data as ISvnLogEntry;
       ti = new TreeItem(getCommitLabel(commit), TreeItemCollapsibleState.None);
+      ti.description = getCommitDescription(commit);
       ti.iconPath = getCommitIcon(commit.author);
       ti.tooltip = getCommitToolTip(commit);
       ti.contextValue = "diffable";
@@ -182,6 +184,7 @@ export class ItemLogProvider
       const fname = path.basename(this.currentItem.svnTarget.fsPath);
       const ti = new TreeItem(fname, TreeItemCollapsibleState.Expanded);
       ti.tooltip = path.dirname(this.currentItem.svnTarget.fsPath);
+      ti.description = path.dirname(this.currentItem.svnTarget.fsPath);
       ti.iconPath = getIconObject("icon-history");
       const item = {
         kind: LogTreeItemKind.TItem,
