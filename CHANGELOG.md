@@ -1,3 +1,10 @@
+# [2.3.0](https://github.com/JohnstonCode/svn-scm/compare/v2.2.1...v2.3.0) (2020-01-01)
+
+
+### Features
+
+* New svn icon ([#758](https://github.com/JohnstonCode/svn-scm/issues/758)) ([c1c20b4](https://github.com/JohnstonCode/svn-scm/commit/c1c20b4))
+
 ## [2.2.1](https://github.com/JohnstonCode/svn-scm/compare/v2.2.0...v2.2.1) (2019-12-27)
 
 
