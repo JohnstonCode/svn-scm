@@ -5,7 +5,7 @@
   "version": "2.3.0",
   "publisher": "johnstoncode",
   "engines": {
-    "vscode": "^1.40.0"
+    "vscode": "^1.41.0"
   },
   "private": true,
   "enableProposedApi": false,
@@ -50,7 +50,7 @@
     "date-fns": "^2.8.1",
     "minimatch": "^3.0.4",
     "original-fs": "^1.0.0",
-    "semver": "^6.0.0",
+    "semver": "^7.0.0",
     "tmp": "0.1.0",
     "xml2js": "^0.4.19"
   },
@@ -62,7 +62,7 @@
     "@types/node": "^12.11.7",
     "@types/semver": "^6.0.0",
     "@types/tmp": "0.1.0",
-    "@types/vscode": "1.40.0",
+    "@types/vscode": "1.41.0",
     "@types/xml2js": "^0.4.4",
     "@typescript-eslint/eslint-plugin": "^2.5.0",
     "@typescript-eslint/parser": "^2.5.0",
