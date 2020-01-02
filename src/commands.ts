@@ -30,6 +30,7 @@ import { PullIncommingChange } from "./commands/pullIncomingChange";
 import { Refresh } from "./commands/refresh";
 import { RefreshRemoteChanges } from "./commands/refreshRemoteChanges";
 import { Remove } from "./commands/remove";
+import { RemoveUnversioned } from "./commands/removeUnversioned";
 import { RenameExplorer } from "./commands/renameExplorer";
 import { Resolve } from "./commands/resolve";
 import { ResolveAll } from "./commands/resolveAll";
@@ -71,6 +72,7 @@ export function registerCommands(sourceControlManager: SourceControlManager, dis
   disposables.push(new RevertChange());
   disposables.push(new Close());
   disposables.push(new Cleanup());
+  disposables.push(new RemoveUnversioned());
   disposables.push(new FinishCheckout());
   disposables.push(new AddToIgnoreSCM());
   disposables.push(new AddToIgnoreExplorer());

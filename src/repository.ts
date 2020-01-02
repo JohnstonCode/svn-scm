@@ -862,6 +862,10 @@ export class Repository implements IRemoteRepository {
     return this.run(Operation.CleanUp, () => this.repository.cleanup());
   }
 
+  public async removeUnversioned() {
+    return this.run(Operation.CleanUp, () => this.repository.removeUnversioned());
+  }
+
   public async getInfo(path: string, revision?: string): Promise<ISvnInfo> {
     return this.run(Operation.Info, () =>
       this.repository.getInfo(path, revision, true)

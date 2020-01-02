@@ -700,6 +700,14 @@ export class Repository {
     return result.stdout;
   }
 
+  public async removeUnversioned() {
+    const result = await this.exec(["cleanup", "--remove-unversioned"]);
+
+    this.svn.logOutput(result.stdout);
+
+    return result.stdout;
+  }
+
   public async finishCheckout() {
     const info = await this.getInfo();
 

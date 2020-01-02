@@ -402,6 +402,11 @@
         "category": "SVN"
       },
       {
+        "command": "svn.removeUnversioned",
+        "title": "Remove unversioned files",
+        "category": "SVN"
+      },
+      {
         "command": "svn.patchChangeList",
         "title": "Show patch from changelist",
         "category": "SVN"
@@ -550,6 +555,10 @@
         },
         {
           "command": "svn.cleanup",
+          "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
+        },
+        {
+          "command": "svn.removeUnversioned",
           "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
         },
         {
@@ -750,6 +759,10 @@
         },
         {
           "command": "svn.cleanup",
+          "when": "config.svn.enabled && scmProvider == svn"
+        },
+        {
+          "command": "svn.removeUnversioned",
           "when": "config.svn.enabled && scmProvider == svn"
         },
         {
