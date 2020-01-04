@@ -58,9 +58,22 @@ export function cpErrorHandler(
   };
 }
 
+export interface SvnVersion {
+  major: number;
+  minor: number;
+}
+
+export class VersionError extends Error {
+  // Ok to extend Error since we use ES6
+}
+
 export class Svn {
   private svnPath: string;
   private lastCwd: string = "";
+  private _version?: SvnVersion;
+  get version(): SvnVersion | undefined {
+    return this._version;
+  }
 
   private _onOutput = new EventEmitter();
   get onOutput(): EventEmitter {
@@ -69,6 +82,13 @@ export class Svn {
 
   constructor(options: ISvnOptions) {
     this.svnPath = options.svnPath;
+    const verMatch = /.*?(\d+)\.(\d+).*/.exec(options.version);
+    if (verMatch) {
+      this._version = {
+        major: parseInt(verMatch[0], 10),
+        minor: parseInt(verMatch[1], 10),
+      };
+    }
   }
 
   public logOutput(output: string): void {

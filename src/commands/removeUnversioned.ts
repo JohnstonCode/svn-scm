@@ -1,6 +1,7 @@
 import { Repository } from "../repository";
 import { Command } from "./command";
 import { window } from "vscode";
+import { VersionError } from "../svn";
 
 export class RemoveUnversioned extends Command {
   constructor() {
@@ -14,8 +15,19 @@ export class RemoveUnversioned extends Command {
       "Yes",
       "No"
     );
-    if (answer === "Yes") {
+    if (answer !== "Yes") {
+      return;
+    }
+    try {
       await repository.removeUnversioned();
+    } catch (e) {
+      if (e instanceof VersionError) {
+        window.showErrorMessage(
+          "Your svn is too old and does not support this feature"
+        );
+      } else {
+        throw e;
+      }
     }
   }
 }
