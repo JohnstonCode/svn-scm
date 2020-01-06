@@ -13,7 +13,7 @@ import { configuration } from "./helpers/configuration";
 import { parseInfoXml } from "./infoParser";
 import SvnError from "./svnError";
 import { Repository } from "./svnRepository";
-import { dispose, IDisposable, toDisposable } from "./util";
+import { dispose, IDisposable, toDisposable, setVscodeContext } from "./util";
 import { iconv } from "./vscodeModules";
 
 export const svnErrorCodes: { [key: string]: string } = {
@@ -58,22 +58,15 @@ export function cpErrorHandler(
   };
 }
 
-export interface SvnVersion {
+interface SvnVersion {
   major: number;
   minor: number;
-}
-
-export class VersionError extends Error {
-  // Ok to extend Error since we use ES6
 }
 
 export class Svn {
   private svnPath: string;
   private lastCwd: string = "";
-  private _version?: SvnVersion;
-  get version(): SvnVersion | undefined {
-    return this._version;
-  }
+  private _version: SvnVersion;
 
   private _onOutput = new EventEmitter();
   get onOutput(): EventEmitter {
@@ -85,10 +78,17 @@ export class Svn {
     const verMatch = /.*?(\d+)\.(\d+).*/.exec(options.version);
     if (verMatch) {
       this._version = {
-        major: parseInt(verMatch[0], 10),
-        minor: parseInt(verMatch[1], 10),
+        major: parseInt(verMatch[1], 10),
+        minor: parseInt(verMatch[2], 10),
+      };
+    } else {
+      // min. required (see checkSvnVersion)
+      this._version = {
+        major: 1,
+        minor: 6,
       };
     }
+    setVscodeContext("svn_gt_1_9", !(this._version.major == 1 && this._version.minor < 9));
   }
 
   public logOutput(output: string): void {

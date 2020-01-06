@@ -1,8 +1,8 @@
-import { commands, Disposable, window } from "vscode";
+import { Disposable, window } from "vscode";
 import { Status } from "../common/types";
 import { debounce } from "../decorators";
 import { SourceControlManager } from "../source_control_manager";
-import { IDisposable } from "../util";
+import { IDisposable, setVscodeContext } from "../util";
 
 export class CheckActiveEditor implements IDisposable {
   private disposables: Disposable[] = [];
@@ -24,8 +24,7 @@ export class CheckActiveEditor implements IDisposable {
 
   @debounce(100)
   private checkHasChangesOnActiveEditor() {
-    commands.executeCommand(
-      "setContext",
+    setVscodeContext(
       "svnActiveEditorHasChanges",
       this.hasChangesOnActiveEditor()
     );

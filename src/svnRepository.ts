@@ -22,7 +22,7 @@ import { parseInfoXml } from "./infoParser";
 import { parseSvnList } from "./listParser";
 import { parseSvnLog } from "./logParser";
 import { parseStatusXml } from "./statusParser";
-import { Svn, VersionError } from "./svn";
+import { Svn } from "./svn";
 import {
   fixPathSeparator,
   fixPegRevision,
@@ -701,10 +701,6 @@ export class Repository {
   }
 
   public async removeUnversioned() {
-    const svnVersion = this.svn.version;
-    if (svnVersion && svnVersion.major == 1 && svnVersion.minor < 9 ) {
-      throw new VersionError();
-    }
     const result = await this.exec(["cleanup", "--remove-unversioned"]);
 
     this.svn.logOutput(result.stdout);

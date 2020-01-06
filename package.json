@@ -559,7 +559,7 @@
         },
         {
           "command": "svn.removeUnversioned",
-          "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
+          "when": "config.svn.enabled && svnOpenRepositoryCount != 0 && svn_gt_1_9"
         },
         {
           "command": "svn.addToIgnoreExplorer",
@@ -763,7 +763,7 @@
         },
         {
           "command": "svn.removeUnversioned",
-          "when": "config.svn.enabled && scmProvider == svn"
+          "when": "config.svn.enabled && scmProvider == svn && svn_gt_1_9"
         },
         {
           "command": "svn.patchChangeList",

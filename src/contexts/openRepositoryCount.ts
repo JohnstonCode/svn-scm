@@ -1,7 +1,7 @@
-import { commands, Disposable } from "vscode";
+import { Disposable } from "vscode";
 import { debounce } from "../decorators";
 import { SourceControlManager } from "../source_control_manager";
-import { IDisposable } from "../util";
+import { IDisposable, setVscodeContext } from "../util";
 
 export class OpenRepositoryCount implements IDisposable {
   private disposables: Disposable[] = [];
@@ -24,10 +24,9 @@ export class OpenRepositoryCount implements IDisposable {
 
   @debounce(100)
   private checkOpened() {
-    commands.executeCommand(
-      "setContext",
+    setVscodeContext(
       "svnOpenRepositoryCount",
-      `${this.sourceControlManager.repositories.length}`
+      this.sourceControlManager.repositories.length
     );
   }
 
