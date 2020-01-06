@@ -198,9 +198,5 @@ export async function isSvnFolder(
 }
 
 export function setVscodeContext(key: string, value: any) {
-  commands.executeCommand(
-    "setContext",
-    key,
-    value
-  );
+  commands.executeCommand("setContext", key, value);
 }

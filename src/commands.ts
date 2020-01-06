@@ -44,7 +44,10 @@ import { Update } from "./commands/update";
 import { Upgrade } from "./commands/upgrade";
 import { SourceControlManager } from "./source_control_manager";
 
-export function registerCommands(sourceControlManager: SourceControlManager, disposables: Disposable[]) {
+export function registerCommands(
+  sourceControlManager: SourceControlManager,
+  disposables: Disposable[]
+) {
   disposables.push(new GetSourceControlManager(sourceControlManager));
   disposables.push(new FileOpen());
   disposables.push(new OpenFile());

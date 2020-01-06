@@ -40,7 +40,10 @@ export class SvnContentProvider
 
   constructor(private sourceControlManager: SourceControlManager) {
     this.disposables.push(
-      sourceControlManager.onDidChangeRepository(this.onDidChangeRepository, this),
+      sourceControlManager.onDidChangeRepository(
+        this.onDidChangeRepository,
+        this
+      ),
       workspace.registerTextDocumentContentProvider("svn", this)
     );
 
@@ -79,8 +82,7 @@ export class SvnContentProvider
 
     const keys = Object.keys(this.cache);
 
-    cacheLoop:
-    for (const key of keys) {
+    cacheLoop: for (const key of keys) {
       const uri = this.cache[key].uri;
       const fsPath = uri.fsPath;
 
@@ -91,7 +93,6 @@ export class SvnContentProvider
         }
       }
     }
-
   }
 
   public async provideTextDocumentContent(uri: Uri): Promise<string> {

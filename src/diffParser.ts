@@ -14,11 +14,7 @@ export async function parseDiffXml(content: string): Promise<ISvnPath[]> {
         tagNameProcessors: [camelcase]
       },
       (err, result) => {
-        if (
-          err ||
-          !result.paths ||
-          !result.paths.path
-        ) {
+        if (err || !result.paths || !result.paths.path) {
           reject();
         }
 

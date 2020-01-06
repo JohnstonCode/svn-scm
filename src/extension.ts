@@ -33,7 +33,10 @@ async function init(
 
   const info = await svnFinder.findSvn(pathHint);
   const svn = new Svn({ svnPath: info.path, version: info.version });
-  const sourceControlManager = await new SourceControlManager(svn, ConstructorPolicy.Async);
+  const sourceControlManager = await new SourceControlManager(
+    svn,
+    ConstructorPolicy.Async
+  );
   const contentProvider = new SvnContentProvider(sourceControlManager);
 
   registerCommands(sourceControlManager, disposables);

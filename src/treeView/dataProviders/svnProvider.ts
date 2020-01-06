@@ -31,7 +31,10 @@ export default class SvnProvider implements TreeDataProvider<BaseNode> {
   }
 
   public async getChildren(element?: BaseNode): Promise<BaseNode[]> {
-    if (!this.sourceControlManager || this.sourceControlManager.openRepositories.length === 0) {
+    if (
+      !this.sourceControlManager ||
+      this.sourceControlManager.openRepositories.length === 0
+    ) {
       return Promise.resolve([]);
     }
 
@@ -39,9 +42,11 @@ export default class SvnProvider implements TreeDataProvider<BaseNode> {
       return element.getChildren();
     }
 
-    const repositories = this.sourceControlManager.openRepositories.map(repository => {
-      return new RepositoryNode(repository.repository, this);
-    });
+    const repositories = this.sourceControlManager.openRepositories.map(
+      repository => {
+        return new RepositoryNode(repository.repository, this);
+      }
+    );
 
     return repositories;
   }

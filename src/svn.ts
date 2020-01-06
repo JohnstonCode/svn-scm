@@ -79,16 +79,19 @@ export class Svn {
     if (verMatch) {
       this._version = {
         major: parseInt(verMatch[1], 10),
-        minor: parseInt(verMatch[2], 10),
+        minor: parseInt(verMatch[2], 10)
       };
     } else {
       // min. required (see checkSvnVersion)
       this._version = {
         major: 1,
-        minor: 6,
+        minor: 6
       };
     }
-    setVscodeContext("svn_gt_1_9", !(this._version.major == 1 && this._version.minor < 9));
+    setVscodeContext(
+      "svn_gt_1_9",
+      !(this._version.major == 1 && this._version.minor < 9)
+    );
   }
 
   public logOutput(output: string): void {

@@ -40,7 +40,7 @@
     "lint:fix": "npm run lint -- --fix",
     "lint": "eslint \"src/**/*.ts\"",
     "semantic-release": "semantic-release",
-    "style-check": "npx prettylint src/**/*.ts",
+    "style-check": "npx prettylint 'src/**/*.ts'",
     "test": "node ./out/test/runTest.js",
     "tools:genReadme": "node ./out/tools/generateConfigSectionForReadme.js",
     "vscode:prepublish": "npm run lint && npm run build",
