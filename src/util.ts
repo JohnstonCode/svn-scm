@@ -1,5 +1,5 @@
 import * as path from "path";
-import { Event } from "vscode";
+import { Event, commands } from "vscode";
 import { Operation } from "./common/types";
 import { exists, lstat, readdir, rmdir, unlink } from "./fs";
 
@@ -195,4 +195,8 @@ export async function isSvnFolder(
   }
 
   return isSvnFolder(parent, true);
+}
+
+export function setVscodeContext(key: string, value: any) {
+  commands.executeCommand("setContext", key, value);
 }

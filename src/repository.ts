@@ -359,7 +359,10 @@ export class Repository implements IRemoteRepository {
     }
 
     if (actionForDeletedFiles === "remove") {
-      return this.removeFiles(uris.map(uri => uri.fsPath), false);
+      return this.removeFiles(
+        uris.map(uri => uri.fsPath),
+        false
+      );
     } else if (actionForDeletedFiles === "prompt") {
       return commands.executeCommand("svn.promptRemove", ...uris);
     }
@@ -860,6 +863,12 @@ export class Repository implements IRemoteRepository {
 
   public async cleanup() {
     return this.run(Operation.CleanUp, () => this.repository.cleanup());
+  }
+
+  public async removeUnversioned() {
+    return this.run(Operation.CleanUp, () =>
+      this.repository.removeUnversioned()
+    );
   }
 
   public async getInfo(path: string, revision?: string): Promise<ISvnInfo> {

@@ -78,7 +78,11 @@ async function showCommitInput(message?: string, filePaths?: string[]) {
   Use a content security policy to only allow loading images from https or from our extension directory,
   and only allow scripts that have a specific nonce.
   -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${panel.webview.cspSource} https:; script-src ${panel.webview.cspSource} 'unsafe-inline'; style-src ${panel.webview.cspSource};">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${
+    panel.webview.cspSource
+  } https:; script-src ${panel.webview.cspSource} 'unsafe-inline'; style-src ${
+      panel.webview.cspSource
+    };">
 
   <title>Commit Message</title>
   <link rel="stylesheet" href="${styleUri}">
@@ -178,7 +182,9 @@ async function showCommitInput(message?: string, filePaths?: string[]) {
           "svn.getSourceControlManager",
           ""
         )) as SourceControlManager;
-        repository = await sourceControlManager.getRepositoryFromUri(Uri.file(filePaths[0]));
+        repository = await sourceControlManager.getRepositoryFromUri(
+          Uri.file(filePaths[0])
+        );
       }
 
       const message = await commands.executeCommand(

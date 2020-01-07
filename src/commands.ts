@@ -30,6 +30,7 @@ import { PullIncommingChange } from "./commands/pullIncomingChange";
 import { Refresh } from "./commands/refresh";
 import { RefreshRemoteChanges } from "./commands/refreshRemoteChanges";
 import { Remove } from "./commands/remove";
+import { RemoveUnversioned } from "./commands/removeUnversioned";
 import { RenameExplorer } from "./commands/renameExplorer";
 import { Resolve } from "./commands/resolve";
 import { ResolveAll } from "./commands/resolveAll";
@@ -43,7 +44,10 @@ import { Update } from "./commands/update";
 import { Upgrade } from "./commands/upgrade";
 import { SourceControlManager } from "./source_control_manager";
 
-export function registerCommands(sourceControlManager: SourceControlManager, disposables: Disposable[]) {
+export function registerCommands(
+  sourceControlManager: SourceControlManager,
+  disposables: Disposable[]
+) {
   disposables.push(new GetSourceControlManager(sourceControlManager));
   disposables.push(new FileOpen());
   disposables.push(new OpenFile());
@@ -71,6 +75,7 @@ export function registerCommands(sourceControlManager: SourceControlManager, dis
   disposables.push(new RevertChange());
   disposables.push(new Close());
   disposables.push(new Cleanup());
+  disposables.push(new RemoveUnversioned());
   disposables.push(new FinishCheckout());
   disposables.push(new AddToIgnoreSCM());
   disposables.push(new AddToIgnoreExplorer());

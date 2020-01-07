@@ -40,7 +40,7 @@
     "lint:fix": "npm run lint -- --fix",
     "lint": "eslint \"src/**/*.ts\"",
     "semantic-release": "semantic-release",
-    "style-check": "npx prettylint src/**/*.ts",
+    "style-check": "npx prettylint 'src/**/*.ts'",
     "test": "node ./out/test/runTest.js",
     "tools:genReadme": "node ./out/tools/generateConfigSectionForReadme.js",
     "vscode:prepublish": "npm run lint && npm run build",
@@ -402,6 +402,11 @@
         "category": "SVN"
       },
       {
+        "command": "svn.removeUnversioned",
+        "title": "Remove unversioned files",
+        "category": "SVN"
+      },
+      {
         "command": "svn.patchChangeList",
         "title": "Show patch from changelist",
         "category": "SVN"
@@ -551,6 +556,10 @@
         {
           "command": "svn.cleanup",
           "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
+        },
+        {
+          "command": "svn.removeUnversioned",
+          "when": "config.svn.enabled && svnOpenRepositoryCount != 0 && isSvn19orGreater"
         },
         {
           "command": "svn.addToIgnoreExplorer",
@@ -751,6 +760,10 @@
         {
           "command": "svn.cleanup",
           "when": "config.svn.enabled && scmProvider == svn"
+        },
+        {
+          "command": "svn.removeUnversioned",
+          "when": "config.svn.enabled && scmProvider == svn && isSvn19orGreater"
         },
         {
           "command": "svn.patchChangeList",

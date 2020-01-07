@@ -18,9 +18,15 @@ function loadVSCodeModule(id: string) {
     module.paths.unshift(`${baseDir}/node_modules`);
     return require(id);
   } catch (eb) {
-    vscode.window.showErrorMessage(`Missing dependency, go to "${baseDir}" and run: npm install ${id}`);
+    vscode.window.showErrorMessage(
+      `Missing dependency, go to "${baseDir}" and run: npm install ${id}`
+    );
   }
 }
 
-export const iconv = loadVSCodeModule("iconv-lite") as typeof import("iconv-lite");
-export const jschardet = loadVSCodeModule("jschardet") as typeof import("jschardet");
+export const iconv = loadVSCodeModule(
+  "iconv-lite"
+) as typeof import("iconv-lite");
+export const jschardet = loadVSCodeModule(
+  "jschardet"
+) as typeof import("jschardet");

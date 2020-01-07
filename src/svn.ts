@@ -71,7 +71,7 @@ export class Svn {
     this.svnPath = options.svnPath;
   }
 
-  private logOutput(output: string): void {
+  public logOutput(output: string): void {
     this._onOutput.emit("log", output);
   }
 

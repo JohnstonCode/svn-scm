@@ -22,6 +22,7 @@ import { SvnFinder } from "./svnFinder";
 import SvnProvider from "./treeView/dataProviders/svnProvider";
 import { toDisposable } from "./util";
 import { BranchChangesProvider } from "./historyView/branchChangesProvider";
+import { IsSvn19orGreater } from "./contexts/isSvn19orGreater";
 
 async function init(
   _context: ExtensionContext,
@@ -33,7 +34,10 @@ async function init(
 
   const info = await svnFinder.findSvn(pathHint);
   const svn = new Svn({ svnPath: info.path, version: info.version });
-  const sourceControlManager = await new SourceControlManager(svn, ConstructorPolicy.Async);
+  const sourceControlManager = await new SourceControlManager(
+    svn,
+    ConstructorPolicy.Async
+  );
   const contentProvider = new SvnContentProvider(sourceControlManager);
 
   registerCommands(sourceControlManager, disposables);
@@ -58,6 +62,7 @@ async function init(
 
   disposables.push(new CheckActiveEditor(sourceControlManager));
   disposables.push(new OpenRepositoryCount(sourceControlManager));
+  disposables.push(new IsSvn19orGreater(info.version));
 
   outputChannel.appendLine(`Using svn "${info.version}" from "${info.path}"`);
 
