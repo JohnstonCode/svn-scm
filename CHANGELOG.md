@@ -1,3 +1,10 @@
+# [2.4.0](https://github.com/JohnstonCode/svn-scm/compare/v2.3.0...v2.4.0) (2020-01-07)
+
+
+### Features
+
+* Add remove unversioned command ([#769](https://github.com/JohnstonCode/svn-scm/issues/769)) ([177bb0b](https://github.com/JohnstonCode/svn-scm/commit/177bb0baf88cf01b618503ce4c8c2a1569ec5ea4))
+
 # [2.3.0](https://github.com/JohnstonCode/svn-scm/compare/v2.2.1...v2.3.0) (2020-01-01)
 
 
