@@ -8,8 +8,7 @@ import { configuration } from "./helpers/configuration";
 
 export const tempdir = path.join(
   os.tmpdir(),
-  "vscode-svn",
-  os.userInfo().uid.toString()
+  `vscode-svn-${os.userInfo().uid.toString()}`
 );
 
 export async function createTempSvnRevisionFile(
