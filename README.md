@@ -93,7 +93,7 @@ Here is a table of settings with their default values. To change any of these, a
 |`svn.sourceControl.countUnversioned`|Allow to count unversioned files in status count|`true`|
 |`svn.log.length`|Number of commit messages to log|`50`|
 |`svn.showOutput`|Show the output window when the extension starts|`false`|
-|`svn.conflicts.autoResolve`|Set file to status resolved after fix conflictss|`false`|
+|`svn.conflicts.autoResolve`|Set file to status resolved after fix conflicts|`false`|
 |`svn.update.ignoreExternals`|Set to ignore externals definitions on update (add --ignore-externals)|`true`|
 |`svn.delete.actionForDeletedFiles`|When a file is deleted, what SVN should do? `none` - Do nothing, `prompt` - Ask the action, `remove` - automatically remove from SVN|`"prompt"`|
 |`svn.delete.ignoredRulesForDeletedFiles`|Ignored files/rules for `svn.delete.actionForDeletedFiles`(Ex.: file.txt or \*\*/\*.txt)|`[]`|

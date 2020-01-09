@@ -83,7 +83,7 @@ export class Resource implements SourceControlResourceState {
       faded,
       tooltip,
       light,
-      dark,
+      dark
     };
   }
 

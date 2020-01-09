@@ -1,6 +1,6 @@
 import * as path from "path";
 import { commands, Uri, ViewColumn, WebviewPanel, window } from "vscode";
-import { Model } from "./model";
+import { SourceControlManager } from "./source_control_manager";
 
 export function noChangesToCommit() {
   return window.showInformationMessage("There are no changes to commit.");
@@ -78,7 +78,11 @@ async function showCommitInput(message?: string, filePaths?: string[]) {
   Use a content security policy to only allow loading images from https or from our extension directory,
   and only allow scripts that have a specific nonce.
   -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${panel.webview.cspSource} https:; script-src ${panel.webview.cspSource}; style-src ${panel.webview.cspSource};">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${
+    panel.webview.cspSource
+  } https:; script-src ${panel.webview.cspSource} 'unsafe-inline'; style-src ${
+      panel.webview.cspSource
+    };">
 
   <title>Commit Message</title>
   <link rel="stylesheet" href="${styleUri}">
@@ -174,11 +178,13 @@ async function showCommitInput(message?: string, filePaths?: string[]) {
       let repository;
 
       if (filePaths && filePaths[0]) {
-        const model = (await commands.executeCommand(
-          "svn.getModel",
+        const sourceControlManager = (await commands.executeCommand(
+          "svn.getSourceControlManager",
           ""
-        )) as Model;
-        repository = await model.getRepositoryFromUri(Uri.file(filePaths[0]));
+        )) as SourceControlManager;
+        repository = await sourceControlManager.getRepositoryFromUri(
+          Uri.file(filePaths[0])
+        );
       }
 
       const message = await commands.executeCommand(

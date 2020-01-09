@@ -11,7 +11,7 @@ import { CommitWithMessage } from "./commands/commitWithMessage";
 import { DeleteUnversioned } from "./commands/deleteUnversioned";
 import { FileOpen } from "./commands/fileOpen";
 import { FinishCheckout } from "./commands/finishCheckout";
-import { GetModel } from "./commands/getModel";
+import { GetSourceControlManager } from "./commands/get_source_control_manager";
 import { Log } from "./commands/log";
 import { OpenChangeBase } from "./commands/openChangeBase";
 import { OpenChangeHead } from "./commands/openChangeHead";
@@ -30,6 +30,7 @@ import { PullIncommingChange } from "./commands/pullIncomingChange";
 import { Refresh } from "./commands/refresh";
 import { RefreshRemoteChanges } from "./commands/refreshRemoteChanges";
 import { Remove } from "./commands/remove";
+import { RemoveUnversioned } from "./commands/removeUnversioned";
 import { RenameExplorer } from "./commands/renameExplorer";
 import { Resolve } from "./commands/resolve";
 import { ResolveAll } from "./commands/resolveAll";
@@ -41,10 +42,13 @@ import { RevertExplorer } from "./commands/revertExplorer";
 import { SwitchBranch } from "./commands/switchBranch";
 import { Update } from "./commands/update";
 import { Upgrade } from "./commands/upgrade";
-import { Model } from "./model";
+import { SourceControlManager } from "./source_control_manager";
 
-export function registerCommands(model: Model, disposables: Disposable[]) {
-  disposables.push(new GetModel(model));
+export function registerCommands(
+  sourceControlManager: SourceControlManager,
+  disposables: Disposable[]
+) {
+  disposables.push(new GetSourceControlManager(sourceControlManager));
   disposables.push(new FileOpen());
   disposables.push(new OpenFile());
   disposables.push(new PromptAuth());
@@ -71,6 +75,7 @@ export function registerCommands(model: Model, disposables: Disposable[]) {
   disposables.push(new RevertChange());
   disposables.push(new Close());
   disposables.push(new Cleanup());
+  disposables.push(new RemoveUnversioned());
   disposables.push(new FinishCheckout());
   disposables.push(new AddToIgnoreSCM());
   disposables.push(new AddToIgnoreExplorer());

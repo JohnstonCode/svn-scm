@@ -1,8 +1,16 @@
-import { Event, Uri, workspace } from "vscode";
+import { Event, Uri, workspace, EventEmitter } from "vscode";
+import { watch } from "fs";
+import { exists } from "../fs";
+import { join } from "path";
+import { debounce } from "../decorators";
 import { anyEvent, filterEvent, IDisposable, isDescendant } from "../util";
 
 export class RepositoryFilesWatcher implements IDisposable {
   private disposables: IDisposable[] = [];
+
+  private _onRepoChange: EventEmitter<Uri>;
+  private _onRepoCreate: EventEmitter<Uri>;
+  private _onRepoDelete: EventEmitter<Uri>;
 
   public onDidChange: Event<Uri>;
   public onDidCreate: Event<Uri>;
@@ -21,6 +29,29 @@ export class RepositoryFilesWatcher implements IDisposable {
 
   constructor(readonly root: string) {
     const fsWatcher = workspace.createFileSystemWatcher("**");
+    this._onRepoChange = new EventEmitter<Uri>();
+    this._onRepoCreate = new EventEmitter<Uri>();
+    this._onRepoDelete = new EventEmitter<Uri>();
+    let onRepoChange: Event<Uri> | undefined;
+    let onRepoCreate: Event<Uri> | undefined;
+    let onRepoDelete: Event<Uri> | undefined;
+
+    if (
+      typeof workspace.workspaceFolders !== "undefined" &&
+      !workspace.workspaceFolders.filter(w => isDescendant(w.uri.fsPath, root))
+        .length
+    ) {
+      const repoWatcher = watch(join(root, ".svn"), this.repoWatch);
+
+      repoWatcher.on("error", error => {
+        throw error;
+      });
+
+      onRepoChange = this._onRepoChange.event;
+      onRepoCreate = this._onRepoCreate.event;
+      onRepoDelete = this._onRepoDelete.event;
+    }
+
     this.disposables.push(fsWatcher);
 
     const isTmp = (uri: Uri) => /[\\\/]\.svn[\\\/]tmp/.test(uri.path);
@@ -57,11 +88,32 @@ export class RepositoryFilesWatcher implements IDisposable {
     this.onDidSvnCreate = filterEvent(this.onDidCreate, ignoreWorkspace);
     this.onDidSvnDelete = filterEvent(this.onDidDelete, ignoreWorkspace);
 
+    if (onRepoChange && onRepoCreate && onRepoDelete) {
+      this.onDidSvnChange = onRepoChange;
+      this.onDidSvnCreate = onRepoCreate;
+      this.onDidSvnDelete = onRepoDelete;
+    }
+
     this.onDidSvnAny = anyEvent(
       this.onDidSvnChange,
       this.onDidSvnCreate,
       this.onDidSvnDelete
     );
+  }
+
+  @debounce(1000)
+  private repoWatch(event: string, filename: string): void {
+    if (event === "change") {
+      this._onRepoChange.fire(Uri.parse(filename));
+    } else if (event === "rename") {
+      exists(filename).then(doesExist => {
+        if (doesExist) {
+          this._onRepoCreate.fire(Uri.parse(filename));
+        } else {
+          this._onRepoDelete.fire(Uri.parse(filename));
+        }
+      });
+    }
   }
 
   public dispose(): void {

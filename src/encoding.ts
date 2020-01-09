@@ -1,7 +1,9 @@
 import * as jschardet from "jschardet";
 
-jschardet.Constants.MINIMUM_THRESHOLD = 0.2;
-jschardet.MacCyrillicModel.mTypicalPositiveRatio += 0.001;
+if (jschardet.Constants) {
+  jschardet.Constants.MINIMUM_THRESHOLD = 0.2;
+  jschardet.MacCyrillicModel.mTypicalPositiveRatio += 0.001;
+}
 
 function detectEncodingByBOM(buffer: Buffer): string | null {
   if (!buffer || buffer.length < 2) {

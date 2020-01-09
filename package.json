@@ -2,10 +2,10 @@
   "name": "svn-scm",
   "displayName": "SVN",
   "description": "Integrated Subversion source control",
-  "version": "2.0.0",
+  "version": "2.4.0",
   "publisher": "johnstoncode",
   "engines": {
-    "vscode": "^1.40.0"
+    "vscode": "^1.41.0"
   },
   "private": true,
   "enableProposedApi": false,
@@ -39,7 +39,7 @@
     "lint:fix": "npm run lint -- --fix",
     "lint": "eslint \"src/**/*.ts\"",
     "semantic-release": "semantic-release",
-    "style-check": "npx prettylint src/**/*.ts",
+    "style-check": "npx prettylint 'src/**/*.ts'",
     "test": "npm run build && webpack --mode development && node ./out/test/runTest.js",
     "tools:genReadme": "node ./out/tools/generateConfigSectionForReadme.js",
     "vscode:prepublish": "npm run build:css && webpack --mode production",
@@ -50,9 +50,10 @@
   "dependencies": {
     "iconv-lite": "^0.5.0",
     "jschardet": "1.6.0",
+    "date-fns": "^2.8.1",
     "minimatch": "^3.0.4",
     "original-fs": "^1.0.0",
-    "semver": "^6.0.0",
+    "semver": "^7.0.0",
     "tmp": "0.1.0",
     "xml2js": "^0.4.19"
   },
@@ -64,7 +65,7 @@
     "@types/node": "^12.11.7",
     "@types/semver": "^6.0.0",
     "@types/tmp": "0.1.0",
-    "@types/vscode": "1.40.0",
+    "@types/vscode": "1.41.0",
     "@types/xml2js": "^0.4.4",
     "@typescript-eslint/eslint-plugin": "^2.5.0",
     "@typescript-eslint/parser": "^2.5.0",
@@ -120,6 +121,11 @@
         {
           "id": "itemlog",
           "name": "File History",
+          "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
+        },
+        {
+          "id": "branchchanges",
+          "name": "Branch Changes",
           "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
         }
       ]
@@ -196,6 +202,20 @@
         "command": "svn.itemlog.copymsg",
         "category": "SVN",
         "title": "Copy message to clipboard"
+      },
+      {
+        "command": "svn.branchchanges.openDiff",
+        "category": "SVN",
+        "title": "Open diff"
+      },
+      {
+        "command": "svn.branchchanges.refresh",
+        "category": "SVN",
+        "title": "Refresh branch changes",
+        "icon": {
+          "dark": "icons/dark/refresh.svg",
+          "light": "icons/light/refresh.svg"
+        }
       },
       {
         "command": "svn.checkout",
@@ -388,6 +408,11 @@
         "category": "SVN"
       },
       {
+        "command": "svn.removeUnversioned",
+        "title": "Remove unversioned files",
+        "category": "SVN"
+      },
+      {
         "command": "svn.patchChangeList",
         "title": "Show patch from changelist",
         "category": "SVN"
@@ -539,6 +564,10 @@
           "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
         },
         {
+          "command": "svn.removeUnversioned",
+          "when": "config.svn.enabled && svnOpenRepositoryCount != 0 && isSvn19orGreater"
+        },
+        {
           "command": "svn.addToIgnoreExplorer",
           "when": "false"
         },
@@ -599,6 +628,14 @@
           "when": "false"
         },
         {
+          "command": "svn.branchchanges.openDiff",
+          "when": "false"
+        },
+        {
+          "command": "svn.branchchanges.refresh",
+          "when": "false"
+        },
+        {
           "command": "svn.pickCommitMessage",
           "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
         }
@@ -622,6 +659,11 @@
         {
           "command": "svn.itemlog.refresh",
           "when": "view == itemlog",
+          "group": "navigation"
+        },
+        {
+          "command": "svn.branchchanges.refresh",
+          "when": "view == branchchanges",
           "group": "navigation"
         }
       ],
@@ -724,6 +766,10 @@
         {
           "command": "svn.cleanup",
           "when": "config.svn.enabled && scmProvider == svn"
+        },
+        {
+          "command": "svn.removeUnversioned",
+          "when": "config.svn.enabled && scmProvider == svn && isSvn19orGreater"
         },
         {
           "command": "svn.patchChangeList",
@@ -1102,7 +1148,7 @@
         },
         "svn.conflicts.autoResolve": {
           "type": "boolean",
-          "description": "Set file to status resolved after fix conflictss",
+          "description": "Set file to status resolved after fix conflicts",
           "default": false
         },
         "svn.update.ignoreExternals": {

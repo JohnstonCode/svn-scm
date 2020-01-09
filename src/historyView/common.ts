@@ -1,4 +1,5 @@
 import { createHash } from "crypto";
+import { formatDistanceToNow } from "date-fns";
 import * as path from "path";
 import {
   commands,
@@ -219,12 +220,18 @@ export function getCommitIcon(
   return gravatar;
 }
 
+export function getCommitDescription(commit: ISvnLogEntry): string {
+  const relativeDate = formatDistanceToNow(Date.parse(commit.date), {
+    addSuffix: true
+  });
+  return `r${commit.revision}, ${relativeDate} by ${commit.author}`;
+}
+
 export function getCommitLabel(commit: ISvnLogEntry): string {
-  let commitMsg = "<blank>";
-  if (commit.msg) {
-    commitMsg = commit.msg.split(/\r?\n/, 1)[0];
+  if (!commit.msg) {
+    return "<blank>";
   }
-  return `${commitMsg} • r${commit.revision}`;
+  return commit.msg.split(/\r?\n/, 1)[0];
 }
 
 export function getCommitToolTip(commit: ISvnLogEntry): string {
@@ -268,16 +275,17 @@ async function downloadFile(
 
 export async function openDiff(
   repo: IRemoteRepository,
-  arg: Uri,
+  arg1: Uri,
   r1: string,
-  r2: string
+  r2: string,
+  arg2?: Uri
 ) {
-  const uri1 = await downloadFile(repo, arg, r1);
-  const uri2 = await downloadFile(repo, arg, r2);
+  const uri1 = await downloadFile(repo, arg1, r1);
+  const uri2 = await downloadFile(repo, arg2 || arg1, r2);
   const opts: TextDocumentShowOptions = {
     preview: true
   };
-  const title = `${path.basename(arg.path)} (${r1} : ${r2})`;
+  const title = `${path.basename(arg1.path)} (${r1} : ${r2})`;
   return commands.executeCommand<void>("vscode.diff", uri1, uri2, title, opts);
 }
 

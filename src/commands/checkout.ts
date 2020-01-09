@@ -4,7 +4,7 @@ import { commands, ProgressLocation, Uri, window, workspace } from "vscode";
 import { IAuth, ICpOptions } from "../common/types";
 import { getBranchName } from "../helpers/branch";
 import { configuration } from "../helpers/configuration";
-import { Model } from "../model";
+import { SourceControlManager } from "../source_control_manager";
 import { svnErrorCodes } from "../svn";
 import { Command } from "./command";
 
@@ -88,12 +88,12 @@ export class Checkout extends Command {
       attempt++;
       try {
         await window.withProgress(progressOptions, async () => {
-          const model = (await commands.executeCommand(
-            "svn.getModel",
+          const sourceControlManager = (await commands.executeCommand(
+            "svn.getSourceControlManager",
             ""
-          )) as Model;
+          )) as SourceControlManager;
           const args = ["checkout", url, repositoryPath];
-          await model.svn.exec(parentPath, args, opt);
+          await sourceControlManager.svn.exec(parentPath, args, opt);
         });
         break;
       } catch (err) {
