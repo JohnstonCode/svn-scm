@@ -3,7 +3,7 @@ import * as path from "path";
 import { Uri } from "vscode";
 import { exists, mkdir, writeFile } from "./fs";
 import * as crypto from "crypto";
-import { iconv } from "./vscodeModules";
+import * as iconv from "iconv-lite";
 import { configuration } from "./helpers/configuration";
 
 export const tempdir = path.join(os.tmpdir(), "vscode-svn");
