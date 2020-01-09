@@ -6,7 +6,11 @@ import * as crypto from "crypto";
 import { iconv } from "./vscodeModules";
 import { configuration } from "./helpers/configuration";
 
-export const tempdir = path.join(os.tmpdir(), "vscode-svn", os.userInfo().uid.toString());
+export const tempdir = path.join(
+  os.tmpdir(),
+  "vscode-svn",
+  os.userInfo().uid.toString()
+);
 
 export async function createTempSvnRevisionFile(
   svnUri: Uri,
