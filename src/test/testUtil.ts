@@ -185,10 +185,7 @@ export function activeExtension() {
     }
 
     if (!extension.isActive) {
-      extension.activate().then(
-        () => resolve(),
-        () => reject()
-      );
+      extension.activate().then(() => resolve(), () => reject());
     } else {
       resolve();
     }
