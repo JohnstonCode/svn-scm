@@ -1,3 +1,10 @@
+## [2.4.1](https://github.com/JohnstonCode/svn-scm/compare/v2.4.0...v2.4.1) (2020-01-09)
+
+
+### Bug Fixes
+
+* temp files are created in uid directory ([#774](https://github.com/JohnstonCode/svn-scm/issues/774)) ([b779ef2](https://github.com/JohnstonCode/svn-scm/commit/b779ef21f5811c72db5e6f8dfde602469d1124e3))
+
 # [2.4.0](https://github.com/JohnstonCode/svn-scm/compare/v2.3.0...v2.4.0) (2020-01-07)
 
 
