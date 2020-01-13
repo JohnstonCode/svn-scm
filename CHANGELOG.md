@@ -1,3 +1,10 @@
+## [2.4.2](https://github.com/JohnstonCode/svn-scm/compare/v2.4.1...v2.4.2) (2020-01-13)
+
+
+### Reverts
+
+* Revert "chore(package): update semantic-release to version 16.0.… (#776) ([7e66eac](https://github.com/JohnstonCode/svn-scm/commit/7e66eac596494e99c0590276c747ab8b3cb07ea9)), closes [#776](https://github.com/JohnstonCode/svn-scm/issues/776)
+
 ## [2.4.1](https://github.com/JohnstonCode/svn-scm/compare/v2.4.0...v2.4.1) (2020-01-09)
 
 
