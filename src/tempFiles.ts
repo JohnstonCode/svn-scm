@@ -17,7 +17,7 @@ export async function createTempSvnRevisionFile(
   payload: string
 ): Promise<Uri> {
   if (!(await exists(tempdir))) {
-    await mkdir(tempdir);
+    await mkdir(tempdir, { mode: 0o770 });
   }
 
   const fname = `r${revision}_${path.basename(svnUri.fsPath)}`;
@@ -27,7 +27,7 @@ export async function createTempSvnRevisionFile(
   const encoding = configuration.get<string>("default.encoding");
 
   if (!(await exists(path.join(tempdir, filePathHash)))) {
-    await mkdir(path.join(tempdir, filePathHash));
+    await mkdir(path.join(tempdir, filePathHash), { mode: 0o770 });
   }
 
   const fpath = path.join(tempdir, filePathHash, fname);
