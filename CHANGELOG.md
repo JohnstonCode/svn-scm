@@ -1,3 +1,10 @@
+## [2.4.3](https://github.com/JohnstonCode/svn-scm/compare/v2.4.2...v2.4.3) (2020-01-24)
+
+
+### Bug Fixes
+
+* temp directory permissions ([#778](https://github.com/JohnstonCode/svn-scm/issues/778)) ([#779](https://github.com/JohnstonCode/svn-scm/issues/779)) ([3d69ae5](https://github.com/JohnstonCode/svn-scm/commit/3d69ae56f256eb29a4123a5c63fb6bc14129ce96))
+
 ## [2.4.2](https://github.com/JohnstonCode/svn-scm/compare/v2.4.1...v2.4.2) (2020-01-13)
 
 
