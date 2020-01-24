@@ -92,6 +92,12 @@ export class RepoLogProvider
     );
     this._dispose.push(
       commands.registerCommand(
+        "svn.repolog.copyrevision",
+        async (item: ILogTreeItem) => copyCommitToClipboard("revision", item)
+      )
+    );
+    this._dispose.push(
+      commands.registerCommand(
         "svn.repolog.addrepolike",
         this.addRepolikeGui,
         this
