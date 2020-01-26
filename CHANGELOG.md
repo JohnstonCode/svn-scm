@@ -1,3 +1,10 @@
+# [2.5.0](https://github.com/JohnstonCode/svn-scm/compare/v2.4.3...v2.5.0) (2020-01-26)
+
+
+### Features
+
+* Added ability to copy revision number to clipboard ([#780](https://github.com/JohnstonCode/svn-scm/issues/780)) ([dc125ec](https://github.com/JohnstonCode/svn-scm/commit/dc125ec3db81fe96ad83da818718da966d62f4c9))
+
 ## [2.4.3](https://github.com/JohnstonCode/svn-scm/compare/v2.4.2...v2.4.3) (2020-01-24)
 
 
