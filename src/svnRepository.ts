@@ -658,21 +658,13 @@ export class Repository {
   }
 
   public async plainLogByRevision(revision: number) {
-    const result = await this.exec([
-      "log",
-      "-r",
-      revision.toString(),
-    ]);
+    const result = await this.exec(["log", "-r", revision.toString()]);
 
     return result.stdout;
   }
 
   public async plainLogByText(search: string) {
-    const result = await this.exec([
-      "log",
-      "--search",
-      search
-    ]);
+    const result = await this.exec(["log", "--search", search]);
 
     return result.stdout;
   }
