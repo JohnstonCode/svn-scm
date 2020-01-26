@@ -11,31 +11,31 @@ export class SearchLogByRevision extends Command {
   }
 
   public async execute(repository: Repository) {
-      const input = await window.showInputBox({prompt: 'Revision?'});
-      if (!input) {
-        return;
-      }
+    const input = await window.showInputBox({ prompt: "Revision?" });
+    if (!input) {
+      return;
+    }
 
-      const revision = parseInt(input, 10);
-      if (!revision || !/^\+?(0|[1-9]\d*)$/.test(input)) {
-          window.showErrorMessage('Invalid revision');
-          return;
-      }
+    const revision = parseInt(input, 10);
+    if (!revision || !/^\+?(0|[1-9]\d*)$/.test(input)) {
+      window.showErrorMessage("Invalid revision");
+      return;
+    }
 
-      try {
-        const resource = toSvnUri(
-          Uri.file(repository.workspaceRoot),
-          SvnUriAction.LOG_REVISION,
-          { revision }
-        );
-        const uri = resource.with({
-          path: path.join(resource.path, "svn.log")
-        });
-  
-        await commands.executeCommand<void>("vscode.open", uri);
-      } catch (error) {
-        console.error(error);
-        window.showErrorMessage("Unable to log");
-      }
+    try {
+      const resource = toSvnUri(
+        Uri.file(repository.workspaceRoot),
+        SvnUriAction.LOG_REVISION,
+        { revision }
+      );
+      const uri = resource.with({
+        path: path.join(resource.path, "svn.log")
+      });
+
+      await commands.executeCommand<void>("vscode.open", uri);
+    } catch (error) {
+      console.error(error);
+      window.showErrorMessage("Unable to log");
+    }
   }
 }
