@@ -169,6 +169,11 @@
         "title": "Copy message to clipboard"
       },
       {
+        "command": "svn.repolog.copyrevision",
+        "category": "SVN",
+        "title": "Copy revision number to clipboard"
+      },
+      {
         "command": "svn.itemlog.openFileRemote",
         "title": "Open this revision",
         "category": "SVN"
@@ -196,6 +201,11 @@
         "command": "svn.itemlog.copymsg",
         "category": "SVN",
         "title": "Copy message to clipboard"
+      },
+      {
+        "command": "svn.itemlog.copyrevision",
+        "category": "SVN",
+        "title": "Copy revision number to clipboard"
       },
       {
         "command": "svn.branchchanges.openDiff",
@@ -602,6 +612,10 @@
           "when": "false"
         },
         {
+          "command": "svn.repolog.copyrevision",
+          "when": "false"
+        },
+        {
           "command": "svn.itemlog.openFileRemote",
           "when": "false"
         },
@@ -619,6 +633,10 @@
         },
         {
           "command": "svn.itemlog.copymsg",
+          "when": "false"
+        },
+        {
+          "command": "svn.itemlog.copyrevision",
           "when": "false"
         },
         {
@@ -701,6 +719,10 @@
           "when": "view == itemlog && viewItem == diffable"
         },
         {
+          "command": "svn.itemlog.copyrevision",
+          "when": "view == itemlog && viewItem == diffable"
+        },
+        {
           "command": "svn.repolog.openDiff",
           "when": "view == repolog && viewItem == diffable"
         },
@@ -718,6 +740,10 @@
         },
         {
           "command": "svn.repolog.copymsg",
+          "when": "view == repolog && viewItem == commit"
+        },
+        {
+          "command": "svn.repolog.copyrevision",
           "when": "view == repolog && viewItem == commit"
         }
       ],

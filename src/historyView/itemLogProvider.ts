@@ -54,6 +54,12 @@ export class ItemLogProvider
     );
     this._dispose.push(
       commands.registerCommand(
+        "svn.itemlog.copyrevision",
+        async (item: ILogTreeItem) => copyCommitToClipboard("revision", item)
+      )
+    );
+    this._dispose.push(
+      commands.registerCommand(
         "svn.itemlog.openFileRemote",
         this.openFileRemoteCmd,
         this
