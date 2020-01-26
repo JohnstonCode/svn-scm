@@ -667,7 +667,7 @@
         },
         {
           "command": "svn.searchLogByText",
-          "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
+          "when": "config.svn.enabled && svnOpenRepositoryCount != 0 && isSvn18orGreater"
         }
       ],
       "view/title": [
