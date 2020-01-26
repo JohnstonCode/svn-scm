@@ -16,7 +16,7 @@ export class SearchLogByRevision extends Command {
         return;
       }
 
-      const revision = parseInt(input);
+      const revision = parseInt(input, 10);
       if (!revision || !/^\+?(0|[1-9]\d*)$/.test(input)) {
           window.showErrorMessage('Invalid revision');
           return;
