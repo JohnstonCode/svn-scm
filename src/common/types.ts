@@ -255,13 +255,17 @@ export interface ISvn {
 export enum SvnUriAction {
   LOG = "LOG",
   PATCH = "PATCH",
-  SHOW = "SHOW"
+  SHOW = "SHOW",
+  LOG_REVISION = "LOG_REVISION",
+  LOG_SEARCH = "LOG_SEARCH"
 }
 
 export interface ISvnUriExtraParams {
   ref?: string;
   limit?: string;
   [key: string]: any;
+  revision?: number;
+  search?: string;
 }
 
 export interface ISvnUriParams {

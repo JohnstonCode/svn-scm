@@ -43,6 +43,8 @@ import { SwitchBranch } from "./commands/switchBranch";
 import { Update } from "./commands/update";
 import { Upgrade } from "./commands/upgrade";
 import { SourceControlManager } from "./source_control_manager";
+import { SearchLogByRevision } from "./commands/search_log_by_revision";
+import { SearchLogByText } from "./commands/search_log_by_text";
 
 export function registerCommands(
   sourceControlManager: SourceControlManager,
@@ -91,4 +93,6 @@ export function registerCommands(
   disposables.push(new RevertAll());
   disposables.push(new PickCommitMessage());
   disposables.push(new RevertExplorer());
+  disposables.push(new SearchLogByRevision());
+  disposables.push(new SearchLogByText());
 }
