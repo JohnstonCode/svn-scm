@@ -1,3 +1,10 @@
+# [2.6.0](https://github.com/JohnstonCode/svn-scm/compare/v2.5.0...v2.6.0) (2020-01-27)
+
+
+### Features
+
+* Added log search commands ([#782](https://github.com/JohnstonCode/svn-scm/issues/782)) ([6fc635f](https://github.com/JohnstonCode/svn-scm/commit/6fc635fb6488378fa83ed1070d4c27428e2549c0))
+
 # [2.5.0](https://github.com/JohnstonCode/svn-scm/compare/v2.4.3...v2.5.0) (2020-01-26)
 
 
