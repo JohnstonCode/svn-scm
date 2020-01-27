@@ -850,6 +850,18 @@ export class Repository implements IRemoteRepository {
     return this.run(Operation.Log, () => this.repository.plainLog());
   }
 
+  public async plainLogByRevision(revision: number) {
+    return this.run(Operation.Log, () =>
+      this.repository.plainLogByRevision(revision)
+    );
+  }
+
+  public async plainLogByText(search: string) {
+    return this.run(Operation.Log, () =>
+      this.repository.plainLogByText(search)
+    );
+  }
+
   public async log(
     rfrom: string,
     rto: string,

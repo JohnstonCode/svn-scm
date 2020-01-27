@@ -467,6 +467,16 @@
           "light": "icons/light/icon-history.svg",
           "dark": "icons/dark/icon-history.svg"
         }
+      },
+      {
+        "command": "svn.searchLogByRevision",
+        "title": "Search log by revision",
+        "category": "SVN"
+      },
+      {
+        "command": "svn.searchLogByText",
+        "title": "Search log",
+        "category": "SVN"
       }
     ],
     "menus": {
@@ -650,6 +660,14 @@
         {
           "command": "svn.pickCommitMessage",
           "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
+        },
+        {
+          "command": "svn.searchLogByRevision",
+          "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
+        },
+        {
+          "command": "svn.searchLogByText",
+          "when": "config.svn.enabled && svnOpenRepositoryCount != 0 && isSvn18orGreater"
         }
       ],
       "view/title": [

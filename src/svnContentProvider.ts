@@ -118,6 +118,12 @@ export class SvnContentProvider
       if (action === SvnUriAction.LOG) {
         return await repository.plainLog();
       }
+      if (action === SvnUriAction.LOG_REVISION && extra.revision) {
+        return await repository.plainLogByRevision(extra.revision);
+      }
+      if (action === SvnUriAction.LOG_SEARCH && extra.search) {
+        return await repository.plainLogByText(extra.search);
+      }
       if (action === SvnUriAction.PATCH) {
         return await repository.patch([fsPath]);
       }
