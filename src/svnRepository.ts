@@ -341,6 +341,13 @@ export class Repository {
           encoding = detectedEncoding;
         }
       }
+    } else {
+      const svnEncoding: string | undefined = configuration.get<string>(
+        "default.encoding"
+      );
+      if (svnEncoding) {
+        encoding = svnEncoding;
+      }
     }
 
     const result = await this.exec(args, { encoding });
