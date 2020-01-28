@@ -53,12 +53,12 @@ jobs:
         run: 'npm ci || npm ci'
         shell: bash
       
-      - name: Lint files
-        if: startsWith(matrix.os, 'ubuntu')
+      - name: Lint check
+        if: startsWith(matrix.os, 'ubuntu') && matrix.version == ''
         run: npm run lint
 
       - name: Style check
-        if: startsWith(matrix.os, 'ubuntu')
+        if: startsWith(matrix.os, 'ubuntu') && matrix.version == ''
         run: npm run style-check
 
       - name: Compile sources
