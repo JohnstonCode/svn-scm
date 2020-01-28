@@ -341,14 +341,14 @@ export class Repository {
           encoding = detectedEncoding;
         }
       }
-    }
-    else {
-      const svnEncoding: string | undefined = configuration.get<string>("default.encoding");
+    } else {
+      const svnEncoding: string | undefined = configuration.get<string>(
+        "default.encoding"
+      );
       if (svnEncoding) {
         encoding = svnEncoding;
       }
     }
-
 
     const result = await this.exec(args, { encoding });
 
@@ -405,7 +405,7 @@ export class Repository {
 
       const filesMessage = `${sendedFiles} ${
         sendedFiles === 1 ? "file" : "files"
-        } commited`;
+      } commited`;
 
       return `${filesMessage}: revision ${matches[1]}.`;
     }
