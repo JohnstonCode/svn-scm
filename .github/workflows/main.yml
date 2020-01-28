@@ -55,6 +55,10 @@ jobs:
       
       - name: Lint files
         if: startsWith(matrix.os, 'ubuntu')
+        run: npm run lint
+
+      - name: Style check
+        if: startsWith(matrix.os, 'ubuntu')
         run: npm run style-check
 
       - name: Compile sources
