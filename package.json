@@ -40,6 +40,7 @@
     "lint:fix": "npm run lint -- --fix",
     "lint": "eslint \"src/**/*.ts\"",
     "semantic-release": "semantic-release",
+    "style-fix": "npx prettier --write \"src/**/*.ts\"",
     "style-check": "npx prettylint 'src/**/*.ts'",
     "test": "node ./out/test/runTest.js",
     "tools:genReadme": "node ./out/tools/generateConfigSectionForReadme.js",
