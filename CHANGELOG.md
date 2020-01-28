@@ -1,3 +1,10 @@
+## [2.6.1](https://github.com/JohnstonCode/svn-scm/compare/v2.6.0...v2.6.1) (2020-01-28)
+
+
+### Bug Fixes
+
+* fix encoding when comparing file revisions [#788](https://github.com/JohnstonCode/svn-scm/issues/788) ([#789](https://github.com/JohnstonCode/svn-scm/issues/789)) ([f6d5a68](https://github.com/JohnstonCode/svn-scm/commit/f6d5a6807be291c654214d35c84cb101eaa0c57a))
+
 # [2.6.0](https://github.com/JohnstonCode/svn-scm/compare/v2.5.0...v2.6.0) (2020-01-27)
 
 
