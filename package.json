@@ -63,7 +63,7 @@
     "@types/node": "^12.11.7",
     "@types/semver": "^6.0.0",
     "@types/tmp": "0.1.0",
-    "@types/vscode": "1.41.0",
+    "@types/vscode": "1.42.0",
     "@types/xml2js": "^0.4.4",
     "@typescript-eslint/eslint-plugin": "^2.5.0",
     "@typescript-eslint/parser": "^2.5.0",
