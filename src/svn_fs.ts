@@ -187,7 +187,7 @@ class SvnFs implements FileSystemProvider, Disposable {
     this._disposables.forEach(disposable => disposable.dispose());
     this._disposables = [];
 
-    for (const [name] of this.readDirectory(Uri.parse('svnfs:/'))) {
+    for (const [name] of this.readDirectory(Uri.parse("svnfs:/"))) {
       this.delete(Uri.parse(`svnfs:/${name}`));
     }
   }
