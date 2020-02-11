@@ -30,3 +30,4 @@ export const iconv = loadVSCodeModule(
 export const jschardet = loadVSCodeModule(
   "jschardet"
 ) as typeof import("jschardet");
+export const keytar = loadVSCodeModule("keytar") as typeof import("keytar");

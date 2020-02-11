@@ -1,3 +1,10 @@
+## [2.6.2](https://github.com/JohnstonCode/svn-scm/compare/v2.6.1...v2.6.2) (2020-02-11)
+
+
+### Bug Fixes
+
+* Fixed repeated auths prompt (close [#652](https://github.com/JohnstonCode/svn-scm/issues/652)) ([#799](https://github.com/JohnstonCode/svn-scm/issues/799)) ([42e64a9](https://github.com/JohnstonCode/svn-scm/commit/42e64a977c43c6a9d1200df2543107d9849c70ca))
+
 ## [2.6.1](https://github.com/JohnstonCode/svn-scm/compare/v2.6.0...v2.6.1) (2020-01-28)
 
 
