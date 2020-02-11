@@ -1,11 +1,11 @@
 import { Command } from "./command";
 import { window, Uri, commands, ProgressLocation } from "vscode";
 import { Repository } from "../repository";
-import { SvnFs } from "../svn_fs";
 import * as cp from "child_process";
+import { svnFs } from "../svn_fs";
 
 export class SearchLogByText extends Command {
-  constructor(private svnFs: SvnFs) {
+  constructor() {
     super("svn.searchLogByText", { repository: true });
   }
 
@@ -16,7 +16,7 @@ export class SearchLogByText extends Command {
     }
 
     const uri = Uri.parse("svnfs:/svn.log");
-    this.svnFs.writeFile(uri, Buffer.from(""), {
+    svnFs.writeFile(uri, Buffer.from(""), {
       create: true,
       overwrite: true
     });
@@ -32,7 +32,7 @@ export class SearchLogByText extends Command {
     proc.stdout.on("data", data => {
       content += data.toString();
 
-      this.svnFs.writeFile(uri, Buffer.from(content), {
+      svnFs.writeFile(uri, Buffer.from(content), {
         create: true,
         overwrite: true
       });
@@ -44,9 +44,19 @@ export class SearchLogByText extends Command {
         location: ProgressLocation.Notification,
         title: "Searching Log"
       },
-      async (_progress, token) => {
+      (_progress, token) => {
         token.onCancellationRequested(() => {
           proc.kill("SIGINT");
+        });
+
+        return new Promise((resolve, reject) => {
+          proc.on("exit", () => {
+            resolve();
+          });
+
+          proc.on("error", () => {
+            reject();
+          })
         });
       }
     );

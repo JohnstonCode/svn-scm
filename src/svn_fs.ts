@@ -8,7 +8,8 @@ import {
   FileStat,
   FileType,
   FileSystemError,
-  FileChangeType
+  FileChangeType,
+  workspace
 } from "vscode";
 import * as path from "path";
 
@@ -50,13 +51,19 @@ export class Directory implements FileStat {
 
 export type Entry = File | Directory;
 
-export class SvnFs implements FileSystemProvider {
+class SvnFs implements FileSystemProvider {
   private _emitter = new EventEmitter<FileChangeEvent[]>();
   private _bufferedEvents: FileChangeEvent[] = [];
   private _fireSoonHandler?: NodeJS.Timer;
   private _root = new Directory("");
 
   readonly onDidChangeFile: Event<FileChangeEvent[]> = this._emitter.event;
+
+  constructor() {
+    workspace.registerFileSystemProvider("svnfs", this, {
+      isCaseSensitive: true
+    });
+  }
 
   watch(_resource: Uri): Disposable {
     // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -239,3 +246,5 @@ export class SvnFs implements FileSystemProvider {
     }, 1);
   }
 }
+
+export const svnFs = new SvnFs();

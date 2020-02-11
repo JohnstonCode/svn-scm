@@ -5,8 +5,7 @@ import {
   ExtensionContext,
   OutputChannel,
   Uri,
-  window,
-  workspace
+  window
 } from "vscode";
 import { registerCommands } from "./commands";
 import { ConstructorPolicy } from "./common/types";
@@ -25,7 +24,6 @@ import { toDisposable } from "./util";
 import { BranchChangesProvider } from "./historyView/branchChangesProvider";
 import { IsSvn19orGreater } from "./contexts/isSvn19orGreater";
 import { IsSvn18orGreater } from "./contexts/isSvn18orGreater";
-import { SvnFs } from "./svn_fs";
 
 async function init(
   _context: ExtensionContext,
@@ -43,12 +41,7 @@ async function init(
   );
   const contentProvider = new SvnContentProvider(sourceControlManager);
 
-  const svnfs = new SvnFs();
-  workspace.registerFileSystemProvider("svnfs", svnfs, {
-    isCaseSensitive: true
-  });
-
-  registerCommands(sourceControlManager, disposables, svnfs);
+  registerCommands(sourceControlManager, disposables);
 
   disposables.push(sourceControlManager, contentProvider);
 
