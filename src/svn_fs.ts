@@ -51,18 +51,21 @@ export class Directory implements FileStat {
 
 export type Entry = File | Directory;
 
-class SvnFs implements FileSystemProvider {
+class SvnFs implements FileSystemProvider, Disposable {
   private _emitter = new EventEmitter<FileChangeEvent[]>();
   private _bufferedEvents: FileChangeEvent[] = [];
   private _fireSoonHandler?: NodeJS.Timer;
   private _root = new Directory("");
+  private _disposables: Disposable[] = [];
 
   readonly onDidChangeFile: Event<FileChangeEvent[]> = this._emitter.event;
 
   constructor() {
-    workspace.registerFileSystemProvider("svnfs", this, {
-      isCaseSensitive: true
-    });
+    this._disposables.push(
+      workspace.registerFileSystemProvider("svnfs", this, {
+        isCaseSensitive: true
+      })
+    );
   }
 
   watch(_resource: Uri): Disposable {
@@ -178,6 +181,15 @@ class SvnFs implements FileSystemProvider {
       { type: FileChangeType.Deleted, uri: oldUri },
       { type: FileChangeType.Created, uri: newUri }
     );
+  }
+
+  dispose() {
+    this._disposables.forEach(disposable => disposable.dispose());
+    this._disposables = [];
+
+    for (const [name] of this.readDirectory(Uri.parse('svnfs:/'))) {
+      this.delete(Uri.parse(`svnfs:/${name}`));
+    }
   }
 
   private _lookup(uri: Uri, silent: false): Entry;

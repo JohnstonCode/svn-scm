@@ -24,6 +24,7 @@ import { toDisposable } from "./util";
 import { BranchChangesProvider } from "./historyView/branchChangesProvider";
 import { IsSvn19orGreater } from "./contexts/isSvn19orGreater";
 import { IsSvn18orGreater } from "./contexts/isSvn18orGreater";
+import { svnFs } from "./svn_fs";
 
 async function init(
   _context: ExtensionContext,
@@ -43,7 +44,7 @@ async function init(
 
   registerCommands(sourceControlManager, disposables);
 
-  disposables.push(sourceControlManager, contentProvider);
+  disposables.push(sourceControlManager, contentProvider, svnFs);
 
   const svnProvider = new SvnProvider(sourceControlManager);
 
