@@ -56,7 +56,7 @@ export class SearchLogByText extends Command {
 
           proc.on("error", () => {
             reject();
-          })
+          });
         });
       }
     );
