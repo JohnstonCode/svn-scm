@@ -45,10 +45,12 @@ import { Upgrade } from "./commands/upgrade";
 import { SourceControlManager } from "./source_control_manager";
 import { SearchLogByRevision } from "./commands/search_log_by_revision";
 import { SearchLogByText } from "./commands/search_log_by_text";
+import { SvnFs } from "./svn_fs";
 
 export function registerCommands(
   sourceControlManager: SourceControlManager,
-  disposables: Disposable[]
+  disposables: Disposable[],
+  svnFs: SvnFs
 ) {
   disposables.push(new GetSourceControlManager(sourceControlManager));
   disposables.push(new FileOpen());
@@ -94,5 +96,5 @@ export function registerCommands(
   disposables.push(new PickCommitMessage());
   disposables.push(new RevertExplorer());
   disposables.push(new SearchLogByRevision());
-  disposables.push(new SearchLogByText());
+  disposables.push(new SearchLogByText(svnFs));
 }

@@ -1,12 +1,11 @@
-import * as path from "path";
 import { Command } from "./command";
-import { window, Uri, commands } from "vscode";
+import { window, Uri, commands, ProgressLocation } from "vscode";
 import { Repository } from "../repository";
-import { toSvnUri } from "../uri";
-import { SvnUriAction } from "../common/types";
+import { SvnFs } from "../svn_fs";
+import * as cp from "child_process";
 
 export class SearchLogByText extends Command {
-  constructor() {
+  constructor(private svnFs: SvnFs) {
     super("svn.searchLogByText", { repository: true });
   }
 
@@ -16,20 +15,40 @@ export class SearchLogByText extends Command {
       return;
     }
 
-    try {
-      const resource = toSvnUri(
-        Uri.file(repository.workspaceRoot),
-        SvnUriAction.LOG_SEARCH,
-        { search: input }
-      );
-      const uri = resource.with({
-        path: path.join(resource.path, "svn.log")
-      });
+    const uri = Uri.parse("svnfs:/svn.log");
+    this.svnFs.writeFile(uri, Buffer.from(""), {
+      create: true,
+      overwrite: true
+    });
 
-      await commands.executeCommand<void>("vscode.open", uri);
-    } catch (error) {
-      console.error(error);
-      window.showErrorMessage("Unable to log");
-    }
+    await commands.executeCommand<void>("vscode.open", uri);
+
+    const proc = cp.spawn("svn", ["log", "--search", input], {
+      cwd: repository.workspaceRoot
+    });
+
+    let content = "";
+
+    proc.stdout.on("data", data => {
+      content += data.toString();
+
+      this.svnFs.writeFile(uri, Buffer.from(content), {
+        create: true,
+        overwrite: true
+      });
+    });
+
+    window.withProgress(
+      {
+        cancellable: true,
+        location: ProgressLocation.Notification,
+        title: "Searching Log"
+      },
+      async (_progress, token) => {
+        token.onCancellationRequested(() => {
+          proc.kill("SIGINT");
+        });
+      }
+    );
   }
 }
