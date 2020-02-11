@@ -59,6 +59,7 @@ export class SvnFs implements FileSystemProvider {
   readonly onDidChangeFile: Event<FileChangeEvent[]> = this._emitter.event;
 
   watch(_resource: Uri): Disposable {
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     return new Disposable(() => {});
   }
 
@@ -68,7 +69,7 @@ export class SvnFs implements FileSystemProvider {
 
   readDirectory(uri: Uri): [string, FileType][] {
     const entry = this._lookupAsDirectory(uri, false);
-    let result: [string, FileType][] = [];
+    const result: [string, FileType][] = [];
     for (const [name, child] of entry.entries) {
       result.push([name, child.type]);
     }
@@ -77,11 +78,11 @@ export class SvnFs implements FileSystemProvider {
   }
 
   createDirectory(uri: Uri): void {
-    let basename = path.posix.basename(uri.path);
-    let dirname = uri.with({ path: path.posix.dirname(uri.path) });
-    let parent = this._lookupAsDirectory(dirname, false);
+    const basename = path.posix.basename(uri.path);
+    const dirname = uri.with({ path: path.posix.dirname(uri.path) });
+    const parent = this._lookupAsDirectory(dirname, false);
 
-    let entry = new Directory(basename);
+    const entry = new Directory(basename);
     parent.entries.set(entry.name, entry);
     parent.mtime = Date.now();
     parent.size += 1;
@@ -93,7 +94,7 @@ export class SvnFs implements FileSystemProvider {
   }
 
   readFile(uri: Uri): Uint8Array {
-    const data = this._lookup(uri, false).data;
+    const data = this._lookupAsFile(uri, false).data;
     if (data) {
       return data;
     }
@@ -106,8 +107,8 @@ export class SvnFs implements FileSystemProvider {
     content: Uint8Array,
     options: { create: boolean; overwrite: boolean }
   ): void {
-    let basename = path.posix.basename(uri.path);
-    let parent = this._lookupParentDirectory(uri);
+    const basename = path.posix.basename(uri.path);
+    const parent = this._lookupParentDirectory(uri);
     let entry = parent.entries.get(basename);
     if (entry instanceof Directory) {
       throw FileSystemError.FileIsADirectory(uri);
@@ -135,9 +136,9 @@ export class SvnFs implements FileSystemProvider {
   }
 
   delete(uri: Uri): void {
-    let dirname = uri.with({ path: path.posix.dirname(uri.path) });
-    let basename = path.posix.basename(uri.path);
-    let parent = this._lookupAsDirectory(dirname, false);
+    const dirname = uri.with({ path: path.posix.dirname(uri.path) });
+    const basename = path.posix.basename(uri.path);
+    const parent = this._lookupAsDirectory(dirname, false);
     if (!parent.entries.has(basename)) {
       throw FileSystemError.FileNotFound(uri);
     }
@@ -156,11 +157,11 @@ export class SvnFs implements FileSystemProvider {
       throw FileSystemError.FileExists(newUri);
     }
 
-    let entry = this._lookup(oldUri, false);
-    let oldParent = this._lookupParentDirectory(oldUri);
+    const entry = this._lookup(oldUri, false);
+    const oldParent = this._lookupParentDirectory(oldUri);
 
-    let newParent = this._lookupParentDirectory(newUri);
-    let newName = path.posix.basename(newUri.path);
+    const newParent = this._lookupParentDirectory(newUri);
+    const newName = path.posix.basename(newUri.path);
 
     oldParent.entries.delete(entry.name);
     entry.name = newName;
@@ -175,7 +176,7 @@ export class SvnFs implements FileSystemProvider {
   private _lookup(uri: Uri, silent: false): Entry;
   private _lookup(uri: Uri, silent: boolean): Entry | undefined;
   private _lookup(uri: Uri, silent: boolean): Entry | undefined {
-    let parts = uri.path.split("/");
+    const parts = uri.path.split("/");
     let entry: Entry = this._root;
 
     for (const part of parts) {
@@ -203,12 +204,21 @@ export class SvnFs implements FileSystemProvider {
   }
 
   private _lookupAsDirectory(uri: Uri, silent: boolean): Directory {
-    let entry = this._lookup(uri, silent);
+    const entry = this._lookup(uri, silent);
     if (entry instanceof Directory) {
       return entry;
     }
 
     throw FileSystemError.FileNotADirectory(uri);
+  }
+
+  private _lookupAsFile(uri: Uri, silent: boolean): File {
+    const entry = this._lookup(uri, silent);
+    if (entry instanceof File) {
+      return entry;
+    }
+
+    throw FileSystemError.FileIsADirectory(uri);
   }
 
   private _lookupParentDirectory(uri: Uri): Directory {
