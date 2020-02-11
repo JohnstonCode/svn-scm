@@ -183,7 +183,7 @@ class SvnFs implements FileSystemProvider, Disposable {
     );
   }
 
-  dispose() {
+  dispose(): void {
     this._disposables.forEach(disposable => disposable.dispose());
     this._disposables = [];
 
