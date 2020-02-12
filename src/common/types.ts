@@ -288,6 +288,10 @@ export interface IAuth {
   password: string;
 }
 
+export interface IStoredAuth {
+  account: string;
+  password: string;
+}
 export interface ISvnLogEntryPath {
   /** full path from repo root */
   _: string;

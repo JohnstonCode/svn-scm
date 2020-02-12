@@ -25,7 +25,8 @@ import {
   Status,
   SvnDepth,
   SvnUriAction,
-  ISvnPathChange
+  ISvnPathChange,
+  IStoredAuth
 } from "./common/types";
 import { debounce, globalSequentialize, memoize, throttle } from "./decorators";
 import { exists } from "./fs";
@@ -50,6 +51,7 @@ import {
 } from "./util";
 import { match, matchAll } from "./util/globMatch";
 import { RepositoryFilesWatcher } from "./watchers/repositoryFilesWatcher";
+import { keytar } from "./vscodeModules";
 
 function shouldShowProgress(operation: Operation): boolean {
   switch (operation) {
@@ -79,6 +81,7 @@ export class Repository implements IRemoteRepository {
   public needCleanUp: boolean = false;
   private remoteChangedUpdateInterval?: NodeJS.Timer;
   private deletedUris: Uri[] = [];
+  private canSaveAuth: boolean = false;
 
   private lastPromptAuth?: Thenable<IAuth | undefined>;
 
@@ -919,6 +922,39 @@ export class Repository implements IRemoteRepository {
     return new PathNormalizer(this.repository.info);
   }
 
+  protected getCredentialServiceName() {
+    let key = "vscode.svn-scm";
+
+    const info = this.repository.info;
+
+    if (info.repository && info.repository.root) {
+      key += ":" + info.repository.root;
+    } else if (info.url) {
+      key += ":" + info.url;
+    }
+
+    return key;
+  }
+
+  public async loadStoredAuths(): Promise<Array<IStoredAuth>> {
+    // Prevent multiple prompts for auth
+    if (this.lastPromptAuth) {
+      await this.lastPromptAuth;
+    }
+    return keytar.findCredentials(this.getCredentialServiceName());
+  }
+
+  public async saveAuth(): Promise<void> {
+    if (this.canSaveAuth && this.username && this.password) {
+      await keytar.setPassword(
+        this.getCredentialServiceName(),
+        this.username,
+        this.password
+      );
+      this.canSaveAuth = false;
+    }
+  }
+
   public async promptAuth(): Promise<IAuth | undefined> {
     // Prevent multiple prompts for auth
     if (this.lastPromptAuth) {
@@ -931,6 +967,7 @@ export class Repository implements IRemoteRepository {
     if (result) {
       this.username = result.username;
       this.password = result.password;
+      this.canSaveAuth = true;
     }
 
     this.lastPromptAuth = undefined;
@@ -1002,11 +1039,14 @@ export class Repository implements IRemoteRepository {
     runOperation: () => Promise<T> = () => Promise.resolve<any>(null)
   ): Promise<T> {
     let attempt = 0;
+    let accounts: IStoredAuth[] = [];
 
     while (true) {
       try {
         attempt++;
-        return await runOperation();
+        const result = await runOperation();
+        this.saveAuth();
+        return result;
       } catch (err) {
         if (
           err.svnErrorCode === svnErrorCodes.RepositoryIsLocked &&
@@ -1016,7 +1056,22 @@ export class Repository implements IRemoteRepository {
           await timeout(Math.pow(attempt, 2) * 50);
         } else if (
           err.svnErrorCode === svnErrorCodes.AuthorizationFailed &&
-          attempt <= 3
+          attempt <= 1 + accounts.length
+        ) {
+          // First attempt load all stored auths
+          if (attempt === 1) {
+            accounts = await this.loadStoredAuths();
+          }
+
+          // each attempt, try a different account
+          const index = accounts.length - 1;
+          if (typeof accounts[index] !== "undefined") {
+            this.username = accounts[index].account;
+            this.password = accounts[index].password;
+          }
+        } else if (
+          err.svnErrorCode === svnErrorCodes.AuthorizationFailed &&
+          attempt <= 3 + accounts.length
         ) {
           const result = await this.promptAuth();
           if (!result) {
