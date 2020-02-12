@@ -1,3 +1,10 @@
+# [2.7.0](https://github.com/JohnstonCode/svn-scm/compare/v2.6.2...v2.7.0) (2020-02-12)
+
+
+### Features
+
+* added svnfs to allow asynchronous log search ([#798](https://github.com/JohnstonCode/svn-scm/issues/798)) ([ef554eb](https://github.com/JohnstonCode/svn-scm/commit/ef554eb66312d1502f49c7aeb215d2d6bec8100c))
+
 ## [2.6.2](https://github.com/JohnstonCode/svn-scm/compare/v2.6.1...v2.6.2) (2020-02-11)
 
 
