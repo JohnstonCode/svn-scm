@@ -51,7 +51,7 @@ export class Directory implements FileStat {
 
 export type Entry = File | Directory;
 
-class SvnFs implements FileSystemProvider, Disposable {
+class TempSvnFs implements FileSystemProvider, Disposable {
   private _emitter = new EventEmitter<FileChangeEvent[]>();
   private _bufferedEvents: FileChangeEvent[] = [];
   private _fireSoonHandler?: NodeJS.Timer;
@@ -62,7 +62,7 @@ class SvnFs implements FileSystemProvider, Disposable {
 
   constructor() {
     this._disposables.push(
-      workspace.registerFileSystemProvider("svnfs", this, {
+      workspace.registerFileSystemProvider("tempsvnfs", this, {
         isCaseSensitive: true
       })
     );
@@ -259,4 +259,4 @@ class SvnFs implements FileSystemProvider, Disposable {
   }
 }
 
-export const svnFs = new SvnFs();
+export const tempSvnFs = new TempSvnFs();

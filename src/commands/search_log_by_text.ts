@@ -2,7 +2,7 @@ import { Command } from "./command";
 import { window, Uri, commands, ProgressLocation } from "vscode";
 import { Repository } from "../repository";
 import * as cp from "child_process";
-import { svnFs } from "../svn_fs";
+import { tempSvnFs } from "../temp_svn_fs";
 
 export class SearchLogByText extends Command {
   constructor() {
@@ -16,7 +16,7 @@ export class SearchLogByText extends Command {
     }
 
     const uri = Uri.parse("svnfs:/svn.log");
-    svnFs.writeFile(uri, Buffer.from(""), {
+    tempSvnFs.writeFile(uri, Buffer.from(""), {
       create: true,
       overwrite: true
     });
@@ -32,7 +32,7 @@ export class SearchLogByText extends Command {
     proc.stdout.on("data", data => {
       content += data.toString();
 
-      svnFs.writeFile(uri, Buffer.from(content), {
+      tempSvnFs.writeFile(uri, Buffer.from(content), {
         create: true,
         overwrite: true
       });
