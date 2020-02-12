@@ -15,7 +15,7 @@ export class SearchLogByText extends Command {
       return;
     }
 
-    const uri = Uri.parse("svnfs:/svn.log");
+    const uri = Uri.parse("tempsvnfs:/svn.log");
     tempSvnFs.writeFile(uri, Buffer.from(""), {
       create: true,
       overwrite: true
