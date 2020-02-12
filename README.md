@@ -61,7 +61,7 @@ If you use [TortoiseSVN](https://tortoisesvn.net/), make sure the option
 Please use a dedicated extension like [blamer-vs](https://marketplace.visualstudio.com/items?itemName=beaugust.blamer-vs)
 
 ## Settings
-Here is a table of settings with their default values. To change any of these, add the relevant Config key and value to your VSCode settings.json file.
+Here are all of the extension settings with their default values. To change any of these, add the relevant Config key and value to your VSCode settings.json file. Alternatively search for the config key in the settings UI to change its value.
 
 <!--begin-settings-->
 ```js
