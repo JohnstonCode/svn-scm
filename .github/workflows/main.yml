@@ -35,6 +35,16 @@ jobs:
       
       - name: Compile sources
         run: npm run build
+
+      - name: Cache VSCode binary
+        id: cache-vscode
+        uses: actions/cache@v1
+        with:
+          path: .vscode-test
+          key: vscode-${{ runner.os }}-${{ matrix.version }}-${{ github.run_id }}
+          restore-keys: |
+            vscode-${{ runner.os }}-${{ matrix.version }}-
+            vscode-${{ runner.os }}-
       
       - name: Run tests
         uses: GabrielBB/xvfb-action@v1.0
