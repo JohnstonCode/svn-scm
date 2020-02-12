@@ -52,9 +52,10 @@ jobs:
           run: npm test
         env:
           CODE_VERSION: ${{ matrix.version }}
+        continue-on-error: ${{ matrix.version == 'insiders' }}
 
       - name: Release
-        if: startsWith(matrix.os, 'ubuntu') && matrix.version == '' && github.ref == 'refs/heads/master' && github.repository == 'JohnstonCode/svn-scm'
+        if: startsWith(matrix.os, 'ubuntu') && matrix.version == 'stable' && github.ref == 'refs/heads/master' && github.repository == 'JohnstonCode/svn-scm'
         run: npm run semantic-release
         env:
           VSCE_TOKEN: ${{ secrets.vsceToken }}
