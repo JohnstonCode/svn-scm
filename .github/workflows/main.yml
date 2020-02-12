@@ -3,7 +3,7 @@ name: build
 on:
   push:
     branches:
-      - master
+      - '*'
   pull_request:
     branches: 
       - '*'
@@ -17,77 +17,45 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-16.04, macOS-latest, windows-2019]
-        version: ['', 'insiders']
+        os: [ubuntu-latest, macOS-latest, windows-latest]
+        version: ['stable', 'insiders']
 
     steps:
       - name: Clone repository
         uses: actions/checkout@v1
-        with:
-          fetch-depth: 1
 
       - name: Setup Node
         uses: actions/setup-node@v1
         with:
           node-version: '10.x'
 
-      - name: Npm cache Posix
-        if: startsWith(matrix.os, 'ubuntu') || startsWith(matrix.os, 'macOS')
-        uses: actions/cache@v1
-        with:
-          path: ~/.npm
-          key: posix-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            posix-node-
-
-      - name: Npm cache Windows
-        if: startsWith(matrix.os, 'windows')
-        uses: actions/cache@v1
-        with:
-          path: ~\AppData\Roaming\npm-cache
-          key: ${{ runner.os }}-node-${{ hashFiles('**\package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
       - name: Install Dependencies
         run: 'npm ci || npm ci'
         shell: bash
       
-      - name: Lint check
-        if: startsWith(matrix.os, 'ubuntu') && matrix.version == ''
-        run: npm run lint
-
-      - name: Style check
-        if: startsWith(matrix.os, 'ubuntu') && matrix.version == ''
-        run: npm run style-check
-
       - name: Compile sources
         run: npm run build
-      
-      - name: Start xvfb
-        if: startsWith(matrix.os, 'ubuntu')
-        run: /usr/bin/Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
 
+      - name: Cache VSCode binary
+        id: cache-vscode
+        uses: actions/cache@v1
+        with:
+          path: .vscode-test
+          key: vscode-${{ runner.os }}-${{ matrix.version }}-${{ github.run_id }}
+          restore-keys: |
+            vscode-${{ runner.os }}-${{ matrix.version }}-
+            vscode-${{ runner.os }}-
+      
       - name: Run tests
+        uses: GabrielBB/xvfb-action@v1.0
+        with:
+          run: npm test
         env:
           CODE_VERSION: ${{ matrix.version }}
-          DISPLAY: ':99.0'
-        run: npm run test
-
-      - name: Prepare artifact
-        if: startsWith(matrix.os, 'ubuntu') && matrix.version == '' && github.event_name == 'pull_request'
-        run: |
-          node_modules/.bin/vsce package -o svn-scm.vsix
-
-      - name: Upload artifact
-        if: startsWith(matrix.os, 'ubuntu') && matrix.version == '' && github.event_name == 'pull_request'
-        uses: actions/upload-artifact@v1
-        with:
-          name: svn-scm.vsix
-          path: svn-scm.vsix
+        continue-on-error: ${{ matrix.version == 'insiders' }}
 
       - name: Release
-        if: startsWith(matrix.os, 'ubuntu') && matrix.version == '' && github.ref == 'refs/heads/master' && github.repository == 'JohnstonCode/svn-scm'
+        if: startsWith(matrix.os, 'ubuntu') && matrix.version == 'stable' && github.ref == 'refs/heads/master' && github.repository == 'JohnstonCode/svn-scm'
         run: npm run semantic-release
         env:
           VSCE_TOKEN: ${{ secrets.vsceToken }}
@@ -97,3 +65,73 @@ jobs:
           GIT_COMMITTER_EMAIL: ${{ secrets.gitEmail }}
           GIT_AUTHOR_NAME: ${{ secrets.gitName }}
           GIT_COMMITTER_NAME: ${{ secrets.gitName }}
+
+  eslint:
+    runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, 'skip ci')"
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v1
+
+      - name: Setup Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: '10.x'
+
+      - name: Install Dependencies
+        run: 'npm ci || npm ci'
+        shell: bash
+
+      - name: Lint check
+        uses: reviewdog/action-eslint@v1
+        with:
+          github_token: ${{ secrets.github_token }}
+          reporter: github-pr-review
+          eslint_flags: "src --ext .ts"
+
+  style:
+    runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, 'skip ci')"
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v1
+
+      - name: Setup Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: '10.x'
+
+      - name: Install Dependencies
+        run: 'npm ci || npm ci'
+        shell: bash
+
+      - name: Style check
+        run: npm run style-check
+
+  artifact:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: '10.x'
+
+      - name: Install Dependencies
+        run: 'npm ci || npm ci'
+        shell: bash
+
+      - name: Package extension
+        uses: lannonbr/vsce-action@master
+        with:
+          args: "package -o svn-scm.vsix"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: "svn-scm-${{ github.sha }}.vsix"
+          path: "svn-scm.vsix"
