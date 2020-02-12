@@ -17,7 +17,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-16.04, macOS-latest, windows-2019]
+        os: [ubuntu-latest, macOS-latest, windows-latest]
         version: ['stable', 'insiders']
 
     steps:
