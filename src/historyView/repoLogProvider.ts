@@ -267,12 +267,10 @@ export class RepoLogProvider
   public async openDiffCmd(element: ILogTreeItem) {
     const commit = element.data as ISvnLogEntryPath;
     const item = this.getCached(element);
-    const ri = item.repo.getPathNormalizer().parse(commit._);
-    if ((await checkIfFile(ri, false)) === false) {
-      return;
-    }
     const parent = (element.parent as ILogTreeItem).data as ISvnLogEntry;
+    const remotePath =  item.repo.getPathNormalizer().parse(commit._).remoteFullPath;
     let prevRev: ISvnLogEntry;
+
     {
       // find prevRev scope
       const pos = item.entries.findIndex(e => e === parent);
@@ -289,28 +287,24 @@ export class RepoLogProvider
           }
         }
       }
-      if (posPrev !== undefined) {
-        prevRev = item.entries[posPrev];
-      } else {
-        // if not found in cache
-        const nm = item.repo.getPathNormalizer();
-        const revs = await item.repo.log(
-          parent.revision,
-          "1",
-          2,
-          nm.parse(commit._).remoteFullPath
-        );
-        if (revs.length === 2) {
-          prevRev = revs[1];
-        } else {
-          window.showWarningMessage("Cannot find previous commit");
-          return;
-        }
-      }
     }
+
+    const revs = await item.repo.log(
+        parent.revision,
+        "1",
+        2,
+        remotePath
+    );
+    if (revs.length === 2) {
+        prevRev = revs[1];
+    } else {
+        window.showWarningMessage("Cannot find previous commit");
+        return;
+    }
+
     return openDiff(
       item.repo,
-      ri.remoteFullPath,
+      remotePath,
       prevRev.revision,
       parent.revision
     );
