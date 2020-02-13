@@ -271,30 +271,13 @@ export class RepoLogProvider
     const remotePath =  item.repo.getPathNormalizer().parse(commit._).remoteFullPath;
     let prevRev: ISvnLogEntry;
 
-    {
-      // find prevRev scope
-      const pos = item.entries.findIndex(e => e === parent);
-      let posPrev: number | undefined;
-      for (
-        let i = pos + 1;
-        posPrev === undefined && i < item.entries.length;
-        i++
-      ) {
-        for (const p of item.entries[i].paths) {
-          if (p._ === commit._) {
-            posPrev = i;
-            break;
-          }
-        }
-      }
-    }
-
     const revs = await item.repo.log(
         parent.revision,
         "1",
         2,
         remotePath
     );
+
     if (revs.length === 2) {
         prevRev = revs[1];
     } else {
