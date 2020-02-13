@@ -268,29 +268,20 @@ export class RepoLogProvider
     const commit = element.data as ISvnLogEntryPath;
     const item = this.getCached(element);
     const parent = (element.parent as ILogTreeItem).data as ISvnLogEntry;
-    const remotePath =  item.repo.getPathNormalizer().parse(commit._).remoteFullPath;
+    const remotePath = item.repo.getPathNormalizer().parse(commit._)
+      .remoteFullPath;
     let prevRev: ISvnLogEntry;
 
-    const revs = await item.repo.log(
-        parent.revision,
-        "1",
-        2,
-        remotePath
-    );
+    const revs = await item.repo.log(parent.revision, "1", 2, remotePath);
 
     if (revs.length === 2) {
-        prevRev = revs[1];
+      prevRev = revs[1];
     } else {
-        window.showWarningMessage("Cannot find previous commit");
-        return;
+      window.showWarningMessage("Cannot find previous commit");
+      return;
     }
 
-    return openDiff(
-      item.repo,
-      remotePath,
-      prevRev.revision,
-      parent.revision
-    );
+    return openDiff(item.repo, remotePath, prevRev.revision, parent.revision);
   }
 
   public async refresh(element?: ILogTreeItem, fetchMoreClick?: boolean) {
