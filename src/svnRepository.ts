@@ -700,6 +700,18 @@ export class Repository {
     return parseSvnLog(result.stdout);
   }
 
+  public async logFile(uri: Uri) {
+    const args = [
+      "log",
+      "--xml",
+      uri.fsPath
+    ];
+
+    const result = await this.exec(args);
+
+    return parseSvnLog(result.stdout);
+  }
+
   public async countNewCommit(revision: string = "BASE:HEAD") {
     const result = await this.exec(["log", "-r", revision, "-q", "--xml"]);
 

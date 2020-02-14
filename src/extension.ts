@@ -5,7 +5,8 @@ import {
   ExtensionContext,
   OutputChannel,
   Uri,
-  window
+  window,
+  workspace
 } from "vscode";
 import { registerCommands } from "./commands";
 import { ConstructorPolicy } from "./common/types";
@@ -25,6 +26,7 @@ import { BranchChangesProvider } from "./historyView/branchChangesProvider";
 import { IsSvn19orGreater } from "./contexts/isSvn19orGreater";
 import { IsSvn18orGreater } from "./contexts/isSvn18orGreater";
 import { tempSvnFs } from "./temp_svn_fs";
+import { SvnTimelineProvider } from "./timeline/svn_timeline_provider";
 
 async function init(
   _context: ExtensionContext,
@@ -66,6 +68,9 @@ async function init(
   disposables.push(new OpenRepositoryCount(sourceControlManager));
   disposables.push(new IsSvn18orGreater(info.version));
   disposables.push(new IsSvn19orGreater(info.version));
+
+  const svnTimelineProvider = new SvnTimelineProvider(sourceControlManager);
+  disposables.push(workspace.registerTimelineProvider('*', svnTimelineProvider));
 
   outputChannel.appendLine(`Using svn "${info.version}" from "${info.path}"`);
 
