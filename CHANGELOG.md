@@ -1,3 +1,10 @@
+## [2.7.1](https://github.com/JohnstonCode/svn-scm/compare/v2.7.0...v2.7.1) (2020-02-14)
+
+
+### Bug Fixes
+
+* Use remote URI to retrieve file for repo log ([#804](https://github.com/JohnstonCode/svn-scm/issues/804)) ([35ac8db](https://github.com/JohnstonCode/svn-scm/commit/35ac8db55211aa5c72f3350deea08bef92ab5068))
+
 # [2.7.0](https://github.com/JohnstonCode/svn-scm/compare/v2.6.2...v2.7.0) (2020-02-12)
 
 
