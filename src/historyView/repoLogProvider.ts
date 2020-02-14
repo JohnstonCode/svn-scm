@@ -267,53 +267,21 @@ export class RepoLogProvider
   public async openDiffCmd(element: ILogTreeItem) {
     const commit = element.data as ISvnLogEntryPath;
     const item = this.getCached(element);
-    const ri = item.repo.getPathNormalizer().parse(commit._);
-    if ((await checkIfFile(ri, false)) === false) {
+    const parent = (element.parent as ILogTreeItem).data as ISvnLogEntry;
+    const remotePath = item.repo.getPathNormalizer().parse(commit._)
+      .remoteFullPath;
+    let prevRev: ISvnLogEntry;
+
+    const revs = await item.repo.log(parent.revision, "1", 2, remotePath);
+
+    if (revs.length === 2) {
+      prevRev = revs[1];
+    } else {
+      window.showWarningMessage("Cannot find previous commit");
       return;
     }
-    const parent = (element.parent as ILogTreeItem).data as ISvnLogEntry;
-    let prevRev: ISvnLogEntry;
-    {
-      // find prevRev scope
-      const pos = item.entries.findIndex(e => e === parent);
-      let posPrev: number | undefined;
-      for (
-        let i = pos + 1;
-        posPrev === undefined && i < item.entries.length;
-        i++
-      ) {
-        for (const p of item.entries[i].paths) {
-          if (p._ === commit._) {
-            posPrev = i;
-            break;
-          }
-        }
-      }
-      if (posPrev !== undefined) {
-        prevRev = item.entries[posPrev];
-      } else {
-        // if not found in cache
-        const nm = item.repo.getPathNormalizer();
-        const revs = await item.repo.log(
-          parent.revision,
-          "1",
-          2,
-          nm.parse(commit._).remoteFullPath
-        );
-        if (revs.length === 2) {
-          prevRev = revs[1];
-        } else {
-          window.showWarningMessage("Cannot find previous commit");
-          return;
-        }
-      }
-    }
-    return openDiff(
-      item.repo,
-      ri.remoteFullPath,
-      prevRev.revision,
-      parent.revision
-    );
+
+    return openDiff(item.repo, remotePath, prevRev.revision, parent.revision);
   }
 
   public async refresh(element?: ILogTreeItem, fetchMoreClick?: boolean) {
