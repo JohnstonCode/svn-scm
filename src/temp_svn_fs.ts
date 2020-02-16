@@ -186,7 +186,11 @@ class TempSvnFs implements FileSystemProvider, Disposable {
     );
   }
 
-  async createTempSvnRevisionFile(svnUri: Uri, revision: string, content: string) {
+  async createTempSvnRevisionFile(
+    svnUri: Uri,
+    revision: string,
+    content: string
+  ) {
     const fname = `r${revision}_${path.basename(svnUri.fsPath)}`;
     const hash = crypto.createHash("md5");
     const filePathHash = hash.update(svnUri.path).digest("hex");
@@ -200,7 +204,10 @@ class TempSvnFs implements FileSystemProvider, Disposable {
 
     const uri = Uri.parse(`tempsvnfs://${filePathHash}/${fname}`, true);
 
-    this.writeFile(uri, Buffer.from(content), { create: true, overwrite: true });
+    this.writeFile(uri, Buffer.from(content), {
+      create: true,
+      overwrite: true
+    });
 
     return uri;
   }

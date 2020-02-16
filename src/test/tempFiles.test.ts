@@ -20,7 +20,11 @@ suite("Test temp file creation", () => {
   test("Temp file is created", async () => {
     const svnUri = Uri.parse("http://example.com/svn/test/trunk/test.js");
 
-    const uri = await tempSvnFs.createTempSvnRevisionFile(svnUri, "30", "test content");
+    const uri = await tempSvnFs.createTempSvnRevisionFile(
+      svnUri,
+      "30",
+      "test content"
+    );
 
     assert.ok(tempSvnFs.stat(uri));
   });
