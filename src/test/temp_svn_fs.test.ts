@@ -2,7 +2,7 @@ import * as assert from "assert";
 import { Uri } from "vscode";
 import { tempSvnFs } from "../temp_svn_fs";
 
-suite("Test temp file creation", () => {
+suite("Test temp svn fs", () => {
   test("Temp files matches expected", async () => {
     const svnUri = Uri.parse("http://example.com/svn/test/trunk/test.js");
 
