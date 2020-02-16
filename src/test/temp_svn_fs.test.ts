@@ -1,6 +1,7 @@
 import * as assert from "assert";
 import { Uri } from "vscode";
 import { tempSvnFs } from "../temp_svn_fs";
+import { join } from "path";
 
 suite("Test temp svn fs", () => {
   test("Temp files matches expected", async () => {
@@ -13,7 +14,7 @@ suite("Test temp svn fs", () => {
     );
 
     assert.equal(revisionUri.authority, "1181ae15a77d83ac0b077051dfed21ed");
-    assert.equal(revisionUri.fsPath, "/r30_test.js");
+    assert.equal(revisionUri.fsPath, join('/', 'r30_test.js'));
   });
 
   test("Temp file is created", async () => {
