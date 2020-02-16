@@ -200,8 +200,6 @@ class TempSvnFs implements FileSystemProvider, Disposable {
       content = iconv.encode(content, encoding).toString();
     }
 
-    this.createDirectory(Uri.parse(`tempsvnfs://${filePathHash}/`, true));
-
     const uri = Uri.parse(`tempsvnfs://${filePathHash}/${fname}`, true);
 
     this.writeFile(uri, Buffer.from(content), {
