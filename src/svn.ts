@@ -10,7 +10,7 @@ import {
 } from "./common/types";
 import * as encodeUtil from "./encoding";
 import { configuration } from "./helpers/configuration";
-import { parseInfoXml } from "./infoParser";
+import { parseInfoXml } from "./parser/infoParser";
 import SvnError from "./svnError";
 import { Repository } from "./svnRepository";
 import { dispose, IDisposable, toDisposable } from "./util";
