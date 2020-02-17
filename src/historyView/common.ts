@@ -1,6 +1,7 @@
 import { createHash } from "crypto";
-import { formatDistanceToNow } from "date-fns";
 import * as path from "path";
+import * as dayjs from "dayjs";
+import * as relativeTime from "dayjs/plugin/relativeTime";
 import {
   commands,
   env,
@@ -15,6 +16,8 @@ import { configuration } from "../helpers/configuration";
 import { IRemoteRepository } from "../remoteRepository";
 import { SvnRI } from "../svnRI";
 import { createTempSvnRevisionFile } from "../tempFiles";
+
+dayjs.extend(relativeTime);
 
 export enum LogTreeItemKind {
   Repo = 1,
@@ -221,9 +224,7 @@ export function getCommitIcon(
 }
 
 export function getCommitDescription(commit: ISvnLogEntry): string {
-  const relativeDate = formatDistanceToNow(Date.parse(commit.date), {
-    addSuffix: true
-  });
+  const relativeDate = dayjs(commit.date).fromNow();
   return `r${commit.revision}, ${relativeDate} by ${commit.author}`;
 }
 

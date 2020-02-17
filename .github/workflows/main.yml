@@ -86,11 +86,7 @@ jobs:
         shell: bash
 
       - name: Lint check
-        uses: reviewdog/action-eslint@v1
-        with:
-          github_token: ${{ secrets.githubToken }}
-          reporter: github-pr-review
-          eslint_flags: "src --ext .ts"
+        run: npm run lint --silent -- -f stylish
 
   artifact:
     runs-on: ubuntu-latest
