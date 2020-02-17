@@ -7,10 +7,12 @@ export class FileItem implements QuickPickItem {
     protected _repository: Repository,
     protected _state: Resource,
     public picked = false
-  ) { }
+  ) {}
 
   get label(): string {
-    return this._repository.repository.removeAbsolutePath(this._state.resourceUri.fsPath);
+    return this._repository.repository.removeAbsolutePath(
+      this._state.resourceUri.fsPath
+    );
   }
 
   get description(): string {

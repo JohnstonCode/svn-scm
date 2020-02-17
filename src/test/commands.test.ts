@@ -180,13 +180,19 @@ suite("Commands Tests", () => {
     repository.inputBox.value = "Multiple Files Commit";
 
     await commands.executeCommand("svn.refresh");
-    await commands.executeCommand("svn.add", repository.unversioned.resourceStates[0]);
+    await commands.executeCommand(
+      "svn.add",
+      repository.unversioned.resourceStates[0]
+    );
     await commands.executeCommand("svn.refresh");
-    await commands.executeCommand("svn.add", repository.unversioned.resourceStates[0]);
+    await commands.executeCommand(
+      "svn.add",
+      repository.unversioned.resourceStates[0]
+    );
     await commands.executeCommand("svn.refresh");
 
     testUtil.overrideNextShowQuickPick(0);
-    
+
     await commands.executeCommand("svn.commitWithMessage");
   });
 
