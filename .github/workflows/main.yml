@@ -30,11 +30,11 @@ jobs:
           node-version: '10.x'
 
       - name: Install Dependencies
-        run: 'npm ci || npm ci'
+        run: 'yarn install --frozen-lockfile || yarn install --frozen-lockfile'
         shell: bash
       
       - name: Compile sources
-        run: npm run build
+        run: yarn run build
 
       - name: Cache VSCode binary
         id: cache-vscode
@@ -49,7 +49,7 @@ jobs:
       - name: Run tests
         uses: GabrielBB/xvfb-action@v1.0
         with:
-          run: npm test
+          run: yarn test
         env:
           CODE_VERSION: ${{ matrix.version }}
         continue-on-error: ${{ matrix.version == 'insiders' }}
@@ -57,8 +57,8 @@ jobs:
       - name: Release
         if: startsWith(matrix.os, 'ubuntu') && matrix.version == 'stable' && github.ref == 'refs/heads/master' && github.repository == 'JohnstonCode/svn-scm'
         run: |
-          npm run organize
-          npm run semantic-release
+          yarn run organize
+          yarn run semantic-release
         env:
           VSCE_TOKEN: ${{ secrets.vsceToken }}
           GITHUB_TOKEN: ${{ secrets.githubToken }}
@@ -82,11 +82,11 @@ jobs:
           node-version: '10.x'
 
       - name: Install Dependencies
-        run: 'npm ci || npm ci'
+        run: 'yarn install --frozen-lockfile || yarn install --frozen-lockfile'
         shell: bash
 
       - name: Lint check
-        run: npm run lint --silent -- -f stylish
+        run: yarn run lint --silent -- -f stylish
 
   artifact:
     runs-on: ubuntu-latest
@@ -102,7 +102,7 @@ jobs:
           node-version: '10.x'
 
       - name: Install Dependencies
-        run: 'npm ci || npm ci'
+        run: 'yarn install --frozen-lockfile || yarn install --frozen-lockfile'
         shell: bash
 
       - name: Package extension
