@@ -13,7 +13,6 @@ import {
 } from "vscode";
 import { ISvnLogEntry } from "../common/types";
 import { SourceControlManager } from "../source_control_manager";
-import { tempdir } from "../tempFiles";
 import { dispose, unwrap } from "../util";
 import {
   copyCommitToClipboard,
@@ -122,9 +121,6 @@ export class ItemLogProvider
     if (te) {
       const uri = te.document.uri;
       if (uri.scheme === "file") {
-        if (uri.path.startsWith(tempdir)) {
-          return; // do not refresh if diff was called
-        }
         const repo = this.sourceControlManager.getRepository(uri);
         if (repo !== null) {
           try {
