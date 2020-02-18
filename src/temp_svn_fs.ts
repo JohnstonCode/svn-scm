@@ -67,6 +67,11 @@ class TempSvnFs implements FileSystemProvider, Disposable {
     this._disposables.push(
       workspace.registerFileSystemProvider("tempsvnfs", this, {
         isCaseSensitive: true
+      }),
+      workspace.onDidCloseTextDocument(event => {
+        if (event.uri.scheme === "tempsvnfs") {
+          this.delete(event.uri);
+        }
       })
     );
   }
