@@ -2,7 +2,7 @@
     "name": "svn-scm",
     "displayName": "SVN",
     "description": "Integrated Subversion source control",
-    "version": "2.7.3",
+    "version": "2.8.0",
     "publisher": "johnstoncode",
     "engines": {
         "vscode": "^1.42.0"
@@ -1059,11 +1059,6 @@
                     "description": "Whether svn is enabled",
                     "default": true
                 },
-                "svn.gravatars.enabled": {
-                    "type": "boolean",
-                    "description": "Use garavatar icons in log viewers",
-                    "default": true
-                },
                 "svn.gravatar.icon_url": {
                     "type": "string",
                     "description": "Url for the gravitar icon using the <AUTHOR>, <AUTHOR_MD5> and <SIZE> placeholders",
@@ -1071,6 +1066,11 @@
                         "https://www.gravatar.com/avatar/<AUTHOR_MD5>.jpg?s=<SIZE>&d=https%3A%2F%2Fui-avatars.com%2Fapi%2F/<AUTHOR>/128"
                     ],
                     "default": "https://www.gravatar.com/avatar/<AUTHOR_MD5>.jpg?s=<SIZE>&d=robohash"
+                },
+                "svn.gravatars.enabled": {
+                    "type": "boolean",
+                    "description": "Use garavatar icons in log viewers",
+                    "default": true
                 },
                 "svn.ignoreMissingSvnWarning": {
                     "type": "boolean",
