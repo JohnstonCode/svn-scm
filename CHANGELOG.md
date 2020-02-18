@@ -1,3 +1,17 @@
+# [2.8.0](https://github.com/JohnstonCode/svn-scm/compare/v2.7.3...v2.8.0) (2020-02-18)
+
+
+### Features
+
+* custom user commit icons ([#825](https://github.com/JohnstonCode/svn-scm/issues/825)) ([20ea925](https://github.com/JohnstonCode/svn-scm/commit/20ea925eae54888db602e486dd793294b05e0d1d))
+
+## [2.7.3](https://github.com/JohnstonCode/svn-scm/compare/v2.7.2...v2.7.3) (2020-02-18)
+
+
+### Bug Fixes
+
+* clean up temp svn files when closed ([#819](https://github.com/JohnstonCode/svn-scm/issues/819)) ([32b1887](https://github.com/JohnstonCode/svn-scm/commit/32b188732cf4a96926db017a5c95edcb9f09614b))
+
 ## [2.7.2](https://github.com/JohnstonCode/svn-scm/compare/v2.7.1...v2.7.2) (2020-02-17)
 
 

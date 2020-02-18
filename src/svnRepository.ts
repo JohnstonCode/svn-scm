@@ -18,10 +18,10 @@ import * as encodeUtil from "./encoding";
 import { exists, writeFile } from "./fs";
 import { getBranchName } from "./helpers/branch";
 import { configuration } from "./helpers/configuration";
-import { parseInfoXml } from "./infoParser";
-import { parseSvnList } from "./listParser";
-import { parseSvnLog } from "./logParser";
-import { parseStatusXml } from "./statusParser";
+import { parseInfoXml } from "./parser/infoParser";
+import { parseSvnList } from "./parser/listParser";
+import { parseSvnLog } from "./parser/logParser";
+import { parseStatusXml } from "./parser/statusParser";
 import { Svn } from "./svn";
 import {
   fixPathSeparator,
@@ -30,7 +30,7 @@ import {
   normalizePath,
   unwrap
 } from "./util";
-import { parseDiffXml } from "./diffParser";
+import { parseDiffXml } from "./parser/diffParser";
 
 export class Repository {
   private _infoCache: {

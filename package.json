@@ -2,7 +2,7 @@
     "name": "svn-scm",
     "displayName": "SVN",
     "description": "Integrated Subversion source control",
-    "version": "2.7.2",
+    "version": "2.8.0",
     "publisher": "johnstoncode",
     "engines": {
         "vscode": "^1.42.0"
@@ -33,20 +33,20 @@
     ],
     "main": "./out/extension",
     "scripts": {
-        "build": "npm run build:ts && npm run build:css",
-        "build:css": "node-sass scss/ -o css/ --output-style compressed",
-        "build:ts": "npx tsc -p ./",
-        "compile": "npx tsc -watch -p ./",
+        "build": "yarn run build:ts && yarn run build:css",
+        "build:css": "yarn node-sass scss/ -o css/ --output-style compressed",
+        "build:ts": "yarn tsc -p ./",
+        "compile": "yarn tsc -watch -p ./",
         "lint": "eslint \"src/**/*.ts\"",
-        "lint:fix": "npm run lint -- --fix",
+        "lint:fix": "yarn run lint --fix",
         "organize": "node ./out/tools/organize.js",
         "semantic-release": "semantic-release --yarn",
-        "style-check": "npx prettylint 'src/**/*.ts'",
-        "style-fix": "npx prettier --write \"src/**/*.ts\"",
+        "style-check": "yarn prettylint 'src/**/*.ts'",
+        "style-fix": "yarn prettier --write \"src/**/*.ts\"",
         "test": "node ./out/test/runTest.js",
         "tools:genReadme": "node ./out/tools/generateConfigSectionForReadme.js",
-        "vscode:prepublish": "npm run lint && npm run build",
-        "watch:css": "npm run build:css -- -w"
+        "vscode:prepublish": "yarn run lint && yarn run build",
+        "watch:css": "yarn run build:css -w"
     },
     "dependencies": {
         "dayjs": "^1.8.20",
@@ -66,8 +66,8 @@
         "@types/tmp": "0.1.0",
         "@types/vscode": "1.42.0",
         "@types/xml2js": "^0.4.4",
-        "@typescript-eslint/eslint-plugin": "^2.5.0",
-        "@typescript-eslint/parser": "^2.5.0",
+        "@typescript-eslint/eslint-plugin": "^2.20.0",
+        "@typescript-eslint/parser": "^2.20.0",
         "decache": "^4.5.1",
         "eslint": "^6.5.1",
         "eslint-config-prettier": "^6.10.0",
@@ -78,7 +78,7 @@
         "node-sass": "^4.13.1",
         "prettier": "^1.18.2",
         "prettylint": "^1.0.0",
-        "semantic-release": "^17.0.3",
+        "semantic-release": "^17.0.4",
         "semantic-release-vsce": "^3.0.1",
         "typescript": "^3.4.5",
         "vscode-test": "^1.0.0"
@@ -87,11 +87,6 @@
         "commitizen": {
             "path": "cz-conventional-changelog"
         }
-    },
-    "greenkeeper": {
-        "ignore": [
-            "@types/node"
-        ]
     },
     "contributes": {
         "viewsContainers": {
@@ -1063,6 +1058,14 @@
                     "type": "boolean",
                     "description": "Whether svn is enabled",
                     "default": true
+                },
+                "svn.gravatar.icon_url": {
+                    "type": "string",
+                    "description": "Url for the gravitar icon using the <AUTHOR>, <AUTHOR_MD5> and <SIZE> placeholders",
+                    "examples": [
+                        "https://www.gravatar.com/avatar/<AUTHOR_MD5>.jpg?s=<SIZE>&d=https%3A%2F%2Fui-avatars.com%2Fapi%2F/<AUTHOR>/128"
+                    ],
+                    "default": "https://www.gravatar.com/avatar/<AUTHOR_MD5>.jpg?s=<SIZE>&d=robohash"
                 },
                 "svn.gravatars.enabled": {
                     "type": "boolean",
