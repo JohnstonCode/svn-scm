@@ -1064,6 +1064,14 @@
                     "description": "Use garavatar icons in log viewers",
                     "default": true
                 },
+                "svn.gravatar.icon_url": {
+                    "type": "string",
+                    "description": "Url for the gravitar icon using the <AUTHOR>, <AUTHOR_MD5> and <SIZE> placeholders",
+                    "examples": [
+                        "https://www.gravatar.com/avatar/<AUTHOR_MD5>.jpg?s=<SIZE>&d=https%3A%2F%2Fui-avatars.com%2Fapi%2F/<AUTHOR>/128"
+                    ],
+                    "default": "https://www.gravatar.com/avatar/<AUTHOR_MD5>.jpg?s=<SIZE>&d=robohash"
+                },
                 "svn.ignoreMissingSvnWarning": {
                     "type": "boolean",
                     "description": "Ignores the warning when SVN is missing",
