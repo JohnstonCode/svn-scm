@@ -1,6 +1,6 @@
 import * as xml2js from "xml2js";
-import { xml2jsParseSettings } from "./common/constants";
-import { ISvnLogEntry } from "./common/types";
+import { xml2jsParseSettings } from "../common/constants";
+import { ISvnLogEntry } from "../common/types";
 
 export async function parseSvnLog(content: string): Promise<ISvnLogEntry[]> {
   return new Promise<ISvnLogEntry[]>((resolve, reject) => {

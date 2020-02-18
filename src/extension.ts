@@ -40,32 +40,22 @@ async function init(
     svn,
     ConstructorPolicy.Async
   );
-  const contentProvider = new SvnContentProvider(sourceControlManager);
 
   registerCommands(sourceControlManager, disposables);
 
-  disposables.push(sourceControlManager, contentProvider, tempSvnFs);
-
-  const svnProvider = new SvnProvider(sourceControlManager);
-
-  window.registerTreeDataProvider("svn", svnProvider);
-
-  const repoLogProvider = new RepoLogProvider(sourceControlManager);
-  disposables.push(repoLogProvider);
-  window.registerTreeDataProvider("repolog", repoLogProvider);
-
-  const itemLogProvider = new ItemLogProvider(sourceControlManager);
-  disposables.push(itemLogProvider);
-  window.registerTreeDataProvider("itemlog", itemLogProvider);
-
-  const branchChangesProvider = new BranchChangesProvider(sourceControlManager);
-  disposables.push(branchChangesProvider);
-  window.registerTreeDataProvider("branchchanges", branchChangesProvider);
-
-  disposables.push(new CheckActiveEditor(sourceControlManager));
-  disposables.push(new OpenRepositoryCount(sourceControlManager));
-  disposables.push(new IsSvn18orGreater(info.version));
-  disposables.push(new IsSvn19orGreater(info.version));
+  disposables.push(
+    sourceControlManager,
+    tempSvnFs,
+    new SvnContentProvider(sourceControlManager),
+    new SvnProvider(sourceControlManager),
+    new RepoLogProvider(sourceControlManager),
+    new ItemLogProvider(sourceControlManager),
+    new BranchChangesProvider(sourceControlManager),
+    new CheckActiveEditor(sourceControlManager),
+    new OpenRepositoryCount(sourceControlManager),
+    new IsSvn18orGreater(info.version),
+    new IsSvn19orGreater(info.version)
+  );
 
   outputChannel.appendLine(`Using svn "${info.version}" from "${info.path}"`);
 

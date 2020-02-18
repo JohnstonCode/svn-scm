@@ -1,6 +1,6 @@
 import * as xml2js from "xml2js";
-import { xml2jsParseSettings } from "./common/constants";
-import { IEntry, IFileStatus, IWcStatus } from "./common/types";
+import { xml2jsParseSettings } from "../common/constants";
+import { IEntry, IFileStatus, IWcStatus } from "../common/types";
 
 function processEntry(
   entry: IEntry | IEntry[],
