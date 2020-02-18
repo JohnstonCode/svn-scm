@@ -88,11 +88,6 @@
             "path": "cz-conventional-changelog"
         }
     },
-    "greenkeeper": {
-        "ignore": [
-            "@types/node"
-        ]
-    },
     "contributes": {
         "viewsContainers": {
             "activitybar": [
