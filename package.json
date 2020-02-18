@@ -2,7 +2,7 @@
     "name": "svn-scm",
     "displayName": "SVN",
     "description": "Integrated Subversion source control",
-    "version": "2.7.2",
+    "version": "2.7.3",
     "publisher": "johnstoncode",
     "engines": {
         "vscode": "^1.42.0"
@@ -66,8 +66,8 @@
         "@types/tmp": "0.1.0",
         "@types/vscode": "1.42.0",
         "@types/xml2js": "^0.4.4",
-        "@typescript-eslint/eslint-plugin": "^2.5.0",
-        "@typescript-eslint/parser": "^2.5.0",
+        "@typescript-eslint/eslint-plugin": "^2.20.0",
+        "@typescript-eslint/parser": "^2.20.0",
         "decache": "^4.5.1",
         "eslint": "^6.5.1",
         "eslint-config-prettier": "^6.10.0",
@@ -78,7 +78,7 @@
         "node-sass": "^4.13.1",
         "prettier": "^1.18.2",
         "prettylint": "^1.0.0",
-        "semantic-release": "^17.0.3",
+        "semantic-release": "^17.0.4",
         "semantic-release-vsce": "^3.0.1",
         "typescript": "^3.4.5",
         "vscode-test": "^1.0.0"
@@ -87,11 +87,6 @@
         "commitizen": {
             "path": "cz-conventional-changelog"
         }
-    },
-    "greenkeeper": {
-        "ignore": [
-            "@types/node"
-        ]
     },
     "contributes": {
         "viewsContainers": {
