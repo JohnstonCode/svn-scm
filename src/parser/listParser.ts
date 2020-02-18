@@ -1,6 +1,6 @@
 import * as xml2js from "xml2js";
-import { xml2jsParseSettings } from "./common/constants";
-import { ISvnListItem } from "./common/types";
+import { xml2jsParseSettings } from "../common/constants";
+import { ISvnListItem } from "../common/types";
 
 export async function parseSvnList(content: string): Promise<ISvnListItem[]> {
   return new Promise<ISvnListItem[]>((resolve, reject) => {

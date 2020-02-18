@@ -3,7 +3,8 @@ import {
   Disposable,
   TreeItem,
   commands,
-  EventEmitter
+  EventEmitter,
+  window
 } from "vscode";
 import { SourceControlManager } from "../source_control_manager";
 import { ISvnPathChange, Status } from "../common/types";
@@ -18,22 +19,19 @@ export class BranchChangesProvider
 
   constructor(private model: SourceControlManager) {
     this._dispose.push(
+      window.registerTreeDataProvider("branchchanges", this),
       commands.registerCommand(
         "svn.branchchanges.openDiff",
         this.openDiffCmd,
         this
-      )
-    );
-
-    this._dispose.push(
+      ),
       commands.registerCommand(
         "svn.branchchanges.refresh",
         () => this._onDidChangeTreeData.fire(),
         this
-      )
+      ),
+      this.model.onDidChangeRepository(() => this._onDidChangeTreeData.fire())
     );
-
-    this.model.onDidChangeRepository(() => this._onDidChangeTreeData.fire());
   }
 
   dispose() {
