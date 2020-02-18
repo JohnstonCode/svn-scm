@@ -214,8 +214,13 @@ export function getCommitIcon(
     return gravatar;
   }
 
+  const gravitarUrl = configuration.get("gravatar.icon_url", "")
+    .replace('<AUTHOR>', author)
+    .replace('<AUTHOR_MD5>', md5(author))
+    .replace('<SIZE>', size.toString());
+
   gravatar = Uri.parse(
-    `https://www.gravatar.com/avatar/${md5(author)}.jpg?s=${size}&d=robohash`
+    gravitarUrl
   );
 
   gravatarCache.set(author, gravatar);
