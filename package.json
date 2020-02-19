@@ -2,7 +2,7 @@
     "name": "svn-scm",
     "displayName": "SVN",
     "description": "Integrated Subversion source control",
-    "version": "2.9.1",
+    "version": "2.10.0",
     "publisher": "johnstoncode",
     "engines": {
         "vscode": "^1.42.0"
@@ -1066,6 +1066,11 @@
                     "description": "Whether svn is enabled",
                     "default": true
                 },
+                "svn.experimental.detect_encoding": {
+                    "type": "boolean",
+                    "description": "Try the experimental encoding detection",
+                    "default": false
+                },
                 "svn.gravatar.icon_url": {
                     "type": "string",
                     "description": "Url for the gravitar icon using the <AUTHOR>, <AUTHOR_MD5> and <SIZE> placeholders",
@@ -1248,11 +1253,6 @@
                     "type": "boolean",
                     "description": "Set to ignore externals definitions on update (add --ignore-externals)",
                     "default": true
-                },
-                "svn.experimental.detect_encoding": {
-                    "type": "boolean",
-                    "description": "Try the experimental encoding detection",
-                    "default": false
                 }
             }
         }

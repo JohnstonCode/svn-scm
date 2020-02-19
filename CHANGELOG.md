@@ -1,3 +1,10 @@
+# [2.10.0](https://github.com/JohnstonCode/svn-scm/compare/v2.9.1...v2.10.0) (2020-02-19)
+
+
+### Features
+
+* added new experimental encoding detection ([#831](https://github.com/JohnstonCode/svn-scm/issues/831)) ([34edcca](https://github.com/JohnstonCode/svn-scm/commit/34edccaadbb2a71ba555127ba839d84bde15f523))
+
 ## [2.9.1](https://github.com/JohnstonCode/svn-scm/compare/v2.9.0...v2.9.1) (2020-02-19)
 
 
