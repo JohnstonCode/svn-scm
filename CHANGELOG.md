@@ -1,3 +1,10 @@
+## [2.9.1](https://github.com/JohnstonCode/svn-scm/compare/v2.9.0...v2.9.1) (2020-02-19)
+
+
+### Bug Fixes
+
+* scanning root ([#828](https://github.com/JohnstonCode/svn-scm/issues/828)) ([#829](https://github.com/JohnstonCode/svn-scm/issues/829)) ([5cf1387](https://github.com/JohnstonCode/svn-scm/commit/5cf138703bdb046781b0311e0e11e1ec84e49a0e))
+
 # [2.9.0](https://github.com/JohnstonCode/svn-scm/compare/v2.8.0...v2.9.0) (2020-02-19)
 
 
