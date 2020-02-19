@@ -5,6 +5,7 @@ import IgnoredChangeListItem from "./quickPickItems/ignoredChangeListItem";
 import NewChangeListItem from "./quickPickItems/newChangeListItem";
 import RemoveChangeListItem from "./quickPickItems/removeChangeListItem";
 import { Repository } from "./repository";
+import { FileItem } from "./quickPickItems/fileItem";
 
 export function getChangelistPickOptions(
   repository: Repository,
@@ -114,6 +115,36 @@ export async function inputCommitChangelist(repository: Repository) {
   }
 
   return choice;
+}
+
+export async function inputCommitFiles(repository: Repository) {
+  const choice = await inputCommitChangelist(repository);
+  if (!choice) {
+    return;
+  }
+
+  if (
+    choice.id === "changes" &&
+    choice.resourceGroup.resourceStates.length > 1
+  ) {
+    const selectedAll = configuration.get("commit.changes.selectedAll", true);
+
+    const picks = choice.resourceGroup.resourceStates.map(
+      r => new FileItem(repository, r, selectedAll)
+    );
+    const selected = await window.showQuickPick(picks, {
+      placeHolder: "Select files to commit",
+      canPickMany: true
+    });
+
+    if (selected !== undefined && selected.length > 0) {
+      return selected.map(s => s.state);
+    }
+
+    return;
+  }
+
+  return choice.resourceGroup.resourceStates;
 }
 
 export function patchChangelistOptions(repository: Repository) {

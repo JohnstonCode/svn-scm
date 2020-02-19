@@ -1,6 +1,6 @@
 import * as path from "path";
 import { window } from "vscode";
-import { inputCommitChangelist } from "../changelistItems";
+import { inputCommitFiles } from "../changelistItems";
 import { Status } from "../common/types";
 import { inputCommitMessage } from "../messages";
 import { Repository } from "../repository";
@@ -13,12 +13,12 @@ export class CommitWithMessage extends Command {
   }
 
   public async execute(repository: Repository) {
-    const choice = await inputCommitChangelist(repository);
-    if (!choice) {
+    const resourceStates = await inputCommitFiles(repository);
+    if (!resourceStates || resourceStates.length === 0) {
       return;
     }
 
-    const filePaths = choice.resourceGroup.resourceStates.map(state => {
+    const filePaths = resourceStates.map(state => {
       return state.resourceUri.fsPath;
     });
 
@@ -32,7 +32,7 @@ export class CommitWithMessage extends Command {
     }
 
     // If files is renamed, the commit need previous file
-    choice.resourceGroup.resourceStates.forEach(state => {
+    resourceStates.forEach(state => {
       if (state instanceof Resource) {
         if (state.type === Status.ADDED && state.renameResourceUri) {
           filePaths.push(state.renameResourceUri.fsPath);
