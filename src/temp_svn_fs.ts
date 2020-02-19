@@ -12,6 +12,9 @@ import {
   workspace
 } from "vscode";
 import * as path from "path";
+import * as crypto from "crypto";
+import { configuration } from "./helpers/configuration";
+import { iconv } from "./vscodeModules";
 
 export class File implements FileStat {
   type: FileType;
@@ -64,6 +67,11 @@ class TempSvnFs implements FileSystemProvider, Disposable {
     this._disposables.push(
       workspace.registerFileSystemProvider("tempsvnfs", this, {
         isCaseSensitive: true
+      }),
+      workspace.onDidCloseTextDocument(event => {
+        if (event.uri.scheme === "tempsvnfs") {
+          this.delete(event.uri);
+        }
       })
     );
   }
@@ -181,6 +189,34 @@ class TempSvnFs implements FileSystemProvider, Disposable {
       { type: FileChangeType.Deleted, uri: oldUri },
       { type: FileChangeType.Created, uri: newUri }
     );
+  }
+
+  async createTempSvnRevisionFile(
+    svnUri: Uri,
+    revision: string,
+    content: string
+  ) {
+    const fname = `r${revision}_${path.basename(svnUri.fsPath)}`;
+    const hash = crypto.createHash("md5");
+    const filePathHash = hash.update(svnUri.path).digest("hex");
+    const encoding = configuration.get<string>("default.encoding");
+
+    if (encoding) {
+      content = iconv.encode(content, encoding).toString();
+    }
+
+    if (!this._root.entries.has(filePathHash)) {
+      this.createDirectory(Uri.parse(`tempsvnfs:/${filePathHash}`));
+    }
+
+    const uri = Uri.parse(`tempsvnfs:/${filePathHash}/${fname}`, true);
+
+    this.writeFile(uri, Buffer.from(content), {
+      create: true,
+      overwrite: true
+    });
+
+    return uri;
   }
 
   dispose(): void {

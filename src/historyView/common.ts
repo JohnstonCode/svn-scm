@@ -15,7 +15,7 @@ import { exists, lstat } from "../fs";
 import { configuration } from "../helpers/configuration";
 import { IRemoteRepository } from "../remoteRepository";
 import { SvnRI } from "../svnRI";
-import { createTempSvnRevisionFile } from "../tempFiles";
+import { tempSvnFs } from "../temp_svn_fs";
 
 dayjs.extend(relativeTime);
 
@@ -214,9 +214,13 @@ export function getCommitIcon(
     return gravatar;
   }
 
-  gravatar = Uri.parse(
-    `https://www.gravatar.com/avatar/${md5(author)}.jpg?s=${size}&d=robohash`
-  );
+  const gravitarUrl = configuration
+    .get("gravatar.icon_url", "")
+    .replace("<AUTHOR>", author)
+    .replace("<AUTHOR_MD5>", md5(author))
+    .replace("<SIZE>", size.toString());
+
+  gravatar = Uri.parse(gravitarUrl);
 
   gravatarCache.set(author, gravatar);
 
@@ -271,7 +275,7 @@ async function downloadFile(
     window.showErrorMessage("Failed to open path");
     throw e;
   }
-  return createTempSvnRevisionFile(arg, revision, out);
+  return tempSvnFs.createTempSvnRevisionFile(arg, revision, out);
 }
 
 export async function openDiff(
@@ -302,7 +306,7 @@ export async function openFileRemote(
     window.showErrorMessage("Failed to open path");
     return;
   }
-  const localUri = await createTempSvnRevisionFile(arg, against, out);
+  const localUri = await tempSvnFs.createTempSvnRevisionFile(arg, against, out);
   const opts: TextDocumentShowOptions = {
     preview: true
   };

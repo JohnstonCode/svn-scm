@@ -13,7 +13,6 @@ import {
 } from "vscode";
 import { ISvnLogEntry } from "../common/types";
 import { SourceControlManager } from "../source_control_manager";
-import { tempdir } from "../tempFiles";
 import { dispose, unwrap } from "../util";
 import {
   copyCommitToClipboard,
@@ -45,37 +44,28 @@ export class ItemLogProvider
   private _dispose: Disposable[] = [];
 
   constructor(private sourceControlManager: SourceControlManager) {
-    window.onDidChangeActiveTextEditor(this.editorChanged, this);
     this._dispose.push(
+      window.onDidChangeActiveTextEditor(this.editorChanged, this),
+      window.registerTreeDataProvider("itemlog", this),
       commands.registerCommand(
         "svn.itemlog.copymsg",
         async (item: ILogTreeItem) => copyCommitToClipboard("msg", item)
-      )
-    );
-    this._dispose.push(
+      ),
       commands.registerCommand(
         "svn.itemlog.copyrevision",
         async (item: ILogTreeItem) => copyCommitToClipboard("revision", item)
-      )
-    );
-    this._dispose.push(
+      ),
       commands.registerCommand(
         "svn.itemlog.openFileRemote",
         this.openFileRemoteCmd,
         this
-      )
-    );
-    this._dispose.push(
-      commands.registerCommand("svn.itemlog.openDiff", this.openDiffCmd, this)
-    );
-    this._dispose.push(
+      ),
+      commands.registerCommand("svn.itemlog.openDiff", this.openDiffCmd, this),
       commands.registerCommand(
         "svn.itemlog.openDiffBase",
         this.openDiffBaseCmd,
         this
-      )
-    );
-    this._dispose.push(
+      ),
       commands.registerCommand("svn.itemlog.refresh", this.refresh, this)
     );
     this.refresh();
@@ -131,9 +121,6 @@ export class ItemLogProvider
     if (te) {
       const uri = te.document.uri;
       if (uri.scheme === "file") {
-        if (uri.path.startsWith(tempdir)) {
-          return; // do not refresh if diff was called
-        }
         const repo = this.sourceControlManager.getRepository(uri);
         if (repo !== null) {
           try {

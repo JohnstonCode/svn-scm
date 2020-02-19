@@ -1,6 +1,6 @@
 import * as xml2js from "xml2js";
-import { ISvnInfo } from "./common/types";
-import { camelcase } from "./util";
+import { ISvnInfo } from "../common/types";
+import { camelcase } from "../util";
 
 export async function parseInfoXml(content: string): Promise<ISvnInfo> {
   return new Promise<ISvnInfo>((resolve, reject) => {
