@@ -141,7 +141,7 @@ export class SourceControlManager implements IDisposable {
     );
     const onPossibleSvnRepositoryChange = filterEvent(
       onWorkspaceChange,
-      uri => !this.getRepository(uri)
+      uri => uri.scheme === "file" && !this.getRepository(uri)
     );
     onPossibleSvnRepositoryChange(
       this.onPossibleSvnRepositoryChange,
