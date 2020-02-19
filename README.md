@@ -69,6 +69,9 @@ Here are all of the extension settings with their default values. To change any 
   // Whether auto refreshing is enabled
   "svn.autorefresh": true,
 
+  // Select all files when commit changes
+  "svn.commit.changes.selectedAll": true,
+
   // Set file to status resolved after fix conflicts
   "svn.conflicts.autoResolve": null,
 

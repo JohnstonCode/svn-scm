@@ -1008,6 +1008,11 @@
                     "description": "Whether auto refreshing is enabled",
                     "default": true
                 },
+                "svn.commit.changes.selectedAll": {
+                    "type": "boolean",
+                    "description": "Select all files when commit changes",
+                    "default": true
+                },
                 "svn.conflicts.autoResolve": {
                     "type": "boolean",
                     "description": "Set file to status resolved after fix conflicts",

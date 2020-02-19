@@ -127,8 +127,11 @@ export async function inputCommitFiles(repository: Repository) {
     choice.id === "changes" &&
     choice.resourceGroup.resourceStates.length > 1
   ) {
+
+    const selectedAll = configuration.get("commit.changes.selectedAll", true);
+
     const picks = choice.resourceGroup.resourceStates.map(
-      r => new FileItem(repository, r)
+      r => new FileItem(repository, r, selectedAll)
     );
     const selected = await window.showQuickPick(picks, {
       placeHolder: "Select files to commit",
