@@ -137,7 +137,7 @@ export async function inputCommitFiles(repository: Repository) {
       canPickMany: true
     });
 
-    if (selected) {
+    if (selected !== undefined && selected.length > 0) {
       return selected.map(s => s.state);
     }
 
