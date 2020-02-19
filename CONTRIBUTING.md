@@ -9,20 +9,26 @@ Requirements
 * [NodeJs](https://nodejs.org/) >= 12.4.0
 * [yarn](https://classic.yarnpkg.com/lang/en/) >= 1.22
 
-First you will need to clone the project
+First you will need to fork the project
+![Github Fork](https://raw.githubusercontent.com/JohnstonCode/svn-scm/master/images/docs/fork.png)
+
+Then clone your fork
 ```
-git clone https://github.com/JohnstonCode/svn-scm.git
+git clone https://github.com/<YOUR_USERNAME>/svn-scm.git
 ```
+
 ### Dependencies
 To install all of the required dependencies run
 ```
 yarn --frozen-lockfile
 ```
+
 ### Build
 To build the extension
 ```
 yarn run build
 ```
+
 ### Watch
 For development run in watch mode
 ```
