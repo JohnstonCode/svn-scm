@@ -10,7 +10,7 @@ Requirements
 * [yarn](https://classic.yarnpkg.com/lang/en/) >= 1.22
 
 First you will need to fork the project
-![Github Fork](https://raw.githubusercontent.com/JohnstonCode/svn-scm/master/images/docs/fork.png)
+![Github Fork](images/docs/fork.png)
 
 Then clone your fork
 ```
