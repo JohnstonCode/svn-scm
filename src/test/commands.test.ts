@@ -61,7 +61,7 @@ suite("Commands Tests", () => {
     assert.equal(repository.changes.resourceStates.length, 1);
   });
 
-  test("Commit File", async function() {
+  test("Commit Single File", async function() {
     const repository = sourceControlManager.getRepository(
       checkoutDir
     ) as Repository;
@@ -165,11 +165,33 @@ suite("Commands Tests", () => {
     assert.equal(repository.changes.resourceStates.length, 0);
   });
 
-  test("Commit File", async function() {
+  test("Commit Multiple", async function() {
+    const file1 = path.join(checkoutDir.fsPath, "file1.txt");
+    fs.writeFileSync(file1, "test");
+    await commands.executeCommand("svn.openFile", Uri.file(file1));
+
+    const file2 = path.join(checkoutDir.fsPath, "file2.txt");
+    fs.writeFileSync(file2, "test");
+    await commands.executeCommand("svn.openFile", Uri.file(file2));
+
     const repository = sourceControlManager.getRepository(
       checkoutDir
     ) as Repository;
-    repository.inputBox.value = "First Commit";
+    repository.inputBox.value = "Multiple Files Commit";
+
+    await commands.executeCommand("svn.refresh");
+    await commands.executeCommand(
+      "svn.add",
+      repository.unversioned.resourceStates[0]
+    );
+    await commands.executeCommand("svn.refresh");
+    await commands.executeCommand(
+      "svn.add",
+      repository.unversioned.resourceStates[0]
+    );
+    await commands.executeCommand("svn.refresh");
+
+    testUtil.overrideNextShowQuickPick(0);
 
     await commands.executeCommand("svn.commitWithMessage");
   });
