@@ -53,7 +53,10 @@ export function detectEncoding(buffer: Buffer): string | null {
     return result;
   }
 
-  const experimental = configuration.get<boolean>("experimental.detect_encoding", false);
+  const experimental = configuration.get<boolean>(
+    "experimental.detect_encoding",
+    false
+  );
   if (experimental) {
     const detected = chardet.detect(buffer);
     if (detected) {
