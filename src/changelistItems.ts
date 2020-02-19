@@ -127,7 +127,6 @@ export async function inputCommitFiles(repository: Repository) {
     choice.id === "changes" &&
     choice.resourceGroup.resourceStates.length > 1
   ) {
-
     const selectedAll = configuration.get("commit.changes.selectedAll", true);
 
     const picks = choice.resourceGroup.resourceStates.map(
