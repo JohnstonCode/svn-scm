@@ -1,3 +1,10 @@
+# [2.9.0](https://github.com/JohnstonCode/svn-scm/compare/v2.8.0...v2.9.0) (2020-02-19)
+
+
+### Features
+
+* Allow select files to commit when choose "changes" (close [#472](https://github.com/JohnstonCode/svn-scm/issues/472)) ([#811](https://github.com/JohnstonCode/svn-scm/issues/811)) ([ba4e806](https://github.com/JohnstonCode/svn-scm/commit/ba4e8063e18eff34d0aa68574ecf011d9ac1b7ab))
+
 # [2.8.0](https://github.com/JohnstonCode/svn-scm/compare/v2.7.3...v2.8.0) (2020-02-18)
 
 
