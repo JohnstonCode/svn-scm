@@ -1,3 +1,10 @@
+## [2.10.1](https://github.com/JohnstonCode/svn-scm/compare/v2.10.0...v2.10.1) (2020-02-20)
+
+
+### Bug Fixes
+
+* use experimental detect encoding with svn cat ([#832](https://github.com/JohnstonCode/svn-scm/issues/832)) ([217a981](https://github.com/JohnstonCode/svn-scm/commit/217a9819011243481c1bcb82b604e12f997d08c9))
+
 # [2.10.0](https://github.com/JohnstonCode/svn-scm/compare/v2.9.1...v2.10.0) (2020-02-19)
 
 
