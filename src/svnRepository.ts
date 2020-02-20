@@ -350,6 +350,14 @@ export class Repository {
       }
     }
 
+    const experimental = configuration.get<boolean>(
+      "experimental.detect_encoding",
+      false
+    );
+    if (experimental) {
+      encoding = null;
+    }
+
     const result = await this.exec(args, { encoding });
 
     return result.stdout;
