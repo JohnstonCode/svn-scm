@@ -58,7 +58,7 @@ export function detectEncoding(buffer: Buffer): string | null {
     false
   );
   if (experimental) {
-    let detected = chardet.detectAll(buffer);
+    const detected = chardet.detectAll(buffer);
     const encodingPriorities = configuration.get<string[]>(
       "experimental.encoding_priority",
       []
