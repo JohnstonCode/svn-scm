@@ -1071,6 +1071,14 @@
                     "description": "Try the experimental encoding detection",
                     "default": false
                 },
+                "svn.experimental.encoding_priority": {
+                    "type":"array",
+                    "description": "Priority of encoding",
+                    "default": [],
+                    "examples": [
+                        ["UTF-8", "GB18030", "windows-1251"]
+                    ]
+                },
                 "svn.gravatar.icon_url": {
                     "type": "string",
                     "description": "Url for the gravitar icon using the <AUTHOR>, <AUTHOR_MD5> and <SIZE> placeholders",
