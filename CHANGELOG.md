@@ -1,3 +1,10 @@
+## [2.10.3](https://github.com/JohnstonCode/svn-scm/compare/v2.10.2...v2.10.3) (2020-02-21)
+
+
+### Bug Fixes
+
+* temp svn fs changed output content type to Buffer to preserve encoding-specific characters ([#836](https://github.com/JohnstonCode/svn-scm/issues/836)) ([f076e64](https://github.com/JohnstonCode/svn-scm/commit/f076e6465dd43a54191154b228e89d08a36fd142))
+
 ## [2.10.2](https://github.com/JohnstonCode/svn-scm/compare/v2.10.1...v2.10.2) (2020-02-21)
 
 
