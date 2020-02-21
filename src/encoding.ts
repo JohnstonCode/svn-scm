@@ -58,9 +58,22 @@ export function detectEncoding(buffer: Buffer): string | null {
     false
   );
   if (experimental) {
-    const detected = chardet.detect(buffer);
-    if (detected) {
-      return detected.replace(/[^a-zA-Z0-9]/g, "").toLocaleLowerCase();
+    let detected = chardet.detectAll(buffer);
+    const encodingPriorities = configuration.get<string[]>(
+      "experimental.encoding_priority",
+      []
+    );
+
+    if (!detected) {
+      return null;
+    }
+
+    for (const pri of encodingPriorities) {
+      for (const det of detected) {
+        if (pri === det.name) {
+          return det.name.replace(/[^a-zA-Z0-9]/g, "").toLocaleLowerCase();
+        }
+      }
     }
 
     return null;
