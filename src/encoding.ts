@@ -46,6 +46,10 @@ const JSCHARDET_TO_ICONV_ENCODINGS: { [name: string]: string } = {
   big5: "cp950"
 };
 
+function normaliseEncodingName(name: string): string {
+  return name.replace(/[^a-zA-Z0-9]/g, "").toLowerCase();
+}
+
 export function detectEncoding(buffer: Buffer): string | null {
   const result = detectEncodingByBOM(buffer);
 
@@ -70,8 +74,8 @@ export function detectEncoding(buffer: Buffer): string | null {
 
     for (const pri of encodingPriorities) {
       for (const det of detected) {
-        if (pri === det.name) {
-          return det.name.replace(/[^a-zA-Z0-9]/g, "").toLocaleLowerCase();
+        if (normaliseEncodingName(pri) === normaliseEncodingName(det.name)) {
+          return normaliseEncodingName(det.name);
         }
       }
     }
@@ -93,9 +97,7 @@ export function detectEncoding(buffer: Buffer): string | null {
     return null;
   }
 
-  const normalizedEncodingName = encoding
-    .replace(/[^a-zA-Z0-9]/g, "")
-    .toLowerCase();
+  const normalizedEncodingName = normaliseEncodingName(encoding);
   const mapped = JSCHARDET_TO_ICONV_ENCODINGS[normalizedEncodingName];
 
   return mapped || normalizedEncodingName;
