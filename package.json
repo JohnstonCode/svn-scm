@@ -2,7 +2,7 @@
     "name": "svn-scm",
     "displayName": "SVN",
     "description": "Integrated Subversion source control",
-    "version": "2.10.1",
+    "version": "2.10.2",
     "publisher": "johnstoncode",
     "engines": {
         "vscode": "^1.42.0"
@@ -1072,11 +1072,15 @@
                     "default": false
                 },
                 "svn.experimental.encoding_priority": {
-                    "type":"array",
+                    "type": "array",
                     "description": "Priority of encoding",
                     "default": [],
                     "examples": [
-                        ["UTF-8", "GB18030", "windows-1251"]
+                        [
+                            "UTF-8",
+                            "GB18030",
+                            "windows-1251"
+                        ]
                     ]
                 },
                 "svn.gravatar.icon_url": {

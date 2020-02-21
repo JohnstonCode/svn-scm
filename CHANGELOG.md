@@ -1,3 +1,10 @@
+## [2.10.2](https://github.com/JohnstonCode/svn-scm/compare/v2.10.1...v2.10.2) (2020-02-21)
+
+
+### Bug Fixes
+
+* added experimental encoding priority list ([#835](https://github.com/JohnstonCode/svn-scm/issues/835)) ([706dbc1](https://github.com/JohnstonCode/svn-scm/commit/706dbc19957bdae7634b7b72120be6f85ba74ad3))
+
 ## [2.10.1](https://github.com/JohnstonCode/svn-scm/compare/v2.10.0...v2.10.1) (2020-02-20)
 
 

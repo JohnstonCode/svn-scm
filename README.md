@@ -102,6 +102,9 @@ Here are all of the extension settings with their default values. To change any 
   // Try the experimental encoding detection
   "svn.experimental.detect_encoding": null,
 
+  // Priority of encoding
+  "svn.experimental.encoding_priority": [],
+
   // Url for the gravitar icon using the <AUTHOR>, <AUTHOR_MD5> and <SIZE> placeholders
   "svn.gravatar.icon_url": "https://www.gravatar.com/avatar/<AUTHOR_MD5>.jpg?s=<SIZE>&d=robohash",
 
