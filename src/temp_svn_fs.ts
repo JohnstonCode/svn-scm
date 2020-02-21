@@ -200,9 +200,12 @@ class TempSvnFs implements FileSystemProvider, Disposable {
     const hash = crypto.createHash("md5");
     const filePathHash = hash.update(svnUri.path).digest("hex");
     const encoding = configuration.get<string>("default.encoding");
+    let contentBuffer: Buffer;
 
     if (encoding) {
-      content = iconv.encode(content, encoding).toString();
+      contentBuffer = iconv.encode(content, encoding);
+    } else {
+      contentBuffer = Buffer.from(content);
     }
 
     if (!this._root.entries.has(filePathHash)) {
@@ -211,7 +214,7 @@ class TempSvnFs implements FileSystemProvider, Disposable {
 
     const uri = Uri.parse(`tempsvnfs:/${filePathHash}/${fname}`, true);
 
-    this.writeFile(uri, Buffer.from(content), {
+    this.writeFile(uri, contentBuffer, {
       create: true,
       overwrite: true
     });
