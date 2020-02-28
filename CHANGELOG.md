@@ -1,3 +1,10 @@
+## [2.10.4](https://github.com/JohnstonCode/svn-scm/compare/v2.10.3...v2.10.4) (2020-02-28)
+
+
+### Bug Fixes
+
+* file changes on windows not registering ([#844](https://github.com/JohnstonCode/svn-scm/issues/844)) ([6b3521a](https://github.com/JohnstonCode/svn-scm/commit/6b3521a08cf2d3ef4a57ec0f46c0c271924f3933))
+
 ## [2.10.3](https://github.com/JohnstonCode/svn-scm/compare/v2.10.2...v2.10.3) (2020-02-21)
 
 
