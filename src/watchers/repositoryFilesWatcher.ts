@@ -3,7 +3,13 @@ import { watch } from "fs";
 import { exists } from "../fs";
 import { join } from "path";
 import { debounce } from "../decorators";
-import { anyEvent, filterEvent, IDisposable, isDescendant, fixPathSeparator } from "../util";
+import {
+  anyEvent,
+  filterEvent,
+  IDisposable,
+  isDescendant,
+  fixPathSeparator
+} from "../util";
 
 export class RepositoryFilesWatcher implements IDisposable {
   private disposables: IDisposable[] = [];
@@ -29,7 +35,7 @@ export class RepositoryFilesWatcher implements IDisposable {
 
   constructor(readonly root: string) {
     const fsWatcher = workspace.createFileSystemWatcher(
-        new RelativePattern(fixPathSeparator(root), "**")
+      new RelativePattern(fixPathSeparator(root), "**")
     );
     this._onRepoChange = new EventEmitter<Uri>();
     this._onRepoCreate = new EventEmitter<Uri>();
