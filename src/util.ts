@@ -73,12 +73,13 @@ export function eventToPromise<T>(event: Event<T>): Promise<T> {
 const regexNormalizePath = new RegExp(path.sep === "/" ? "\\\\" : "/", "g");
 const regexNormalizeWindows = new RegExp("^\\\\(\\w:)", "g");
 export function fixPathSeparator(file: string) {
+  file = file.replace(regexNormalizePath, path.sep);
+  file = file.replace(regexNormalizeWindows, "$1"); // "\t:\test" => "t:\test"
+
   if (path.sep === "\\") {
     file = file.charAt(0).toLowerCase() + file.slice(1);
   }
 
-  file = file.replace(regexNormalizePath, path.sep);
-  file = file.replace(regexNormalizeWindows, "$1"); // "\t:\test" => "t:\test"
   return file;
 }
 
