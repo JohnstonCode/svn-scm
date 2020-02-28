@@ -82,7 +82,7 @@
         "prettylint": "^1.0.0",
         "semantic-release": "^17.0.4",
         "semantic-release-vsce": "^3.0.1",
-        "typescript": "^3.8.2",
+        "typescript": "^3.8.3",
         "vscode-test": "^1.0.0"
     },
     "config": {
