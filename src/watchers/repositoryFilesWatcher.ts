@@ -1,7 +1,7 @@
 import { Event, Uri, workspace, EventEmitter } from "vscode";
 import { watch } from "fs";
 import { exists } from "../fs";
-import { join, resolve } from "path";
+import { join } from "path";
 import { debounce } from "../decorators";
 import { anyEvent, filterEvent, IDisposable, isDescendant } from "../util";
 
@@ -28,9 +28,7 @@ export class RepositoryFilesWatcher implements IDisposable {
   public onDidSvnAny: Event<Uri>;
 
   constructor(readonly root: string) {
-    const fsWatcher = workspace.createFileSystemWatcher(
-      join(resolve(root), "**")
-    );
+    const fsWatcher = workspace.createFileSystemWatcher("**");
     this._onRepoChange = new EventEmitter<Uri>();
     this._onRepoCreate = new EventEmitter<Uri>();
     this._onRepoDelete = new EventEmitter<Uri>();
