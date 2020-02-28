@@ -1,9 +1,15 @@
-import { Event, Uri, workspace, EventEmitter } from "vscode";
+import { Event, Uri, workspace, EventEmitter, RelativePattern } from "vscode";
 import { watch } from "fs";
 import { exists } from "../fs";
-import { join, resolve } from "path";
+import { join } from "path";
 import { debounce } from "../decorators";
-import { anyEvent, filterEvent, IDisposable, isDescendant } from "../util";
+import {
+  anyEvent,
+  filterEvent,
+  IDisposable,
+  isDescendant,
+  fixPathSeparator
+} from "../util";
 
 export class RepositoryFilesWatcher implements IDisposable {
   private disposables: IDisposable[] = [];
@@ -29,7 +35,7 @@ export class RepositoryFilesWatcher implements IDisposable {
 
   constructor(readonly root: string) {
     const fsWatcher = workspace.createFileSystemWatcher(
-      join(resolve(root), "**")
+      new RelativePattern(fixPathSeparator(root), "**")
     );
     this._onRepoChange = new EventEmitter<Uri>();
     this._onRepoCreate = new EventEmitter<Uri>();
@@ -58,8 +64,7 @@ export class RepositoryFilesWatcher implements IDisposable {
 
     const isTmp = (uri: Uri) => /[\\\/]\.svn[\\\/]tmp/.test(uri.path);
 
-    const isRelevant = (uri: Uri) =>
-      !isTmp(uri) && isDescendant(this.root, uri.fsPath);
+    const isRelevant = (uri: Uri) => !isTmp(uri);
 
     this.onDidChange = filterEvent(fsWatcher.onDidChange, isRelevant);
     this.onDidCreate = filterEvent(fsWatcher.onDidCreate, isRelevant);
