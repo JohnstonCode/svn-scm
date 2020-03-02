@@ -1,5 +1,8 @@
 import { SourceControlResourceState, window } from "vscode";
 import { Command } from "./command";
+import * as nls from "vscode-nls";
+
+const localize = nls.loadMessageBundle();
 
 export class Add extends Command {
   constructor() {
@@ -26,7 +29,9 @@ export class Add extends Command {
         await repository.addFiles(paths);
       } catch (error) {
         console.log(error);
-        window.showErrorMessage("Unable to add file");
+        window.showErrorMessage(
+          localize("add.unable_to_add_file", "Unable to add file")
+        );
       }
     });
   }

@@ -3,6 +3,9 @@ import { Uri, window } from "vscode";
 import { Repository } from "../repository";
 import { fixPathSeparator } from "../util";
 import { Command } from "./command";
+import * as nls from "vscode-nls";
+
+const localize = nls.loadMessageBundle();
 
 export class RenameExplorer extends Command {
   constructor() {
@@ -35,7 +38,11 @@ export class RenameExplorer extends Command {
       const oldName = path.relative(root, oldFile);
       newName = await window.showInputBox({
         value: path.basename(oldFile),
-        prompt: `New name name for ${oldName}`
+        prompt: localize(
+          "renameExplorer.new_name",
+          "New name name for {0}",
+          oldName
+        )
       });
     }
     if (!newName) {

@@ -1,0 +1,4 @@
+{
+    "svn.failed_to_execute_svn_enoent": "Failed to execute svn (ENOENT)",
+    "svn.failed_to_execute": "Failed to execute svn"
+}

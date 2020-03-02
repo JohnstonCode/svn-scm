@@ -1,0 +1,9 @@
+{
+    "switchBranch.create_new": "Created new branch {0}",
+    "switchBranch.commit_message": "Commit message for create branch {0}",
+    "switchBranch.ancestor_error": "Seems like these branches don't have a common ancestor. Do you want to retry with '--ignore-ancestry' option?",
+    "switchBranch.yes": "Yes",
+    "switchBranch.no": "No",
+    "switchBranch.unable_to_create": "Unable to create new branch",
+    "switchBranch.unable_to_switch": "Unable to switch branch"
+}

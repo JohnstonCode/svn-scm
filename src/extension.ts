@@ -25,6 +25,9 @@ import { BranchChangesProvider } from "./historyView/branchChangesProvider";
 import { IsSvn19orGreater } from "./contexts/isSvn19orGreater";
 import { IsSvn18orGreater } from "./contexts/isSvn18orGreater";
 import { tempSvnFs } from "./temp_svn_fs";
+import * as nls from 'vscode-nls';
+
+const localize = nls.config({ messageFormat: nls.MessageFormat.file })();
 
 async function init(
   _context: ExtensionContext,
@@ -57,7 +60,7 @@ async function init(
     new IsSvn19orGreater(info.version)
   );
 
-  outputChannel.appendLine(`Using svn "${info.version}" from "${info.path}"`);
+  outputChannel.appendLine(localize('extension.using_svn', 'Using svn "{0}" from "{1}', info.version, info.path));
 
   const onOutput = (str: string) => outputChannel.append(str);
   svn.onOutput.addListener("log", onOutput);
@@ -97,11 +100,11 @@ async function _activate(context: ExtensionContext, disposables: Disposable[]) {
       outputChannel.appendLine(err.message);
       outputChannel.show();
 
-      const findSvnExecutable = "Find SVN executable";
-      const download = "Download SVN";
-      const neverShowAgain = "Don't Show Again";
+      const findSvnExecutable = localize('extension.find_svn_executable', "Find SVN executable");
+      const download = localize('extension.svn_download', "Download SVN");
+      const neverShowAgain = localize('extension.svn_dont_show', "Don't Show Again");
       const choice = await window.showWarningMessage(
-        "SVN not found. Install it or configure it using the 'svn.path' setting.",
+        localize('extension.svn_not_found', "SVN not found. Install it or configure it using the 'svn.path' setting."),
         findSvnExecutable,
         download,
         neverShowAgain
@@ -127,7 +130,7 @@ async function _activate(context: ExtensionContext, disposables: Disposable[]) {
         if (executable && executable[0]) {
           const file = executable[0].fsPath;
 
-          outputChannel.appendLine(`Updated "svn.path" with "${file}"`);
+          outputChannel.appendLine(localize('extension.update_path', 'Updated "svn.path" with "{0}"', file));
 
           await configuration.update("path", file);
 

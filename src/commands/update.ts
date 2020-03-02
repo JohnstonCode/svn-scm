@@ -2,6 +2,9 @@ import { window } from "vscode";
 import { configuration } from "../helpers/configuration";
 import { Repository } from "../repository";
 import { Command } from "./command";
+import * as nls from 'vscode-nls';
+
+const localize = nls.loadMessageBundle();
 
 export class Update extends Command {
   constructor() {
@@ -26,7 +29,7 @@ export class Update extends Command {
       }
     } catch (error) {
       console.error(error);
-      window.showErrorMessage("Unable to update");
+      window.showErrorMessage(localize("update.unable", "Unable to update"));
     }
   }
 }

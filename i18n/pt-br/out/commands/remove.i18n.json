@@ -1,0 +1,6 @@
+{
+    "remove.keep_local_copy": "Would you like to keep a local copy of the files?",
+    "remove.yes": "Yes",
+    "remove.no": "No",
+    "remove.unable_to_remove": "Unable to remove files"
+}

@@ -2,6 +2,9 @@ import * as path from "path";
 import { Uri, window } from "vscode";
 import { configuration } from "../helpers/configuration";
 import { Command } from "./command";
+import * as nls from 'vscode-nls';
+
+const localize = nls.loadMessageBundle();
 
 export class Resolved extends Command {
   constructor() {
@@ -17,14 +20,15 @@ export class Resolved extends Command {
 
     if (!autoResolve) {
       const basename = path.basename(uri.fsPath);
+      const yes = localize("resolved.yes", "Yes");
       const pick = await window.showWarningMessage(
-        `Mark the conflict as resolved for "${basename}"?`,
+        localize("resolved.mark_resolved", "Mark the conflict as resolved for '{0}'", basename),
         { modal: true },
-        "Yes",
-        "No"
+        yes,
+        localize("resolved.no", "No")
       );
 
-      if (pick !== "Yes") {
+      if (pick !== yes) {
         return;
       }
     }

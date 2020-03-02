@@ -1,0 +1,6 @@
+{
+    "promptRemove.add_to_ignore": "Add to ignored list",
+    "promptRemove.remove_from_svn": "The file(s) \"{0}\" are removed from disk.\nWould you like remove from SVN?",
+    "promptRemove.yes": "Yes",
+    "promptRemove.no": "No"
+}

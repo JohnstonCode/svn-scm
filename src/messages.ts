@@ -1,9 +1,14 @@
 import * as path from "path";
 import { commands, Uri, ViewColumn, WebviewPanel, window } from "vscode";
 import { SourceControlManager } from "./source_control_manager";
+import * as nls from "vscode-nls";
+
+const localize = nls.loadMessageBundle();
 
 export function noChangesToCommit() {
-  return window.showInformationMessage("There are no changes to commit.");
+  return window.showInformationMessage(
+    localize("messages.no_change_to_commit", "There are no changes to commit.")
+  );
 }
 
 let panel: WebviewPanel;
@@ -37,7 +42,7 @@ async function showCommitInput(message?: string, filePaths?: string[]) {
 
     panel = window.createWebviewPanel(
       "svnCommitMessage",
-      "Commit Message",
+      localize("", "Commit Message"),
       {
         preserveFocus: false,
         viewColumn: ViewColumn.Active
@@ -93,13 +98,25 @@ async function showCommitInput(message?: string, filePaths?: string[]) {
     <form>
       <fieldset>
         <div class="float-right">
-          <a href="#" id="pickCommitMessage">Pick a previous commit message</a>
+          <a href="#" id="pickCommitMessage">${localize(
+            "messages.pick_prev_commit",
+            "Pick a previous commit message"
+          )}</a>
         </div>
         <label for="message">Commit message</label>
-        <textarea id="message" rows="3" placeholder="Message (press Ctrl+Enter to commit)"></textarea>
-        <button id="commit" class="button-primary">Commit</button>
+        <textarea id="message" rows="3" placeholder="${localize(
+          "messages.enter_commit",
+          "Message (press Ctrl+Enter to commit)"
+        )}"></textarea>
+        <button id="commit" class="button-primary">${localize(
+          "messages.commit",
+          "Commit"
+        )}</button>
         <div class="float-right">
-          <button id="cancel" class="button button-outline">Cancel</button>
+          <button id="cancel" class="button button-outline">${localize(
+            "messages.cancel",
+            "Cancel"
+          )}</button>
         </div>
       </fieldset>
     </form>
@@ -232,13 +249,17 @@ export async function inputCommitMessage(
   }
 
   if (message === "") {
+    const yes = localize("messages.yes", "Yes");
     const allowEmpty = await window.showWarningMessage(
-      "Do you really want to commit an empty message?",
+      localize(
+        "messages.check_empty_commit",
+        "Do you really want to commit an empty message?"
+      ),
       { modal: true },
-      "Yes"
+      yes
     );
 
-    if (allowEmpty === "Yes") {
+    if (allowEmpty === yes) {
       return "";
     } else {
       return undefined;

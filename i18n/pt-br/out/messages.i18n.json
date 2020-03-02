@@ -1,0 +1,10 @@
+{
+    "messages.no_change_to_commit": "There are no changes to commit.",
+    "messages.commit_message": "Commit Message",
+    "messages.pick_prev_commit": "Pick a previous commit message",
+    "messages.enter_commit": "Message (press Ctrl+Enter to commit)",
+    "messages.commit": "Commit",
+    "messages.cancel": "Cancel",
+    "messages.check_empty_commit": "Do you really want to commit an empty message?",
+    "messages.yes": "Yes"
+}

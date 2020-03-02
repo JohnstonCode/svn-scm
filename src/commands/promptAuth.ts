@@ -1,6 +1,9 @@
 import { window } from "vscode";
 import { IAuth } from "../common/types";
 import { Command } from "./command";
+import * as nls from "vscode-nls";
+
+const localize = nls.loadMessageBundle();
 
 export class PromptAuth extends Command {
   constructor() {
@@ -9,8 +12,14 @@ export class PromptAuth extends Command {
 
   public async execute(prevUsername?: string, prevPassword?: string) {
     const username = await window.showInputBox({
-      placeHolder: "Svn repository username",
-      prompt: "Please enter your username",
+      placeHolder: localize(
+        "promptAuth.username_placeholder",
+        "Svn repository username"
+      ),
+      prompt: localize(
+        "promptAuth.username_prompt",
+        "Please enter your username"
+      ),
       value: prevUsername
     });
 
@@ -19,8 +28,14 @@ export class PromptAuth extends Command {
     }
 
     const password = await window.showInputBox({
-      placeHolder: "Svn repository password",
-      prompt: "Please enter your password",
+      placeHolder: localize(
+        "promptAuth.password_placeholder",
+        "Svn repository password"
+      ),
+      prompt: localize(
+        "promptAuth.password_prompt",
+        "Please enter your password"
+      ),
       value: prevPassword,
       password: true
     });

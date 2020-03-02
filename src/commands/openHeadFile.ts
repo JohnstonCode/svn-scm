@@ -3,6 +3,9 @@ import { commands, Uri, window } from "vscode";
 import { Resource } from "../resource";
 import IncomingChangeNode from "../treeView/nodes/incomingChangeNode";
 import { Command } from "./command";
+import * as nls from "vscode-nls";
+
+const localize = nls.loadMessageBundle();
 
 export class OpenHeadFile extends Command {
   constructor() {
@@ -31,7 +34,11 @@ export class OpenHeadFile extends Command {
     const basename = path.basename(resource.resourceUri.fsPath);
     if (!HEAD) {
       window.showWarningMessage(
-        `"HEAD version of '${basename}' is not available."`
+        localize(
+          "openHeadFile.version_unavailable",
+          "HEAD version of '{0}' is not available.",
+          basename
+        )
       );
       return;
     }

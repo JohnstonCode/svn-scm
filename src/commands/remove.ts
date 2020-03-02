@@ -1,5 +1,8 @@
 import { SourceControlResourceState, window } from "vscode";
 import { Command } from "./command";
+import * as nls from "vscode-nls";
+
+const localize = nls.loadMessageBundle();
 
 export class Remove extends Command {
   constructor() {
@@ -14,18 +17,22 @@ export class Remove extends Command {
     }
 
     let keepLocal: boolean;
+    const yes = localize("remove.yes", "Yes");
     const answer = await window.showWarningMessage(
-      "Would you like to keep a local copy of the files?.",
+      localize(
+        "remove.keep_local_copy",
+        "Would you like to keep a local copy of the files?"
+      ),
       { modal: true },
-      "Yes",
-      "No"
+      yes,
+      localize("remove.no", "No")
     );
 
     if (!answer) {
       return;
     }
 
-    if (answer === "Yes") {
+    if (answer === yes) {
       keepLocal = true;
     } else {
       keepLocal = false;
@@ -44,7 +51,9 @@ export class Remove extends Command {
         await repository.removeFiles(paths, keepLocal);
       } catch (error) {
         console.log(error);
-        window.showErrorMessage("Unable to remove files");
+        window.showErrorMessage(
+          localize("remove.unable_to_remove", "Unable to remove files")
+        );
       }
     });
   }

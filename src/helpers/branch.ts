@@ -5,6 +5,9 @@ import NewFolderItem from "../quickPickItems/newFolderItem";
 import ParentFolderItem from "../quickPickItems/parentFolderItem";
 import { Repository } from "../repository";
 import { configuration } from "./configuration";
+import * as nls from "vscode-nls";
+
+const localize = nls.loadMessageBundle();
 
 export function getBranchName(folder: string): IBranchItem | undefined {
   const confs = [
@@ -42,7 +45,10 @@ export async function selectBranch(
   const promise = repository.repository.list(folder);
 
   window.withProgress(
-    { location: ProgressLocation.Window, title: "Checking remote branches" },
+    {
+      location: ProgressLocation.Window,
+      title: localize("branch.checking_remote", "Checking remote branches")
+    },
     () => promise
   );
 
@@ -84,7 +90,7 @@ export async function selectBranch(
 
   if (choice instanceof NewFolderItem) {
     const result = await window.showInputBox({
-      prompt: "Please provide a branch name",
+      prompt: localize("branch.name", "Please provide a branch name"),
       ignoreFocusOut: true
     });
 

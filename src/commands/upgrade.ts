@@ -3,6 +3,9 @@ import { configuration } from "../helpers/configuration";
 import { SourceControlManager } from "../source_control_manager";
 import { fixPathSeparator } from "../util";
 import { Command } from "./command";
+import * as nls from "vscode-nls";
+
+const localize = nls.loadMessageBundle();
 
 export class Upgrade extends Command {
   constructor() {
@@ -20,11 +23,17 @@ export class Upgrade extends Command {
 
     folderPath = fixPathSeparator(folderPath);
 
-    const yes = "Yes";
-    const no = "No";
-    const neverShowAgain = "Don't Show Again";
+    const yes = localize("upgrade.yes", "Yes");
+    const no = localize("upgrade.no", "No");
+    const neverShowAgain = localize(
+      "upgrade.dont_show_again",
+      "Don't Show Again"
+    );
     const choice = await window.showWarningMessage(
-      "You want upgrade the working copy (svn upgrade)?",
+      localize(
+        "upgrade.upgrade_working_copy",
+        "You want upgrade the working copy (svn upgrade)?"
+      ),
       yes,
       no,
       neverShowAgain
@@ -40,11 +49,21 @@ export class Upgrade extends Command {
       );
 
       if (upgraded) {
-        window.showInformationMessage(`Working copy "${folderPath}" upgraded`);
+        window.showInformationMessage(
+          localize(
+            "upgrade.working_copy_upgraded",
+            "Working copy '{0}' upgraded",
+            folderPath
+          )
+        );
         sourceControlManager.tryOpenRepository(folderPath);
       } else {
         window.showErrorMessage(
-          `Error on upgrading working copy "${folderPath}". See log for more detail`
+          localize(
+            "upgrade.upgrade_error",
+            "Error on upgrading working copy '{0}'. See log for more detail",
+            folderPath
+          )
         );
       }
     } else if (choice === neverShowAgain) {

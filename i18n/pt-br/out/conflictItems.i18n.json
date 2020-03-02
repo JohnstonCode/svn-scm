@@ -1,0 +1,14 @@
+{
+    "conflictItems.base": "base",
+    "conflictItems.base.description": "Choose the file that was the (unmodified) BASE revision before you tried to integrate changes",
+    "conflictItems.working": "working",
+    "conflictItems.working.description": "Assuming that you've manually handled the conflict resolution, choose the version of the file as it currently stands in your working copy.",
+    "conflictItems.mine_full": "mine-full",
+    "conflictItems.mine_full.description": "Preserve all local modifications and discarding all changes fetched",
+    "conflictItems.theirs_full": "theirs-full",
+    "conflictItems.theirs_full.description": "Discard all local modifications and integrating all changes fetched",
+    "conflictItems.mine_conflict": "mine-conflict",
+    "conflictItems.mine_conflict.description": "Resolve conflicted files by preferring local modifications over the changes fetched",
+    "conflictItems.theirs_conflict": "theirs-conflict",
+    "conflictItems.theirs_conflict.description": "Resolve conflicted files by preferring the changes fetched from the server over local modifications"
+}

@@ -10,6 +10,9 @@ import { SourceControlManager } from "../source_control_manager";
 import { ISvnPathChange, Status } from "../common/types";
 import { openDiff, getIconObject, openFileRemote } from "./common";
 import { dispose } from "../util";
+import * as nls from 'vscode-nls';
+
+const localize = nls.loadMessageBundle();
 
 export class BranchChangesProvider
   implements TreeDataProvider<ISvnPathChange>, Disposable {
@@ -54,7 +57,7 @@ export class BranchChangesProvider
       label: element.newPath.toString(),
       command: {
         command: "svn.branchchanges.openDiff",
-        title: "Open diff",
+        title: localize("bcp.open_diff", "Open diff"),
         arguments: [element]
       },
       iconPath,

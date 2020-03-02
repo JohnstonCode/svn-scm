@@ -15,6 +15,9 @@ import SvnError from "./svnError";
 import { Repository } from "./svnRepository";
 import { dispose, IDisposable, toDisposable } from "./util";
 import { iconv } from "./vscodeModules";
+import * as nls from 'vscode-nls';
+
+const localize = nls.loadMessageBundle();
 
 export const svnErrorCodes: { [key: string]: string } = {
   AuthorizationFailed: "E170001",
@@ -49,7 +52,7 @@ export function cpErrorHandler(
     if (/ENOENT/.test(err.message)) {
       err = new SvnError({
         error: err,
-        message: "Failed to execute svn (ENOENT)",
+        message: localize("svn.failed_to_execute_svn_enoent", "Failed to execute svn (ENOENT)"),
         svnErrorCode: "NotASvnRepository"
       });
     }
@@ -206,7 +209,7 @@ export class Svn {
     if (exitCode) {
       return Promise.reject<IExecutionResult>(
         new SvnError({
-          message: "Failed to execute svn",
+          message: localize("svn.failed_to_execute", "Failed to execute svn"),
           stdout: decodedStdout,
           stderr,
           stderrFormated: stderr.replace(/^svn: E\d+: +/gm, ""),

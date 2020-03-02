@@ -2,6 +2,9 @@ import { window } from "vscode";
 import { configuration } from "../helpers/configuration";
 import IncomingChangeNode from "../treeView/nodes/incomingChangeNode";
 import { Command } from "./command";
+import * as nls from 'vscode-nls';
+
+const localize = nls.loadMessageBundle();
 
 export class PullIncommingChange extends Command {
   constructor() {
@@ -28,7 +31,7 @@ export class PullIncommingChange extends Command {
         }
       } catch (error) {
         console.error(error);
-        window.showErrorMessage("Unable to update");
+        window.showErrorMessage(localize("pullIncomingChange.unable_to_update", "Unable to update"));
       }
 
       return;

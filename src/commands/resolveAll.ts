@@ -2,6 +2,9 @@ import { window } from "vscode";
 import { getConflictPickOptions } from "../conflictItems";
 import { Repository } from "../repository";
 import { Command } from "./command";
+import * as nls from 'vscode-nls';
+
+const localize = nls.loadMessageBundle();
 
 export class ResolveAll extends Command {
   constructor() {
@@ -16,7 +19,7 @@ export class ResolveAll extends Command {
     }
 
     for (const conflict of conflicts) {
-      const placeHolder = `Select conflict option for ${conflict.resourceUri.path}`;
+      const placeHolder = localize("resolveAll.select_option", "Select conflict option for {0}", conflict.resourceUri.path);
       const picks = getConflictPickOptions();
 
       const choice = await window.showQuickPick(picks, { placeHolder });

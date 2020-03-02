@@ -4,6 +4,9 @@ import { SvnUriAction } from "../common/types";
 import { Repository } from "../repository";
 import { toSvnUri } from "../uri";
 import { Command } from "./command";
+import * as nls from 'vscode-nls';
+
+const localize = nls.loadMessageBundle();
 
 export class Log extends Command {
   constructor() {
@@ -23,7 +26,7 @@ export class Log extends Command {
       await commands.executeCommand<void>("vscode.open", uri);
     } catch (error) {
       console.error(error);
-      window.showErrorMessage("Unable to log");
+      window.showErrorMessage(localize("log.unable_to_log", "Unable to log"));
     }
   }
 }

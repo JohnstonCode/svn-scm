@@ -4,6 +4,9 @@ import { window, Uri, commands } from "vscode";
 import { Repository } from "../repository";
 import { toSvnUri } from "../uri";
 import { SvnUriAction } from "../common/types";
+import * as nls from "vscode-nls";
+
+const localize = nls.loadMessageBundle();
 
 export class SearchLogByRevision extends Command {
   constructor() {
@@ -11,14 +14,18 @@ export class SearchLogByRevision extends Command {
   }
 
   public async execute(repository: Repository) {
-    const input = await window.showInputBox({ prompt: "Revision?" });
+    const input = await window.showInputBox({
+      prompt: localize("searchRevision.revision", "Revision?")
+    });
     if (!input) {
       return;
     }
 
     const revision = parseInt(input, 10);
     if (!revision || !/^\+?(0|[1-9]\d*)$/.test(input)) {
-      window.showErrorMessage("Invalid revision");
+      window.showErrorMessage(
+        localize("searchRevision.invalid_revision", "Invalid revision")
+      );
       return;
     }
 
@@ -35,7 +42,9 @@ export class SearchLogByRevision extends Command {
       await commands.executeCommand<void>("vscode.open", uri);
     } catch (error) {
       console.error(error);
-      window.showErrorMessage("Unable to log");
+      window.showErrorMessage(
+        localize("searchRevision.unable_to_log", "Unable to log")
+      );
     }
   }
 }

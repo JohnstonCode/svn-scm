@@ -33,6 +33,9 @@ import {
   normalizePath
 } from "./util";
 import { matchAll } from "./util/globMatch";
+import * as nls from "vscode-nls";
+
+const localize = nls.loadMessageBundle();
 
 export class SourceControlManager implements IDisposable {
   private _onDidOpenRepository = new EventEmitter<Repository>();
@@ -470,7 +473,7 @@ export class SourceControlManager implements IDisposable {
         repository
       };
     });
-    const placeHolder = "Choose a repository";
+    const placeHolder = localize("scm.choose_repo", "Choose a repository");
     const pick = await window.showQuickPick(picks, { placeHolder });
 
     return pick && pick.repository;

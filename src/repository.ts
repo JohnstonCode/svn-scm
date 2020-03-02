@@ -52,6 +52,9 @@ import {
 import { match, matchAll } from "./util/globMatch";
 import { RepositoryFilesWatcher } from "./watchers/repositoryFilesWatcher";
 import { keytar } from "./vscodeModules";
+import * as nls from "vscode-nls";
+
+const localize = nls.loadMessageBundle();
 
 function shouldShowProgress(operation: Operation): boolean {
   switch (operation) {
@@ -205,8 +208,10 @@ export class Repository implements IRemoteRepository {
     );
 
     this.sourceControl.count = 0;
-    this.sourceControl.inputBox.placeholder =
-      "Message (press Ctrl+Enter to commit)";
+    this.sourceControl.inputBox.placeholder = localize(
+      "repository.inputbox_placeholder",
+      "Message (press Ctrl+Enter to commit)"
+    );
     this.sourceControl.acceptInputCommand = {
       command: "svn.commitWithMessage",
       title: "commit",
@@ -225,15 +230,15 @@ export class Repository implements IRemoteRepository {
 
     this.changes = this.sourceControl.createResourceGroup(
       "changes",
-      "Changes"
+      localize("repository.changes", "Changes")
     ) as ISvnResourceGroup;
     this.conflicts = this.sourceControl.createResourceGroup(
       "conflicts",
-      "conflicts"
+      localize("repository.conflicts", "Conflicts")
     ) as ISvnResourceGroup;
     this.unversioned = this.sourceControl.createResourceGroup(
       "unversioned",
-      "Unversioned"
+      localize("repository.unversioned", "Unversioned")
     ) as ISvnResourceGroup;
 
     this.changes.hideWhenEmpty = true;
@@ -615,7 +620,7 @@ export class Repository implements IRemoteRepository {
         // Prefix 'changelist-' to prevent double id with 'change' or 'external'
         group = this.sourceControl.createResourceGroup(
           `changelist-${changelist}`,
-          `Changelist "${changelist}"`
+          localize("repository.changelist", "Changelist {0}", changelist)
         ) as ISvnResourceGroup;
         group.hideWhenEmpty = true;
         this.disposables.push(group);
@@ -636,7 +641,7 @@ export class Repository implements IRemoteRepository {
 
       this.unversioned = this.sourceControl.createResourceGroup(
         "unversioned",
-        "Unversioned"
+        localize("repository.unversioned", "Unversioned")
       ) as ISvnResourceGroup;
 
       this.unversioned.hideWhenEmpty = true;
@@ -666,7 +671,7 @@ export class Repository implements IRemoteRepository {
 
       this.remoteChanges = this.sourceControl.createResourceGroup(
         "remotechanges",
-        "Remote Changes"
+        localize("repository.remote_changes", "Remote Changes")
       ) as ISvnResourceGroup;
 
       this.remoteChanges.repository = this;
@@ -778,7 +783,10 @@ export class Repository implements IRemoteRepository {
 
   public async newBranch(
     name: string,
-    commitMessage: string = "Created new branch"
+    commitMessage: string = localize(
+      "repository.create_new_branch",
+      "Created new branch"
+    )
   ) {
     return this.run(Operation.NewBranch, async () => {
       await this.repository.newBranch(name, commitMessage);

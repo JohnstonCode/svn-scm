@@ -1,6 +1,9 @@
 import { Repository } from "../repository";
 import { Command } from "./command";
 import { window } from "vscode";
+import * as nls from "vscode-nls";
+
+const localize = nls.loadMessageBundle();
 
 export class RemoveUnversioned extends Command {
   constructor() {
@@ -8,13 +11,17 @@ export class RemoveUnversioned extends Command {
   }
 
   public async execute(repository: Repository) {
+    const yes = localize("removeUnversioned.yes", "Yes");
     const answer = await window.showWarningMessage(
-      "Are you sure? This will remove all unversioned files except for ignored.",
+      localize(
+        "removeUnversioned.remove_all",
+        "Are you sure? This will remove all unversioned files except for ignored."
+      ),
       { modal: true },
-      "Yes",
-      "No"
+      yes,
+      localize("removeUnversioned.no", "No")
     );
-    if (answer !== "Yes") {
+    if (answer !== yes) {
       return;
     }
     await repository.removeUnversioned();

@@ -3,6 +3,9 @@ import { window, Uri, commands, ProgressLocation } from "vscode";
 import { Repository } from "../repository";
 import * as cp from "child_process";
 import { tempSvnFs } from "../temp_svn_fs";
+import * as nls from 'vscode-nls';
+
+const localize = nls.loadMessageBundle();
 
 export class SearchLogByText extends Command {
   constructor() {
@@ -10,7 +13,7 @@ export class SearchLogByText extends Command {
   }
 
   public async execute(repository: Repository) {
-    const input = await window.showInputBox({ prompt: "Search query" });
+    const input = await window.showInputBox({ prompt: localize("searchText.search_query", "Search query") });
     if (!input) {
       return;
     }
@@ -42,7 +45,7 @@ export class SearchLogByText extends Command {
       {
         cancellable: true,
         location: ProgressLocation.Notification,
-        title: "Searching Log"
+        title: localize("searchText.searching", "Searching Log")
       },
       (_progress, token) => {
         token.onCancellationRequested(() => {

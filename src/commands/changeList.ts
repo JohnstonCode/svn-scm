@@ -4,6 +4,9 @@ import { SourceControlManager } from "../source_control_manager";
 import { Resource } from "../resource";
 import { normalizePath } from "../util";
 import { Command } from "./command";
+import * as nls from "vscode-nls";
+
+const localize = nls.loadMessageBundle();
 
 export class ChangeList extends Command {
   constructor() {
@@ -37,7 +40,10 @@ export class ChangeList extends Command {
 
     if (repositories.length === 0) {
       window.showErrorMessage(
-        "Files are not under version control and cannot be added to a change list"
+        localize(
+          "changeList.no_version_control",
+          "Files are not under version control and cannot be added to a change list"
+        )
       );
       return;
     }
@@ -46,14 +52,20 @@ export class ChangeList extends Command {
 
     if (uniqueRepositories.length !== 1) {
       window.showErrorMessage(
-        "Unable to add files from different repositories to change list"
+        localize(
+          "changeList.diff_repo_error",
+          "Unable to add files from different repositories to change list"
+        )
       );
       return;
     }
 
     if (repositories.length !== uris.length) {
       window.showErrorMessage(
-        "Some Files are not under version control and cannot be added to a change list"
+        localize(
+          "changeList.some_files_untracked",
+          "Some Files are not under version control and cannot be added to a change list"
+        )
       );
       return;
     }
@@ -96,21 +108,33 @@ export class ChangeList extends Command {
       } catch (error) {
         console.log(error);
         window.showErrorMessage(
-          `Unable to remove file "${paths.join(",")}" from changelist`
+          localize(
+            "changeList.unable_to_remove_file",
+            'Unable to remove file "{0}" from changelist',
+            paths.join(",")
+          )
         );
       }
     } else {
       try {
         await repository.addChangelist(paths, changelistName);
         window.showInformationMessage(
-          `Added files "${paths.join(",")}" to changelist "${changelistName}"`
+          localize(
+            "changeList.added_files",
+            'Added files "{0}" to changelist "{1}"',
+            paths.join(","),
+            changelistName
+          )
         );
       } catch (error) {
         console.log(error);
         window.showErrorMessage(
-          `Unable to add file "${paths.join(
-            ","
-          )}" to changelist "${changelistName}"`
+          localize(
+            "changeList.unable_to_add_file",
+            'Unable to add file "{0}" to changelist {1}',
+            paths.join(","),
+            changelistName
+          )
         );
       }
     }

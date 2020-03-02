@@ -1,0 +1,9 @@
+{
+    "repository.inputbox_placeholder": "Message (press Ctrl+Enter to commit)",
+    "repository.changes": "changes",
+    "repository.conflicts": "Conflicts",
+    "repository.unversioned": "Unversioned",
+    "repository.changelist": "Changelist {0}",
+    "repository.remote_changes": "Remote Changes",
+    "repository.create_new_branch": "Created new branch"
+}

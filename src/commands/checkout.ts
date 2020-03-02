@@ -7,6 +7,9 @@ import { configuration } from "../helpers/configuration";
 import { SourceControlManager } from "../source_control_manager";
 import { svnErrorCodes } from "../svn";
 import { Command } from "./command";
+import * as nls from "vscode-nls";
+
+const localize = nls.loadMessageBundle();
 
 export class Checkout extends Command {
   constructor() {
@@ -16,7 +19,7 @@ export class Checkout extends Command {
   public async execute(url?: string) {
     if (!url) {
       url = await window.showInputBox({
-        prompt: "Repository URL",
+        prompt: localize("checkout.repo_url", "Repository URL"),
         ignoreFocusOut: true
       });
     }
@@ -37,7 +40,10 @@ export class Checkout extends Command {
       canSelectFolders: true,
       canSelectMany: false,
       defaultUri: Uri.file(defaultCheckoutDirectory),
-      openLabel: "Select Repository Location"
+      openLabel: localize(
+        "checkout.select_repo_location",
+        "Select Repository Location"
+      )
     });
 
     if (!uris || uris.length === 0) {
@@ -57,7 +63,7 @@ export class Checkout extends Command {
     }
 
     folderName = await window.showInputBox({
-      prompt: "Folder name",
+      prompt: localize("checkout.folder_name", "Folder name"),
       value: folderName,
       ignoreFocusOut: true
     });
@@ -76,7 +82,11 @@ export class Checkout extends Command {
 
     const progressOptions = {
       location,
-      title: `Checkout svn repository '${url}'...`,
+      title: localize(
+        "checkout.checkout_repo",
+        "Checkout svn repository '{0}'...",
+        url
+      ),
       cancellable: true
     };
 
@@ -116,17 +126,25 @@ export class Checkout extends Command {
     }
 
     const choices = [];
-    let message = "Would you like to open the checked out repository?";
-    const open = "Open Repository";
+    let message = localize(
+      "checkout.open_checked_out",
+      "Would you like to open the checked out repository?"
+    );
+    const open = localize("checkout.open_repo", "Open Repository");
     choices.push(open);
 
-    const addToWorkspace = "Add to Workspace";
+    const addToWorkspace = localize(
+      "checkout.add_to_workspace",
+      "Add to Workspace"
+    );
     if (
       workspace.workspaceFolders &&
       (workspace as any).updateWorkspaceFolders // For VSCode >= 1.21
     ) {
-      message =
-        "Would you like to open the checked out repository, or add it to the current workspace?";
+      message = localize(
+        "checkout.open_or_checkout",
+        "Would you like to open the checked out repository, or add it to the current workspace?"
+      );
       choices.push(addToWorkspace);
     }
 

@@ -1,0 +1,8 @@
+{
+    "changeList.no_version_control": "Files are not under version control and cannot be added to a change list",
+    "changeList.diff_repo_error": "Unable to add files from different repositories to change list",
+    "changeList.some_files_untracked": "Some Files are not under version control and cannot be added to a change list",
+    "changeList.unable_to_remove_file": "Unable to remove file \"{0}\" from changelist",
+    "changeList.added_files": "Added files \"{0}\" to changelist \"{1}\"",
+    "changeList.unable_to_add_file": "Unable to add file \"{0}\" to changelist \"{1}\""
+}

@@ -1,0 +1,8 @@
+{
+    "upgrade.yes": "Yes",
+    "upgrade.no": "No",
+    "upgrade.dont_show_again": "Don't Show Again",
+    "upgrade.upgrade_working_copy": "You want upgrade the working copy (svn upgrade)?",
+    "upgrade.working_copy_upgraded": "Working copy '{0}' upgraded",
+    "upgrade.upgrade_error": "Error on upgrading working copy '{0}'. See log for more detail"
+}

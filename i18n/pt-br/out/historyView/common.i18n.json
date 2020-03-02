@@ -1,0 +1,8 @@
+{
+    "common.clipboard_supported": "Clipboard is supported in VS Code 1.30 and newer",
+    "common.log_entries_dont_exist": "Log entries above do not exist in working copy",
+    "common.no_working_copy_path": "No working copy for this path",
+    "common.not_avaialbe_from_copy": "Not available from this working copy: {0}",
+    "common.not_a_file": "This target is not a file",
+    "common.failed_open_path": "Failed to open path"
+}

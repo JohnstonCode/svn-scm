@@ -1,0 +1,6 @@
+{
+    "resource.open_diff_head": "Open Diff With Head",
+    "resource.open_diff_base": "Open Diff With Base",
+    "resource.renamed_from": "Renamed from {0}",
+    "resource.property": "Property {0}"
+}

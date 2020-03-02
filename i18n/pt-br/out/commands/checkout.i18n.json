@@ -1,0 +1,10 @@
+{
+    "checkout.repo_url": "Repository URL",
+    "checkout.select_repo_location": "Select Repository Location",
+    "checkout.folder_name": "Folder name",
+    "checkout.checkout_repo": "Checkout svn repository '{0}'...",
+    "checkout.open_checked_out": "Would you like to open the checked out repository?",
+    "checkout.open_repo": "Open Repository",
+    "checkout.add_to_workspace": "Add to Workspace",
+    "checkout.open_or_checkout": "Would you like to open the checked out repository, or add it to the current workspace?"
+}

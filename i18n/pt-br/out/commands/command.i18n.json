@@ -1,0 +1,5 @@
+{
+    "command.unable_to_patch": "Unable to patch",
+    "command.file_ignored": "File(s) is now being ignored",
+    "command.unable_to_ignore": "Unable to set property ignore"
+}

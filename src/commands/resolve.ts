@@ -1,6 +1,9 @@
 import { SourceControlResourceState, window } from "vscode";
 import { getConflictPickOptions } from "../conflictItems";
 import { Command } from "./command";
+import * as nls from "vscode-nls";
+
+const localize = nls.loadMessageBundle();
 
 export class Resolve extends Command {
   constructor() {
@@ -16,7 +19,7 @@ export class Resolve extends Command {
     const picks = getConflictPickOptions();
 
     const choice = await window.showQuickPick(picks, {
-      placeHolder: "Select conflict option"
+      placeHolder: localize("resolve.select_option", "Select conflict option")
     });
 
     if (!choice) {

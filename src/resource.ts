@@ -9,6 +9,9 @@ import {
 import { PropStatus, Status } from "./common/types";
 import { memoize } from "./decorators";
 import { configuration } from "./helpers/configuration";
+import * as nls from "vscode-nls";
+
+const localize = nls.loadMessageBundle();
 
 const iconsRootPath = path.join(__dirname, "..", "icons");
 
@@ -106,14 +109,14 @@ export class Resource implements SourceControlResourceState {
     if (this.remote || diffHead) {
       return {
         command: "svn.openResourceHead",
-        title: "Open Diff With Head",
+        title: localize("resource.open_diff_head", "Open Diff With Head"),
         arguments: [this]
       };
     }
 
     return {
       command: "svn.openResourceBase",
-      title: "Open Diff With Base",
+      title: localize("resource.open_diff_base", "Open Diff With Base"),
       arguments: [this]
     };
   }
@@ -134,7 +137,11 @@ export class Resource implements SourceControlResourceState {
 
   private get tooltip(): string {
     if (this.type === Status.ADDED && this.renameResourceUri) {
-      return "Renamed from " + this.renameResourceUri.fsPath;
+      return localize(
+        "resource.renamed_from",
+        "Renamed from {0}",
+        this.renameResourceUri.fsPath
+      );
     }
 
     if (
@@ -142,8 +149,10 @@ export class Resource implements SourceControlResourceState {
       this.props &&
       this.props !== PropStatus.NONE
     ) {
-      return (
-        "Property " + this.props.charAt(0).toUpperCase() + this.props.slice(1)
+      return localize(
+        "resource.property",
+        "Property {0}",
+        this.props.charAt(0).toUpperCase() + this.props.slice(1)
       );
     }
 

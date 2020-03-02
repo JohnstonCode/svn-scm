@@ -27,6 +27,9 @@ import { Repository } from "../repository";
 import { Resource } from "../resource";
 import IncomingChangeNode from "../treeView/nodes/incomingChangeNode";
 import { fromSvnUri, toSvnUri } from "../uri";
+import * as nls from "vscode-nls";
+
+const localize = nls.loadMessageBundle();
 
 export abstract class Command implements Disposable {
   private _disposable?: Disposable;
@@ -425,7 +428,9 @@ export abstract class Command implements Disposable {
       });
     } catch (error) {
       console.error(error);
-      window.showErrorMessage("Unable to patch");
+      window.showErrorMessage(
+        localize("command.unable_to_patch", "Unable to patch")
+      );
     }
   }
 
@@ -473,11 +478,15 @@ export abstract class Command implements Disposable {
         const ignored = await inputIgnoreList(repository, resources);
 
         if (ignored) {
-          window.showInformationMessage(`File(s) is now being ignored`);
+          window.showInformationMessage(
+            localize("command.file_ignored", "File(s) is now being ignored")
+          );
         }
       } catch (error) {
         console.log(error);
-        window.showErrorMessage("Unable to set property ignore");
+        window.showErrorMessage(
+          localize("command.unable_to_ignore", "Unable to set property ignore")
+        );
       }
     });
   }

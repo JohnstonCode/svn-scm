@@ -1,6 +1,9 @@
 import { SourceControlResourceState, window } from "vscode";
 import { checkAndPromptDepth, confirmRevert } from "../input/revert";
 import { Command } from "./command";
+import * as nls from "vscode-nls";
+
+const localize = nls.loadMessageBundle();
 
 export class Revert extends Command {
   constructor() {
@@ -32,7 +35,9 @@ export class Revert extends Command {
         await repository.revert(paths, depth);
       } catch (error) {
         console.log(error);
-        window.showErrorMessage("Unable to revert");
+        window.showErrorMessage(
+          localize("revert.unable_to_revert", "Unable to revert")
+        );
       }
     });
   }

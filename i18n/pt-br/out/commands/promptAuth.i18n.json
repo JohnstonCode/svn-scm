@@ -1,0 +1,6 @@
+{
+    "promptAuth.username_placeholder": "Svn repository username",
+    "promptAuth.username_prompt": "Please enter your username",
+    "promptAuth.password_placeholder": "Svn repository password",
+    "promptAuth.password_prompt": "Please enter your password"
+}

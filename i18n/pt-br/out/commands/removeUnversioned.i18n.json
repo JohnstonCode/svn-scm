@@ -1,0 +1,5 @@
+{
+    "removeUnversioned.remove_all": "Are you sure? This will remove all unversioned files except for ignored.",
+    "removeUnversioned.yes": "Yes",
+    "removeUnversioned.no": "No"
+}

@@ -16,6 +16,9 @@ import { configuration } from "../helpers/configuration";
 import { IRemoteRepository } from "../remoteRepository";
 import { SvnRI } from "../svnRI";
 import { tempSvnFs } from "../temp_svn_fs";
+import * as nls from 'vscode-nls';
+
+const localize = nls.loadMessageBundle();
 
 dayjs.extend(relativeTime);
 
@@ -80,7 +83,7 @@ export function getIconObject(iconName: string): { light: Uri; dark: Uri } {
 export async function copyCommitToClipboard(what: string, item: ILogTreeItem) {
   const clipboard = (env as any).clipboard;
   if (clipboard === undefined) {
-    window.showErrorMessage("Clipboard is supported in VS Code 1.30 and newer");
+    window.showErrorMessage(localize("common.clipboard_supported", "Clipboard is supported in VS Code 1.30 and newer"));
     return;
   }
   if (item.kind === LogTreeItemKind.Commit) {
@@ -126,7 +129,7 @@ export function insertBaseMarker(
       i++;
     }
     const titem = new TreeItem("BASE");
-    titem.tooltip = "Log entries above do not exist in working copy";
+    titem.tooltip = localize("common.log_entries_dont_exist", "Log entries above do not exist in working copy");
     out.splice(i, 0, { kind: LogTreeItemKind.TItem, data: titem });
   }
   return undefined;
@@ -138,7 +141,7 @@ export async function checkIfFile(
 ): Promise<boolean | undefined> {
   if (e.localFullPath === undefined) {
     if (local) {
-      window.showErrorMessage("No working copy for this path");
+      window.showErrorMessage(localize("common.no_working_copy_path", "No working copy for this path"));
     }
     return undefined;
   }
@@ -147,12 +150,12 @@ export async function checkIfFile(
     stat = await lstat(e.localFullPath.fsPath);
   } catch {
     window.showWarningMessage(
-      "Not available from this working copy: " + e.localFullPath
+      localize("common.not_avaialbe_from_copy", "Not available from this working copy: {0}", e.localFullPath.toString())
     );
     return false;
   }
   if (!stat.isFile()) {
-    window.showErrorMessage("This target is not a file");
+    window.showErrorMessage(localize("common.not_a_file", "This target is not a file"));
     return false;
   }
   return true;
@@ -272,7 +275,7 @@ async function downloadFile(
   try {
     out = await repo.show(arg, revision);
   } catch (e) {
-    window.showErrorMessage("Failed to open path");
+    window.showErrorMessage(localize("common.failed_open_path", "Failed to open path"));
     throw e;
   }
   return tempSvnFs.createTempSvnRevisionFile(arg, revision, out);
@@ -303,7 +306,7 @@ export async function openFileRemote(
   try {
     out = await repo.show(arg, against);
   } catch {
-    window.showErrorMessage("Failed to open path");
+    window.showErrorMessage(localize("common.failed_open_path", "Failed to open path"));
     return;
   }
   const localUri = await tempSvnFs.createTempSvnRevisionFile(arg, against, out);

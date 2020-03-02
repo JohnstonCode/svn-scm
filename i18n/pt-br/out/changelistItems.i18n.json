@@ -1,0 +1,10 @@
+{
+    "changelistItems.select_changelist_new": "Select an existing changelist or create a new",
+    "changelistItems.changelist_name": "Changelist name",
+    "changelistItems.changelist_enter_name": "Please enter a changelist name",
+    "changelistItems.no_changes_commit": "There are no changes to commit.",
+    "changelistItems.select_changelist_commit": "Select a changelist to commit",
+    "changelistItems.select_files_commit": "Select files to commit",
+    "changelistItems.no_changelists_pick": "No changelists to pick from",
+    "changelistItems.select_changelist": "Select a changelist"
+}

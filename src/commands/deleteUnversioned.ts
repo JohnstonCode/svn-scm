@@ -2,6 +2,9 @@ import { SourceControlResourceState, window } from "vscode";
 import { exists, lstat, unlink } from "../fs";
 import { deleteDirectory } from "../util";
 import { Command } from "./command";
+import * as nls from "vscode-nls";
+
+const localize = nls.loadMessageBundle();
 
 export class DeleteUnversioned extends Command {
   constructor() {
@@ -14,13 +17,17 @@ export class DeleteUnversioned extends Command {
       return;
     }
     const uris = selection.map(resource => resource.resourceUri);
+    const yes = localize("deleteUnversioned.yes", "Yes");
     const answer = await window.showWarningMessage(
-      "Would you like to delete selected files?",
+      localize(
+        "deleteUnversioned.delete_selected",
+        "Would you like to delete selected files?"
+      ),
       { modal: true },
-      "Yes",
-      "No"
+      yes,
+      localize("deleteUnversioned.no", "No")
     );
-    if (answer === "Yes") {
+    if (answer === yes) {
       for (const uri of uris) {
         const fsPath = uri.fsPath;
 
