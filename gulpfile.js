@@ -16,7 +16,8 @@ const outDest = 'out';
 
 const languages = [
     { folderName: 'zh-CN', id: 'zh-CN' },
-    { folderNasme: 'pt-br', id: 'pt-br' }
+    { folderName: 'pt-br', id: 'pt-br' },
+    { folderName: 'ru', id: 'ru' }
 ];
 
 const cleanTask = function() {
