@@ -941,16 +941,25 @@ export class Repository implements IRemoteRepository {
     if (this.lastPromptAuth) {
       await this.lastPromptAuth;
     }
-    return keytar.findCredentials(this.getCredentialServiceName());
+
+    try {
+      return keytar.findCredentials(this.getCredentialServiceName());
+    } catch (error) {
+      return [];
+    }
   }
 
   public async saveAuth(): Promise<void> {
     if (this.canSaveAuth && this.username && this.password) {
-      await keytar.setPassword(
-        this.getCredentialServiceName(),
-        this.username,
-        this.password
-      );
+      try {
+        await keytar.setPassword(
+          this.getCredentialServiceName(),
+          this.username,
+          this.password
+        );
+      } catch (error) {
+        console.log(error);
+      }
       this.canSaveAuth = false;
     }
   }
