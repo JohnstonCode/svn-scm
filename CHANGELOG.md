@@ -1,3 +1,10 @@
+## [2.10.5](https://github.com/JohnstonCode/svn-scm/compare/v2.10.4...v2.10.5) (2020-03-03)
+
+
+### Bug Fixes
+
+* Fixed no ask for username and password (close [#849](https://github.com/JohnstonCode/svn-scm/issues/849)) ([#850](https://github.com/JohnstonCode/svn-scm/issues/850)) ([856e736](https://github.com/JohnstonCode/svn-scm/commit/856e7364264ef3335d3dca5e777a9fd1d73d3cdd))
+
 ## [2.10.4](https://github.com/JohnstonCode/svn-scm/compare/v2.10.3...v2.10.4) (2020-02-28)
 
 
