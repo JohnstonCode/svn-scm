@@ -5,7 +5,7 @@
     "version": "2.10.5",
     "publisher": "johnstoncode",
     "engines": {
-        "vscode": "^1.42.0"
+        "vscode": "^1.43.0"
     },
     "private": true,
     "enableProposedApi": false,
