@@ -1,3 +1,10 @@
+## [2.10.6](https://github.com/JohnstonCode/svn-scm/compare/v2.10.5...v2.10.6) (2020-03-12)
+
+
+### Bug Fixes
+
+* Capitalised conflicts change group name ([#857](https://github.com/JohnstonCode/svn-scm/issues/857)) ([03637f5](https://github.com/JohnstonCode/svn-scm/commit/03637f558df9f6111d58300169e2ed79d00a1af2))
+
 ## [2.10.5](https://github.com/JohnstonCode/svn-scm/compare/v2.10.4...v2.10.5) (2020-03-03)
 
 
