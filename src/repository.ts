@@ -229,7 +229,7 @@ export class Repository implements IRemoteRepository {
     ) as ISvnResourceGroup;
     this.conflicts = this.sourceControl.createResourceGroup(
       "conflicts",
-      "conflicts"
+      "Conflicts"
     ) as ISvnResourceGroup;
     this.unversioned = this.sourceControl.createResourceGroup(
       "unversioned",
