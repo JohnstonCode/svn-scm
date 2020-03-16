@@ -69,7 +69,7 @@
         "@types/vscode": "1.43.0",
         "@types/xml2js": "^0.4.4",
         "@typescript-eslint/eslint-plugin": "^2.23.0",
-        "@typescript-eslint/parser": "^2.23.0",
+        "@typescript-eslint/parser": "^2.24.0",
         "decache": "^4.5.1",
         "eslint": "^6.5.1",
         "eslint-config-prettier": "^6.10.0",
