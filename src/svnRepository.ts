@@ -589,10 +589,7 @@ export class Repository {
 
     this.resetInfoCache();
 
-    const message = result.stdout
-      .trim()
-      .split(/\r?\n/)
-      .pop();
+    const message = result.stdout.trim().split(/\r?\n/).pop();
 
     if (message) {
       return message;
@@ -607,10 +604,7 @@ export class Repository {
 
     this.resetInfoCache();
 
-    const message = result.stdout
-      .trim()
-      .split(/\r?\n/)
-      .pop();
+    const message = result.stdout.trim().split(/\r?\n/).pop();
 
     if (message) {
       return message;
