@@ -101,9 +101,7 @@ export class SvnFinder {
           ? e(new Error("Not found"))
           : c({
               path,
-              version: Buffer.concat(buffers)
-                .toString("utf8")
-                .trim()
+              version: Buffer.concat(buffers).toString("utf8").trim()
             })
       );
     });

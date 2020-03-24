@@ -33,7 +33,7 @@ function decorate(
 function _memoize(fn: Function, key: string): Function {
   const memoizeKey = `$memoize$${key}`;
 
-  return function(this: any, ...args: any[]) {
+  return function (this: any, ...args: any[]) {
     if (!this.hasOwnProperty(memoizeKey)) {
       Object.defineProperty(this, memoizeKey, {
         configurable: false,
@@ -53,7 +53,7 @@ function _throttle<T>(fn: Function, key: string): Function {
   const currentKey = `$throttle$current$${key}`;
   const nextKey = `$throttle$next$${key}`;
 
-  const trigger = function(this: any, ...args: any[]) {
+  const trigger = function (this: any, ...args: any[]) {
     if (this[nextKey]) {
       return this[nextKey];
     }
@@ -83,7 +83,7 @@ export const throttle = decorate(_throttle);
 function _sequentialize(fn: Function, key: string): Function {
   const currentKey = `__$sequence$${key}`;
 
-  return function(this: any, ...args: any[]) {
+  return function (this: any, ...args: any[]) {
     const currentPromise =
       (this[currentKey] as Promise<any>) || Promise.resolve(null);
     const run = async () => fn.apply(this, args);
@@ -98,7 +98,7 @@ export function debounce(delay: number): Function {
   return decorate((fn, key) => {
     const timerKey = `$debounce$${key}`;
 
-    return function(this: any, ...args: any[]) {
+    return function (this: any, ...args: any[]) {
       clearTimeout(this[timerKey]);
       this[timerKey] = setTimeout(() => fn.apply(this, args), delay);
     };
@@ -109,7 +109,7 @@ const _seqList: { [key: string]: any } = {};
 
 export function globalSequentialize(name: string): Function {
   return decorate((fn, _key) => {
-    return function(this: any, ...args: any[]) {
+    return function (this: any, ...args: any[]) {
       const currentPromise =
         (_seqList[name] as Promise<any>) || Promise.resolve(null);
       const run = async () => fn.apply(this, args);
