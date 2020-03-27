@@ -58,7 +58,7 @@
         "xml2js": "^0.4.19"
     },
     "devDependencies": {
-        "@semantic-release/changelog": "^5.0.0",
+        "@semantic-release/changelog": "^5.0.1",
         "@semantic-release/git": "^9.0.0",
         "@types/chardet": "^0.8.0",
         "@types/glob": "^7.1.1",
