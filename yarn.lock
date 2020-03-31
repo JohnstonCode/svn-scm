@@ -247,13 +247,6 @@
   resolved "https://registry.yarnpkg.com/@tootallnate/once/-/once-1.0.0.tgz#9c13c2574c92d4503b005feca8f2e16cc1611506"
   integrity sha512-KYyTT/T6ALPkIRd2Ge080X/BsXvy9O0hcWTtMWkPvwAwF99+vn6Dv4GzrFT/Nn1LePr+FFDbRXXlqmsy9lw2zA==
 
-"@types/chardet@^0.8.0":
-  version "0.8.0"
-  resolved "https://registry.yarnpkg.com/@types/chardet/-/chardet-0.8.0.tgz#40932a9d751bb1ff22e7403312faaf81755ad432"
-  integrity sha512-0PFX0r+bt2W6np4tZzF2Gh28pPLTM7lgjLMs0DJnV/Y4rPI3kLJCwtwRTb4aGl1iHmuF8TEmizzfJOw/7XQRfw==
-  dependencies:
-    "@types/node" "*"
-
 "@types/color-name@^1.1.1":
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/@types/color-name/-/color-name-1.1.1.tgz#1c1261bbeaa10a8055bbc5d8ab84b7b2afc846a0"
@@ -913,10 +906,10 @@ chardet@^0.7.0:
   resolved "https://registry.yarnpkg.com/chardet/-/chardet-0.7.0.tgz#90094849f0937f2eedc2425d0d28a9e5f0cbad9e"
   integrity sha512-mT8iDcrh03qDGRRmoA2hmBJnxpllMR+0/0qlzjqZES6NdiWDcZkCNAk4rPFZ9Q85r27unkiNNg8ZOiwZXBHwcA==
 
-chardet@^0.8.0:
-  version "0.8.0"
-  resolved "https://registry.yarnpkg.com/chardet/-/chardet-0.8.0.tgz#215e9e457296aa88fb0c38b010fd7a7e20482ed3"
-  integrity sha512-fRAe54sDSPvCz9I3puKUoUpLBEIUjlwBoNyNcD2eAiP5Ybw2iXnrT7w15hfkNywosXFNllWwvOKsxl7UUCKQaQ==
+chardet@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/chardet/-/chardet-1.0.0.tgz#65ba4e0ceed0434be13ceb20cc4ff4925981ae55"
+  integrity sha512-sRgcGMB9CDh4AnAELRZ0++YGu2W6MOx0gyNliIQddywtvIBXuA83ePfgyszHkrWI9dOuz51WyfC6lCizS4arpg==
 
 cheerio@^1.0.0-rc.1:
   version "1.0.0-rc.3"
