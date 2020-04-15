@@ -1,7 +1,7 @@
 import * as path from "path";
 import { Event, commands } from "vscode";
 import { Operation } from "./common/types";
-import { exists, lstat, readdir, rmdir, unlink } from "./fs";
+import { exists, lstat, readdir, rmdir, stat, unlink } from "./fs";
 
 export interface IDisposable {
   dispose(): void;
@@ -37,6 +37,18 @@ export function anyEvent<T>(...events: Array<Event<T>>): Event<T> {
 
     return result;
   };
+}
+
+export function filterEventAsync<T>(
+  event: Event<T>,
+  filter: (e: T) => Promise<boolean>
+): Event<T> {
+  return (listener: any, thisArgs = null, disposables?: any) =>
+    event(
+      async (e: any) => (await filter(e)) && listener.call(thisArgs, e),
+      null,
+      disposables
+    );
 }
 
 export function filterEvent<T>(
@@ -144,17 +156,25 @@ export function isReadOnly(operation: Operation): boolean {
   }
 }
 
+export async function isDirectory(path: string, followLinks = false) {
+  try {
+    return (await (followLinks ? stat(path) : lstat(path))).isDirectory();
+  } catch (e) {
+    return false;
+  }
+}
+
 /**
  * Remove directory recursively
  * @param {string} dirPath
  * @see https://stackoverflow.com/a/42505874/3027390
  */
 export async function deleteDirectory(dirPath: string): Promise<void> {
-  if ((await exists(dirPath)) && (await lstat(dirPath)).isDirectory()) {
+  if (await isDirectory(dirPath)) {
     await Promise.all(
       (await readdir(dirPath)).map(async (entry: string) => {
         const entryPath = path.join(dirPath, entry);
-        if ((await lstat(entryPath)).isDirectory()) {
+        if (await isDirectory(entryPath)) {
           await deleteDirectory(entryPath);
         } else {
           await unlink(entryPath);

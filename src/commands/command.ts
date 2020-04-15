@@ -19,7 +19,7 @@ import {
   SvnUriAction,
   LineChange
 } from "../common/types";
-import { exists, readFile, stat, unlink } from "../fs";
+import { exists, readFile, unlink } from "../fs";
 import { inputIgnoreList } from "../ignoreitems";
 import { applyLineChanges } from "../lineChanges";
 import { SourceControlManager } from "../source_control_manager";
@@ -27,6 +27,7 @@ import { Repository } from "../repository";
 import { Resource } from "../resource";
 import IncomingChangeNode from "../treeView/nodes/incomingChangeNode";
 import { fromSvnUri, toSvnUri } from "../uri";
+import { isDirectory } from "../util";
 
 export abstract class Command implements Disposable {
   private _disposable?: Disposable;
@@ -208,10 +209,7 @@ export abstract class Command implements Disposable {
       return;
     }
 
-    if (
-      (await exists(right.fsPath)) &&
-      (await stat(right.fsPath)).isDirectory()
-    ) {
+    if (await isDirectory(right.fsPath, true)) {
       return;
     }
 

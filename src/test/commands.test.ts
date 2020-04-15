@@ -37,14 +37,14 @@ suite("Commands Tests", () => {
     testUtil.destroyAllTempPaths();
   });
 
-  test("File Open", async function() {
+  test("File Open", async function () {
     const file = path.join(checkoutDir.fsPath, "new.txt");
     fs.writeFileSync(file, "test");
 
     await commands.executeCommand("svn.fileOpen", Uri.file(file));
   });
 
-  test("Add File", async function() {
+  test("Add File", async function () {
     const repository = sourceControlManager.getRepository(
       checkoutDir
     ) as Repository;
@@ -61,7 +61,7 @@ suite("Commands Tests", () => {
     assert.equal(repository.changes.resourceStates.length, 1);
   });
 
-  test("Commit Single File", async function() {
+  test("Commit Single File", async function () {
     const repository = sourceControlManager.getRepository(
       checkoutDir
     ) as Repository;
@@ -70,15 +70,15 @@ suite("Commands Tests", () => {
     await commands.executeCommand("svn.commitWithMessage");
   });
 
-  test("Update", async function() {
+  test("Update", async function () {
     await commands.executeCommand("svn.update");
   });
 
-  test("Show Log", async function() {
+  test("Show Log", async function () {
     await commands.executeCommand("svn.log");
   });
 
-  test("Open Changes", async function() {
+  test("Open Changes", async function () {
     const file = path.join(checkoutDir.fsPath, "new.txt");
     fs.writeFileSync(file, "test 2");
     const uri = Uri.file(file);
@@ -88,7 +88,7 @@ suite("Commands Tests", () => {
     await commands.executeCommand("svn.openChangeHead", uri);
   });
 
-  test("Open File", async function() {
+  test("Open File", async function () {
     const file = path.join(checkoutDir.fsPath, "new.txt");
     const uri = Uri.file(file);
 
@@ -96,7 +96,7 @@ suite("Commands Tests", () => {
     await commands.executeCommand("svn.openHEADFile", uri);
   });
 
-  test("Open Diff (Double click o source control)", async function() {
+  test("Open Diff (Double click o source control)", async function () {
     const repository = sourceControlManager.getRepository(
       checkoutDir
     ) as Repository;
@@ -110,7 +110,7 @@ suite("Commands Tests", () => {
     await commands.executeCommand("svn.openResourceHead", resource);
   });
 
-  test("Add Changelist", async function() {
+  test("Add Changelist", async function () {
     const repository = sourceControlManager.getRepository(
       checkoutDir
     ) as Repository;
@@ -127,7 +127,7 @@ suite("Commands Tests", () => {
     assert.ok(repository.changelists.has("changelist-test"));
   });
 
-  test("Remove Changelist", async function() {
+  test("Remove Changelist", async function () {
     const repository = sourceControlManager.getRepository(
       checkoutDir
     ) as Repository;
@@ -143,11 +143,11 @@ suite("Commands Tests", () => {
     assert.equal(group.resourceStates.length, 0);
   });
 
-  test("Show Patch", async function() {
+  test("Show Patch", async function () {
     await commands.executeCommand("svn.patch");
   });
 
-  test("Commit Selected File", async function() {
+  test("Commit Selected File", async function () {
     const repository = sourceControlManager.getRepository(
       checkoutDir
     ) as Repository;
@@ -165,7 +165,7 @@ suite("Commands Tests", () => {
     assert.equal(repository.changes.resourceStates.length, 0);
   });
 
-  test("Commit Multiple", async function() {
+  test("Commit Multiple", async function () {
     const file1 = path.join(checkoutDir.fsPath, "file1.txt");
     fs.writeFileSync(file1, "test");
     await commands.executeCommand("svn.openFile", Uri.file(file1));
@@ -196,7 +196,7 @@ suite("Commands Tests", () => {
     await commands.executeCommand("svn.commitWithMessage");
   });
 
-  test("New Branch", async function() {
+  test("New Branch", async function () {
     testUtil.overrideNextShowQuickPick(0);
     testUtil.overrideNextShowQuickPick(1);
     testUtil.overrideNextShowInputBox("test");
@@ -212,7 +212,7 @@ suite("Commands Tests", () => {
     assert.equal(await repository.getCurrentBranch(), "branches/test");
   });
 
-  test("Switch Branch", async function() {
+  test("Switch Branch", async function () {
     this.timeout(5000);
     testUtil.overrideNextShowQuickPick(2);
     await commands.executeCommand("svn.switchBranch");

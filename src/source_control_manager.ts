@@ -30,7 +30,9 @@ import {
   IDisposable,
   isDescendant,
   isSvnFolder,
-  normalizePath
+  normalizePath,
+  filterEventAsync,
+  isDirectory
 } from "./util";
 import { matchAll } from "./util/globMatch";
 
@@ -139,9 +141,12 @@ export class SourceControlManager implements IDisposable {
       fsWatcher.onDidCreate,
       fsWatcher.onDidDelete
     );
-    const onPossibleSvnRepositoryChange = filterEvent(
+    const onPossibleSvnRepositoryChange = filterEventAsync(
       onWorkspaceChange,
-      uri => uri.scheme === "file" && !this.getRepository(uri)
+      async uri =>
+        uri.scheme === "file" &&
+        (await isDirectory(uri.fsPath)) &&
+        !this.getRepository(uri)
     );
     onPossibleSvnRepositoryChange(
       this.onPossibleSvnRepositoryChange,
