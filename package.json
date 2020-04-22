@@ -79,7 +79,7 @@
         "node-sass": "^4.13.1",
         "prettier": "^2.0.5",
         "prettylint": "^1.0.0",
-        "semantic-release": "^17.0.6",
+        "semantic-release": "^17.0.7",
         "semantic-release-vsce": "^3.0.1",
         "typescript": "^3.8.3",
         "vscode-test": "^1.0.0"
