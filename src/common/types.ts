@@ -145,6 +145,7 @@ export interface IFileStatus {
   status: string;
   props: string;
   path: string;
+  externalPath?: string,
   changelist?: string;
   rename?: string;
   wcStatus: IWcStatus;
