@@ -6,11 +6,11 @@ import {
   window,
   workspace
 } from "vscode";
-import { exists, stat } from "../fs";
 import { Resource } from "../resource";
 import IncomingChangeNode from "../treeView/nodes/incomingChangeNode";
 import { fromSvnUri } from "../uri";
 import { Command } from "./command";
+import { isDirectory } from "../util";
 
 export class OpenFile extends Command {
   constructor() {
@@ -65,10 +65,7 @@ export class OpenFile extends Command {
     const preview = uris.length === 1 ? true : false;
     const activeTextEditor = window.activeTextEditor;
     for (const uri of uris) {
-      if (
-        (await exists(uri.fsPath)) &&
-        (await stat(uri.fsPath)).isDirectory()
-      ) {
+      if (await isDirectory(uri.fsPath, true)) {
         continue;
       }
 

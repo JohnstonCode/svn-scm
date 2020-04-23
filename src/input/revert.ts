@@ -1,6 +1,6 @@
 import { Uri, window } from "vscode";
 import { SvnDepth } from "../common/types";
-import { lstat } from "../fs";
+import { isDirectory } from "../util";
 
 export async function confirmRevert() {
   const yes = "Yes I'm sure";
@@ -45,14 +45,9 @@ export async function checkAndPromptDepth(
     if (uri.scheme !== "file") {
       continue;
     }
-    try {
-      const stat = await lstat(uri.fsPath);
-      if (stat.isDirectory()) {
-        hasDirectory = true;
-        break;
-      }
-    } catch (error) {
-      // ignore
+    if (await isDirectory(uri.fsPath)) {
+      hasDirectory = true;
+      break;
     }
   }
 

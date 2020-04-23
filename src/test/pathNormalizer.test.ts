@@ -23,7 +23,7 @@ suite("SVN URLs parsing", () => {
     // do nothing
   });
 
-  test("somedomain", function() {
+  test("somedomain", function () {
     assert.equal(nm1.branchRoot.toString(), Uri.parse(ri1.url).toString());
     assert.equal(
       nm1.repoRoot.toString(),
@@ -60,7 +60,7 @@ suite("SVN URLs parsing", () => {
   };
   const nm2 = new PathNormalizer(ri2 as ISvnInfo);
 
-  test("rootdomain", function() {
+  test("rootdomain", function () {
     const p1 = nm2.parse(
       "/foo/drupal-7/trunk/drupal/sites/all/themes/foo_theme/scss/foo-pdf.scss"
     );
@@ -89,7 +89,7 @@ suite("SVN URLs parsing", () => {
   };
   const nm3 = new PathNormalizer(ri3 as ISvnInfo);
 
-  test("rootbranch", function() {
+  test("rootbranch", function () {
     const p4 = nm3.parse("/file.c");
     assert.equal(p4.localFullPath!.path, "/home/user/svn/file.c");
   });
@@ -106,7 +106,7 @@ suite("SVN URLs parsing", () => {
   const nm4 = new PathNormalizer(ri4 as ISvnInfo);
 
   if (process.platform == "win32") {
-    test("winpath", function() {
+    test("winpath", function () {
       const p4 = nm4.parse("/trunk/file.c");
       assert.equal(p4.localFullPath!.fsPath, "x:\\work\\rootd\\file.c");
     });
