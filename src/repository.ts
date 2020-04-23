@@ -498,7 +498,7 @@ export class Repository implements IRemoteRepository {
       );
     });
 
-    // Pre calculate the externalPath to make getOpenRepository faster?
+    // Pre calculate the externalPath to make getOpenRepository faster
     this.statusExternal = this.statusExternal.map(external => {
       external.externalPath = path.join(this.workspaceRoot, external.path);
 
