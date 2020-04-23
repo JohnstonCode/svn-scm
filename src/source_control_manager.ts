@@ -348,12 +348,18 @@ export class SourceControlManager implements IDisposable {
         }
 
         for (const external of liveRepository.repository.statusExternal) {
-          if (external.externalPath && isDescendant(external.externalPath, hint.fsPath)) {
+          if (
+            external.externalPath &&
+            isDescendant(external.externalPath, hint.fsPath)
+          ) {
             return false;
           }
         }
         for (const ignored of liveRepository.repository.statusIgnored) {
-          const hintPath = (hint as Uri).fsPath.replace(liveRepository.repository.workspaceRoot + '/', '');
+          const hintPath = (hint as Uri).fsPath.replace(
+            liveRepository.repository.workspaceRoot + "/",
+            ""
+          );
           if (isDescendant(ignored.path, hintPath)) {
             return false;
           }
