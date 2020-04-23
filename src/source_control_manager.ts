@@ -153,6 +153,7 @@ export class SourceControlManager implements IDisposable {
   }
 
   private onPossibleSvnRepositoryChange(uri: Uri): void {
+    console.log(uri);
     const possibleSvnRepositoryPath = uri.fsPath.replace(/\.svn.*$/, "");
     this.eventuallyScanPossibleSvnRepository(possibleSvnRepositoryPath);
   }
@@ -352,11 +353,8 @@ export class SourceControlManager implements IDisposable {
           }
         }
         for (const ignored of liveRepository.repository.statusIgnored) {
-          const ignoredPath = path.join(
-            liveRepository.repository.workspaceRoot,
-            ignored.path
-          );
-          if (isDescendant(ignoredPath, hint.fsPath)) {
+          const hintPath = (hint as Uri).fsPath.replace(liveRepository.repository.workspaceRoot + '/', '');
+          if (isDescendant(ignored.path, hintPath)) {
             return false;
           }
         }
