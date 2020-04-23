@@ -119,7 +119,7 @@ export function isDescendant(parent: string, descendant: string): boolean {
   // return descendant.startsWith(parent);
   const relative = path.relative(parent, descendant);
 
-  return !relative.startsWith('..') && !path.isAbsolute(relative);
+  return !relative.startsWith("..") && !path.isAbsolute(relative);
 }
 
 export function camelcase(name: string) {
