@@ -95,28 +95,31 @@ export function normalizePath(file: string) {
 }
 
 export function isDescendant(parent: string, descendant: string): boolean {
-  if (parent.trim() === "" || descendant.trim() === "") {
-    return false;
-  }
+  // if (parent.trim() === "" || descendant.trim() === "") {
+  //   return false;
+  // }
 
-  parent = parent.replace(/[\\\/]/g, path.sep);
-  descendant = descendant.replace(/[\\\/]/g, path.sep);
+  // parent = parent.replace(/[\\\/]/g, path.sep);
+  // descendant = descendant.replace(/[\\\/]/g, path.sep);
 
-  // IF Windows
-  if (path.sep === "\\") {
-    parent = parent.replace(/^\\/, "").toLowerCase();
-    descendant = descendant.replace(/^\\/, "").toLowerCase();
-  }
+  // // IF Windows
+  // if (path.sep === "\\") {
+  //   parent = parent.replace(/^\\/, "").toLowerCase();
+  //   descendant = descendant.replace(/^\\/, "").toLowerCase();
+  // }
 
-  if (parent === descendant) {
-    return true;
-  }
+  // if (parent === descendant) {
+  //   return true;
+  // }
 
-  if (parent.charAt(parent.length - 1) !== path.sep) {
-    parent += path.sep;
-  }
+  // if (parent.charAt(parent.length - 1) !== path.sep) {
+  //   parent += path.sep;
+  // }
 
-  return descendant.startsWith(parent);
+  // return descendant.startsWith(parent);
+  const relative = path.relative(parent, descendant);
+
+  return !relative.startsWith('..') && !path.isAbsolute(relative);
 }
 
 export function camelcase(name: string) {
