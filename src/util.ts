@@ -39,6 +39,18 @@ export function anyEvent<T>(...events: Array<Event<T>>): Event<T> {
   };
 }
 
+export function filterEventAsync<T>(
+  event: Event<T>,
+  filter: (e: T) => Promise<boolean>
+): Event<T> {
+  return (listener: any, thisArgs = null, disposables?: any) =>
+    event(
+      async (e: any) => (await filter(e)) && listener.call(thisArgs, e),
+      null,
+      disposables
+    );
+}
+
 export function filterEvent<T>(
   event: Event<T>,
   filter: (e: T) => boolean
@@ -95,31 +107,28 @@ export function normalizePath(file: string) {
 }
 
 export function isDescendant(parent: string, descendant: string): boolean {
-  // if (parent.trim() === "" || descendant.trim() === "") {
-  //   return false;
-  // }
+  if (parent.trim() === "" || descendant.trim() === "") {
+    return false;
+  }
 
-  // parent = parent.replace(/[\\\/]/g, path.sep);
-  // descendant = descendant.replace(/[\\\/]/g, path.sep);
+  parent = parent.replace(/[\\\/]/g, path.sep);
+  descendant = descendant.replace(/[\\\/]/g, path.sep);
 
-  // // IF Windows
-  // if (path.sep === "\\") {
-  //   parent = parent.replace(/^\\/, "").toLowerCase();
-  //   descendant = descendant.replace(/^\\/, "").toLowerCase();
-  // }
+  // IF Windows
+  if (path.sep === "\\") {
+    parent = parent.replace(/^\\/, "").toLowerCase();
+    descendant = descendant.replace(/^\\/, "").toLowerCase();
+  }
 
-  // if (parent === descendant) {
-  //   return true;
-  // }
+  if (parent === descendant) {
+    return true;
+  }
 
-  // if (parent.charAt(parent.length - 1) !== path.sep) {
-  //   parent += path.sep;
-  // }
+  if (parent.charAt(parent.length - 1) !== path.sep) {
+    parent += path.sep;
+  }
 
-  // return descendant.startsWith(parent);
-  const relative = path.relative(parent, descendant);
-
-  return !relative.startsWith("..") && !path.isAbsolute(relative);
+  return descendant.startsWith(parent);
 }
 
 export function camelcase(name: string) {

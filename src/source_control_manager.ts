@@ -30,7 +30,8 @@ import {
   IDisposable,
   isDescendant,
   isSvnFolder,
-  normalizePath
+  normalizePath,
+  filterEventAsync
 } from "./util";
 import { matchAll } from "./util/globMatch";
 
@@ -139,9 +140,9 @@ export class SourceControlManager implements IDisposable {
       fsWatcher.onDidCreate,
       fsWatcher.onDidDelete
     );
-    const onPossibleSvnRepositoryChange = filterEvent(
+    const onPossibleSvnRepositoryChange = filterEventAsync(
       onWorkspaceChange,
-      uri => uri.scheme === "file" && !this.getRepository(uri)
+      async uri => uri.scheme === "file" && (await this.getRepositoryFromUri(uri)) instanceof Repository
     );
     onPossibleSvnRepositoryChange(
       this.onPossibleSvnRepositoryChange,
@@ -153,7 +154,6 @@ export class SourceControlManager implements IDisposable {
   }
 
   private onPossibleSvnRepositoryChange(uri: Uri): void {
-    console.log(uri);
     const possibleSvnRepositoryPath = uri.fsPath.replace(/\.svn.*$/, "");
     this.eventuallyScanPossibleSvnRepository(possibleSvnRepositoryPath);
   }
@@ -340,68 +340,34 @@ export class SourceControlManager implements IDisposable {
     }
 
     if (hint instanceof Uri) {
-      let i = 0;
-      const repos = this.openRepositoriesSorted();
-      const max = repos.length;
-
-      rl: for (; i < max; i++) {
-        const repo = repos[i];
-
-        if (!isDescendant(repo.repository.workspaceRoot, hint.fsPath)) {
-          continue;
+      return this.openRepositoriesSorted().find(liveRepository => {
+        if (
+          !isDescendant(liveRepository.repository.workspaceRoot, hint.fsPath)
+        ) {
+          return false;
         }
 
-        for (const external of repo.repository.statusExternal) {
+        for (const external of liveRepository.repository.statusExternal) {
           const externalPath = path.join(
-            repo.repository.workspaceRoot,
+            liveRepository.repository.workspaceRoot,
             external.path
           );
           if (isDescendant(externalPath, hint.fsPath)) {
-            continue rl;
+            return false;
           }
         }
-
-        for (const ignored of repo.repository.statusIgnored) {
-          const hintPath = (hint as Uri).fsPath.replace(
-            repo.repository.workspaceRoot + "/",
-            ""
+        for (const ignored of liveRepository.repository.statusIgnored) {
+          const ignoredPath = path.join(
+            liveRepository.repository.workspaceRoot,
+            ignored.path
           );
-          if (isDescendant(ignored.path, hintPath)) {
-            continue rl;
+          if (isDescendant(ignoredPath, hint.fsPath)) {
+            return false;
           }
         }
 
-        return repo;
-      }
-
-      // return this.openRepositoriesSorted().find(liveRepository => {
-      //   if (
-      //     !isDescendant(liveRepository.repository.workspaceRoot, hint.fsPath)
-      //   ) {
-      //     return false;
-      //   }
-
-      //   for (const external of liveRepository.repository.statusExternal) {
-      //     const externalPath = path.join(
-      //       liveRepository.repository.workspaceRoot,
-      //       external.path
-      //     );
-      //     if (isDescendant(externalPath, hint.fsPath)) {
-      //       return false;
-      //     }
-      //   }
-      //   for (const ignored of liveRepository.repository.statusIgnored) {
-      //     const hintPath = (hint as Uri).fsPath.replace(
-      //       liveRepository.repository.workspaceRoot + "/",
-      //       ""
-      //     );
-      //     if (isDescendant(ignored.path, hintPath)) {
-      //       return false;
-      //     }
-      //   }
-
-      //   return true;
-      // });
+        return true;
+      });
     }
 
     for (const liveRepository of this.openRepositories) {
