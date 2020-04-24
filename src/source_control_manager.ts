@@ -342,7 +342,7 @@ export class SourceControlManager implements IDisposable {
     if (hint instanceof Uri) {
       let i = 0;
       const repos = this.openRepositoriesSorted();
-      let max = repos.length;
+      const max = repos.length;
 
       rl: for (; i < max; i++) {
         const repo = repos[i];
