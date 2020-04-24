@@ -340,34 +340,68 @@ export class SourceControlManager implements IDisposable {
     }
 
     if (hint instanceof Uri) {
-      return this.openRepositoriesSorted().find(liveRepository => {
-        if (
-          !isDescendant(liveRepository.repository.workspaceRoot, hint.fsPath)
-        ) {
-          return false;
+      let i = 0;
+      const repos = this.openRepositoriesSorted();
+      let max = repos.length;
+
+      rl: for (; i < max; i++) {
+        const repo = repos[i];
+
+        if (!isDescendant(repo.repository.workspaceRoot, hint.fsPath)) {
+          continue;
         }
 
-        for (const external of liveRepository.repository.statusExternal) {
+        for (const external of repo.repository.statusExternal) {
           const externalPath = path.join(
-            liveRepository.repository.workspaceRoot,
+            repo.repository.workspaceRoot,
             external.path
           );
           if (isDescendant(externalPath, hint.fsPath)) {
-            return false;
-          }
-        }
-        for (const ignored of liveRepository.repository.statusIgnored) {
-          const hintPath = (hint as Uri).fsPath.replace(
-            liveRepository.repository.workspaceRoot + "/",
-            ""
-          );
-          if (isDescendant(ignored.path, hintPath)) {
-            return false;
+            continue rl;
           }
         }
 
-        return true;
-      });
+        for (const ignored of repo.repository.statusIgnored) {
+          const hintPath = (hint as Uri).fsPath.replace(
+            repo.repository.workspaceRoot + "/",
+            ""
+          );
+          if (isDescendant(ignored.path, hintPath)) {
+            continue rl;
+          }
+        }
+
+        return repo;
+      }
+
+      // return this.openRepositoriesSorted().find(liveRepository => {
+      //   if (
+      //     !isDescendant(liveRepository.repository.workspaceRoot, hint.fsPath)
+      //   ) {
+      //     return false;
+      //   }
+
+      //   for (const external of liveRepository.repository.statusExternal) {
+      //     const externalPath = path.join(
+      //       liveRepository.repository.workspaceRoot,
+      //       external.path
+      //     );
+      //     if (isDescendant(externalPath, hint.fsPath)) {
+      //       return false;
+      //     }
+      //   }
+      //   for (const ignored of liveRepository.repository.statusIgnored) {
+      //     const hintPath = (hint as Uri).fsPath.replace(
+      //       liveRepository.repository.workspaceRoot + "/",
+      //       ""
+      //     );
+      //     if (isDescendant(ignored.path, hintPath)) {
+      //       return false;
+      //     }
+      //   }
+
+      //   return true;
+      // });
     }
 
     for (const liveRepository of this.openRepositories) {
