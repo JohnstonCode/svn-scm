@@ -72,6 +72,9 @@ Here are all of the extension settings with their default values. To change any 
   // Select all files when commit changes
   "svn.commit.changes.selectedAll": true,
 
+  // Check empty message before commit
+  "svn.commit.checkEmptyMessage": true,
+
   // Set file to status resolved after fix conflicts
   "svn.conflicts.autoResolve": null,
 

@@ -1009,6 +1009,11 @@
                     "description": "Select all files when commit changes",
                     "default": true
                 },
+                "svn.commit.checkEmptyMessage": {
+                    "type": "boolean",
+                    "description": "Check empty message before commit",
+                    "default": true
+                },
                 "svn.conflicts.autoResolve": {
                     "type": "boolean",
                     "description": "Set file to status resolved after fix conflicts",
