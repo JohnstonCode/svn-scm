@@ -11,6 +11,7 @@ export class PromptAuth extends Command {
     const username = await window.showInputBox({
       placeHolder: "Svn repository username",
       prompt: "Please enter your username",
+      ignoreFocusOut: true,
       value: prevUsername
     });
 
@@ -22,6 +23,7 @@ export class PromptAuth extends Command {
       placeHolder: "Svn repository password",
       prompt: "Please enter your password",
       value: prevPassword,
+      ignoreFocusOut: true,
       password: true
     });
 
