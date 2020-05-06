@@ -1,6 +1,7 @@
 import * as path from "path";
 import { commands, Uri, ViewColumn, WebviewPanel, window } from "vscode";
 import { SourceControlManager } from "./source_control_manager";
+import { configuration } from "./helpers/configuration";
 
 export function noChangesToCommit() {
   return window.showInformationMessage("There are no changes to commit.");
@@ -231,7 +232,12 @@ export async function inputCommitMessage(
     message = await showCommitInput(message, filePaths);
   }
 
-  if (message === "") {
+  const checkEmptyMessage = configuration.get<boolean>(
+    "commit.checkEmptyMessage",
+    true
+  );
+
+  if (message === "" && checkEmptyMessage) {
     const allowEmpty = await window.showWarningMessage(
       "Do you really want to commit an empty message?",
       { modal: true },
