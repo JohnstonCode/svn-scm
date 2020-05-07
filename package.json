@@ -49,7 +49,7 @@
         "watch:css": "yarn run build:css -w"
     },
     "dependencies": {
-        "chardet": "^1.0.0",
+        "chardet": "^1.1.0",
         "dayjs": "^1.8.26",
         "minimatch": "^3.0.4",
         "original-fs": "^1.0.0",
