@@ -56,7 +56,9 @@ export abstract class Command implements Disposable {
     this._disposable && this._disposable.dispose(); // tslint:disable-line
   }
 
-  private createRepositoryCommand(method: Function): (...args: any[]) => any {
+  private createRepositoryCommand(
+    method: (...args: any[]) => void
+  ): (...args: any[]) => any {
     const result = async (...args: any[]) => {
       const sourceControlManager = (await commands.executeCommand(
         "svn.getSourceControlManager",
