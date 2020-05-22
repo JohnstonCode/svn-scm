@@ -20,13 +20,6 @@ export interface ICommandOptions {
   diff?: boolean;
 }
 
-export interface ICommand {
-  commandId: string;
-  key: string;
-  method: Function;
-  options: ICommandOptions;
-}
-
 export interface IConflictOption {
   label: string;
   description: string;
@@ -180,7 +173,7 @@ export interface IEntry {
   reposStatus?: {
     props: string;
     item: string;
-    lock?: object;
+    lock?: Record<string, unknown>;
   };
 }
 

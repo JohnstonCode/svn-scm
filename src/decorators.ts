@@ -8,11 +8,11 @@
 import { done } from "./util";
 
 function decorate(
-  decorator: (fn: Function, key: string) => Function
-): Function {
+  decorator: (fn: (...args: any[]) => void, key: string) => void
+): (_target: any, key: string, descriptor: any) => void {
   return (_target: any, key: string, descriptor: any) => {
     let fnKey: string | null = null;
-    let fn: Function | null = null;
+    let fn: ((...args: any[]) => void) | null = null;
 
     if (typeof descriptor.value === "function") {
       fnKey = "value";
@@ -30,7 +30,10 @@ function decorate(
   };
 }
 
-function _memoize(fn: Function, key: string): Function {
+function _memoize(
+  fn: (...args: any[]) => void,
+  key: string
+): (this: any, ...args: any[]) => any {
   const memoizeKey = `$memoize$${key}`;
 
   return function (this: any, ...args: any[]) {
@@ -49,7 +52,10 @@ function _memoize(fn: Function, key: string): Function {
 
 export const memoize = decorate(_memoize);
 
-function _throttle<T>(fn: Function, key: string): Function {
+function _throttle(
+  fn: (...args: any[]) => void,
+  key: string
+): (this: any, ...args: any[]) => any {
   const currentKey = `$throttle$current$${key}`;
   const nextKey = `$throttle$next$${key}`;
 
@@ -67,7 +73,7 @@ function _throttle<T>(fn: Function, key: string): Function {
       return this[nextKey];
     }
 
-    this[currentKey] = fn.apply(this, args) as Promise<T>;
+    this[currentKey] = fn.apply(this, args);
 
     const clear = () => (this[currentKey] = undefined);
     done(this[currentKey]).then(clear, clear);
@@ -80,7 +86,10 @@ function _throttle<T>(fn: Function, key: string): Function {
 
 export const throttle = decorate(_throttle);
 
-function _sequentialize(fn: Function, key: string): Function {
+function _sequentialize(
+  fn: (...args: any[]) => void,
+  key: string
+): (this: any, ...args: any[]) => any {
   const currentKey = `__$sequence$${key}`;
 
   return function (this: any, ...args: any[]) {
@@ -94,7 +103,9 @@ function _sequentialize(fn: Function, key: string): Function {
 
 export const sequentialize = decorate(_sequentialize);
 
-export function debounce(delay: number): Function {
+export function debounce(
+  delay: number
+): (_target: any, key: string, descriptor: any) => void {
   return decorate((fn, key) => {
     const timerKey = `$debounce$${key}`;
 
@@ -107,7 +118,9 @@ export function debounce(delay: number): Function {
 
 const _seqList: { [key: string]: any } = {};
 
-export function globalSequentialize(name: string): Function {
+export function globalSequentialize(
+  name: string
+): (_target: any, key: string, descriptor: any) => void {
   return decorate((fn, _key) => {
     return function (this: any, ...args: any[]) {
       const currentPromise =

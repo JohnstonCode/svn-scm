@@ -13,5 +13,6 @@ module.exports = {
     '@typescript-eslint/no-non-null-assertion': 'off',
     '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
     '@typescript-eslint/no-inferrable-types': 'off',
+    '@typescript-eslint/explicit-module-boundary-types': 'off'
   },
 }
