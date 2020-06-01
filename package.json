@@ -67,7 +67,7 @@
         "@types/tmp": "0.2.0",
         "@types/vscode": "1.44.0",
         "@types/xml2js": "^0.4.4",
-        "@typescript-eslint/eslint-plugin": "^3.0.0",
+        "@typescript-eslint/eslint-plugin": "^3.0.2",
         "@typescript-eslint/parser": "^3.0.0",
         "decache": "^4.6.0",
         "eslint": "^7.1.0",
