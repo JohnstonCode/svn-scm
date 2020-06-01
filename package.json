@@ -75,7 +75,7 @@
         "eslint-plugin-prettier": "^3.1.3",
         "glob": "^7.1.4",
         "milligram": "^1.3.0",
-        "mocha": "^7.1.2",
+        "mocha": "^7.2.0",
         "node-sass": "^4.14.1",
         "prettier": "^2.0.5",
         "prettylint": "^1.0.0",
