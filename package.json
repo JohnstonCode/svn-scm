@@ -208,12 +208,12 @@
             {
                 "command": "svn.itemlog.copymsg",
                 "category": "SVN",
-                "title": "Copy message to clipboard"
+                "title": "Copy message"
             },
             {
                 "command": "svn.itemlog.copyrevision",
                 "category": "SVN",
-                "title": "Copy revision number to clipboard"
+                "title": "Copy revision number"
             },
             {
                 "command": "svn.itemlog.openDiff",
@@ -350,12 +350,12 @@
             {
                 "command": "svn.repolog.copymsg",
                 "category": "SVN",
-                "title": "Copy message to clipboard"
+                "title": "Copy message"
             },
             {
                 "command": "svn.repolog.copyrevision",
                 "category": "SVN",
-                "title": "Copy revision number to clipboard"
+                "title": "Copy revision number"
             },
             {
                 "command": "svn.repolog.openDiff",
