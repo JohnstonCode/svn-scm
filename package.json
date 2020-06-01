@@ -82,7 +82,7 @@
         "semantic-release": "^17.0.8",
         "semantic-release-vsce": "^3.0.1",
         "typescript": "^3.9.3",
-        "vscode-test": "^1.0.0"
+        "vscode-test": "^1.4.0"
     },
     "config": {
         "commitizen": {
