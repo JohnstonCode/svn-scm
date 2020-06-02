@@ -1,3 +1,17 @@
+## [2.11.1](https://github.com/JohnstonCode/svn-scm/compare/v2.11.0...v2.11.1) (2020-05-06)
+
+
+### Bug Fixes
+
+* Fixed focus out for authentication dialog (close [#918](https://github.com/JohnstonCode/svn-scm/issues/918)) ([#919](https://github.com/JohnstonCode/svn-scm/issues/919)) ([ce57c22](https://github.com/JohnstonCode/svn-scm/commit/ce57c220c62c5ce537ace265e7fede543cbf18f8))
+
+# [2.11.0](https://github.com/JohnstonCode/svn-scm/compare/v2.10.6...v2.11.0) (2020-05-06)
+
+
+### Features
+
+* Added option to not prompt if commit message is empty (close [#913](https://github.com/JohnstonCode/svn-scm/issues/913)) ([#920](https://github.com/JohnstonCode/svn-scm/issues/920)) ([2f5e2c2](https://github.com/JohnstonCode/svn-scm/commit/2f5e2c215ee6c6113536a80474accb6a8e4d87b3))
+
 ## [2.10.6](https://github.com/JohnstonCode/svn-scm/compare/v2.10.5...v2.10.6) (2020-03-12)
 
 
