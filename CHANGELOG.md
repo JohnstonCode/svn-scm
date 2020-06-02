@@ -1,3 +1,10 @@
+## [2.11.2](https://github.com/JohnstonCode/svn-scm/compare/v2.11.1...v2.11.2) (2020-06-02)
+
+
+### Bug Fixes
+
+* made copy titles more consistent with other UIs ([#953](https://github.com/JohnstonCode/svn-scm/issues/953)) ([111df3c](https://github.com/JohnstonCode/svn-scm/commit/111df3cef66ba45a32863c6a37144c92963a4c60))
+
 ## [2.11.1](https://github.com/JohnstonCode/svn-scm/compare/v2.11.0...v2.11.1) (2020-05-06)
 
 
