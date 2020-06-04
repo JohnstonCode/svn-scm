@@ -8,3 +8,8 @@ update_configs:
     ignored_updates:
       - match:
           dependency_name: "@types/node"
+      - match:
+          dependency_name: "@types/vscode"
+    automerged_updates:
+      - match:
+          dependency_type: "all"
