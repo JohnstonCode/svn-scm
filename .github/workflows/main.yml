@@ -106,9 +106,7 @@ jobs:
         shell: bash
 
       - name: Package extension
-        uses: lannonbr/vsce-action@master
-        with:
-          args: "package -o svn-scm.vsix"
+        run: npx vsce package -o svn-scm.vsix
 
       - name: Upload artifact
         uses: actions/upload-artifact@v1
