@@ -27,7 +27,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v1
         with:
-          node-version: '10.x'
+          node-version: '12.17'
 
       - name: Install Dependencies
         run: 'yarn install --frozen-lockfile || yarn install --frozen-lockfile'
@@ -79,7 +79,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v1
         with:
-          node-version: '10.x'
+          node-version: '12.17'
 
       - name: Install Dependencies
         run: 'yarn install --frozen-lockfile || yarn install --frozen-lockfile'
@@ -99,7 +99,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v1
         with:
-          node-version: '10.x'
+          node-version: '12.17'
 
       - name: Install Dependencies
         run: 'yarn install --frozen-lockfile || yarn install --frozen-lockfile'
