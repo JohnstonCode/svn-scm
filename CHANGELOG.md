@@ -1,3 +1,10 @@
+## [2.11.3](https://github.com/JohnstonCode/svn-scm/compare/v2.11.2...v2.11.3) (2020-06-07)
+
+
+### Bug Fixes
+
+* sourceControl.changesLeftClick setting to 'Open' now works ([#961](https://github.com/JohnstonCode/svn-scm/issues/961)) ([f912d65](https://github.com/JohnstonCode/svn-scm/commit/f912d65b04c37778892245e523708c396f3b73bf))
+
 ## [2.11.2](https://github.com/JohnstonCode/svn-scm/compare/v2.11.1...v2.11.2) (2020-06-02)
 
 
