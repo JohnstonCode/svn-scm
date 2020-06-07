@@ -66,8 +66,8 @@ export class OpenFile extends Command {
     const activeTextEditor = window.activeTextEditor;
     for (const uri of uris) {
       if (
-        (await exists(uri.fsPath)) &&
-        (await stat(uri.fsPath)).isDirectory()
+        !uri ||
+        ((await exists(uri.fsPath)) && (await stat(uri.fsPath)).isDirectory())
       ) {
         continue;
       }
