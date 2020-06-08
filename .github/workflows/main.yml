@@ -113,3 +113,14 @@ jobs:
         with:
           name: "svn-scm-${{ github.sha }}.vsix"
           path: "svn-scm.vsix"
+
+      - name: Package bundled extension
+        run: |
+          yarn add iconv-lite jschardet
+          npx vsce package -o svn-scm-bundled.vsix
+
+      - name: Upload bundled artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: "svn-scm-bundled-${{ github.sha }}.vsix"
+          path: "svn-scm-bundled.vsix"
