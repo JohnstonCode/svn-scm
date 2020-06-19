@@ -3577,10 +3577,10 @@ micromatch@^4.0.0, micromatch@^4.0.2:
     braces "^3.0.1"
     picomatch "^2.0.5"
 
-milligram@^1.4.0:
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/milligram/-/milligram-1.4.0.tgz#6e44bd4c134bde1abfdc04aca81073f626d264a6"
-  integrity sha512-ZkuBd7r3NVNLmaG/LPV8/lJJg09rK6qZn3cwEY5Pm7biosrJG1/KW6KNRMHeeJScVJLmmRcorROBXYaOH8WtNQ==
+milligram@^1.4.1:
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/milligram/-/milligram-1.4.1.tgz#6c8c781541b0d994ccca784c60f0aca1f7104b42"
+  integrity sha512-RCgh/boHhcXWOUfKJWm3RJRoUeaEguoipDg0mJ31G0tFfvcpWMUlO1Zlqqr12K4kAXfDlllaidu0x7PaL2PTFg==
   dependencies:
     normalize.css "~8.0.1"
 
