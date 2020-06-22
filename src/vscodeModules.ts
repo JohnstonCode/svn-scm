@@ -24,9 +24,31 @@ function loadVSCodeModule(id: string) {
   }
 }
 
-export const iconv = loadVSCodeModule(
-  "iconv-lite"
-) as typeof import("iconv-lite");
+function getNodeModule(moduleName: string) {
+  try {
+    return require(`${appRoot}/node_modules.asar/${moduleName}`);
+  } catch (error) {
+    //Ignore
+  }
+
+  const baseDir = path.dirname(process.execPath);
+
+  try {
+    module.paths.unshift(`${baseDir}/node_modules`);
+    return require(moduleName);
+  } catch (error) {}
+
+  return undefined;
+}
+
+let iconv_lite = getNodeModule(
+  "iconv-lite-umd"
+) as typeof import("iconv-lite-umd");
+if (!iconv_lite) {
+  iconv_lite = loadVSCodeModule("iconv-lite") as typeof import("iconv-lite");
+}
+
+export const iconv = iconv_lite;
 export const jschardet = loadVSCodeModule(
   "jschardet"
 ) as typeof import("jschardet");

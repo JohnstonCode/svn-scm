@@ -203,7 +203,7 @@ class TempSvnFs implements FileSystemProvider, Disposable {
     let contentBuffer: Buffer;
 
     if (encoding) {
-      contentBuffer = iconv.encode(content, encoding);
+      contentBuffer = Buffer.from(iconv.encode(content, encoding));
     } else {
       contentBuffer = Buffer.from(content);
     }
