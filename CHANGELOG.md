@@ -1,3 +1,10 @@
+## [2.11.4](https://github.com/JohnstonCode/svn-scm/compare/v2.11.3...v2.11.4) (2020-06-22)
+
+
+### Bug Fixes
+
+* VSCode now uses iconv-lite-umd ([#975](https://github.com/JohnstonCode/svn-scm/issues/975)) ([3b97b58](https://github.com/JohnstonCode/svn-scm/commit/3b97b58cedfc10169d92a9f3b9166c5f9d6b4f34))
+
 ## [2.11.3](https://github.com/JohnstonCode/svn-scm/compare/v2.11.2...v2.11.3) (2020-06-07)
 
 
