@@ -25,8 +25,8 @@ function loadVSCodeModule(id: string) {
 }
 
 export const iconv = loadVSCodeModule(
-  "iconv-lite"
-) as typeof import("iconv-lite");
+  "iconv-lite-umd"
+) as typeof import("iconv-lite-umd");
 export const jschardet = loadVSCodeModule(
   "jschardet"
 ) as typeof import("jschardet");

@@ -2537,6 +2537,11 @@ humanize-ms@^1.2.1:
   dependencies:
     ms "^2.0.0"
 
+iconv-lite-umd@0.6.3:
+  version "0.6.3"
+  resolved "https://registry.yarnpkg.com/iconv-lite-umd/-/iconv-lite-umd-0.6.3.tgz#61307cab8ac29939992d0724d3ab8799467f0e97"
+  integrity sha512-fQ/8XE8reiCZ6t+SX4tX6/tQdV4tThJZv5qtMe5Sk+IWsExz0S2Zd+GiBS5IEPgDxnsmiJSpH67+qzN3FT4lKw==
+
 iconv-lite@^0.4.24, iconv-lite@~0.4.13:
   version "0.4.24"
   resolved "https://registry.yarnpkg.com/iconv-lite/-/iconv-lite-0.4.24.tgz#2022b4b25fbddc21d2f524974a474aafe733908b"
