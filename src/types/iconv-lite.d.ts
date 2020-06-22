@@ -16,13 +16,25 @@ declare module "iconv-lite" {
 
   export function encodingExists(encoding: string): boolean;
 
-	// Stream API
-	export function decodeStream(encoding: string, options?: Options): NodeJS.ReadWriteStream;
+  // Stream API
+  export function decodeStream(
+    encoding: string,
+    options?: Options
+  ): NodeJS.ReadWriteStream;
 
-	export function encodeStream(encoding: string, options?: Options): NodeJS.ReadWriteStream;
+  export function encodeStream(
+    encoding: string,
+    options?: Options
+  ): NodeJS.ReadWriteStream;
 
-	// Low-level stream APIs
-	export function getEncoder(encoding: string, options?: Options): EncoderStream;
+  // Low-level stream APIs
+  export function getEncoder(
+    encoding: string,
+    options?: Options
+  ): EncoderStream;
 
-	export function getDecoder(encoding: string, options?: Options): DecoderStream;
+  export function getDecoder(
+    encoding: string,
+    options?: Options
+  ): DecoderStream;
 }

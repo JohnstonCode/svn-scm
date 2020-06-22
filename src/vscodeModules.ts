@@ -36,18 +36,16 @@ function getNodeModule(moduleName: string) {
   try {
     module.paths.unshift(`${baseDir}/node_modules`);
     return require(moduleName);
-  } catch (error) {
-
-  }
+  } catch (error) {}
 
   return undefined;
 }
 
-let iconv_lite = getNodeModule('iconv-lite-umd') as typeof import('iconv-lite-umd');
+let iconv_lite = getNodeModule(
+  "iconv-lite-umd"
+) as typeof import("iconv-lite-umd");
 if (!iconv_lite) {
-  iconv_lite = loadVSCodeModule(
-    "iconv-lite"
-  ) as typeof import('iconv-lite');
+  iconv_lite = loadVSCodeModule("iconv-lite") as typeof import("iconv-lite");
 }
 
 export const iconv = iconv_lite;
