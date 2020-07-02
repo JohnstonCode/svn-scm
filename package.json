@@ -50,7 +50,7 @@
     },
     "dependencies": {
         "chardet": "^1.2.0",
-        "dayjs": "^1.8.28",
+        "dayjs": "^1.8.29",
         "minimatch": "^3.0.4",
         "original-fs": "^1.0.0",
         "semver": "^7.2.1",
