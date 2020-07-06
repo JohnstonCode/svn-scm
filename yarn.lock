@@ -930,10 +930,10 @@ chalk@^4.0.0:
     ansi-styles "^4.1.0"
     supports-color "^7.1.0"
 
-chardet@^1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/chardet/-/chardet-1.2.0.tgz#a1d1c97df9aa6517d3965ff193b5087f33fa98a3"
-  integrity sha512-ks9x93utxiilvtGa+Rl6+5dOxAw75Z2Jp7lRuP3jViMA+IpxbHoq7e4v5CHZ08KQuutWsIaOlUVriBmUiyesig==
+chardet@^1.2.1:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/chardet/-/chardet-1.2.1.tgz#8e0b4441c96f1ad747431989db1ff590739c6931"
+  integrity sha512-bnDt+69nS8Hi7Xmt0uDiQ32/hRpMK/0pc4lc32Y87voBgdsz26VZXOyo5VNQWQfe7rUsevZIfWB82C5QSpCXcQ==
 
 cheerio@^1.0.0-rc.1:
   version "1.0.0-rc.3"
