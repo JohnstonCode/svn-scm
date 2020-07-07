@@ -1,3 +1,10 @@
+## [2.11.5](https://github.com/JohnstonCode/svn-scm/compare/v2.11.4...v2.11.5) (2020-07-07)
+
+
+### Bug Fixes
+
+* Typo in keepLocal warning message ([#996](https://github.com/JohnstonCode/svn-scm/issues/996)) ([c8945b8](https://github.com/JohnstonCode/svn-scm/commit/c8945b87f42bfdebd74daaaecadf33cfc9560d1f))
+
 ## [2.11.4](https://github.com/JohnstonCode/svn-scm/compare/v2.11.3...v2.11.4) (2020-06-22)
 
 
