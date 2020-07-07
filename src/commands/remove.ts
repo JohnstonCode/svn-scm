@@ -15,7 +15,7 @@ export class Remove extends Command {
 
     let keepLocal: boolean;
     const answer = await window.showWarningMessage(
-      "Would you like to keep a local copy of the files?.",
+      "Would you like to keep a local copy of the files?",
       { modal: true },
       "Yes",
       "No"
