@@ -33,8 +33,8 @@ jobs:
         run: 'yarn install --frozen-lockfile || yarn install --frozen-lockfile'
         shell: bash
       
-      - name: Compile sources
-        run: yarn run build
+      - name: Compile sources for tests
+        run: yarn run test-compile
 
       - name: Cache VSCode binary
         id: cache-vscode

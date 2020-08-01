@@ -35,8 +35,8 @@
     "scripts": {
         "build": "yarn run build:ts && yarn run build:css",
         "build:css": "yarn node-sass scss/ -o css/ --output-style compressed",
-        "build:ts": "yarn tsc -p ./",
-        "compile": "yarn tsc -watch -p ./",
+        "build:ts": "webpack --mode production",
+        "compile": "webpack --mode development --watch",
         "lint": "eslint \"src/**/*.ts\"",
         "lint:fix": "yarn run lint --fix",
         "organize": "node ./out/tools/organize.js",
@@ -46,7 +46,8 @@
         "test": "node ./out/test/runTest.js",
         "tools:genReadme": "node ./out/tools/generateConfigSectionForReadme.js",
         "vscode:prepublish": "yarn run lint && yarn run build",
-        "watch:css": "yarn run build:css -w"
+        "watch:css": "yarn run build:css -w",
+        "test-compile": "tsc -p ./"
     },
     "dependencies": {
         "chardet": "^1.2.1",
@@ -82,8 +83,11 @@
         "prettylint": "^1.0.0",
         "semantic-release": "^17.1.1",
         "semantic-release-vsce": "^3.0.1",
+        "ts-loader": "^8.0.1",
         "typescript": "^3.9.7",
-        "vscode-test": "^1.4.0"
+        "vscode-test": "^1.4.0",
+        "webpack": "^4.44.1",
+        "webpack-cli": "^3.3.12"
     },
     "config": {
         "commitizen": {
