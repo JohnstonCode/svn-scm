@@ -876,6 +876,10 @@ export class Repository implements IRemoteRepository {
     );
   }
 
+  public async logByUser(user: string) {
+    return this.run(Operation.Log, () => this.repository.logByUser(user));
+  }
+
   public async cleanup() {
     return this.run(Operation.CleanUp, () => this.repository.cleanup());
   }

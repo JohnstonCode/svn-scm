@@ -1274,6 +1274,11 @@
                     "type": "boolean",
                     "description": "Set to ignore externals definitions on update (add --ignore-externals)",
                     "default": true
+                },
+                "svn.previousCommitsUser": {
+                    "type": "string",
+                    "description": "Only show previous commits for a given user. Requires svn >= 1.8",
+                    "default": null
                 }
             }
         }
