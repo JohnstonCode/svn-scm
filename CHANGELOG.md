@@ -1,3 +1,10 @@
+## [2.11.6](https://github.com/JohnstonCode/svn-scm/compare/v2.11.5...v2.11.6) (2020-08-01)
+
+
+### Bug Fixes
+
+* Extension is now bundled with webpack ([#1020](https://github.com/JohnstonCode/svn-scm/issues/1020)) ([2a36ffe](https://github.com/JohnstonCode/svn-scm/commit/2a36ffebba6cfd417f7854e8c3d9e574b1ee6591))
+
 ## [2.11.5](https://github.com/JohnstonCode/svn-scm/compare/v2.11.4...v2.11.5) (2020-07-07)
 
 

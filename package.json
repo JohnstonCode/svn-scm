@@ -2,7 +2,7 @@
     "name": "svn-scm",
     "displayName": "SVN",
     "description": "Integrated Subversion source control",
-    "version": "2.11.5",
+    "version": "2.11.6",
     "publisher": "johnstoncode",
     "engines": {
         "vscode": "^1.44.0"
@@ -44,10 +44,10 @@
         "style-check": "yarn prettylint 'src/**/*.ts'",
         "style-fix": "yarn prettier --write \"src/**/*.ts\"",
         "test": "node ./out/test/runTest.js",
+        "test-compile": "tsc -p ./",
         "tools:genReadme": "node ./out/tools/generateConfigSectionForReadme.js",
         "vscode:prepublish": "yarn run lint && yarn run build",
-        "watch:css": "yarn run build:css -w",
-        "test-compile": "tsc -p ./"
+        "watch:css": "yarn run build:css -w"
     },
     "dependencies": {
         "chardet": "^1.2.1",
