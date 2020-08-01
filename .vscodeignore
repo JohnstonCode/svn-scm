@@ -22,3 +22,6 @@ tslint.json
 vsc-extension-quickstart.md
 .dependabot/**
 images/docs/**
+
+out/**
+!out/extension.js*
