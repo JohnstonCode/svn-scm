@@ -1,3 +1,10 @@
+## [2.11.7](https://github.com/JohnstonCode/svn-scm/compare/v2.11.6...v2.11.7) (2020-08-02)
+
+
+### Bug Fixes
+
+* Fixed webpack dep issue on remote vscode ([#1025](https://github.com/JohnstonCode/svn-scm/issues/1025)) ([9a58729](https://github.com/JohnstonCode/svn-scm/commit/9a58729acf6eadf73a70b51ec269bc3443314639))
+
 ## [2.11.6](https://github.com/JohnstonCode/svn-scm/compare/v2.11.5...v2.11.6) (2020-08-01)
 
 
