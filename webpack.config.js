@@ -27,7 +27,6 @@ const config = {
     extensions: ['.ts', '.js']
   },
   module: {
-    noParse: /vscodeModules/,
     rules: [
       {
         test: /\.ts$/,
