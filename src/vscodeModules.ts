@@ -1,12 +1,12 @@
 // Only this file is allowed to import VSCode modules
 // tslint:disable: import-blacklist
 
-import { env } from "vscode";
+import { env, window } from "vscode";
 
 declare const __webpack_require__: typeof require;
 declare const __non_webpack_require__: typeof require;
 
-function getNodeModule<T>(moduleName: string): T | undefined {
+function getNodeModule<T>(moduleName: string, showError = true): T | undefined {
   const r =
     typeof __webpack_require__ === "function"
       ? __non_webpack_require__
@@ -19,7 +19,9 @@ function getNodeModule<T>(moduleName: string): T | undefined {
   try {
     return r(`${env.appRoot}/node_modules/${moduleName}`);
   } catch (err) {
-    console.log(`Missing dependency: ${moduleName}`);
+    if (showError) {
+      window.showErrorMessage(`Missing dependency: ${moduleName}`);
+    }
   }
   return undefined;
 }
@@ -27,7 +29,8 @@ function getNodeModule<T>(moduleName: string): T | undefined {
 export const keytar = getNodeModule("keytar") as typeof import("keytar");
 
 let iconv_lite = getNodeModule(
-  "iconv-lite-umd"
+  "iconv-lite-umd",
+  false
 ) as typeof import("iconv-lite-umd");
 if (!iconv_lite) {
   iconv_lite = getNodeModule("iconv-lite") as typeof import("iconv-lite");
