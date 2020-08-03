@@ -91,7 +91,7 @@ export function registerCommands(
   disposables.push(new OpenChangeHead());
   disposables.push(new OpenHeadFile());
   disposables.push(new RevertAll());
-  disposables.push(new PickCommitMessage());
+  disposables.push(new PickCommitMessage(sourceControlManager.svn.version));
   disposables.push(new RevertExplorer());
   disposables.push(new SearchLogByRevision());
   disposables.push(new SearchLogByText());

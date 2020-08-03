@@ -702,6 +702,12 @@ export class Repository {
     return parseSvnLog(result.stdout);
   }
 
+  public async logByUser(user: string) {
+    const result = await this.exec(["log", "--xml", "-v", "--search", user]);
+
+    return parseSvnLog(result.stdout);
+  }
+
   public async countNewCommit(revision: string = "BASE:HEAD") {
     const result = await this.exec(["log", "-r", revision, "-q", "--xml"]);
 
