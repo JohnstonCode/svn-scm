@@ -30,6 +30,7 @@ export function toSvnUri(
 }
 
 export function getIconUri(iconName: string, theme: string): Uri {
+  // Path needs to be relative from out/
   const iconsRootPath = path.join(__dirname, "..", "icons");
   return Uri.file(path.join(iconsRootPath, theme, `${iconName}.svg`));
 }
