@@ -2,7 +2,7 @@
     "name": "svn-scm",
     "displayName": "SVN",
     "description": "Integrated Subversion source control",
-    "version": "2.11.7",
+    "version": "2.12.0",
     "publisher": "johnstoncode",
     "engines": {
         "vscode": "^1.44.0"
@@ -1212,6 +1212,11 @@
                     "default": null,
                     "scope": "machine"
                 },
+                "svn.previousCommitsUser": {
+                    "type": "string",
+                    "description": "Only show previous commits for a given user. Requires svn >= 1.8",
+                    "default": null
+                },
                 "svn.refresh.remoteChanges": {
                     "type": "boolean",
                     "description": "Refresh remote changes on refresh command",
@@ -1274,11 +1279,6 @@
                     "type": "boolean",
                     "description": "Set to ignore externals definitions on update (add --ignore-externals)",
                     "default": true
-                },
-                "svn.previousCommitsUser": {
-                    "type": "string",
-                    "description": "Only show previous commits for a given user. Requires svn >= 1.8",
-                    "default": null
                 }
             }
         }

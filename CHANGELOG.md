@@ -1,3 +1,10 @@
+# [2.12.0](https://github.com/JohnstonCode/svn-scm/compare/v2.11.7...v2.12.0) (2020-08-03)
+
+
+### Features
+
+* Added config option to show previous commits by user ([#1023](https://github.com/JohnstonCode/svn-scm/issues/1023)) ([42d3c36](https://github.com/JohnstonCode/svn-scm/commit/42d3c3616697c5ba0459d93fb2940d5335f46e44))
+
 ## [2.11.7](https://github.com/JohnstonCode/svn-scm/compare/v2.11.6...v2.11.7) (2020-08-02)
 
 

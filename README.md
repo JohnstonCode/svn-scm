@@ -157,6 +157,9 @@ Here are all of the extension settings with their default values. To change any 
   // Path to the svn executable
   "svn.path": null,
 
+  // Only show previous commits for a given user. Requires svn >= 1.8
+  "svn.previousCommitsUser": null,
+
   // Refresh remote changes on refresh command
   "svn.refresh.remoteChanges": null,
 
