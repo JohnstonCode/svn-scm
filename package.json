@@ -2,7 +2,7 @@
     "name": "svn-scm",
     "displayName": "SVN",
     "description": "Integrated Subversion source control",
-    "version": "2.11.6",
+    "version": "2.11.7",
     "publisher": "johnstoncode",
     "engines": {
         "vscode": "^1.44.0"
@@ -83,7 +83,7 @@
         "prettylint": "^1.0.0",
         "semantic-release": "^17.1.1",
         "semantic-release-vsce": "^3.0.1",
-        "ts-loader": "^8.0.1",
+        "ts-loader": "^8.0.2",
         "typescript": "^3.9.7",
         "vscode-test": "^1.4.0",
         "webpack": "^4.44.1",
