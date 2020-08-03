@@ -1,3 +1,10 @@
+## [2.12.1](https://github.com/JohnstonCode/svn-scm/compare/v2.12.0...v2.12.1) (2020-08-03)
+
+
+### Bug Fixes
+
+* Fixed styling on "Commit selected" page ([#1028](https://github.com/JohnstonCode/svn-scm/issues/1028)) ([c63e3a3](https://github.com/JohnstonCode/svn-scm/commit/c63e3a37680b2c6a664afe0d7314f8388c15de41))
+
 # [2.12.0](https://github.com/JohnstonCode/svn-scm/compare/v2.11.7...v2.12.0) (2020-08-03)
 
 
