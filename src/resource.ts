@@ -10,6 +10,7 @@ import { PropStatus, Status } from "./common/types";
 import { memoize } from "./decorators";
 import { configuration } from "./helpers/configuration";
 
+// Path needs to be relative from out/
 const iconsRootPath = path.join(__dirname, "..", "icons");
 
 function getIconUri(iconName: string, theme: string): Uri {

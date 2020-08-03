@@ -68,7 +68,8 @@ export function transform(
 
 export function getIconObject(iconName: string): { light: Uri; dark: Uri } {
   // XXX Maybe use full path to extension?
-  const iconsRootPath = path.join(__dirname, "..", "..", "icons");
+  // Path needs to be relative from out/
+  const iconsRootPath = path.join(__dirname, "..", "icons");
   const toUri = (theme: string) =>
     Uri.file(path.join(iconsRootPath, theme, `${iconName}.svg`));
   return {
