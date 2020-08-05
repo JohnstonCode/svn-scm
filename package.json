@@ -77,7 +77,7 @@
         "glob": "^7.1.4",
         "iconv-lite-umd": "0.6.8",
         "milligram": "^1.4.1",
-        "mocha": "^8.1.0",
+        "mocha": "^8.1.1",
         "node-sass": "^4.14.1",
         "prettier": "^2.0.5",
         "prettylint": "^1.0.0",
