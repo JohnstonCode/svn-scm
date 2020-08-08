@@ -23,7 +23,6 @@ vsc-extension-quickstart.md
 .dependabot/**
 images/docs/**
 bin
-node_modules
 webpack.config.js
 
 out/**

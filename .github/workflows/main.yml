@@ -71,7 +71,6 @@ jobs:
       - name: Release Open VSX
         if: startsWith(matrix.os, 'ubuntu') && matrix.version == 'stable' && github.ref == 'refs/heads/master' && github.repository == 'JohnstonCode/svn-scm'
         run: |
-          sed -i '/^node_modules/d' .vscodeignore
           yarn add iconv-lite jschardet
           npx vsce package -o svn-scm-ovsx.vsix
           npx ovsx publish svn-scm-ovsx.vsix -p ${{ secrets.ovsxToken }}
@@ -132,7 +131,6 @@ jobs:
 
       - name: Package open-vsx extension
         run: |
-          sed -i '/^node_modules/d' .vscodeignore
           yarn add iconv-lite jschardet
           npx vsce package -o svn-scm-ovsx.vsix
 
