@@ -114,13 +114,14 @@ jobs:
           name: "svn-scm-${{ github.sha }}.vsix"
           path: "svn-scm.vsix"
 
-      - name: Package bundled extension
+      - name: Package open-vsx extension
         run: |
+          sed -i '/^node_modules/d' .vscodeignore
           yarn add iconv-lite jschardet
-          npx vsce package -o svn-scm-bundled.vsix
+          npx vsce package -o svn-scm-ovsx.vsix
 
-      - name: Upload bundled artifact
+      - name: Upload open-vsx artifact
         uses: actions/upload-artifact@v1
         with:
-          name: "svn-scm-bundled-${{ github.sha }}.vsix"
-          path: "svn-scm-bundled.vsix"
+          name: "svn-scm-ovsx-${{ github.sha }}.vsix"
+          path: "svn-scm-ovsx.vsix"
