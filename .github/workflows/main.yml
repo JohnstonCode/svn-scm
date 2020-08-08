@@ -75,7 +75,7 @@ jobs:
           yarn add iconv-lite jschardet
           npx vsce package -o svn-scm-ovsx.vsix
           npx ovsx publish svn-scm-ovsx.vsix -p ${{ secrets.ovsxToken }}
-      
+
       - name: Upload Open VSX to release
         uses: svenstaro/upload-release-action@v2
         with:
