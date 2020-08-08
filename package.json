@@ -79,6 +79,7 @@
         "milligram": "^1.4.1",
         "mocha": "^8.1.1",
         "node-sass": "^4.14.1",
+        "ovsx": "^0.1.0-next.dacd2fd",
         "prettier": "^2.0.5",
         "prettylint": "^1.0.0",
         "semantic-release": "^17.1.1",
