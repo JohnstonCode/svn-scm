@@ -86,9 +86,9 @@ jobs:
         if: startsWith(matrix.os, 'ubuntu') && matrix.version == 'stable' && github.ref == 'refs/heads/master' && github.repository == 'JohnstonCode/svn-scm'
         uses: svenstaro/upload-release-action@v2
         with:
-          repo_token: ${{ steps.getTag.outputs.tag }}
+          repo_token: ${{ secrets.githubToken }}
           file: svn-scm-ovsx.vsix
-          tag: ${{ github.ref }}
+          tag: ${{ steps.getTag.outputs.tag }}
 
   eslint:
     runs-on: ubuntu-latest
