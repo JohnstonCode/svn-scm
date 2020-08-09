@@ -11,22 +11,29 @@ function getNodeModule<T>(moduleName: string, showError = true): T | undefined {
     typeof __webpack_require__ === "function"
       ? __non_webpack_require__
       : require;
-  try {
-    return r(`${env.appRoot}/node_modules.asar/${moduleName}`);
-  } catch (err) {
-    // Not in ASAR.
-  }
-  try {
-    return r(`${env.appRoot}/node_modules/${moduleName}`);
-  } catch (err) {
-    if (showError) {
-      window.showErrorMessage(`Missing dependency: ${moduleName}`);
+
+  const paths = [
+    `${env.appRoot}/node_modules.asar/${moduleName}`,
+    `${env.appRoot}/node_modules/${moduleName}`,
+    moduleName
+  ];
+
+  for (const p of paths) {
+    try {
+      return r(p);
+    } catch (err) {
+      // Not in path.
     }
   }
+
+  if (showError) {
+    window.showErrorMessage(`Missing dependency: ${moduleName}`);
+  }
+
   return undefined;
 }
 
-export const keytar = getNodeModule("keytar") as typeof import("keytar");
+export const keytar = getNodeModule("keytar", false) as typeof import("keytar");
 
 let iconv_lite = getNodeModule(
   "iconv-lite-umd",
