@@ -1,3 +1,10 @@
+## [2.12.2](https://github.com/JohnstonCode/svn-scm/compare/v2.12.1...v2.12.2) (2020-08-09)
+
+
+### Bug Fixes
+
+* Added Open VSX build ([#914](https://github.com/JohnstonCode/svn-scm/issues/914)) ([#963](https://github.com/JohnstonCode/svn-scm/issues/963)) ([d52c630](https://github.com/JohnstonCode/svn-scm/commit/d52c630189d27367bfcbd2e9fc00ee6b1a4686d5))
+
 ## [2.12.1](https://github.com/JohnstonCode/svn-scm/compare/v2.12.0...v2.12.1) (2020-08-03)
 
 
