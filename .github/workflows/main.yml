@@ -76,6 +76,7 @@ jobs:
           npx ovsx publish svn-scm-ovsx.vsix -p ${{ secrets.ovsxToken }}
 
       - name: 'Get tag'
+        if: startsWith(matrix.os, 'ubuntu') && matrix.version == 'stable' && github.ref == 'refs/heads/master' && github.repository == 'JohnstonCode/svn-scm'
         id: getTag
         uses: "WyriHaximus/github-action-get-previous-tag@master"
         env:
