@@ -1,3 +1,10 @@
+## [2.12.3](https://github.com/JohnstonCode/svn-scm/compare/v2.12.2...v2.12.3) (2020-08-09)
+
+
+### Bug Fixes
+
+* tag open vsx release properly ([#1033](https://github.com/JohnstonCode/svn-scm/issues/1033)) ([486427d](https://github.com/JohnstonCode/svn-scm/commit/486427d80274de0307152daea1ff9bf2727ab6b6))
+
 ## [2.12.2](https://github.com/JohnstonCode/svn-scm/compare/v2.12.1...v2.12.2) (2020-08-09)
 
 
