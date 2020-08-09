@@ -75,13 +75,20 @@ jobs:
           npx vsce package -o svn-scm-ovsx.vsix
           npx ovsx publish svn-scm-ovsx.vsix -p ${{ secrets.ovsxToken }}
 
+      - name: 'Get tag'
+        if: startsWith(matrix.os, 'ubuntu') && matrix.version == 'stable' && github.ref == 'refs/heads/master' && github.repository == 'JohnstonCode/svn-scm'
+        id: getTag
+        uses: "WyriHaximus/github-action-get-previous-tag@master"
+        env:
+          GITHUB_TOKEN: "${{ secrets.githubToken }}"
+
       - name: Upload Open VSX to release
         if: startsWith(matrix.os, 'ubuntu') && matrix.version == 'stable' && github.ref == 'refs/heads/master' && github.repository == 'JohnstonCode/svn-scm'
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.githubToken }}
           file: svn-scm-ovsx.vsix
-          tag: ${{ github.ref }}
+          tag: ${{ steps.getTag.outputs.tag }}
 
   eslint:
     runs-on: ubuntu-latest
