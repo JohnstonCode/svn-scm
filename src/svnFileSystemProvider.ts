@@ -16,7 +16,13 @@ import { SourceControlManager } from "./source_control_manager";
 import { fromSvnUri } from "./uri";
 import { SvnUriAction, RepositoryChangeEvent } from "./common/types";
 import { debounce, throttle } from "./decorators";
-import { filterEvent, eventToPromise, isDescendant, pathEquals } from "./util";
+import {
+  filterEvent,
+  eventToPromise,
+  isDescendant,
+  pathEquals,
+  EmptyDisposable
+} from "./util";
 
 const THREE_MINUTES = 1000 * 60 * 3;
 const FIVE_MINUTES = 1000 * 60 * 5;
@@ -92,7 +98,7 @@ export class SvnFileSystemProvider implements FileSystemProvider, Disposable {
   }
 
   watch(): Disposable {
-    return { dispose: function () {} };
+    return EmptyDisposable;
   }
 
   async stat(uri: Uri): Promise<FileStat> {

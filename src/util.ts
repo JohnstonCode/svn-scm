@@ -219,3 +219,5 @@ export function pathEquals(a: string, b: string): boolean {
 
   return a === b;
 }
+
+export const EmptyDisposable = toDisposable(() => null);
