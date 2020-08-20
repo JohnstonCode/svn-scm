@@ -30,9 +30,12 @@ import {
   IDisposable,
   isDescendant,
   isSvnFolder,
-  normalizePath
+  normalizePath,
+  eventToPromise
 } from "./util";
 import { matchAll } from "./util/globMatch";
+
+type State = "uninitialized" | "initialized";
 
 export class SourceControlManager implements IDisposable {
   private _onDidOpenRepository = new EventEmitter<Repository>();
@@ -59,6 +62,29 @@ export class SourceControlManager implements IDisposable {
   private maxDepth: number = 0;
 
   private configurationChangeDisposable: Disposable;
+
+  private _onDidChangeState = new EventEmitter<State>();
+  readonly onDidchangeState = this._onDidChangeState.event;
+
+  private _state: State = "uninitialized";
+  get state(): State {
+    return this._state;
+  }
+
+  setState(state: State): void {
+    this._state = state;
+    this._onDidChangeState.fire(state);
+  }
+
+  get isInitialized(): Promise<void> {
+    if (this._state === "initialized") {
+      return Promise.resolve();
+    }
+
+    return eventToPromise(
+      filterEvent(this.onDidchangeState, s => s === "initialized")
+    ) as Promise<any>;
+  }
 
   get repositories(): Repository[] {
     return this.openRepositories.map(r => r.repository);
@@ -148,6 +174,8 @@ export class SourceControlManager implements IDisposable {
       this,
       this.disposables
     );
+
+    this.setState("initialized");
 
     await this.scanWorkspaceFolders();
   }

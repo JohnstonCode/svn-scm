@@ -13,7 +13,10 @@ suite("Test temp svn fs", () => {
       "test content"
     );
 
-    assert.equal(revisionUri.fsPath, join('/', '1181ae15a77d83ac0b077051dfed21ed', 'r30_test.js'));
+    assert.equal(
+      revisionUri.fsPath,
+      join("/", "1181ae15a77d83ac0b077051dfed21ed", "r30_test.js")
+    );
   });
 
   test("Temp file is created", async () => {
