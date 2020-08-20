@@ -113,7 +113,7 @@ export class SvnFileSystemProvider implements FileSystemProvider, Disposable {
       const listResults = await repository.list(fsPath);
 
       if (listResults.length) {
-        size = new Number(listResults[0].size) as number;
+        size = Number(listResults[0].size) as number;
         mtime = Date.parse(listResults[0].commit.date);
       }
     } catch {}
