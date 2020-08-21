@@ -132,7 +132,7 @@
         "commands": [
             {
                 "command": "svn.add",
-                "title": "Add",
+                "title": "%svn.command.add%",
                 "category": "SVN",
                 "icon": {
                     "light": "icons/light/add.svg",
@@ -141,23 +141,23 @@
             },
             {
                 "command": "svn.addToIgnoreExplorer",
-                "title": "Ignore file/ext from SVN (svn:ignore)",
+                "title": "%svn.command.addToIgnore%",
                 "category": "SVN"
             },
             {
                 "command": "svn.addToIgnoreSCM",
-                "title": "Ignore file/ext from SVN (svn:ignore)",
+                "title": "%svn.command.addToIgnore%",
                 "category": "SVN"
             },
             {
                 "command": "svn.branchchanges.openDiff",
                 "category": "SVN",
-                "title": "Open diff"
+                "title": "%svn.command.openDiff%"
             },
             {
                 "command": "svn.branchchanges.refresh",
                 "category": "SVN",
-                "title": "Refresh branch changes",
+                "title": "%svn.command.refreshBranchChanges%",
                 "icon": {
                     "dark": "icons/dark/refresh.svg",
                     "light": "icons/light/refresh.svg"
@@ -165,7 +165,7 @@
             },
             {
                 "command": "svn.changelist",
-                "title": "Set changelist",
+                "title": "%svn.command.setChangelist%",
                 "category": "SVN",
                 "icon": {
                     "light": "icons/light/changelist.svg",
@@ -174,22 +174,22 @@
             },
             {
                 "command": "svn.checkout",
-                "title": "Checkout",
+                "title": "%svn.command.checkout%",
                 "category": "SVN"
             },
             {
                 "command": "svn.cleanup",
-                "title": "Clean up working copy",
+                "title": "%svn.command.cleanWorkingCopy%",
                 "category": "SVN"
             },
             {
                 "command": "svn.close",
-                "title": "Close repository",
+                "title": "%svn.command.closeRepository%",
                 "category": "SVN"
             },
             {
                 "command": "svn.commit",
-                "title": "Commit Selected",
+                "title": "%svn.command.commitSelected%",
                 "category": "SVN",
                 "icon": {
                     "light": "icons/light/check.svg",
@@ -198,7 +198,7 @@
             },
             {
                 "command": "svn.commitWithMessage",
-                "title": "Commit Changes",
+                "title": "%svn.command.commitChanges%",
                 "category": "SVN",
                 "icon": {
                     "light": "icons/light/check.svg",
@@ -207,38 +207,38 @@
             },
             {
                 "command": "svn.deleteUnversioned",
-                "title": "Delete selected files",
+                "title": "%svn.command.deleteSelectedFiles%",
                 "category": "SVN"
             },
             {
                 "command": "svn.itemlog.copymsg",
                 "category": "SVN",
-                "title": "Copy message"
+                "title": "%svn.command.copyMessage%"
             },
             {
                 "command": "svn.itemlog.copyrevision",
                 "category": "SVN",
-                "title": "Copy revision number"
+                "title": "%svn.command.copyRevisionNumber%"
             },
             {
                 "command": "svn.itemlog.openDiff",
-                "title": "Open diff",
+                "title": "%svn.command.openDiff%",
                 "category": "SVN"
             },
             {
                 "command": "svn.itemlog.openDiffBase",
-                "title": "Open diff with BASE",
+                "title": "%svn.command.openDiffBase%",
                 "category": "SVN"
             },
             {
                 "command": "svn.itemlog.openFileRemote",
-                "title": "Open this revision",
+                "title": "%svn.command.openThisRevision%",
                 "category": "SVN"
             },
             {
                 "command": "svn.itemlog.refresh",
                 "category": "SVN",
-                "title": "Refresh log for item",
+                "title": "%svn.command.refreshLogForItem%",
                 "icon": {
                     "dark": "icons/dark/refresh.svg",
                     "light": "icons/light/refresh.svg"
@@ -246,12 +246,12 @@
             },
             {
                 "command": "svn.log",
-                "title": "Show commit messages",
+                "title": "%svn.command.showCommitMessages%",
                 "category": "SVN"
             },
             {
                 "command": "svn.openChangeBase",
-                "title": "Open Changes with BASE",
+                "title": "%svn.command.openChangesBase%",
                 "category": "SVN",
                 "icon": {
                     "light": "icons/light/open-change-base.svg",
@@ -260,7 +260,7 @@
             },
             {
                 "command": "svn.openChangeHead",
-                "title": "Open Changes with HEAD",
+                "title": "%svn.command.openChangesHead%",
                 "category": "SVN",
                 "icon": {
                     "light": "icons/light/open-change-head.svg",
@@ -269,12 +269,12 @@
             },
             {
                 "command": "svn.openChangePrev",
-                "title": "Open Changes with PREV",
+                "title": "%svn.command.openChangesPrev%",
                 "category": "SVN"
             },
             {
                 "command": "svn.openFile",
-                "title": "Open File",
+                "title": "%svn.command.openFile%",
                 "category": "SVN",
                 "icon": {
                     "light": "icons/light/open-file.svg",
@@ -283,27 +283,27 @@
             },
             {
                 "command": "svn.openHEADFile",
-                "title": "Open File (HEAD)",
+                "title": "%svn.command.openFileHead%",
                 "category": "SVN"
             },
             {
                 "command": "svn.patch",
-                "title": "Show diff patch for selected",
+                "title": "%svn.command.showPatchSelected%",
                 "category": "SVN"
             },
             {
                 "command": "svn.patchAll",
-                "title": "Show all diff patch",
+                "title": "%svn.command.showPatchAll%",
                 "category": "SVN"
             },
             {
                 "command": "svn.patchChangeList",
-                "title": "Show patch from changelist",
+                "title": "%svn.command.showPatchChangelist%",
                 "category": "SVN"
             },
             {
                 "command": "svn.pickCommitMessage",
-                "title": "Pick a previous commit message",
+                "title": "%svn.command.pickPreviousCommitMessage%",
                 "category": "SVN",
                 "icon": {
                     "light": "icons/light/icon-history.svg",
@@ -312,7 +312,7 @@
             },
             {
                 "command": "svn.refresh",
-                "title": "Refresh",
+                "title": "%svn.command.refresh%",
                 "category": "SVN",
                 "icon": {
                     "light": "icons/light/refresh.svg",
@@ -321,7 +321,7 @@
             },
             {
                 "command": "svn.refreshRemoteChanges",
-                "title": "Refresh Remote Changes",
+                "title": "%svn.command.refreshRemoteChanges%",
                 "category": "SVN",
                 "icon": {
                     "light": "icons/light/refresh.svg",
@@ -330,23 +330,23 @@
             },
             {
                 "command": "svn.remove",
-                "title": "Remove Selected",
+                "title": "%svn.command.removeSelected%",
                 "category": "SVN"
             },
             {
                 "command": "svn.removeUnversioned",
-                "title": "Remove unversioned files",
+                "title": "%svn.command.removeUnversioned%",
                 "category": "SVN"
             },
             {
                 "command": "svn.renameExplorer",
-                "title": "Rename with SVN",
+                "title": "%svn.command.rename%",
                 "category": "SVN"
             },
             {
                 "command": "svn.repolog.addrepolike",
                 "category": "SVN",
-                "title": "Add repo-like path",
+                "title": "%svn.command.addRepoPath%",
                 "icon": {
                     "dark": "icons/dark/add.svg",
                     "light": "icons/light/add.svg"
@@ -355,32 +355,32 @@
             {
                 "command": "svn.repolog.copymsg",
                 "category": "SVN",
-                "title": "Copy message"
+                "title": "%svn.command.copyMessage%"
             },
             {
                 "command": "svn.repolog.copyrevision",
                 "category": "SVN",
-                "title": "Copy revision number"
+                "title": "%svn.command.copyRevisionNumber%"
             },
             {
                 "command": "svn.repolog.openDiff",
                 "category": "SVN",
-                "title": "Open diff"
+                "title": "%svn.command.openDiff%"
             },
             {
                 "command": "svn.repolog.openFileLocal",
                 "category": "SVN",
-                "title": "Open WC version of a file"
+                "title": "%svn.command.openWcFile%"
             },
             {
                 "command": "svn.repolog.openFileRemote",
                 "category": "SVN",
-                "title": "Open this revision"
+                "title": "%svn.command.openThisRevision%"
             },
             {
                 "command": "svn.repolog.refresh",
                 "category": "SVN",
-                "title": "Refresh log",
+                "title": "%svn.command.refreshLog%",
                 "icon": {
                     "dark": "icons/dark/refresh.svg",
                     "light": "icons/light/refresh.svg"
@@ -389,11 +389,11 @@
             {
                 "command": "svn.repolog.remove",
                 "category": "SVN",
-                "title": "Remove"
+                "title": "%svn.command.remove%"
             },
             {
                 "command": "svn.resolve",
-                "title": "Resolve conflicts for selected",
+                "title": "%svn.command.resolveSelected%",
                 "category": "SVN",
                 "icon": {
                     "light": "icons/light/check.svg",
@@ -402,12 +402,12 @@
             },
             {
                 "command": "svn.resolveAll",
-                "title": "Resolve all conflicts",
+                "title": "%svn.command.resolveAll%",
                 "category": "SVN"
             },
             {
                 "command": "svn.revert",
-                "title": "Revert Selected File",
+                "title": "%svn.command.revertSelected%",
                 "category": "SVN",
                 "icon": {
                     "light": "icons/light/clean.svg",
@@ -416,7 +416,7 @@
             },
             {
                 "command": "svn.revertAll",
-                "title": "Revert All Changes",
+                "title": "%svn.command.revertAll%",
                 "category": "SVN",
                 "icon": {
                     "light": "icons/light/clean.svg",
@@ -425,7 +425,7 @@
             },
             {
                 "command": "svn.revertChange",
-                "title": "Revert Change",
+                "title": "%svn.command.revertChange%",
                 "category": "SVN",
                 "icon": {
                     "light": "icons/light/clean.svg",
@@ -434,7 +434,7 @@
             },
             {
                 "command": "svn.revertExplorer",
-                "title": "Revert with SVN",
+                "title": "%svn.command.revertSvn%",
                 "category": "SVN",
                 "icon": {
                     "light": "icons/light/clean.svg",
@@ -443,22 +443,22 @@
             },
             {
                 "command": "svn.searchLogByRevision",
-                "title": "Search log by revision",
+                "title": "%svn.command.searchLogRevision%",
                 "category": "SVN"
             },
             {
                 "command": "svn.searchLogByText",
-                "title": "Search log",
+                "title": "%svn.command.searchLog%",
                 "category": "SVN"
             },
             {
                 "command": "svn.switchBranch",
-                "title": "Switch Branch",
+                "title": "%svn.command.switchBranch%",
                 "category": "SVN"
             },
             {
                 "command": "svn.treeview.pullIncomingChange",
-                "title": "Update selected",
+                "title": "%svn.command.updateSelected%",
                 "category": "SVN",
                 "icon": {
                     "light": "icons/light/download.svg",
@@ -467,7 +467,7 @@
             },
             {
                 "command": "svn.treeview.refreshProvider",
-                "title": "Refresh",
+                "title": "%svn.command.refresh%",
                 "category": "SVN",
                 "icon": {
                     "light": "icons/light/refresh.svg",
@@ -476,7 +476,7 @@
             },
             {
                 "command": "svn.update",
-                "title": "Update",
+                "title": "%svn.command.update%",
                 "category": "SVN",
                 "icon": {
                     "light": "icons/light/download.svg",

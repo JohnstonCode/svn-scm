@@ -25,12 +25,14 @@ import { BranchChangesProvider } from "./historyView/branchChangesProvider";
 import { IsSvn19orGreater } from "./contexts/isSvn19orGreater";
 import { IsSvn18orGreater } from "./contexts/isSvn18orGreater";
 import { tempSvnFs } from "./temp_svn_fs";
+import { init } from "./localise";
 
-async function init(
+async function _init(
   _context: ExtensionContext,
   outputChannel: OutputChannel,
   disposables: Disposable[]
 ) {
+  init(_context.extensionPath);
   const pathHint = configuration.get<string>("path");
   const svnFinder = new SvnFinder();
 
@@ -80,7 +82,7 @@ async function _activate(context: ExtensionContext, disposables: Disposable[]) {
 
   const tryInit = async () => {
     try {
-      await init(context, outputChannel, disposables);
+      await _init(context, outputChannel, disposables);
     } catch (err) {
       if (!/Svn installation not found/.test(err.message || "")) {
         throw err;
