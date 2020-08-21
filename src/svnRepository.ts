@@ -374,7 +374,7 @@ export class Repository {
     return result.stdout;
   }
 
-  public async showAsBuffer(
+  public async showBuffer(
     file: string | Uri,
     revision?: string
   ): Promise<Buffer> {
@@ -675,7 +675,7 @@ export class Repository {
     return message;
   }
 
-  public async patchAsBuffer(files: string[]) {
+  public async patchBuffer(files: string[]) {
     files = files.map(file => this.removeAbsolutePath(file));
     const result = await this.execBuffer(["diff", "--internal-diff", ...files]);
     const message = result.stdout;
@@ -729,7 +729,7 @@ export class Repository {
     return result.stdout;
   }
 
-  public async plainLogAsBuffer(): Promise<Buffer> {
+  public async plainLogBuffer(): Promise<Buffer> {
     const logLength = configuration.get<string>("log.length") || "50";
     const result = await this.execBuffer([
       "log",
@@ -748,7 +748,7 @@ export class Repository {
     return result.stdout;
   }
 
-  public async plainLogByRevisionAsBuffer(revision: number) {
+  public async plainLogByRevisionBuffer(revision: number) {
     const result = await this.execBuffer(["log", "-r", revision.toString()]);
 
     return result.stdout;
@@ -760,7 +760,7 @@ export class Repository {
     return result.stdout;
   }
 
-  public async plainLogByTextAsBuffer(search: string) {
+  public async plainLogByTextBuffer(search: string) {
     const result = await this.execBuffer(["log", "--search", search]);
 
     return result.stdout;

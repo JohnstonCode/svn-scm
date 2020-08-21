@@ -755,12 +755,12 @@ export class Repository implements IRemoteRepository {
     });
   }
 
-  public async showAsBuffer(
+  public async showBuffer(
     filePath: string | Uri,
     revision?: string
   ): Promise<Buffer> {
     return this.run<Buffer>(Operation.Show, () => {
-      return this.repository.showAsBuffer(filePath, revision);
+      return this.repository.showBuffer(filePath, revision);
     });
   }
 
@@ -847,10 +847,8 @@ export class Repository implements IRemoteRepository {
     return this.run(Operation.Patch, () => this.repository.patch(files));
   }
 
-  public async patchAsBuffer(files: string[]) {
-    return this.run(Operation.Patch, () =>
-      this.repository.patchAsBuffer(files)
-    );
+  public async patchBuffer(files: string[]) {
+    return this.run(Operation.Patch, () => this.repository.patchBuffer(files));
   }
 
   public async patchChangelist(changelistName: string) {
@@ -869,8 +867,8 @@ export class Repository implements IRemoteRepository {
     return this.run(Operation.Log, () => this.repository.plainLog());
   }
 
-  public async plainLogAsBuffer() {
-    return this.run(Operation.Log, () => this.repository.plainLogAsBuffer());
+  public async plainLogBuffer() {
+    return this.run(Operation.Log, () => this.repository.plainLogBuffer());
   }
 
   public async plainLogByRevision(revision: number) {
@@ -879,9 +877,9 @@ export class Repository implements IRemoteRepository {
     );
   }
 
-  public async plainLogByRevisionAsBuffer(revision: number) {
+  public async plainLogByRevisionBuffer(revision: number) {
     return this.run(Operation.Log, () =>
-      this.repository.plainLogByRevisionAsBuffer(revision)
+      this.repository.plainLogByRevisionBuffer(revision)
     );
   }
 
@@ -891,9 +889,9 @@ export class Repository implements IRemoteRepository {
     );
   }
 
-  public async plainLogByTextAsBuffer(search: string) {
+  public async plainLogByTextBuffer(search: string) {
     return this.run(Operation.Log, () =>
-      this.repository.plainLogByTextAsBuffer(search)
+      this.repository.plainLogByTextBuffer(search)
     );
   }
 

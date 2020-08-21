@@ -154,20 +154,20 @@ export class SvnFileSystemProvider implements FileSystemProvider, Disposable {
 
     try {
       if (action === SvnUriAction.SHOW) {
-        return await repository.showAsBuffer(fsPath, extra.ref);
+        return await repository.showBuffer(fsPath, extra.ref);
       }
       if (action === SvnUriAction.LOG) {
-        return await repository.plainLogAsBuffer();
+        return await repository.plainLogBuffer();
       }
       if (action === SvnUriAction.LOG_REVISION && extra.revision) {
-        return await repository.plainLogByRevisionAsBuffer(extra.revision);
+        return await repository.plainLogByRevisionBuffer(extra.revision);
       }
       if (action === SvnUriAction.LOG_SEARCH && extra.search) {
-        return await repository.plainLogByTextAsBuffer(extra.search);
+        return await repository.plainLogByTextBuffer(extra.search);
       }
       if (action === SvnUriAction.PATCH) {
         console.log("here");
-        return await repository.patchAsBuffer([fsPath]);
+        return await repository.patchBuffer([fsPath]);
       }
     } catch {}
 
