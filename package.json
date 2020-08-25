@@ -75,7 +75,7 @@
         "mocha": "^8.1.1",
         "node-sass": "^4.14.1",
         "original-fs": "^1.0.0",
-        "ovsx": "^0.1.0-next.9321255",
+        "ovsx": "^0.1.0-next.bcce4bc",
         "prettier": "^2.0.5",
         "prettylint": "^1.0.0",
         "semantic-release": "^17.1.1",
