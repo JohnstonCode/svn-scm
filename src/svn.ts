@@ -58,6 +58,12 @@ export function cpErrorHandler(
   };
 }
 
+export interface BufferResult {
+  exitCode: number;
+  stdout: Buffer;
+  stderr: string;
+}
+
 export class Svn {
   public version: string;
 
@@ -221,6 +227,111 @@ export class Svn {
     }
 
     return { exitCode, stdout: decodedStdout, stderr };
+  }
+
+  public async execBuffer(
+    cwd: string,
+    args: any[],
+    options: ICpOptions = {}
+  ): Promise<BufferResult> {
+    if (cwd) {
+      this.lastCwd = cwd;
+      options.cwd = cwd;
+    }
+
+    if (options.log !== false) {
+      const argsOut = args.map(arg => (/ |^$/.test(arg) ? `'${arg}'` : arg));
+      this.logOutput(
+        `[${this.lastCwd.split(/[\\\/]+/).pop()}]$ svn ${argsOut.join(" ")}\n`
+      );
+    }
+
+    if (options.username) {
+      args.push("--username", options.username);
+    }
+    if (options.password) {
+      args.push("--password", options.password);
+    }
+
+    if (options.username || options.password) {
+      // Configuration format: FILE:SECTION:OPTION=[VALUE]
+      // Disable password store
+      args.push("--config-option", "config:auth:password-stores=");
+      // Disable store auth credentials
+      args.push("--config-option", "servers:global:store-auth-creds=no");
+    }
+
+    // Force non interactive environment
+    args.push("--non-interactive");
+
+    const defaults: cp.SpawnOptions = {
+      env: proc.env
+    };
+    if (cwd) {
+      defaults.cwd = cwd;
+    }
+
+    defaults.env = Object.assign({}, proc.env, options.env || {}, {
+      LC_ALL: "en_US.UTF-8",
+      LANG: "en_US.UTF-8"
+    });
+
+    const process = cp.spawn(this.svnPath, args, defaults);
+
+    const disposables: IDisposable[] = [];
+
+    const once = (
+      ee: NodeJS.EventEmitter,
+      name: string,
+      fn: (...args: any[]) => void
+    ) => {
+      ee.once(name, fn);
+      disposables.push(toDisposable(() => ee.removeListener(name, fn)));
+    };
+
+    const on = (
+      ee: NodeJS.EventEmitter,
+      name: string,
+      fn: (...args: any[]) => void
+    ) => {
+      ee.on(name, fn);
+      disposables.push(toDisposable(() => ee.removeListener(name, fn)));
+    };
+
+    const [exitCode, stdout, stderr] = await Promise.all<any>([
+      new Promise<number>((resolve, reject) => {
+        once(process, "error", reject);
+        once(process, "exit", resolve);
+      }),
+      new Promise<Buffer>(resolve => {
+        const buffers: Buffer[] = [];
+        on(process.stdout as Readable, "data", (b: Buffer) => buffers.push(b));
+        once(process.stdout as Readable, "close", () =>
+          resolve(Buffer.concat(buffers))
+        );
+      }),
+      new Promise<string>(resolve => {
+        const buffers: Buffer[] = [];
+        on(process.stderr as Readable, "data", (b: Buffer) => buffers.push(b));
+        once(process.stderr as Readable, "close", () =>
+          resolve(Buffer.concat(buffers).toString())
+        );
+      })
+    ]);
+
+    dispose(disposables);
+
+    if (options.log !== false && stderr.length > 0) {
+      const name = this.lastCwd.split(/[\\\/]+/).pop();
+      const err = stderr
+        .split("\n")
+        .filter((line: string) => line)
+        .map((line: string) => `[${name}]$ ${line}`)
+        .join("\n");
+      this.logOutput(err);
+    }
+
+    return { exitCode, stdout, stderr };
   }
 
   public async getRepositoryRoot(path: string) {

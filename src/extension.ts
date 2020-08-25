@@ -17,7 +17,6 @@ import { RepoLogProvider } from "./historyView/repoLogProvider";
 import * as messages from "./messages";
 import { SourceControlManager } from "./source_control_manager";
 import { Svn } from "./svn";
-import { SvnContentProvider } from "./svnContentProvider";
 import { SvnFinder } from "./svnFinder";
 import SvnProvider from "./treeView/dataProviders/svnProvider";
 import { toDisposable } from "./util";
@@ -25,6 +24,7 @@ import { BranchChangesProvider } from "./historyView/branchChangesProvider";
 import { IsSvn19orGreater } from "./contexts/isSvn19orGreater";
 import { IsSvn18orGreater } from "./contexts/isSvn18orGreater";
 import { tempSvnFs } from "./temp_svn_fs";
+import { SvnFileSystemProvider } from "./svnFileSystemProvider";
 
 async function init(
   _context: ExtensionContext,
@@ -46,7 +46,7 @@ async function init(
   disposables.push(
     sourceControlManager,
     tempSvnFs,
-    new SvnContentProvider(sourceControlManager),
+    new SvnFileSystemProvider(sourceControlManager),
     new SvnProvider(sourceControlManager),
     new RepoLogProvider(sourceControlManager),
     new ItemLogProvider(sourceControlManager),

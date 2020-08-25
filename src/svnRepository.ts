@@ -11,7 +11,8 @@ import {
   Status,
   SvnDepth,
   ISvnPathChange,
-  ISvnPath
+  ISvnPath,
+  ISvnListItem
 } from "./common/types";
 import { sequentialize } from "./decorators";
 import * as encodeUtil from "./encoding";
@@ -22,7 +23,7 @@ import { parseInfoXml } from "./parser/infoParser";
 import { parseSvnList } from "./parser/listParser";
 import { parseSvnLog } from "./parser/logParser";
 import { parseStatusXml } from "./parser/statusParser";
-import { Svn } from "./svn";
+import { Svn, BufferResult } from "./svn";
 import {
   fixPathSeparator,
   fixPegRevision,
@@ -76,6 +77,16 @@ export class Repository {
     options.password = this.password;
 
     return this.svn.exec(this.workspaceRoot, args, options);
+  }
+
+  public async execBuffer(
+    args: string[],
+    options: ICpOptions = {}
+  ): Promise<BufferResult> {
+    options.username = this.username;
+    options.password = this.password;
+
+    return this.svn.execBuffer(this.workspaceRoot, args, options);
   }
 
   public removeAbsolutePath(file: string) {
@@ -363,6 +374,51 @@ export class Repository {
     return result.stdout;
   }
 
+  public async showBuffer(
+    file: string | Uri,
+    revision?: string
+  ): Promise<Buffer> {
+    const args = ["cat"];
+
+    let uri: Uri;
+    let filePath: string;
+
+    if (file instanceof Uri) {
+      uri = file;
+      filePath = file.toString(true);
+    } else {
+      uri = Uri.file(file);
+      filePath = file;
+    }
+
+    const isChild =
+      uri.scheme === "file" && isDescendant(this.workspaceRoot, uri.fsPath);
+
+    let target: string = filePath;
+
+    if (isChild) {
+      target = this.removeAbsolutePath(target);
+    }
+
+    if (revision) {
+      args.push("-r", revision);
+      if (
+        isChild &&
+        !["BASE", "COMMITTED", "PREV"].includes(revision.toUpperCase())
+      ) {
+        const info = await this.getInfo();
+        target = info.url + "/" + target.replace(/\\/g, "/");
+        // TODO move to SvnRI
+      }
+    }
+
+    args.push(target);
+
+    const result = await this.execBuffer(args);
+
+    return result.stdout;
+  }
+
   public async commitFiles(message: string, files: string[]) {
     files = files.map(file => this.removeAbsolutePath(file));
 
@@ -619,6 +675,13 @@ export class Repository {
     return message;
   }
 
+  public async patchBuffer(files: string[]) {
+    files = files.map(file => this.removeAbsolutePath(file));
+    const result = await this.execBuffer(["diff", "--internal-diff", ...files]);
+    const message = result.stdout;
+    return message;
+  }
+
   public async patchChangelist(changelistName: string) {
     const result = await this.exec([
       "diff",
@@ -666,14 +729,39 @@ export class Repository {
     return result.stdout;
   }
 
+  public async plainLogBuffer(): Promise<Buffer> {
+    const logLength = configuration.get<string>("log.length") || "50";
+    const result = await this.execBuffer([
+      "log",
+      "-r",
+      "HEAD:1",
+      "--limit",
+      logLength
+    ]);
+
+    return result.stdout;
+  }
+
   public async plainLogByRevision(revision: number) {
     const result = await this.exec(["log", "-r", revision.toString()]);
 
     return result.stdout;
   }
 
+  public async plainLogByRevisionBuffer(revision: number) {
+    const result = await this.execBuffer(["log", "-r", revision.toString()]);
+
+    return result.stdout;
+  }
+
   public async plainLogByText(search: string) {
     const result = await this.exec(["log", "--search", search]);
+
+    return result.stdout;
+  }
+
+  public async plainLogByTextBuffer(search: string) {
+    const result = await this.execBuffer(["log", "--search", search]);
 
     return result.stdout;
   }
@@ -751,6 +839,12 @@ export class Repository {
     }
 
     const result = await this.exec(["list", url, "--xml"]);
+
+    return parseSvnList(result.stdout);
+  }
+
+  public async ls(file: string): Promise<ISvnListItem[]> {
+    const result = await this.exec(["list", file, "--xml"]);
 
     return parseSvnList(result.stdout);
   }

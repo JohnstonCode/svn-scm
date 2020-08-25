@@ -205,3 +205,19 @@ export async function isSvnFolder(
 export function setVscodeContext(key: string, value: any) {
   commands.executeCommand("setContext", key, value);
 }
+
+function isWindowsPath(path: string): boolean {
+  return /^[a-zA-Z]:\\/.test(path);
+}
+
+export function pathEquals(a: string, b: string): boolean {
+  // Windows is case insensitive
+  if (isWindowsPath(a)) {
+    a = a.toLowerCase();
+    b = b.toLowerCase();
+  }
+
+  return a === b;
+}
+
+export const EmptyDisposable = toDisposable(() => null);

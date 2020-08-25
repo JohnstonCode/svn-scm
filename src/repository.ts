@@ -26,7 +26,8 @@ import {
   SvnDepth,
   SvnUriAction,
   ISvnPathChange,
-  IStoredAuth
+  IStoredAuth,
+  ISvnListItem
 } from "./common/types";
 import { debounce, globalSequentialize, memoize, throttle } from "./decorators";
 import { exists } from "./fs";
@@ -754,6 +755,15 @@ export class Repository implements IRemoteRepository {
     });
   }
 
+  public async showBuffer(
+    filePath: string | Uri,
+    revision?: string
+  ): Promise<Buffer> {
+    return this.run<Buffer>(Operation.Show, () => {
+      return this.repository.showBuffer(filePath, revision);
+    });
+  }
+
   public async addFiles(files: string[]) {
     return this.run(Operation.Add, () => this.repository.addFiles(files));
   }
@@ -837,6 +847,10 @@ export class Repository implements IRemoteRepository {
     return this.run(Operation.Patch, () => this.repository.patch(files));
   }
 
+  public async patchBuffer(files: string[]) {
+    return this.run(Operation.Patch, () => this.repository.patchBuffer(files));
+  }
+
   public async patchChangelist(changelistName: string) {
     return this.run(Operation.Patch, () =>
       this.repository.patchChangelist(changelistName)
@@ -853,15 +867,31 @@ export class Repository implements IRemoteRepository {
     return this.run(Operation.Log, () => this.repository.plainLog());
   }
 
+  public async plainLogBuffer() {
+    return this.run(Operation.Log, () => this.repository.plainLogBuffer());
+  }
+
   public async plainLogByRevision(revision: number) {
     return this.run(Operation.Log, () =>
       this.repository.plainLogByRevision(revision)
     );
   }
 
+  public async plainLogByRevisionBuffer(revision: number) {
+    return this.run(Operation.Log, () =>
+      this.repository.plainLogByRevisionBuffer(revision)
+    );
+  }
+
   public async plainLogByText(search: string) {
     return this.run(Operation.Log, () =>
       this.repository.plainLogByText(search)
+    );
+  }
+
+  public async plainLogByTextBuffer(search: string) {
+    return this.run(Operation.Log, () =>
+      this.repository.plainLogByTextBuffer(search)
     );
   }
 
@@ -920,6 +950,12 @@ export class Repository implements IRemoteRepository {
     return this.run(Operation.Rename, () =>
       this.repository.rename(oldFile, newFile)
     );
+  }
+
+  public async list(filePath: string): Promise<ISvnListItem[]> {
+    return this.run<ISvnListItem[]>(Operation.List, () => {
+      return this.repository.ls(filePath);
+    });
   }
 
   public getPathNormalizer(): PathNormalizer {

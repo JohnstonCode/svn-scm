@@ -33,11 +33,11 @@ suite("Repository Tests", () => {
     testUtil.destroyAllTempPaths();
   });
 
-  test("Empty Open Repository", async function() {
+  test("Empty Open Repository", async function () {
     assert.equal(sourceControlManager.repositories.length, 0);
   });
 
-  test("Try Open Repository", async function() {
+  test("Try Open Repository", async function () {
     await sourceControlManager.tryOpenRepository(checkoutDir.fsPath);
     assert.equal(sourceControlManager.repositories.length, 1);
   });
@@ -76,7 +76,7 @@ suite("Repository Tests", () => {
     assert.equal(name, "trunk");
   });
 
-  test("Try commit file", async function() {
+  test("Try commit file", async function () {
     this.timeout(60000);
     const repository: Repository | null = sourceControlManager.getRepository(
       checkoutDir.fsPath
@@ -107,7 +107,7 @@ suite("Repository Tests", () => {
     assert.equal(remoteContent, "test");
   });
 
-  test("Try switch branch", async function() {
+  test("Try switch branch", async function () {
     this.timeout(60000);
     const newCheckoutDir = await testUtil.createRepoCheckout(
       testUtil.getSvnUrl(repoUri) + "/trunk"
