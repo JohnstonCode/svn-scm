@@ -1,3 +1,10 @@
+## [2.12.4](https://github.com/JohnstonCode/svn-scm/compare/v2.12.3...v2.12.4) (2020-08-25)
+
+
+### Bug Fixes
+
+* Using custom file system provider over content provider ([#1053](https://github.com/JohnstonCode/svn-scm/issues/1053)) ([4ceeafe](https://github.com/JohnstonCode/svn-scm/commit/4ceeafe7ccbaca7c5c0cadc785d15845bb61fb6a))
+
 ## [2.12.3](https://github.com/JohnstonCode/svn-scm/compare/v2.12.2...v2.12.3) (2020-08-09)
 
 
