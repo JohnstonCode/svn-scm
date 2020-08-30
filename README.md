@@ -38,7 +38,13 @@ If you use [TortoiseSVN](https://tortoisesvn.net/), make sure the option
 
 ## [Contributors](https://github.com/JohnstonCode/svn-scm/graphs/contributors)
 
-## Features
+# Features
+
+### Checkout
+
+You can checkout a SVN repository with the `SVN: Checkout` command in the **Command Palette** (`Ctrl+Shift+P`). You will be asked for the URL of the repository and the parent directory under which to put the local repository.
+
+----
 
 * Source Control View
 * Quick Diffs in gutter
