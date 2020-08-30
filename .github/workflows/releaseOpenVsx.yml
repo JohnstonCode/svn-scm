@@ -1,0 +1,40 @@
+name: release Open VSX
+
+on:
+  push:
+    tags:
+     - "v*"
+
+jobs:
+  build:
+   runs-on: ubuntu-latest
+   steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
+    - name: Fetch tags
+      run: git fetch --tags -f || true
+
+    - name: Install dependencies
+      run: yarn install --frozen-lockfile || yarn install --frozen-lockfile
+
+    - name: Release Open VSX
+      run: |
+        yarn add iconv-lite jschardet
+        npx vsce package -o svn-scm-ovsx.vsix
+        npx ovsx publish svn-scm-ovsx.vsix -p ${{ secrets.ovsxToken }}
+
+    - name: 'Get tag'
+        id: getTag
+        uses: "WyriHaximus/github-action-get-previous-tag@master"
+        env:
+          GITHUB_TOKEN: "${{ secrets.githubToken }}"
+
+    - name: Upload Open VSX to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.githubToken }}
+          file: svn-scm-ovsx.vsix
+          tag: ${{ steps.getTag.outputs.tag }}
