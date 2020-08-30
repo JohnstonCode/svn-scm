@@ -5416,7 +5416,7 @@ osenv@0, osenv@^0.1.3, osenv@^0.1.4, osenv@^0.1.5:
     os-homedir "^1.0.0"
     os-tmpdir "^1.0.0"
 
-ovsx@^0.1.0-next.bcce4bc:
+ovsx@^0.1.0-next.9321255:
   version "0.1.0-next.bcce4bc"
   resolved "https://registry.yarnpkg.com/ovsx/-/ovsx-0.1.0-next.bcce4bc.tgz#8da209efa2e634151a6437a4fdce23e8e947cca4"
   integrity sha512-ArfM+MLP/JwxqKctM5UNyqyCgSMMvUPI7ADu5sVS7nSG2+uxGW+y9AyO5dh8g61MdjhsTSgZsJ4nl8f29cf/bQ==
