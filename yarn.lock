@@ -5417,11 +5417,11 @@ osenv@0, osenv@^0.1.3, osenv@^0.1.4, osenv@^0.1.5:
     os-tmpdir "^1.0.0"
 
 ovsx@^0.1.0-next.9321255:
-  version "0.1.0-next.bcce4bc"
-  resolved "https://registry.yarnpkg.com/ovsx/-/ovsx-0.1.0-next.bcce4bc.tgz#8da209efa2e634151a6437a4fdce23e8e947cca4"
-  integrity sha512-ArfM+MLP/JwxqKctM5UNyqyCgSMMvUPI7ADu5sVS7nSG2+uxGW+y9AyO5dh8g61MdjhsTSgZsJ4nl8f29cf/bQ==
+  version "0.1.0-next.9321255"
+  resolved "https://registry.yarnpkg.com/ovsx/-/ovsx-0.1.0-next.9321255.tgz#dbb679e2eacf28017cfd474487a94008426d024d"
+  integrity sha512-gGQRzQWHBT6VdjZZgGxQUN1oaRxBuKcTkhtkL9AMstLqIu+tVmbTjJIE/j/RQeSumsn+HPoXysjnR0fzKsHkdQ==
   dependencies:
-    vsce "~1.77.0"
+    vsce "^1.73.0"
 
 p-each-series@^2.1.0:
   version "2.1.0"
@@ -7669,7 +7669,7 @@ vm-browserify@^1.0.1:
   resolved "https://registry.yarnpkg.com/vm-browserify/-/vm-browserify-1.1.2.tgz#78641c488b8e6ca91a75f511e7a3b32a86e5dda0"
   integrity sha512-2ham8XPWTONajOR0ohOKOHXkm3+gaBmGut3SRuu75xLd/RRaY6vqgh8NBYYk7+RW3u5AtzPQZG8F10LHkl0lAQ==
 
-vsce@^1.73.0, vsce@~1.77.0:
+vsce@^1.73.0:
   version "1.77.0"
   resolved "https://registry.yarnpkg.com/vsce/-/vsce-1.77.0.tgz#21364d3e63095b2f54e0f185445e8ff6ab614602"
   integrity sha512-8vOTCI3jGmOm0JJFu/BMAbqxpaSuka4S3hV9E6K5aWBUsDM1SGFExkIxHblnsI8sls43xP61DHorYT+K0F+GFA==
