@@ -673,6 +673,30 @@
                 {
                     "command": "svn.update",
                     "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
+                },
+                {
+                    "command": "svn.treeview.pullIncomingChange",
+                    "when": "false"
+                },
+                {
+                    "command": "svn.patchChangeList",
+                    "when": "false"
+                },
+                {
+                    "command": "svn.refreshRemoteChanges",
+                    "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
+                },
+                {
+                    "command": "svn.openChangePrev",
+                    "when": "false"
+                },
+                {
+                    "command": "svn.treeview.refreshProvider",
+                    "when": "false"
+                },
+                {
+                    "command": "svn.addToIgnoreSCM",
+                    "when": "false"
                 }
             ],
             "view/title": [
