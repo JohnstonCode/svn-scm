@@ -66,7 +66,7 @@
         "dayjs": "^1.9.3",
         "decache": "^4.6.0",
         "eslint": "^7.11.0",
-        "eslint-config-prettier": "^6.12.0",
+        "eslint-config-prettier": "^6.13.0",
         "eslint-plugin-prettier": "^3.1.4",
         "glob": "^7.1.4",
         "iconv-lite-umd": "0.6.8",
