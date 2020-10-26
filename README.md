@@ -190,6 +190,9 @@ Here are all of the extension settings with their default values. To change any 
   // Hide unversioned files in Source Control UI
   "svn.sourceControl.hideUnversioned": null,
 
+  // Ignore unversioned files like .gitignore, Configuring this will overlook the default ignore rule
+  "svn.sourceControl.ignore": [],
+
   // Changelists to ignore on commit
   "svn.sourceControl.ignoreOnCommit": ["ignore-on-commit"],
 

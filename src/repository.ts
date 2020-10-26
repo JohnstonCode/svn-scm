@@ -503,6 +503,8 @@ export class Repository implements IRemoteRepository {
       "sourceControl.hideUnversioned"
     );
 
+    const ignoreList = configuration.get<string[]>("sourceControl.ignore");
+
     for (const status of statusesRepository) {
       if (status.path === ".") {
         this.isIncomplete = status.status === Status.INCOMPLETE;
@@ -580,9 +582,14 @@ export class Repository implements IRemoteRepository {
           statuses.some(s => s.path === matches[1])
         ) {
           continue;
-        } else {
-          unversioned.push(resource);
         }
+        if (
+          ignoreList.length > 0 &&
+          matchAll(path.sep + status.path, ignoreList, { dot: true })
+        ) {
+          continue;
+        }
+        unversioned.push(resource);
       } else if (status.changelist) {
         let changelist = changelists.get(status.changelist);
         if (!changelist) {

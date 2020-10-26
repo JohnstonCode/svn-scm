@@ -1285,6 +1285,11 @@
                     "description": "Hide unversioned files in Source Control UI",
                     "default": false
                 },
+                "svn.sourceControl.ignore": {
+                    "type": "array",
+                    "description": "Ignore unversioned files like .gitignore, Configuring this will overlook the default ignore rule",
+                    "default": []
+                },
                 "svn.sourceControl.ignoreOnCommit": {
                     "type": "array",
                     "description": "Changelists to ignore on commit",
