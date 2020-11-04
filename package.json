@@ -82,7 +82,7 @@
         "semantic-release-vsce": "^3.0.1",
         "semver": "^7.2.1",
         "tmp": "0.2.1",
-        "ts-loader": "^8.0.7",
+        "ts-loader": "^8.0.8",
         "typescript": "^4.0.5",
         "vscode-test": "^1.4.1",
         "webpack": "^5.4.0",
