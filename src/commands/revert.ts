@@ -26,7 +26,7 @@ export class Revert extends Command {
         return;
       }
 
-      const paths = resources.map(resource => resource.fsPath);
+      const paths = resources.map(resource => resource.fsPath).reverse();
 
       try {
         await repository.revert(paths, depth);

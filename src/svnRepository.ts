@@ -16,7 +16,7 @@ import {
 } from "./common/types";
 import { sequentialize } from "./decorators";
 import * as encodeUtil from "./encoding";
-import { exists, writeFile } from "./fs";
+import { exists, writeFile, stat, readdir } from "./fs";
 import { getBranchName } from "./helpers/branch";
 import { configuration } from "./helpers/configuration";
 import { parseInfoXml } from "./parser/infoParser";
@@ -31,6 +31,7 @@ import {
   normalizePath,
   unwrap
 } from "./util";
+import { matchAll } from "./util/globMatch";
 import { parseDiffXml } from "./parser/diffParser";
 
 export class Repository {
@@ -477,7 +478,34 @@ export class Repository {
     return result.stdout;
   }
 
+  public async addFilesByIgnore(files: string[], ignoreList: string[]) {
+    const allFiles = async (file: string): Promise<string[]> => {
+      if ((await stat(file)).isDirectory()) {
+        return (
+          await Promise.all(
+            (await readdir(file)).map(subfile => {
+              const abspath = path.resolve(file + path.sep + subfile);
+              const relpath = this.removeAbsolutePath(abspath);
+              if (!matchAll(path.sep + relpath, ignoreList, { dot: true })) {
+                return allFiles(abspath);
+              }
+              return [];
+            })
+          )
+        ).reduce((acc, cur) => acc.concat(cur), [file]);
+      }
+      return [file];
+    };
+    files = (await Promise.all(files.map(file => allFiles(file)))).flat();
+    files = files.map(file => this.removeAbsolutePath(file));
+    return this.exec(["add", "--depth=empty", ...files]);
+  }
+
   public addFiles(files: string[]) {
+    const ignoreList = configuration.get<string[]>("sourceControl.ignore");
+    if (ignoreList.length > 0) {
+      return this.addFilesByIgnore(files, ignoreList);
+    }
     files = files.map(file => this.removeAbsolutePath(file));
     return this.exec(["add", ...files]);
   }
