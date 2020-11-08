@@ -1,3 +1,10 @@
+## [2.13.2](https://github.com/JohnstonCode/svn-scm/compare/v2.13.1...v2.13.2) (2020-11-08)
+
+
+### Bug Fixes
+
+* update ovsx package to fix ovsx release ([3c7f592](https://github.com/JohnstonCode/svn-scm/commit/3c7f592deaf225bbdc2d4ed42eab1e89aac34751))
+
 ## [2.13.1](https://github.com/JohnstonCode/svn-scm/compare/v2.13.0...v2.13.1) (2020-11-08)
 
 
