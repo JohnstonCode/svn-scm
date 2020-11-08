@@ -26,7 +26,7 @@ jobs:
         npx vsce package -o svn-scm-ovsx.vsix
         npx ovsx publish svn-scm-ovsx.vsix -p ${{ secrets.ovsxToken }}
 
-    - name: 'Get tag'
+    - name: Get tag
         id: getTag
         uses: "WyriHaximus/github-action-get-previous-tag@master"
         env:
