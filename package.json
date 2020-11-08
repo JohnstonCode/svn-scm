@@ -2,7 +2,7 @@
     "name": "svn-scm",
     "displayName": "SVN",
     "description": "Integrated Subversion source control",
-    "version": "2.12.4",
+    "version": "2.13.0",
     "publisher": "johnstoncode",
     "engines": {
         "vscode": "^1.44.0"
@@ -495,6 +495,10 @@
                     "when": "false"
                 },
                 {
+                    "command": "svn.addToIgnoreSCM",
+                    "when": "false"
+                },
+                {
                     "command": "svn.branchchanges.openDiff",
                     "when": "false"
                 },
@@ -567,6 +571,10 @@
                     "when": "config.svn.enabled && svnOpenRepositoryCount != 0 && svnActiveEditorHasChanges"
                 },
                 {
+                    "command": "svn.openChangePrev",
+                    "when": "false"
+                },
+                {
                     "command": "svn.openFile",
                     "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
                 },
@@ -583,11 +591,19 @@
                     "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
                 },
                 {
+                    "command": "svn.patchChangeList",
+                    "when": "false"
+                },
+                {
                     "command": "svn.pickCommitMessage",
                     "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
                 },
                 {
                     "command": "svn.refresh",
+                    "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
+                },
+                {
+                    "command": "svn.refreshRemoteChanges",
                     "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
                 },
                 {
@@ -671,23 +687,7 @@
                     "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
                 },
                 {
-                    "command": "svn.update",
-                    "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
-                },
-                {
                     "command": "svn.treeview.pullIncomingChange",
-                    "when": "false"
-                },
-                {
-                    "command": "svn.patchChangeList",
-                    "when": "false"
-                },
-                {
-                    "command": "svn.refreshRemoteChanges",
-                    "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
-                },
-                {
-                    "command": "svn.openChangePrev",
                     "when": "false"
                 },
                 {
@@ -695,8 +695,8 @@
                     "when": "false"
                 },
                 {
-                    "command": "svn.addToIgnoreSCM",
-                    "when": "false"
+                    "command": "svn.update",
+                    "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
                 }
             ],
             "view/title": [

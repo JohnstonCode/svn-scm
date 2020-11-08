@@ -1,3 +1,10 @@
+# [2.13.0](https://github.com/JohnstonCode/svn-scm/compare/v2.12.4...v2.13.0) (2020-11-08)
+
+
+### Features
+
+* Add 'svn.sourceControl.ignore' option ([#1116](https://github.com/JohnstonCode/svn-scm/issues/1116)) ([7b4241b](https://github.com/JohnstonCode/svn-scm/commit/7b4241bb03b9fd12870850b53688a8c193df13fc))
+
 ## [2.12.4](https://github.com/JohnstonCode/svn-scm/compare/v2.12.3...v2.12.4) (2020-08-25)
 
 
