@@ -1,3 +1,10 @@
+## [2.13.1](https://github.com/JohnstonCode/svn-scm/compare/v2.13.0...v2.13.1) (2020-11-08)
+
+
+### Bug Fixes
+
+* fix openvsx release ([#1138](https://github.com/JohnstonCode/svn-scm/issues/1138)) ([f517a9f](https://github.com/JohnstonCode/svn-scm/commit/f517a9f526622c1151e7811b3101e79050802c2b))
+
 # [2.13.0](https://github.com/JohnstonCode/svn-scm/compare/v2.12.4...v2.13.0) (2020-11-08)
 
 
