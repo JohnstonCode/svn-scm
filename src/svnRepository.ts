@@ -486,7 +486,12 @@ export class Repository {
             (await readdir(file)).map(subfile => {
               const abspath = path.resolve(file + path.sep + subfile);
               const relpath = this.removeAbsolutePath(abspath);
-              if (!matchAll(path.sep + relpath, ignoreList, { dot: true })) {
+              if (
+                !matchAll(path.sep + relpath, ignoreList, {
+                  dot: true,
+                  matchBase: true
+                })
+              ) {
                 return allFiles(abspath);
               }
               return [];
