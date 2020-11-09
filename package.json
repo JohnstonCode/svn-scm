@@ -1291,7 +1291,8 @@
                     "default": [],
                     "examples": [
                         [
-                            "*.js",
+                            "**/*.js",
+                            "*.jar",
                             "/log",
                             "/.vscode/*",
                             "!/.vscode/settings.json"
