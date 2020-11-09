@@ -1292,6 +1292,7 @@
                     "examples": [
                         [
                             "**/*.js",
+                            "*.jar",
                             "/log",
                             "/.vscode/*",
                             "!/.vscode/settings.json"
