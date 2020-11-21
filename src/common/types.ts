@@ -62,6 +62,7 @@ export interface ISvnPathChange {
   kind: SvnKindType;
   item: Status;
   repo: Uri;
+  localPath: Uri;
 }
 
 export interface ISvnListItem {

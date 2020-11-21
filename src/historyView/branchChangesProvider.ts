@@ -51,14 +51,18 @@ export class BranchChangesProvider
     const iconPath = getIconObject(iconName);
 
     return {
-      label: element.newPath.toString(),
+      label: element.localPath.fsPath,
       command: {
         command: "svn.branchchanges.openDiff",
         title: "Open diff",
         arguments: [element]
       },
       iconPath,
-      tooltip: `${element.oldPath}@r${element.oldRevision} → ${element.newPath}@r${element.newRevision}`
+      tooltip: `${element.oldPath.fsPath.replace(element.repo.fsPath, "")}@r${
+        element.oldRevision
+      } → ${element.newPath.fsPath.replace(element.repo.fsPath, "")}@r${
+        element.newRevision
+      }`
     };
   }
 
