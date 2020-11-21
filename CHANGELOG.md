@@ -1,3 +1,17 @@
+## [2.13.3](https://github.com/JohnstonCode/svn-scm/compare/v2.13.2...v2.13.3) (2020-11-09)
+
+
+### Bug Fixes
+
+* use matchBase option when match ignoreList ([#1139](https://github.com/JohnstonCode/svn-scm/issues/1139)) ([09f4114](https://github.com/JohnstonCode/svn-scm/commit/09f4114bf20f37bb669d3a989bd5a3261620900c))
+
+## [2.13.2](https://github.com/JohnstonCode/svn-scm/compare/v2.13.1...v2.13.2) (2020-11-08)
+
+
+### Bug Fixes
+
+* update ovsx package to fix ovsx release ([3c7f592](https://github.com/JohnstonCode/svn-scm/commit/3c7f592deaf225bbdc2d4ed42eab1e89aac34751))
+
 ## [2.13.1](https://github.com/JohnstonCode/svn-scm/compare/v2.13.0...v2.13.1) (2020-11-08)
 
 

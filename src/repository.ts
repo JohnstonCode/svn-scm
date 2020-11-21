@@ -585,7 +585,10 @@ export class Repository implements IRemoteRepository {
         }
         if (
           ignoreList.length > 0 &&
-          matchAll(path.sep + status.path, ignoreList, { dot: true })
+          matchAll(path.sep + status.path, ignoreList, {
+            dot: true,
+            matchBase: true
+          })
         ) {
           continue;
         }
