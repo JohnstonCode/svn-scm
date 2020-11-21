@@ -272,7 +272,7 @@ export class Repository {
         props: path.props,
         kind: path.kind,
         repo: Uri.parse(this.info.repository.root),
-        localPath: Uri.parse(path._.replace(copyFromUrl, ''))
+        localPath: Uri.parse(path._.replace(copyFromUrl, ""))
       });
     }
 
