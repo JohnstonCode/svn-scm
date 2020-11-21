@@ -1,3 +1,10 @@
+## [2.13.4](https://github.com/JohnstonCode/svn-scm/compare/v2.13.3...v2.13.4) (2020-11-21)
+
+
+### Bug Fixes
+
+* Changed how file paths are shown in branch changes ([#1162](https://github.com/JohnstonCode/svn-scm/issues/1162)) ([8784c5e](https://github.com/JohnstonCode/svn-scm/commit/8784c5e1f9ba91f70cfa2ce464f11d860e74451f))
+
 ## [2.13.3](https://github.com/JohnstonCode/svn-scm/compare/v2.13.2...v2.13.3) (2020-11-09)
 
 
