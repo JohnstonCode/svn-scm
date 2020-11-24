@@ -36,7 +36,7 @@ export interface ISvnInfo {
     uuid: string;
   };
   wcInfo?: {
-    wcrootAbspath: string;
+    wcrootAbspath?: string;
     uuid: string;
   };
   commit: {

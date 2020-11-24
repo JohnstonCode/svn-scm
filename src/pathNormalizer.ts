@@ -22,7 +22,7 @@ export class PathNormalizer {
   constructor(public readonly repoInfo: ISvnInfo) {
     this.repoRoot = Uri.parse(repoInfo.repository.root);
     this.branchRoot = Uri.parse(repoInfo.url);
-    if (repoInfo.wcInfo) {
+    if (repoInfo.wcInfo && repoInfo.wcInfo.wcrootAbspath) {
       this.checkoutRoot = Uri.file(repoInfo.wcInfo.wcrootAbspath);
     }
   }
