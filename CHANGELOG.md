@@ -1,3 +1,10 @@
+## [2.13.5](https://github.com/JohnstonCode/svn-scm/compare/v2.13.4...v2.13.5) (2020-11-24)
+
+
+### Bug Fixes
+
+* wcrootAbspath can be undefined on older versions of svn ([#1170](https://github.com/JohnstonCode/svn-scm/issues/1170)) ([502d09a](https://github.com/JohnstonCode/svn-scm/commit/502d09a445efe16833e82e446b815a4718b8662c))
+
 ## [2.13.4](https://github.com/JohnstonCode/svn-scm/compare/v2.13.3...v2.13.4) (2020-11-21)
 
 
