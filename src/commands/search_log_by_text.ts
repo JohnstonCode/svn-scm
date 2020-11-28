@@ -49,7 +49,7 @@ export class SearchLogByText extends Command {
           proc.kill("SIGINT");
         });
 
-        return new Promise((resolve, reject) => {
+        return new Promise<void>((resolve, reject) => {
           proc.on("exit", (code: number) => {
             code === 0 ? resolve() : reject();
           });
