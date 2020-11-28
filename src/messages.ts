@@ -24,7 +24,7 @@ export function dispose() {
 }
 
 async function showCommitInput(message?: string, filePaths?: string[]) {
-  const promise = new Promise<string>(resolve => {
+  const promise = new Promise<string|undefined>(resolve => {
     // Close previous commit message input
     if (panel) {
       panel.dispose();
