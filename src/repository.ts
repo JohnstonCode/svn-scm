@@ -45,6 +45,7 @@ import {
   dispose,
   eventToPromise,
   filterEvent,
+  getSvnDir,
   isDescendant,
   isReadOnly,
   timeout,
@@ -736,7 +737,7 @@ export class Repository implements IRemoteRepository {
     }
 
     // Not has original resource for content of ".svn" folder
-    if (isDescendant(path.join(this.root, ".svn"), uri.fsPath)) {
+    if (isDescendant(path.join(this.root, getSvnDir()), uri.fsPath)) {
       return;
     }
 

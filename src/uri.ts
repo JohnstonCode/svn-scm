@@ -5,6 +5,7 @@ import {
   ISvnUriParams,
   SvnUriAction
 } from "./common/types";
+import { getSvnDir } from "./util";
 
 export function fromSvnUri(uri: Uri): ISvnUriParams {
   return JSON.parse(uri.query);
@@ -24,7 +25,7 @@ export function toSvnUri(
 
   return uri.with({
     scheme: "svn",
-    path: replaceFileExtension ? uri.path + ".svn" : uri.path,
+    path: replaceFileExtension ? uri.path + getSvnDir() : uri.path,
     query: JSON.stringify(params)
   });
 }
