@@ -5439,10 +5439,10 @@ scss-tokenizer@^0.2.3:
     js-base64 "^2.1.8"
     source-map "^0.4.2"
 
-semantic-release-vsce@^3.0.1:
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/semantic-release-vsce/-/semantic-release-vsce-3.0.1.tgz#fc7ff8863ed3dd913a3102b1cf0e68e62f94fa17"
-  integrity sha512-fbRw3cQx9CO9rDVTOmazQO2JCBweGFVRVO//E4xzgVEgQaHERVJJnWcR5t7jFjNzrJ/hfRytqqLNlxhbx3X+rQ==
+semantic-release-vsce@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/semantic-release-vsce/-/semantic-release-vsce-3.1.0.tgz#c08ddf3dd482234182f398787dd1e07239c62ade"
+  integrity sha512-K/7CHge7ZzJzH4RDf3M63GVymGSIZl4oQtKcET0FO2LX4+vVRBLyWKJwJPOBD+1gvgRO6JT4rx/q1GSpjyA0nA==
   dependencies:
     "@semantic-release/error" "^2.2.0"
     commander "^4.1.1"
