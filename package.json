@@ -61,7 +61,7 @@
         "@types/vscode": "1.44.0",
         "@types/xml2js": "^0.4.8",
         "@typescript-eslint/eslint-plugin": "^4.14.1",
-        "@typescript-eslint/parser": "^4.14.1",
+        "@typescript-eslint/parser": "^4.14.2",
         "chardet": "^1.3.0",
         "dayjs": "^1.10.4",
         "decache": "^4.6.0",
