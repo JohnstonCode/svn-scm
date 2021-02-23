@@ -85,7 +85,7 @@
         "ts-loader": "^8.0.17",
         "typescript": "^4.2.2",
         "vscode-test": "^1.5.1",
-        "webpack": "^5.24.0",
+        "webpack": "^5.24.1",
         "webpack-cli": "^4.5.0",
         "xml2js": "^0.4.19"
     },
