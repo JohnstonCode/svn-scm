@@ -92,27 +92,27 @@ export class Repository implements IRemoteRepository {
   }
 
   private _onDidChangeRepository = new EventEmitter<Uri>();
-  public readonly onDidChangeRepository: Event<Uri> =
-    this._onDidChangeRepository.event;
+  public readonly onDidChangeRepository: Event<Uri> = this
+    ._onDidChangeRepository.event;
 
   private _onDidChangeState = new EventEmitter<RepositoryState>();
-  public readonly onDidChangeState: Event<RepositoryState> =
-    this._onDidChangeState.event;
+  public readonly onDidChangeState: Event<RepositoryState> = this
+    ._onDidChangeState.event;
 
   private _onDidChangeStatus = new EventEmitter<void>();
-  public readonly onDidChangeStatus: Event<void> =
-    this._onDidChangeStatus.event;
+  public readonly onDidChangeStatus: Event<void> = this._onDidChangeStatus
+    .event;
 
   private _onDidChangeRemoteChangedFiles = new EventEmitter<void>();
-  public readonly onDidChangeRemoteChangedFile: Event<void> =
-    this._onDidChangeRemoteChangedFiles.event;
+  public readonly onDidChangeRemoteChangedFile: Event<void> = this
+    ._onDidChangeRemoteChangedFiles.event;
 
   private _onRunOperation = new EventEmitter<Operation>();
   public readonly onRunOperation: Event<Operation> = this._onRunOperation.event;
 
   private _onDidRunOperation = new EventEmitter<Operation>();
-  public readonly onDidRunOperation: Event<Operation> =
-    this._onDidRunOperation.event;
+  public readonly onDidRunOperation: Event<Operation> = this._onDidRunOperation
+    .event;
 
   @memoize
   get onDidChangeOperations(): Event<void> {
