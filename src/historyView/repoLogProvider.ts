@@ -64,12 +64,12 @@ function getActionIcon(action: string) {
 }
 
 export class RepoLogProvider
-  implements TreeDataProvider<ILogTreeItem>, Disposable {
-  private _onDidChangeTreeData: EventEmitter<
-    ILogTreeItem | undefined
-  > = new EventEmitter<ILogTreeItem | undefined>();
-  public readonly onDidChangeTreeData: Event<ILogTreeItem | undefined> = this
-    ._onDidChangeTreeData.event;
+  implements TreeDataProvider<ILogTreeItem>, Disposable
+{
+  private _onDidChangeTreeData: EventEmitter<ILogTreeItem | undefined> =
+    new EventEmitter<ILogTreeItem | undefined>();
+  public readonly onDidChangeTreeData: Event<ILogTreeItem | undefined> =
+    this._onDidChangeTreeData.event;
   // TODO on-disk cache?
   private readonly logCache: Map<string, ICachedLog> = new Map();
   private _dispose: Disposable[] = [];
@@ -255,8 +255,9 @@ export class RepoLogProvider
     const commit = element.data as ISvnLogEntryPath;
     const item = this.getCached(element);
     const parent = (element.parent as ILogTreeItem).data as ISvnLogEntry;
-    const remotePath = item.repo.getPathNormalizer().parse(commit._)
-      .remoteFullPath;
+    const remotePath = item.repo
+      .getPathNormalizer()
+      .parse(commit._).remoteFullPath;
     let prevRev: ISvnLogEntry;
 
     const revs = await item.repo.log(parent.revision, "1", 2, remotePath);

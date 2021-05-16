@@ -152,7 +152,9 @@ export function isReadOnly(operation: Operation): boolean {
 export async function deleteDirectory(dirPath: string): Promise<void> {
   if ((await exists(dirPath)) && (await lstat(dirPath)).isDirectory()) {
     await Promise.all(
-      (await readdir(dirPath)).map(async (entry: string) => {
+      (
+        await readdir(dirPath)
+      ).map(async (entry: string) => {
         const entryPath = path.join(dirPath, entry);
         if ((await lstat(entryPath)).isDirectory()) {
           await deleteDirectory(entryPath);

@@ -13,13 +13,13 @@ import RepositoryNode from "../nodes/repositoryNode";
 import { dispose } from "../../util";
 
 export default class SvnProvider
-  implements TreeDataProvider<BaseNode>, Disposable {
-  private _onDidChangeTreeData: EventEmitter<
-    BaseNode | undefined
-  > = new EventEmitter<BaseNode | undefined>();
+  implements TreeDataProvider<BaseNode>, Disposable
+{
+  private _onDidChangeTreeData: EventEmitter<BaseNode | undefined> =
+    new EventEmitter<BaseNode | undefined>();
   private _dispose: Disposable[] = [];
-  public onDidChangeTreeData: Event<BaseNode | undefined> = this
-    ._onDidChangeTreeData.event;
+  public onDidChangeTreeData: Event<BaseNode | undefined> =
+    this._onDidChangeTreeData.event;
 
   constructor(private sourceControlManager: SourceControlManager) {
     this._dispose.push(
