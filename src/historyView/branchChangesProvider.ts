@@ -12,8 +12,7 @@ import { openDiff, getIconObject, openFileRemote } from "./common";
 import { dispose } from "../util";
 
 export class BranchChangesProvider
-  implements TreeDataProvider<ISvnPathChange>, Disposable
-{
+  implements TreeDataProvider<ISvnPathChange>, Disposable {
   private _dispose: Disposable[] = [];
   private _onDidChangeTreeData = new EventEmitter<ISvnPathChange | undefined>();
   public readonly onDidChangeTreeData = this._onDidChangeTreeData.event;
