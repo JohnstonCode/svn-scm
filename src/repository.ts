@@ -188,12 +188,9 @@ export class Repository implements IRemoteRepository {
     this.disposables.push(this._fsWatcher);
 
     this._fsWatcher.onDidAny(this.onFSChange, this, this.disposables);
-
-    // TODO on svn switch event fired two times since two files were changed
     this._fsWatcher.onDidSvnAny(
       async (e: Uri) => {
-        await this.repository.updateInfo();
-        this._onDidChangeRepository.fire(e);
+        await this.onDidAnyFileChanged(e);
       },
       this,
       this.disposables
@@ -290,6 +287,12 @@ export class Repository implements IRemoteRepository {
         this.onDidSaveTextDocument(document);
       })
     );
+  }
+
+  @debounce(1000)
+  private async onDidAnyFileChanged(e: Uri) {
+    await this.repository.updateInfo();
+    this._onDidChangeRepository.fire(e);
   }
 
   private createRemoteChangedInterval() {
