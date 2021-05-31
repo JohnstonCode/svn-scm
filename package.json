@@ -3,20 +3,20 @@
     "displayName": "SVN",
     "description": "Integrated Subversion source control",
     "version": "2.13.5",
-    "publisher": "johnstoncode",
+    "publisher": "blashaq1",
     "engines": {
         "vscode": "^1.44.0"
     },
     "private": true,
     "enableProposedApi": false,
     "icon": "images/subversion.png",
-    "homepage": "https://github.com/JohnstonCode/svn-scm/blob/master/README.md",
+    "homepage": "https://github.com/Blashaq/svn-scm/README.md",
     "repository": {
         "type": "git",
-        "url": "https://github.com/JohnstonCode/svn-scm.git"
+        "url": "https://github.com/Blashaq/svn-scm"
     },
     "bugs": {
-        "url": "https://github.com/JohnstonCode/svn-scm/issues"
+        "url": "https://github.com/Blashaq/svn-scm/issues"
     },
     "categories": [
         "Other",
