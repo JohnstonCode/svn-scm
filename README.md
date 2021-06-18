@@ -118,6 +118,12 @@ Here are all of the extension settings with their default values. To change any 
   // Use garavatar icons in log viewers
   "svn.gravatars.enabled": true,
 
+  // Set up a client-side pre-commit hook executable command/file to SVN.
+  "svn.hooks.precommit": null,
+
+  // Set up a client-side post-commit hook executable command/file to SVN.
+  "svn.hooks.postcommit": null,
+
   // Ignores the warning when SVN is missing
   "svn.ignoreMissingSvnWarning": null,
 

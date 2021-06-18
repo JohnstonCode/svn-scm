@@ -1,6 +1,8 @@
 import * as path from "path";
 import { SourceControlResourceState, Uri, window } from "vscode";
 import { Status } from "../common/types";
+import { configuration } from "../helpers/configuration";
+import { executeHook } from "../helpers/hooks";
 import { inputCommitMessage } from "../messages";
 import { Resource } from "../resource";
 import { Command } from "./command";
@@ -65,9 +67,19 @@ export class Commit extends Command {
 
         repository.inputBox.value = message;
 
+        const prehook = configuration.get<string>("hooks.precommit");
+        if (prehook) {
+          await executeHook(prehook);
+        }
+
         const result = await repository.commitFiles(message, paths);
         window.showInformationMessage(result);
         repository.inputBox.value = "";
+
+        const posthook = configuration.get<string>("hooks.postcommit");
+        if (posthook) {
+          await executeHook(prehook);
+        }
       } catch (error) {
         console.error(error);
         window.showErrorMessage(error.stderrFormated);

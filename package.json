@@ -1129,6 +1129,21 @@
                     "description": "Use garavatar icons in log viewers",
                     "default": true
                 },
+                "svn.hooks.precommit": {
+                    "type": [
+                      "string", 
+                      "null"],
+                    "description": "Pre-commit hook executable path",
+                    "default": null
+                },
+                "svn.hooks.postcommit": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "description": "Post-commit hook executable path",
+                  "default": null
+                },
                 "svn.ignoreMissingSvnWarning": {
                     "type": "boolean",
                     "description": "Ignores the warning when SVN is missing",
