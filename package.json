@@ -1131,16 +1131,66 @@
                 },
                 "svn.hooks.precommit": {
                     "type": [
-                      "string", 
+                      "array", 
                       "null"],
+                    "items": {
+                      "type": ["object", "string"],
+                      "properties": {
+                        "project": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "The project/repository name for which the commands are executed. If ommitted the commands will always be executed."
+                        },
+                        "branch": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "The branch for which the commands are executed. If ommitted the commands are executed for any branch."
+                        },
+                        "commands": {
+                          "type": ["string", "array"]
+                        }
+                      }
+                    },
                     "description": "Pre-commit hook executable path",
                     "default": null
                 },
                 "svn.hooks.postcommit": {
                   "type": [
-                    "string",
+                    "array",
                     "null"
                   ],
+                  "items": {
+                    "type": [
+                      "object",
+                      "string"
+                    ],
+                    "properties": {
+                      "project": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "description": "The project/repository name for which the commands are executed. If ommitted the commands will always be executed."
+                      },
+                      "branch": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "description": "The branch for which the commands are executed. If ommitted the commands are executed for any branch."
+                      },
+                      "commands": {
+                        "type": [
+                          "string",
+                          "array"
+                        ]
+                      }
+                    }
+                  },
                   "description": "Post-commit hook executable path",
                   "default": null
                 },

@@ -2,7 +2,7 @@ import * as path from "path";
 import { SourceControlResourceState, Uri, window } from "vscode";
 import { Status } from "../common/types";
 import { configuration } from "../helpers/configuration";
-import { executeHook } from "../helpers/hooks";
+import Hook from "../helpers/hooks";
 import { inputCommitMessage } from "../messages";
 import { Resource } from "../resource";
 import { Command } from "./command";
@@ -67,18 +67,22 @@ export class Commit extends Command {
 
         repository.inputBox.value = message;
 
-        const prehook = configuration.get<string>("hooks.precommit");
-        if (prehook) {
-          await executeHook(prehook);
+        const prehooks = configuration.get<Array<Hook>>("hooks.precommit");
+        if (prehooks) {
+          for (const hook of prehooks) {
+            await new Hook(hook).execute(repository);
+          }
         }
 
         const result = await repository.commitFiles(message, paths);
         window.showInformationMessage(result);
         repository.inputBox.value = "";
 
-        const posthook = configuration.get<string>("hooks.postcommit");
+        const posthook = configuration.get<Array<Hook>>("hooks.postcommit");
         if (posthook) {
-          await executeHook(prehook);
+          for (const hook of posthook) {
+            await new Hook(hook).execute(repository);
+          }
         }
       } catch (error) {
         console.error(error);
