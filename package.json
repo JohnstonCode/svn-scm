@@ -1129,70 +1129,83 @@
                     "description": "Use garavatar icons in log viewers",
                     "default": true
                 },
-                "svn.hooks.precommit": {
+                "svn.hooks": {
                     "type": [
-                      "array", 
-                      "null"],
-                    "items": {
-                      "type": ["object", "string"],
-                      "properties": {
-                        "project": {
-                          "type": [
-                            "string",
-                            "null"
-                          ],
-                          "description": "The project/repository name for which the commands are executed. If ommitted the commands will always be executed."
-                        },
-                        "branch": {
-                          "type": [
-                            "string",
-                            "null"
-                          ],
-                          "description": "The branch for which the commands are executed. If ommitted the commands are executed for any branch."
-                        },
-                        "commands": {
-                          "type": ["string", "array"]
-                        }
-                      }
-                    },
-                    "description": "Pre-commit hook executable path",
-                    "default": null
-                },
-                "svn.hooks.postcommit": {
-                  "type": [
-                    "array",
-                    "null"
-                  ],
-                  "items": {
-                    "type": [
-                      "object",
-                      "string"
+                        "array",
+                        "null"
                     ],
-                    "properties": {
-                      "project": {
-                        "type": [
-                          "string",
-                          "null"
+                    "items": {
+                        "type": "object",
+                        "required": [
+                            "commandType",
+                            "commandDisposition",
+                            "commandOperation",
+                            "command"
                         ],
-                        "description": "The project/repository name for which the commands are executed. If ommitted the commands will always be executed."
-                      },
-                      "branch": {
-                        "type": [
-                          "string",
-                          "null"
-                        ],
-                        "description": "The branch for which the commands are executed. If ommitted the commands are executed for any branch."
-                      },
-                      "commands": {
-                        "type": [
-                          "string",
-                          "array"
-                        ]
-                      }
-                    }
-                  },
-                  "description": "Post-commit hook executable path",
-                  "default": null
+                        "properties": {
+                            "commandType": {
+                                "enum": [
+                                    "System",
+                                    "VSCode"
+                                ]
+                            },
+                            "commandDisposition": {
+                                "enum": [
+                                    "Pre",
+                                    "Post"
+                                ]
+                            },
+                            "commandOperation": {
+                                "enum": [
+                                    "Add",
+                                    "AddChangelist",
+                                    "Changes",
+                                    "CleanUp",
+                                    "Commit",
+                                    "CurrentBranch",
+                                    "Info",
+                                    "Ignore",
+                                    "Log",
+                                    "NewBranch",
+                                    "Patch",
+                                    "Remove",
+                                    "RemoveChangelist",
+                                    "Rename",
+                                    "Resolve",
+                                    "Resolved",
+                                    "Revert",
+                                    "Show",
+                                    "Status",
+                                    "StatusRemote",
+                                    "SwitchBranch",
+                                    "Update",
+                                    "List"
+                                ]
+                            },
+                            "command": {
+                                "type": [
+                                    "string",
+                                    "array"
+                                ]
+                            },
+                            "project": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ],
+                                "description": "The project/repository name for which the commands are executed. If ommitted the commands will always be executed."
+                            },
+                            "branch": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ],
+                                "description": "The branch for which the commands are executed. If ommitted the commands are executed for any branch."
+                            }
+                        }
+                    },
+                    "description": "Hooks to be executed pre or post-command",
+                    "default": null
                 },
                 "svn.ignoreMissingSvnWarning": {
                     "type": "boolean",

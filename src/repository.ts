@@ -53,6 +53,7 @@ import {
 import { match, matchAll } from "./util/globMatch";
 import { RepositoryFilesWatcher } from "./watchers/repositoryFilesWatcher";
 import { keytar } from "./vscodeModules";
+import Hook, { Disposition } from "./helpers/hooks";
 
 function shouldShowProgress(operation: Operation): boolean {
   switch (operation) {
@@ -1092,9 +1093,21 @@ export class Repository implements IRemoteRepository {
       }
     };
 
-    return shouldShowProgress(operation)
+    const hooks = configuration.get<Array<Hook>>("hooks");
+
+    for (const hook of hooks) {
+      await new Hook(hook).execute(operation, this, Disposition.Pre);
+    }
+
+    const result = shouldShowProgress(operation)
       ? window.withProgress({ location: ProgressLocation.SourceControl }, run)
       : run();
+
+    for (const hook of hooks) {
+      await new Hook(hook).execute(operation, this, Disposition.Post);
+    }
+
+    return result;
   }
 
   private async retryRun<T>(
