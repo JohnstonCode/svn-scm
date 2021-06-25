@@ -1,4 +1,4 @@
-import { Stats } from "original-fs";
+import { Stats, statSync } from "original-fs";
 import * as path from "path";
 import {
   commands,
@@ -167,7 +167,10 @@ export class SourceControlManager implements IDisposable {
     );
     const onPossibleSvnRepositoryChange = filterEvent(
       onWorkspaceChange,
-      uri => uri.scheme === "file" && !this.getRepository(uri)
+      uri =>
+        uri.scheme === "file" &&
+        statSync(uri.fsPath).isDirectory() &&
+        !this.getRepository(uri)
     );
     onPossibleSvnRepositoryChange(
       this.onPossibleSvnRepositoryChange,
