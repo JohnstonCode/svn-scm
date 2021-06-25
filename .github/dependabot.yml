@@ -1,0 +1,30 @@
+version: 2
+updates:
+- package-ecosystem: npm
+  directory: "/"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: "@types/node"
+    versions:
+    - ">= 0"
+  - dependency-name: "@types/vscode"
+    versions:
+    - ">= 0"
+  - dependency-name: webpack
+    versions:
+    - 5.34.0
+    - 5.35.0
+    - 5.36.0
+  - dependency-name: eslint-config-prettier
+    versions:
+    - 8.0.0
+    - 8.1.0
+    - 8.2.0
+  - dependency-name: ts-loader
+    versions:
+    - 9.0.0
+  - dependency-name: "@typescript-eslint/parser"
+    versions:
+    - 4.16.0
