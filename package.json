@@ -1131,8 +1131,7 @@
                 },
                 "svn.hooks": {
                     "type": [
-                        "array",
-                        "null"
+                        "array"
                     ],
                     "items": {
                         "type": "object",
@@ -1182,11 +1181,28 @@
                                     "List"
                                 ]
                             },
+                            "commandArguments": {
+                                "type": [
+                                    "string",
+                                    "array"
+                                ],
+                                "default": [],
+                                "description": "Arguments to be passed to VSCode command execution. The arguments are passed to all commands defined."
+                            },
                             "command": {
                                 "type": [
                                     "string",
                                     "array"
                                 ]
+                            },
+                            "operationArguments": {
+                                "enum": [
+                                    "None",
+                                    "ReadOnly",
+                                    "ReadWrite"
+                                ],
+                                "default": "None",
+                                "description": "Access rights to SVN operation arguments. Operation arguments are passed as a JSON string by replacing `${opArgs}` variable *any* command. The arguments can be overwritten by a JSON output to `stdout`."
                             },
                             "project": {
                                 "type": [
@@ -1205,7 +1221,7 @@
                         }
                     },
                     "description": "Hooks to be executed pre or post-command",
-                    "default": null
+                    "default": []
                 },
                 "svn.ignoreMissingSvnWarning": {
                     "type": "boolean",

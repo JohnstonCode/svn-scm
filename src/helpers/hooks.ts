@@ -1,7 +1,6 @@
 import { exec } from "child_process";
 import { commands } from "vscode";
 import { Operation } from "../common/types";
-import { Repository } from "../repository";
 import SvnError from "../svnError";
 
 export enum Disposition {
@@ -14,11 +13,19 @@ export enum Command {
   VSCode = "VSCode"
 }
 
+export enum OperationArgs {
+  None = "None",
+  ReadOnly = "ReadOnly",
+  ReadWrite = "ReadWrite"
+}
+
 export interface IHook {
   commandType: Command;
   commandDisposition: Disposition;
   commandOperation: Operation;
+  commandArguments: Array<any> | string;
   command: Array<string> | string;
+  operationArguments: OperationArgs;
   project?: string;
   branch?: string;
 }
@@ -27,7 +34,9 @@ export default class Hook implements IHook {
   commandType: Command;
   commandDisposition: Disposition;
   commandOperation: Operation;
-  command: Array<string> | string;
+  commandArguments: Array<any>;
+  command: Array<string>;
+  operationArguments: OperationArgs;
   project?: string;
   branch?: string;
 
@@ -35,15 +44,24 @@ export default class Hook implements IHook {
     this.commandType = data.commandType;
     this.commandDisposition = data.commandDisposition;
     this.commandOperation = data.commandOperation;
+    this.commandArguments = Array.isArray(data.commandArguments)
+      ? data.commandArguments.slice()
+      : new Array<string>(`${data.commandArguments}`);
     this.command = Array.isArray(data.command)
       ? data.command.slice()
       : new Array<string>(`${data.command}`);
+
+    this.operationArguments = data.operationArguments;
 
     this.project = data.project;
     this.branch = data.branch;
   }
 
-  private async _execute(command: string): Promise<unknown> {
+  private async _execute(
+    command: string,
+    args?: string[],
+    operationArgs?: any
+  ): Promise<unknown> {
     switch (this.commandType) {
       case Command.System:
         return new Promise((resolve, reject) => {
@@ -59,6 +77,8 @@ export default class Hook implements IHook {
               );
               return;
             } else {
+              this.operationArguments === OperationArgs.ReadWrite &&
+                Object.assign(operationArgs, JSON.parse(stdout));
               resolve(stdout);
             }
           });
@@ -66,8 +86,12 @@ export default class Hook implements IHook {
 
       case Command.VSCode:
         return new Promise((resolve, reject) => {
-          commands.executeCommand(command).then(
-            value => resolve(value),
+          commands.executeCommand(command, ...(args || [])).then(
+            value => {
+              this.operationArguments === OperationArgs.ReadWrite &&
+                Object.assign(operationArgs, value);
+              resolve(value);
+            },
             reason =>
               reject(
                 new SvnError({
@@ -87,29 +111,17 @@ export default class Hook implements IHook {
     }
   }
 
-  public async execute(
-    operation: Operation,
-    repository: Repository,
-    disposition: Disposition
-  ) {
-    if (this.commandOperation !== operation) {
-      return;
-    }
-
-    if (this.commandDisposition !== disposition) {
-      return;
-    }
-
-    if (this.project !== undefined && !repository.root.includes(this.project)) {
-      return;
-    }
-
-    if (this.branch !== repository.currentBranch && this.branch !== undefined) {
-      return;
-    }
-
+  public async execute(operationArgs: any = {}) {
     for (const command of this.command) {
-      await this._execute(command);
+      const _command =
+        this.operationArguments === OperationArgs.None
+          ? command
+          : String(command).replace(
+              "${opArgs}",
+              `${JSON.stringify(operationArgs)}`
+            );
+
+      await this._execute(_command, this.commandArguments, operationArgs);
     }
   }
 }

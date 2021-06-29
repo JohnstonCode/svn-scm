@@ -119,7 +119,7 @@ Here are all of the extension settings with their default values. To change any 
   "svn.gravatars.enabled": true,
 
   // Set up client-side hooks to be executed before or after SVN commands.
-  "svn.hooks": null
+  "svn.hooks": []
 
   // Ignores the warning when SVN is missing
   "svn.ignoreMissingSvnWarning": null,
