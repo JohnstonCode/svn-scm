@@ -59,7 +59,7 @@
         "@types/semver": "^7.3.6",
         "@types/tmp": "0.2.0",
         "@types/vscode": "1.44.0",
-        "@types/xml2js": "^0.4.8",
+        "@types/xml2js": "^0.4.9",
         "@typescript-eslint/eslint-plugin": "^4.28.1",
         "@typescript-eslint/parser": "^4.28.1",
         "chardet": "^1.3.0",
