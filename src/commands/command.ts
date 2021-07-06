@@ -27,6 +27,7 @@ import { Repository } from "../repository";
 import { Resource } from "../resource";
 import IncomingChangeNode from "../treeView/nodes/incomingChangeNode";
 import { fromSvnUri, toSvnUri } from "../uri";
+import { getSvnDir } from "../util";
 
 export abstract class Command implements Disposable {
   private _disposable?: Disposable;
@@ -398,7 +399,12 @@ export abstract class Command implements Disposable {
 
   protected async showDiffPath(repository: Repository, content: string) {
     try {
-      const tempFile = path.join(repository.root, ".svn", "tmp", "svn.patch");
+      const tempFile = path.join(
+        repository.root,
+        getSvnDir(),
+        "tmp",
+        "svn.patch"
+      );
 
       if (await exists(tempFile)) {
         try {

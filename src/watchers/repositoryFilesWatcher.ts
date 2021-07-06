@@ -8,7 +8,8 @@ import {
   filterEvent,
   IDisposable,
   isDescendant,
-  fixPathSeparator
+  fixPathSeparator,
+  getSvnDir
 } from "../util";
 
 export class RepositoryFilesWatcher implements IDisposable {
@@ -49,7 +50,7 @@ export class RepositoryFilesWatcher implements IDisposable {
       !workspace.workspaceFolders.filter(w => isDescendant(w.uri.fsPath, root))
         .length
     ) {
-      const repoWatcher = watch(join(root, ".svn"), this.repoWatch);
+      const repoWatcher = watch(join(root, getSvnDir()), this.repoWatch);
 
       repoWatcher.on("error", error => {
         throw error;
@@ -62,7 +63,8 @@ export class RepositoryFilesWatcher implements IDisposable {
 
     this.disposables.push(fsWatcher);
 
-    const isTmp = (uri: Uri) => /[\\\/]\.svn[\\\/]tmp/.test(uri.path);
+    //https://subversion.apache.org/docs/release-notes/1.3.html#_svn-hack
+    const isTmp = (uri: Uri) => /[\\\/](\.svn|_svn)[\\\/]tmp/.test(uri.path);
 
     const isRelevant = (uri: Uri) => !isTmp(uri);
 
@@ -76,7 +78,8 @@ export class RepositoryFilesWatcher implements IDisposable {
       this.onDidDelete
     );
 
-    const svnPattern = /[\\\/]\.svn[\\\/]/;
+    //https://subversion.apache.org/docs/release-notes/1.3.html#_svn-hack
+    const svnPattern = /[\\\/](\.svn|_svn)[\\\/]/;
 
     const ignoreSvn = (uri: Uri) => !svnPattern.test(uri.path);
 
