@@ -118,6 +118,9 @@ Here are all of the extension settings with their default values. To change any 
   // Use garavatar icons in log viewers
   "svn.gravatars.enabled": true,
 
+  // Set up client-side hooks to be executed before or after SVN commands.
+  "svn.hooks": []
+
   // Ignores the warning when SVN is missing
   "svn.ignoreMissingSvnWarning": null,
 

@@ -53,6 +53,7 @@ import {
 import { match, matchAll } from "./util/globMatch";
 import { RepositoryFilesWatcher } from "./watchers/repositoryFilesWatcher";
 import { keytar } from "./vscodeModules";
+import Hook, { Disposition } from "./helpers/hooks";
 
 function shouldShowProgress(operation: Operation): boolean {
   switch (operation) {
@@ -841,8 +842,12 @@ export class Repository implements IRemoteRepository {
   }
 
   public async commitFiles(message: string, files: any[]) {
-    return this.run(Operation.Commit, () =>
-      this.repository.commitFiles(message, files)
+    const args = { message: message, files: files };
+    return this.run(
+      Operation.Commit,
+      (obj: any = { message: message, files: files }) =>
+        this.repository.commitFiles(obj.message, obj.files),
+      args
     );
   }
 
@@ -1055,7 +1060,8 @@ export class Repository implements IRemoteRepository {
 
   private async run<T>(
     operation: Operation,
-    runOperation: () => Promise<T> = () => Promise.resolve<any>(null)
+    runOperation: (args?: any) => Promise<T> = () => Promise.resolve<any>(null),
+    operationArgs?: any
   ): Promise<T> {
     if (this.state !== RepositoryState.Idle) {
       throw new Error("Repository not initialized");
@@ -1066,7 +1072,9 @@ export class Repository implements IRemoteRepository {
       this._onRunOperation.fire(operation);
 
       try {
-        const result = await this.retryRun(runOperation);
+        const actualOperation = () =>
+          runOperation(operationArgs ? operationArgs : undefined);
+        const result = await this.retryRun(actualOperation);
 
         const checkRemote = operation === Operation.StatusRemote;
 
@@ -1092,9 +1100,41 @@ export class Repository implements IRemoteRepository {
       }
     };
 
-    return shouldShowProgress(operation)
+    const hooks = configuration
+      .get<Array<Hook>>("hooks")
+      .filter(
+        hook =>
+          hook.commandOperation == operation &&
+          (hook.project ? this.root.includes(hook.project) : true) &&
+          (hook.branch ? this.currentBranch == hook.branch : true)
+      );
+
+    const prehooks = hooks.filter(
+      hook => hook.commandDisposition == Disposition.Pre
+    );
+
+    if (operationArgs) {
+      console.log(JSON.stringify(operationArgs));
+    }
+
+    for (const hook of prehooks) {
+      await new Hook(hook).execute(operationArgs);
+    }
+
+    const result = shouldShowProgress(operation)
       ? window.withProgress({ location: ProgressLocation.SourceControl }, run)
       : run();
+
+    const posthooks = hooks.filter(
+      hook => hook.commandDisposition == Disposition.Post
+    );
+
+    return result.then(async () => {
+      for (const hook of posthooks) {
+        await new Hook(hook).execute(operationArgs);
+      }
+      return result;
+    });
   }
 
   private async retryRun<T>(
