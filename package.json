@@ -54,7 +54,7 @@
         "@semantic-release/changelog": "^5.0.1",
         "@semantic-release/git": "^9.0.0",
         "@types/glob": "^7.1.4",
-        "@types/mocha": "^8.2.3",
+        "@types/mocha": "^9.0.0",
         "@types/node": "^12.11.7",
         "@types/semver": "^7.3.7",
         "@types/tmp": "0.2.1",
