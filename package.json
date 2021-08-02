@@ -76,7 +76,7 @@
         "node-sass": "^6.0.1",
         "original-fs": "^1.0.0",
         "ovsx": "0.2.0",
-        "prettier": "^2.2.1",
+        "prettier": "^2.3.2",
         "prettylint": "^1.0.0",
         "semantic-release": "^17.4.4",
         "semantic-release-vsce": "^4.0.1",
