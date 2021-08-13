@@ -1,3 +1,10 @@
+## [2.13.6](https://github.com/JohnstonCode/svn-scm/compare/v2.13.5...v2.13.6) (2021-05-31)
+
+
+### Bug Fixes
+
+* Debounce filesystem events ([#1409](https://github.com/JohnstonCode/svn-scm/issues/1409)) ([7b45ad3](https://github.com/JohnstonCode/svn-scm/commit/7b45ad36bb21ebb71f72e140664b12cdf8b6f329))
+
 ## [2.13.5](https://github.com/JohnstonCode/svn-scm/compare/v2.13.4...v2.13.5) (2020-11-24)
 
 
