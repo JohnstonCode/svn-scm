@@ -67,7 +67,7 @@
         "decache": "^4.6.0",
         "eslint": "^7.32.0",
         "eslint-config-prettier": "^7.2.0",
-        "eslint-plugin-prettier": "^3.4.0",
+        "eslint-plugin-prettier": "^3.4.1",
         "glob": "^7.1.7",
         "iconv-lite-umd": "0.6.8",
         "milligram": "^1.4.1",
