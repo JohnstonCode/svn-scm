@@ -1,3 +1,10 @@
+# [2.14.0](https://github.com/JohnstonCode/svn-scm/compare/v2.13.6...v2.14.0) (2021-10-07)
+
+
+### Features
+
+* Support SVN_ASP_DOT_NET_HACK env variable ([#1174](https://github.com/JohnstonCode/svn-scm/issues/1174)) ([86c36d2](https://github.com/JohnstonCode/svn-scm/commit/86c36d2166c9e483d2470b088f9cb34c0beb0b81))
+
 ## [2.13.6](https://github.com/JohnstonCode/svn-scm/compare/v2.13.5...v2.13.6) (2021-05-31)
 
 

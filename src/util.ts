@@ -181,11 +181,16 @@ export function fixPegRevision(file: string) {
   return file;
 }
 
+export function getSvnDir(): string {
+  return process.env.SVN_ASP_DOT_NET_HACK ? "_svn" : ".svn";
+}
+
 export async function isSvnFolder(
   dir: string,
   checkParent: boolean = true
 ): Promise<boolean> {
-  const result = await exists(`${dir}/.svn`);
+  const svnDir = getSvnDir();
+  const result = await exists(`${dir}/${svnDir}`);
 
   if (result || !checkParent) {
     return result;
