@@ -457,6 +457,11 @@
                 "category": "SVN"
             },
             {
+                "command": "svn.merge",
+                "title": "Merge",
+                "category": "SVN"
+            },
+            {
                 "command": "svn.treeview.pullIncomingChange",
                 "title": "Update selected",
                 "category": "SVN",
@@ -687,6 +692,10 @@
                     "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
                 },
                 {
+                    "command": "svn.merge",
+                    "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
+                },
+                {
                     "command": "svn.treeview.pullIncomingChange",
                     "when": "false"
                 },
@@ -812,6 +821,10 @@
                 },
                 {
                     "command": "svn.switchBranch",
+                    "when": "config.svn.enabled && scmProvider == svn"
+                },
+                {
+                    "command": "svn.merge",
                     "when": "config.svn.enabled && scmProvider == svn"
                 },
                 {

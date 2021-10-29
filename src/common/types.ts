@@ -110,6 +110,7 @@ export enum Operation {
   Info = "Info",
   Ignore = "Ignore",
   Log = "Log",
+  Merge = "Merge",
   NewBranch = "NewBranch",
   Patch = "Patch",
   Remove = "Remove",
