@@ -30,20 +30,22 @@ export class Merge extends Command {
     } catch (error) {
       console.log(error);
 
-      if (
-        typeof error === "object" &&
-        error.hasOwnProperty("stderrFormated") &&
-        error.stderrFormated.includes("try updating first")
-      ) {
-        const answer = await window.showErrorMessage(
-          "Seems like you need to update first prior to merging. " +
-            "Would you like to update now and try merging again?",
-          "Yes",
-          "No"
-        );
-        if (answer === "Yes") {
-          await commands.executeCommand("svn.update");
-          await this.merge(repository, branch);
+      if (typeof error === "object" && error.hasOwnProperty("stderrFormated")) {
+        if (error.stderrFormated.includes("try updating first")) {
+          const answer = await window.showErrorMessage(
+            "Seems like you need to update first prior to merging. " +
+              "Would you like to update now and try merging again?",
+            "Yes",
+            "No"
+          );
+          if (answer === "Yes") {
+            await commands.executeCommand("svn.update");
+            await this.merge(repository, branch);
+          }
+        } else {
+          window.showErrorMessage(
+            "Unable to merge branch: " + error.stderrFormated
+          );
         }
       } else {
         window.showErrorMessage("Unable to merge branch");
