@@ -16,7 +16,7 @@ export class Merge extends Command {
       return;
     }
 
-    this.merge(repository, branch);
+    await this.merge(repository, branch);
   }
 
   async merge(repository: Repository, branch: IBranchItem) {
