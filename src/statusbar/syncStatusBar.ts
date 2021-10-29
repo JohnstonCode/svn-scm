@@ -50,7 +50,8 @@ export class SyncStatusBar {
     const isSyncRunning =
       this.repository.operations.isRunning(Operation.SwitchBranch) ||
       this.repository.operations.isRunning(Operation.NewBranch) ||
-      this.repository.operations.isRunning(Operation.Update);
+      this.repository.operations.isRunning(Operation.Update) ||
+      this.repository.operations.isRunning(Operation.Merge);
 
     const isStatusRemoteRunning = this.repository.operations.isRunning(
       Operation.StatusRemote
