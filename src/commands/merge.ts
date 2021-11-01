@@ -1,6 +1,6 @@
 import { commands, window } from "vscode";
 import { IBranchItem } from "../common/types";
-import { selectBranch } from "../helpers/branch";
+import { isTrunk, selectBranch } from "../helpers/branch";
 import { Repository } from "../repository";
 import { Command } from "./command";
 
@@ -21,7 +21,7 @@ export class Merge extends Command {
 
   async merge(repository: Repository, branch: IBranchItem) {
     let reintegrate = false;
-    if (repository.currentBranch == "trunk") {
+    if (isTrunk(repository.currentBranch)) {
       reintegrate = true;
     }
 
