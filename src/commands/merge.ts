@@ -28,8 +28,6 @@ export class Merge extends Command {
     try {
       await repository.merge(branch.path, reintegrate);
     } catch (error) {
-      console.log(error);
-
       if (typeof error === "object" && error.hasOwnProperty("stderrFormated")) {
         if (error.stderrFormated.includes("try updating first")) {
           const answer = await window.showErrorMessage(
@@ -48,6 +46,7 @@ export class Merge extends Command {
           );
         }
       } else {
+        console.log(error);
         window.showErrorMessage("Unable to merge branch");
       }
     }
