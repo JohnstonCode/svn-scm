@@ -1,3 +1,10 @@
+# [2.15.0](https://github.com/JohnstonCode/svn-scm/compare/v2.14.0...v2.15.0) (2021-11-08)
+
+
+### Features
+
+* Added Merge command ([#1540](https://github.com/JohnstonCode/svn-scm/issues/1540)) ([87060b3](https://github.com/JohnstonCode/svn-scm/commit/87060b36021361c1d99c29a91b8a22b5b1f34d09))
+
 # [2.14.0](https://github.com/JohnstonCode/svn-scm/compare/v2.13.6...v2.14.0) (2021-10-07)
 
 

@@ -2,7 +2,7 @@
     "name": "svn-scm",
     "displayName": "SVN",
     "description": "Integrated Subversion source control",
-    "version": "2.14.0",
+    "version": "2.15.0",
     "publisher": "johnstoncode",
     "engines": {
         "vscode": "^1.44.0"
@@ -250,6 +250,11 @@
                 "category": "SVN"
             },
             {
+                "command": "svn.merge",
+                "title": "Merge",
+                "category": "SVN"
+            },
+            {
                 "command": "svn.openChangeBase",
                 "title": "Open Changes with BASE",
                 "category": "SVN",
@@ -457,11 +462,6 @@
                 "category": "SVN"
             },
             {
-                "command": "svn.merge",
-                "title": "Merge",
-                "category": "SVN"
-            },
-            {
                 "command": "svn.treeview.pullIncomingChange",
                 "title": "Update selected",
                 "category": "SVN",
@@ -565,6 +565,10 @@
                 },
                 {
                     "command": "svn.log",
+                    "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
+                },
+                {
+                    "command": "svn.merge",
                     "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
                 },
                 {
@@ -689,10 +693,6 @@
                 },
                 {
                     "command": "svn.switchBranch",
-                    "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
-                },
-                {
-                    "command": "svn.merge",
                     "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
                 },
                 {
