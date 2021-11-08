@@ -45,6 +45,7 @@ import { Upgrade } from "./commands/upgrade";
 import { SourceControlManager } from "./source_control_manager";
 import { SearchLogByRevision } from "./commands/search_log_by_revision";
 import { SearchLogByText } from "./commands/search_log_by_text";
+import { Merge } from "./commands/merge";
 
 export function registerCommands(
   sourceControlManager: SourceControlManager,
@@ -63,6 +64,7 @@ export function registerCommands(
   disposables.push(new OpenResourceHead());
   disposables.push(new OpenChangeBase());
   disposables.push(new SwitchBranch());
+  disposables.push(new Merge());
   disposables.push(new Revert());
   disposables.push(new Update());
   disposables.push(new PullIncommingChange());

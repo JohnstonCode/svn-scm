@@ -662,6 +662,24 @@ export class Repository {
     return true;
   }
 
+  public async merge(
+    ref: string,
+    reintegrate: boolean = false,
+    accept_action: string = "postpone"
+  ) {
+    const repoUrl = await this.getRepoUrl();
+    const branchUrl = repoUrl + "/" + ref;
+
+    let args = ["merge", "--accept", accept_action];
+    args = args.concat(reintegrate ? ["--reintegrate"] : []);
+    args = args.concat([branchUrl]);
+
+    await this.exec(args);
+
+    this.resetInfoCache();
+    return true;
+  }
+
   public async revert(files: string[], depth: keyof typeof SvnDepth) {
     files = files.map(file => this.removeAbsolutePath(file));
     const result = await this.exec(["revert", "--depth", depth, ...files]);
