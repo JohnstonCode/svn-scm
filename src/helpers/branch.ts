@@ -107,3 +107,16 @@ export async function selectBranch(
 
   return;
 }
+
+export function isTrunk(folder: string): boolean {
+  const conf = "layout.trunkRegex";
+  const layout = configuration.get<string>(conf);
+  const regex = new RegExp(`(^|/)(${layout})$`);
+  const matches = folder.match(regex);
+  const group = configuration.get<number>(`${conf}Name`, 1) + 2;
+
+  if (matches && matches[2] && matches[group]) {
+    return true;
+  }
+  return false;
+}

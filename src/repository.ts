@@ -818,6 +818,17 @@ export class Repository implements IRemoteRepository {
     });
   }
 
+  public async merge(
+    name: string,
+    reintegrate: boolean = false,
+    accept_action: string = "postpone"
+  ) {
+    await this.run(Operation.Merge, async () => {
+      await this.repository.merge(name, reintegrate, accept_action);
+      this.updateRemoteChangedFiles();
+    });
+  }
+
   public async updateRevision(
     ignoreExternals: boolean = false
   ): Promise<string> {
