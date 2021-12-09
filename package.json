@@ -49,7 +49,9 @@
         "vscode:prepublish": "yarn run lint && yarn run build",
         "watch:css": "yarn run build:css -w"
     },
-    "dependencies": {},
+    "dependencies": {
+        "jschardet": "^3.0.0"
+    },
     "devDependencies": {
         "@semantic-release/changelog": "^5.0.1",
         "@semantic-release/git": "^9.0.0",
@@ -70,7 +72,6 @@
         "eslint-plugin-prettier": "^3.4.0",
         "glob": "^7.1.7",
         "iconv-lite-umd": "0.6.8",
-        "jschardet": "^3.0.0",
         "milligram": "^1.4.1",
         "minimatch": "^3.0.4",
         "mocha": "^9.0.3",
