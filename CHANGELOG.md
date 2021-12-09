@@ -1,3 +1,10 @@
+## [2.15.1](https://github.com/JohnstonCode/svn-scm/compare/v2.15.0...v2.15.1) (2021-12-09)
+
+
+### Bug Fixes
+
+* Added jschardet ([#1548](https://github.com/JohnstonCode/svn-scm/issues/1548)) ([e3dbc82](https://github.com/JohnstonCode/svn-scm/commit/e3dbc821a3ac20b74a7dc0902f995187608258dd))
+
 # [2.15.0](https://github.com/JohnstonCode/svn-scm/compare/v2.14.0...v2.15.0) (2021-11-08)
 
 
