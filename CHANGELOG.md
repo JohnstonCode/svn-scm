@@ -1,3 +1,10 @@
+## [2.15.2](https://github.com/JohnstonCode/svn-scm/compare/v2.15.1...v2.15.2) (2021-12-09)
+
+
+### Bug Fixes
+
+* added jschardect as dep ([#1549](https://github.com/JohnstonCode/svn-scm/issues/1549)) ([3d627d3](https://github.com/JohnstonCode/svn-scm/commit/3d627d39073b77f724f1cc9be5545981501babc4))
+
 ## [2.15.1](https://github.com/JohnstonCode/svn-scm/compare/v2.15.0...v2.15.1) (2021-12-09)
 
 
