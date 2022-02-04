@@ -1,3 +1,10 @@
+## [2.15.3](https://github.com/JohnstonCode/svn-scm/compare/v2.15.2...v2.15.3) (2022-02-04)
+
+
+### Bug Fixes
+
+* Missing dependency: iconv-lite ([#1558](https://github.com/JohnstonCode/svn-scm/issues/1558)) ([d614c2a](https://github.com/JohnstonCode/svn-scm/commit/d614c2a03cdd65d740a81d1b8a22c4955268e83a))
+
 ## [2.15.2](https://github.com/JohnstonCode/svn-scm/compare/v2.15.1...v2.15.2) (2021-12-09)
 
 
