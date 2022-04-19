@@ -1,3 +1,10 @@
+## [2.15.4](https://github.com/JohnstonCode/svn-scm/compare/v2.15.3...v2.15.4) (2022-04-19)
+
+
+### Bug Fixes
+
+* Add --limit=1 when determining branch copy source ([#1571](https://github.com/JohnstonCode/svn-scm/issues/1571)) ([593dfe5](https://github.com/JohnstonCode/svn-scm/commit/593dfe5cb61a4a1ad4c30eda1c212fbf9e7256eb))
+
 ## [2.15.3](https://github.com/JohnstonCode/svn-scm/compare/v2.15.2...v2.15.3) (2022-02-04)
 
 
