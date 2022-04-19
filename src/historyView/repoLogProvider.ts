@@ -29,6 +29,7 @@ import {
   getCommitLabel,
   getCommitToolTip,
   getIconObject,
+  getActionIcon,
   getLimit,
   ICachedLog,
   ILogTreeItem,
@@ -40,28 +41,6 @@ import {
   transform,
   getCommitDescription
 } from "./common";
-
-function getActionIcon(action: string) {
-  let name: string | undefined;
-  switch (action) {
-    case "A":
-      name = "status-added";
-      break;
-    case "D":
-      name = "status-deleted";
-      break;
-    case "M":
-      name = "status-modified";
-      break;
-    case "R":
-      name = "status-renamed";
-      break;
-  }
-  if (name === undefined) {
-    return undefined;
-  }
-  return getIconObject(name);
-}
 
 export class RepoLogProvider
   implements TreeDataProvider<ILogTreeItem>, Disposable {
@@ -95,6 +74,10 @@ export class RepoLogProvider
         async (item: ILogTreeItem) => copyCommitToClipboard("revision", item)
       ),
       commands.registerCommand(
+        "svn.repolog.addrevision",
+        async (element: ILogTreeItem) => commands.executeCommand("svn.revisionviewer.addrevision", element)
+      ),
+      commands.registerCommand(
         "svn.repolog.addrepolike",
         this.addRepolikeGui,
         this
@@ -117,7 +100,7 @@ export class RepoLogProvider
           return this.refresh();
           // TODO refresh only required repo, need to pass element === getChildren()
         }
-      )
+      ),
     );
   }
 

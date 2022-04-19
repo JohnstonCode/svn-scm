@@ -14,6 +14,7 @@ import { OpenRepositoryCount } from "./contexts/openRepositoryCount";
 import { configuration } from "./helpers/configuration";
 import { ItemLogProvider } from "./historyView/itemLogProvider";
 import { RepoLogProvider } from "./historyView/repoLogProvider";
+import { RevisionViewerProvider } from "./historyView/revisionViewerProvider";
 import * as messages from "./messages";
 import { SourceControlManager } from "./source_control_manager";
 import { Svn } from "./svn";
@@ -51,6 +52,7 @@ async function init(
     new RepoLogProvider(sourceControlManager),
     new ItemLogProvider(sourceControlManager),
     new BranchChangesProvider(sourceControlManager),
+    new RevisionViewerProvider(),
     new CheckActiveEditor(sourceControlManager),
     new OpenRepositoryCount(sourceControlManager),
     new IsSvn18orGreater(info.version),

@@ -29,7 +29,8 @@ import {
   openDiff,
   openFileRemote,
   transform,
-  getCommitDescription
+  getCommitDescription,
+  SvnPath
 } from "./common";
 
 export class ItemLogProvider
@@ -54,6 +55,10 @@ export class ItemLogProvider
       commands.registerCommand(
         "svn.itemlog.copyrevision",
         async (item: ILogTreeItem) => copyCommitToClipboard("revision", item)
+      ),
+      commands.registerCommand(
+        "svn.itemlog.addrevision",
+        async (item: ILogTreeItem) => commands.executeCommand("svn.revisionviewer.addrevision", item)
       ),
       commands.registerCommand(
         "svn.itemlog.openFileRemote",
@@ -189,7 +194,14 @@ export class ItemLogProvider
       if (entries.length === 0) {
         await fetchMore(this.currentItem);
       }
-      const result = transform(entries, LogTreeItemKind.Commit);
+
+      // Assign repo as parent for RevisionViewerProvider
+      let repoParent: ILogTreeItem = {
+        kind: LogTreeItemKind.Repo,
+        data: new SvnPath(this.currentItem.repo.branchRoot.toString())
+      }
+
+      const result = transform(entries, LogTreeItemKind.Commit, repoParent);
       insertBaseMarker(this.currentItem, entries, result);
       if (!this.currentItem.isComplete) {
         const ti = new TreeItem(`Load another ${getLimit()} revisions`);

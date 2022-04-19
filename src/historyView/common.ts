@@ -78,6 +78,28 @@ export function getIconObject(iconName: string): { light: Uri; dark: Uri } {
   };
 }
 
+export function getActionIcon(action: string) {
+  let name: string | undefined;
+  switch (action) {
+    case "A":
+      name = "status-added";
+      break;
+    case "D":
+      name = "status-deleted";
+      break;
+    case "M":
+      name = "status-modified";
+      break;
+    case "R":
+      name = "status-renamed";
+      break;
+  }
+  if (name === undefined) {
+    return undefined;
+  }
+  return getIconObject(name);
+}
+
 export async function copyCommitToClipboard(what: string, item: ILogTreeItem) {
   const clipboard = (env as any).clipboard;
   if (clipboard === undefined) {
