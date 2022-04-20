@@ -4,6 +4,7 @@ import { window, Uri, commands } from "vscode";
 import { Repository } from "../repository";
 import { toSvnUri } from "../uri";
 import { SvnUriAction } from "../common/types";
+import { getRevision } from "../util";
 
 export class SearchLogByRevision extends Command {
   constructor() {
@@ -16,8 +17,8 @@ export class SearchLogByRevision extends Command {
       return;
     }
 
-    const revision = parseInt(input, 10);
-    if (!revision || !/^\+?(0|[1-9]\d*)$/.test(input)) {
+    const revision = getRevision(input);
+    if (!revision) {
       window.showErrorMessage("Invalid revision");
       return;
     }

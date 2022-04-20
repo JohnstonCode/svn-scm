@@ -20,7 +20,7 @@ import { exists } from "../fs";
 import { SourceControlManager } from "../source_control_manager";
 import { IRemoteRepository } from "../remoteRepository";
 import { Repository } from "../repository";
-import { dispose, unwrap } from "../util";
+import { dispose, unwrap, getRevision } from "../util";
 import {
   checkIfFile,
   copyCommitToClipboard,
@@ -41,6 +41,8 @@ import {
   transform,
   getCommitDescription
 } from "./common";
+import { resolve } from "dns";
+import { timingSafeEqual } from "crypto";
 
 export class RepoLogProvider
   implements TreeDataProvider<ILogTreeItem>, Disposable {
@@ -101,6 +103,11 @@ export class RepoLogProvider
           // TODO refresh only required repo, need to pass element === getChildren()
         }
       ),
+      commands.registerCommand(
+        "svn.repolog.selectrevision",
+        this.selectRevisionCmd,
+        this
+      )
     );
   }
 
@@ -222,6 +229,73 @@ export class RepoLogProvider
     }
     const parent = (element.parent as ILogTreeItem).data as ISvnLogEntry;
     return openFileRemote(item.repo, ri.remoteFullPath, parent.revision);
+  }
+
+  public async selectRevisionCmd() {
+    if (!this.logCache.size) {
+      return;
+    }
+    let repo: IRemoteRepository | null = null;
+
+    // Check if there are multiple repositories currently open
+    if (this.logCache.size > 1) {
+      const items = Array.from(this.logCache.keys())
+        // Figure out proper icon
+        .map(repoPath => {
+          const cached: ICachedLog = this.logCache.get(repoPath)!;
+          if (cached.repo instanceof Repository) {
+            return {label: `$(folder) ${repoPath}`, repo: cached.repo};
+          } else {
+            return {label: `$(repo) ${repoPath}`, repo: cached.repo};
+          }
+        });
+
+      const item = await window.showQuickPick(
+        items,
+        { placeHolder: "Which repository?"}
+      );
+
+      if (item)
+        repo = item.repo;
+    } else {
+      repo = this.logCache.entries().next().value[1].repo;
+    }
+
+    if (!repo) {
+      return;
+    }
+
+    // Get revision 
+    const input = await window.showInputBox({ prompt: "Revision?" });
+    if (!input) {
+      return;
+    }
+
+    let revision = getRevision(input)?.toString();
+    if (!revision) {
+      window.showErrorMessage("Invalid revision");
+      return;
+    }
+
+    // Confirm commit
+    let commit = (await repo.log(revision, revision, 1))[0];
+    if(! await window.showQuickPick(
+      [{label: commit.msg}],
+      )){
+        return;
+      }
+    
+    // Create tree item
+    let ti : ILogTreeItem = {
+      kind: LogTreeItemKind.Commit,
+      data: commit,
+      parent: {
+        kind: LogTreeItemKind.Repo,
+        data: new SvnPath(repo.branchRoot.toString())
+      }
+    };
+
+    commands.executeCommand("svn.revisionviewer.addrevision", ti);
   }
 
   public openFileLocal(element: ILogTreeItem) {

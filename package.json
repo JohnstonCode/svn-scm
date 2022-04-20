@@ -385,6 +385,15 @@
                 "title": "Add to selected revisions"
             },
             {
+                "command": "svn.repolog.selectrevision",
+                "category": "SVN",
+                "title": "Select revision",
+                "icon": {
+                    "dark": "icons/dark/add.svg",
+                    "light": "icons/light/add.svg"
+                }
+            },
+            {
                 "command": "svn.repolog.openDiff",
                 "category": "SVN",
                 "title": "Open diff"
@@ -690,6 +699,10 @@
                     "when": "false"
                 },
                 {
+                    "command": "svn.revisionviewer.addrevision",
+                    "when": "false"
+                },
+                {
                     "command": "svn.resolve",
                     "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
                 },
@@ -752,6 +765,11 @@
                 {
                     "command": "svn.repolog.addrepolike",
                     "when": "view == repolog",
+                    "group": "navigation"
+                },
+                {
+                    "command": "svn.repolog.selectrevision",
+                    "when": "view == revisionviewer",
                     "group": "navigation"
                 },
                 {

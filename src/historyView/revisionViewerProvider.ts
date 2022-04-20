@@ -49,13 +49,7 @@ export class RevisionViewerProvider
     dispose(this._dispose);
   }
 
-  public async addRevision(element?: ILogTreeItem) {
-    if (!element) {
-        // TODO invoked from command palette
-        // window.showInformationMessage("Nothing specified");
-        return ;
-    }
-
+  public async addRevision(element: ILogTreeItem) {
     const svnTarget = element.parent!.data as SvnPath;
     const repoPath = svnTarget.toString();
     const logEntry = element.data as ISvnLogEntry;
