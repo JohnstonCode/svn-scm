@@ -31,7 +31,7 @@ export class RevisionViewerProvider
   > = new EventEmitter<ILogTreeItem | undefined>();
   public readonly onDidChangeTreeData: Event<ILogTreeItem | undefined> = this
     ._onDidChangeTreeData.event;
-  private readonly logCache: Map<string, ISvnLogEntry[]> = new Map();
+  private readonly logCache: Map<string, Map<string,ISvnLogEntry>> = new Map();
   private _dispose: Disposable[] = [];
 
   constructor() {
@@ -54,10 +54,15 @@ export class RevisionViewerProvider
     const repoPath = svnTarget.toString();
     const logEntry = element.data as ISvnLogEntry;
 
+    // Prevent duplicate revisions from being added
     if (this.logCache.has(repoPath)) {
-        this.logCache.get(repoPath)!.push(logEntry)
+      const cache = this.logCache.get(repoPath)!
+      if(!cache.has(logEntry.revision)) 
+        cache.set(logEntry.revision, logEntry);
     } else {
-        this.logCache.set(repoPath, [logEntry]);
+      const cache: Map<string, ISvnLogEntry> = new Map();
+      cache.set(logEntry.revision, logEntry);
+      this.logCache.set(repoPath, cache);
     }
     
     this._onDidChangeTreeData.fire();
@@ -118,7 +123,8 @@ export class RevisionViewerProvider
       let repoPath = repo.toString();
 
       if (this.logCache.has(repoPath)) {
-        let logentries = this.logCache.get(repoPath)!;
+        let logentries = Array.from(this.logCache.get(repoPath)!.entries())
+          .map(([_, entry ]) => entry);
         return transform(logentries, LogTreeItemKind.Commit, element);
       }
     } else if (element.kind === LogTreeItemKind.Commit) {

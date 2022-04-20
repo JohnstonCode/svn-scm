@@ -41,8 +41,6 @@ import {
   transform,
   getCommitDescription
 } from "./common";
-import { resolve } from "dns";
-import { timingSafeEqual } from "crypto";
 
 export class RepoLogProvider
   implements TreeDataProvider<ILogTreeItem>, Disposable {
@@ -278,13 +276,21 @@ export class RepoLogProvider
     }
 
     // Confirm commit
-    let commit = (await repo.log(revision, revision, 1))[0];
+    let commit : ISvnLogEntry;
+    try {
+      commit = (await repo.log(revision, revision, 1, repo.branchRoot))[0];
+      
+    } catch (e) {
+      window.showErrorMessage(`Unable to fetch ${repo.branchRoot} r${revision}`);
+      return;
+    }
+
     if(! await window.showQuickPick(
       [{label: commit.msg}],
       )){
         return;
       }
-    
+
     // Create tree item
     let ti : ILogTreeItem = {
       kind: LogTreeItemKind.Commit,
