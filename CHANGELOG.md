@@ -1,3 +1,10 @@
+## [2.15.5](https://github.com/JohnstonCode/svn-scm/compare/v2.15.4...v2.15.5) (2022-04-20)
+
+
+### Bug Fixes
+
+* force deployment ([#1572](https://github.com/JohnstonCode/svn-scm/issues/1572)) ([84db286](https://github.com/JohnstonCode/svn-scm/commit/84db2860962ce6439f1272d6f9abf3825034142f))
+
 ## [2.15.4](https://github.com/JohnstonCode/svn-scm/compare/v2.15.3...v2.15.4) (2022-04-19)
 
 
