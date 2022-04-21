@@ -42,6 +42,16 @@ export class RevisionViewerProvider
         this.addRevision,
         this
       ),
+      commands.registerCommand(
+        "svn.revisionviewer.remove",
+        this.removeCmd,
+        this
+      ),
+      commands.registerCommand(
+        "svn.revisionviewer.removeall",
+        this.removeAllCmd,
+        this
+      ),
     );
   }
 
@@ -68,6 +78,33 @@ export class RevisionViewerProvider
     this._onDidChangeTreeData.fire();
   }
 
+  public removeCmd(element: ILogTreeItem) {
+    if(element.kind == LogTreeItemKind.Repo) {
+      const repoPath = (element.data as SvnPath).toString();
+      this.logCache.delete(repoPath);
+
+    } else if (element.kind == LogTreeItemKind.Commit) {
+      const revision = (element.data as ISvnLogEntry).revision;
+      const repoPath = (element.parent?.data as SvnPath).toString();
+      if (this.logCache.has(repoPath)) {
+        const entries = this.logCache.get(repoPath)!;
+        entries.delete(revision);
+
+        // Was this the last revision from this repo?
+        if (!entries.size)  {
+          this.logCache.delete(repoPath);
+        }
+      }
+    }
+
+    this._onDidChangeTreeData.fire();
+  }
+
+  public removeAllCmd() {
+    this.logCache.clear();
+    this._onDidChangeTreeData.fire();
+  }
+
   public async getTreeItem(element: ILogTreeItem): Promise<TreeItem> {
     let ti: TreeItem;
     if (element.kind === LogTreeItemKind.Repo) {
@@ -76,7 +113,7 @@ export class RevisionViewerProvider
         svnTarget.toString(),
         TreeItemCollapsibleState.Expanded
       );
-      ti.contextValue = "viewerrepo"
+      ti.contextValue = "repo"
       ti.iconPath = getIconObject("icon-repo");
     } else if (element.kind === LogTreeItemKind.Commit) {
       const commit = element.data as ISvnLogEntry;

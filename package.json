@@ -387,7 +387,7 @@
             {
                 "command": "svn.repolog.selectrevision",
                 "category": "SVN",
-                "title": "Select revision",
+                "title": "Add revision",
                 "icon": {
                     "dark": "icons/dark/add.svg",
                     "light": "icons/light/add.svg"
@@ -420,12 +420,25 @@
             {
                 "command": "svn.repolog.remove",
                 "category": "SVN",
-                "title": "Remove"
+                "title": "Remove",
+                "icon": "$(close)"
             },
             {
                 "command": "svn.revisionviewer.addrevision",
                 "category": "SVN",
                 "title": "Add to selected revisions"
+            },
+            {
+                "command": "svn.revisionviewer.remove",
+                "category": "SVN",
+                "title": "Remove",
+                "icon": "$(close)"
+            },
+            {
+                "command": "svn.revisionviewer.removeall",
+                "category": "SVN",
+                "title": "Remove all",
+                "icon": "$(close-all)"
             },
             {
                 "command": "svn.resolve",
@@ -703,6 +716,14 @@
                     "when": "false"
                 },
                 {
+                    "command": "svn.revisionviewer.remove",
+                    "when": "false"
+                },
+                {
+                    "command": "svn.revisionviewer.removeall",
+                    "when": "false"
+                },
+                {
                     "command": "svn.resolve",
                     "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
                 },
@@ -760,17 +781,12 @@
                 {
                     "command": "svn.repolog.refresh",
                     "when": "view == repolog",
-                    "group": "navigation"
+                    "group": "navigation@2"
                 },
                 {
                     "command": "svn.repolog.addrepolike",
                     "when": "view == repolog",
-                    "group": "navigation"
-                },
-                {
-                    "command": "svn.repolog.selectrevision",
-                    "when": "view == revisionviewer",
-                    "group": "navigation"
+                    "group": "navigation@1"
                 },
                 {
                     "command": "svn.itemlog.refresh",
@@ -781,6 +797,16 @@
                     "command": "svn.branchchanges.refresh",
                     "when": "view == branchchanges",
                     "group": "navigation"
+                },
+                {
+                    "command": "svn.repolog.selectrevision",
+                    "when": "view == revisionviewer",
+                    "group": "navigation@1"
+                },
+                {
+                    "command": "svn.revisionviewer.removeall",
+                    "when": "view == revisionviewer",
+                    "group": "navigation@2"
                 }
             ],
             "view/item/context": [
@@ -803,6 +829,11 @@
                 {
                     "command": "svn.repolog.remove",
                     "when": "view == repolog && viewItem == userrepo"
+                },
+                {
+                    "command": "svn.repolog.remove",
+                    "when": "view == repolog && viewItem == userrepo",
+                    "group": "inline"
                 },
                 {
                     "command": "svn.itemlog.openFileRemote",
@@ -857,6 +888,15 @@
                 {
                     "command": "svn.repolog.addrevision",
                     "when": "view == repolog && viewItem == commit"
+                },
+                {
+                    "command": "svn.revisionviewer.remove",
+                    "when": "view == revisionviewer && viewItem != diffable"
+                },
+                {
+                    "command": "svn.revisionviewer.remove",
+                    "when": "view == revisionviewer && viewItem != diffable",
+                    "group": "inline"
                 }
             ],
             "scm/title": [
