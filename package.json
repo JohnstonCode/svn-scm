@@ -897,6 +897,18 @@
                     "command": "svn.revisionviewer.remove",
                     "when": "view == revisionviewer && viewItem != diffable",
                     "group": "inline"
+                },
+                {
+                    "command": "svn.repolog.copymsg",
+                    "when": "view == revisionviewer && viewItem == commit"
+                },
+                {
+                    "command": "svn.repolog.copyrevision",
+                    "when": "view == revisionviewer && viewItem == commit"
+                },
+                {
+                    "command": "svn.repolog.openDiff",
+                    "when": "view == revisionviewer && viewItem == diffable"
                 }
             ],
             "scm/title": [
