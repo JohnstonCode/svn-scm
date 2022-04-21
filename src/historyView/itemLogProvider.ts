@@ -58,7 +58,8 @@ export class ItemLogProvider
       ),
       commands.registerCommand(
         "svn.itemlog.addrevision",
-        async (item: ILogTreeItem) => commands.executeCommand("svn.revisionviewer.addrevision", item)
+        async (item: ILogTreeItem) =>
+          commands.executeCommand("svn.revisionviewer.addrevision", item)
       ),
       commands.registerCommand(
         "svn.itemlog.openFileRemote",
@@ -196,10 +197,10 @@ export class ItemLogProvider
       }
 
       // Assign repo as parent for RevisionViewerProvider
-      let repoParent: ILogTreeItem = {
+      const repoParent: ILogTreeItem = {
         kind: LogTreeItemKind.Repo,
         data: new SvnPath(this.currentItem.repo.branchRoot.toString())
-      }
+      };
 
       const result = transform(entries, LogTreeItemKind.Commit, repoParent);
       insertBaseMarker(this.currentItem, entries, result);

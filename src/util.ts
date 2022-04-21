@@ -228,7 +228,7 @@ export function pathEquals(a: string, b: string): boolean {
 export const EmptyDisposable = toDisposable(() => null);
 
 export function getRevision(text: string): number | undefined {
-  let exp = /^[\+r]?(0|[1-9]\d*)$/i;
+  const exp = /^[\+r]?(0|[1-9]\d*)$/i;
   if (!exp.test(text)) {
     return undefined;
   }

@@ -75,7 +75,8 @@ export class RepoLogProvider
       ),
       commands.registerCommand(
         "svn.repolog.addrevision",
-        async (element: ILogTreeItem) => commands.executeCommand("svn.revisionviewer.addrevision", element)
+        async (element: ILogTreeItem) =>
+          commands.executeCommand("svn.revisionviewer.addrevision", element)
       ),
       commands.registerCommand(
         "svn.repolog.addrepolike",
@@ -242,19 +243,17 @@ export class RepoLogProvider
         .map(repoPath => {
           const cached: ICachedLog = this.logCache.get(repoPath)!;
           if (cached.repo instanceof Repository) {
-            return {label: `$(folder) ${repoPath}`, repo: cached.repo};
+            return { label: `$(folder) ${repoPath}`, repo: cached.repo };
           } else {
-            return {label: `$(repo) ${repoPath}`, repo: cached.repo};
+            return { label: `$(repo) ${repoPath}`, repo: cached.repo };
           }
         });
 
-      const item = await window.showQuickPick(
-        items,
-        { placeHolder: "Which repository?"}
-      );
+      const item = await window.showQuickPick(items, {
+        placeHolder: "Which repository?"
+      });
 
-      if (item)
-        repo = item.repo;
+      if (item) repo = item.repo;
     } else {
       repo = this.logCache.entries().next().value[1].repo;
     }
@@ -263,36 +262,33 @@ export class RepoLogProvider
       return;
     }
 
-    // Get revision 
+    // Get revision
     const input = await window.showInputBox({ prompt: "Revision?" });
     if (!input) {
       return;
     }
 
-    let revision = getRevision(input)?.toString();
+    const revision = getRevision(input)?.toString();
     if (!revision) {
       window.showErrorMessage("Invalid revision");
       return;
     }
 
     // Confirm commit
-    let commit : ISvnLogEntry;
+    let commit: ISvnLogEntry;
     try {
       commit = (await repo.log(revision, revision, 1, repo.branchRoot))[0];
-      
     } catch (e) {
-      window.showErrorMessage(`Unable to fetch ${repo.branchRoot} r${revision}`);
+      window.showErrorMessage(
+        `Unable to fetch ${repo.branchRoot} r${revision}`
+      );
       return;
     }
 
-    if(! await window.showQuickPick(
-      [{label: commit.msg}],
-      )){
-        return;
-      }
+    if (!(await window.showQuickPick([{ label: commit.msg }]))) return;
 
     // Create tree item
-    let ti : ILogTreeItem = {
+    const ti: ILogTreeItem = {
       kind: LogTreeItemKind.Commit,
       data: commit,
       parent: {
