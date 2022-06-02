@@ -243,7 +243,17 @@ export function getCommitLabel(commit: ISvnLogEntry): string {
 export function getCommitToolTip(commit: ISvnLogEntry): string {
   let date = commit.date;
   if (!isNaN(Date.parse(date))) {
-    date = new Date(date).toString();
+    const dateFormat = configuration.get<string>("dateFormat");
+    if (dateFormat) {
+      try {
+        date = dayjs(date).format(dateFormat);
+      } catch (error) {
+        console.warn(error);
+        date = new Date(date).toString();
+      }
+    } else {
+      date = new Date(date).toString();
+    }
   }
   return `Author: ${commit.author}
 ${date}

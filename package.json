@@ -1063,6 +1063,11 @@
                     "description": "Set file to status resolved after fix conflicts",
                     "default": false
                 },
+                "svn.dateFormat": {
+                  "type": "string",
+                  "description": "Format of dates in CommitToolTip. List of all available formats: https://day.js.org/docs/en/display/format",
+                  "default": null
+                },
                 "svn.default.encoding": {
                     "type": [
                         "string",

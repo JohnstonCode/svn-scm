@@ -82,6 +82,9 @@ Here are all of the extension settings with their default values. To change any 
   // Set file to status resolved after fix conflicts
   "svn.conflicts.autoResolve": null,
 
+  // Format of dates in CommitToolTip. List of all available formats: https://day.js.org/docs/en/display/format
+  "svn.dateFormat": null,
+
   // Encoding of svn output if the output is not utf-8. When this parameter is null, the encoding is automatically detected. Example: 'windows-1252'.
   "svn.default.encoding": null,
 
