@@ -1,3 +1,10 @@
+## [2.15.6](https://github.com/JohnstonCode/svn-scm/compare/v2.15.5...v2.15.6) (2022-12-21)
+
+
+### Bug Fixes
+
+* bind repoWatch to RepositoryFilesWatcher object ([#1591](https://github.com/JohnstonCode/svn-scm/issues/1591)) ([32be3f9](https://github.com/JohnstonCode/svn-scm/commit/32be3f9aa6a3b87687e85b2226dc078226b1eb38))
+
 ## [2.15.5](https://github.com/JohnstonCode/svn-scm/compare/v2.15.4...v2.15.5) (2022-04-20)
 
 
