@@ -2,6 +2,7 @@
 
 ![Visual Studio Marketplace Release Date](https://img.shields.io/visual-studio-marketplace/release-date/johnstoncode.svn-scm)
 ![Visual Studio Marketplace Last Updated](https://img.shields.io/visual-studio-marketplace/last-updated/johnstoncode.svn-scm)
+![Visual Studio Marketplace Version](https://img.shields.io/visual-studio-marketplace/v/johnstoncode.svn-scm)
 ![Visual Studio Marketplace Rating](https://img.shields.io/visual-studio-marketplace/r/johnstoncode.svn-scm)
 
 ![GitHub Workflow Status (with branch)](https://img.shields.io/github/actions/workflow/status/JohnstonCode/svn-scm/main.yml?branch=master)
