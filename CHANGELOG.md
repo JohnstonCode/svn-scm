@@ -1,3 +1,10 @@
+## [2.15.7](https://github.com/JohnstonCode/svn-scm/compare/v2.15.6...v2.15.7) (2022-12-23)
+
+
+### Bug Fixes
+
+* remove unsupported badges ([#1592](https://github.com/JohnstonCode/svn-scm/issues/1592)) ([c9e74ad](https://github.com/JohnstonCode/svn-scm/commit/c9e74ad4c5c059bccbfb3d60fabcb8311211d75c))
+
 ## [2.15.6](https://github.com/JohnstonCode/svn-scm/compare/v2.15.5...v2.15.6) (2022-12-21)
 
 
