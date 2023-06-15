@@ -1,4 +1,4 @@
-import * as path from "path";
+import { posix as path } from "path";
 import { Command } from "./command";
 import { window, Uri, commands } from "vscode";
 import { Repository } from "../repository";

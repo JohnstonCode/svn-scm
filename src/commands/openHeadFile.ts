@@ -1,4 +1,4 @@
-import * as path from "path";
+import { posix as path } from "path";
 import { commands, Uri, window } from "vscode";
 import { Resource } from "../resource";
 import IncomingChangeNode from "../treeView/nodes/incomingChangeNode";
@@ -28,7 +28,7 @@ export class OpenHeadFile extends Command {
 
     const HEAD = await this.getLeftResource(resource, "HEAD");
 
-    const basename = path.basename(resource.resourceUri.fsPath);
+    const basename = path.basename(resource.resourceUri.path);
     if (!HEAD) {
       window.showWarningMessage(
         `"HEAD version of '${basename}' is not available."`
@@ -36,7 +36,7 @@ export class OpenHeadFile extends Command {
       return;
     }
 
-    const basedir = path.dirname(resource.resourceUri.fsPath);
+    const basedir = path.dirname(resource.resourceUri.path);
 
     const uri = HEAD.with({
       path: path.join(basedir, `(HEAD) ${basename}`) // change document title
