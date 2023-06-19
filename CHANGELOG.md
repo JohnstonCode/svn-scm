@@ -1,3 +1,10 @@
+## [2.16.1](https://github.com/JohnstonCode/svn-scm/compare/v2.16.0...v2.16.1) (2023-06-19)
+
+
+### Bug Fixes
+
+* Use path.posix to handle uri related paths ([#1598](https://github.com/JohnstonCode/svn-scm/issues/1598)) ([1ea1b26](https://github.com/JohnstonCode/svn-scm/commit/1ea1b26e14cdfeea941ece35004aa659c80c9a2e))
+
 # [2.16.0](https://github.com/JohnstonCode/svn-scm/compare/v2.15.7...v2.16.0) (2023-06-19)
 
 
