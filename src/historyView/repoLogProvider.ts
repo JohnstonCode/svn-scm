@@ -4,6 +4,7 @@ import {
   Disposable,
   Event,
   EventEmitter,
+  ThemeIcon,
   TreeDataProvider,
   TreeItem,
   TreeItemCollapsibleState,
@@ -327,9 +328,9 @@ export class RepoLogProvider
         ti.contextValue = "repo";
       }
       if (cached.repo instanceof Repository) {
-        ti.iconPath = getIconObject("folder");
+        ti.iconPath = new ThemeIcon("folder-opened");
       } else {
-        ti.iconPath = getIconObject("icon-repo");
+        ti.iconPath = new ThemeIcon("repo");
       }
       const from = cached.persisted.commitFrom || "HEAD";
       ti.tooltip = `${svnTarget} since ${from}`;
@@ -400,7 +401,7 @@ export class RepoLogProvider
           arguments: [element, true],
           title: "refresh element"
         };
-        ti.iconPath = getIconObject("icon-unfold");
+        ti.iconPath = new ThemeIcon("unfold");
         result.push({ kind: LogTreeItemKind.TItem, data: ti });
       }
       return result;

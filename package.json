@@ -2,7 +2,7 @@
     "name": "svn-scm",
     "displayName": "SVN",
     "description": "Integrated Subversion source control",
-    "version": "2.15.7",
+    "version": "2.16.0",
     "publisher": "johnstoncode",
     "engines": {
         "vscode": "^1.44.0"
@@ -136,10 +136,7 @@
                 "command": "svn.add",
                 "title": "Add",
                 "category": "SVN",
-                "icon": {
-                    "light": "icons/light/add.svg",
-                    "dark": "icons/dark/add.svg"
-                }
+                "icon": "$(add)"
             },
             {
                 "command": "svn.addToIgnoreExplorer",
@@ -160,19 +157,13 @@
                 "command": "svn.branchchanges.refresh",
                 "category": "SVN",
                 "title": "Refresh branch changes",
-                "icon": {
-                    "dark": "icons/dark/refresh.svg",
-                    "light": "icons/light/refresh.svg"
-                }
+                "icon": "$(refresh)"
             },
             {
                 "command": "svn.changelist",
                 "title": "Set changelist",
                 "category": "SVN",
-                "icon": {
-                    "light": "icons/light/changelist.svg",
-                    "dark": "icons/dark/changelist.svg"
-                }
+                "icon": "$(list-unordered)"
             },
             {
                 "command": "svn.checkout",
@@ -193,19 +184,13 @@
                 "command": "svn.commit",
                 "title": "Commit Selected",
                 "category": "SVN",
-                "icon": {
-                    "light": "icons/light/check.svg",
-                    "dark": "icons/dark/check.svg"
-                }
+                "icon": "$(check)"
             },
             {
                 "command": "svn.commitWithMessage",
                 "title": "Commit Changes",
                 "category": "SVN",
-                "icon": {
-                    "light": "icons/light/check.svg",
-                    "dark": "icons/dark/check.svg"
-                }
+                "icon": "$(check)"
             },
             {
                 "command": "svn.deleteUnversioned",
@@ -241,10 +226,7 @@
                 "command": "svn.itemlog.refresh",
                 "category": "SVN",
                 "title": "Refresh log for item",
-                "icon": {
-                    "dark": "icons/dark/refresh.svg",
-                    "light": "icons/light/refresh.svg"
-                }
+                "icon": "$(refresh)"
             },
             {
                 "command": "svn.log",
@@ -283,10 +265,7 @@
                 "command": "svn.openFile",
                 "title": "Open File",
                 "category": "SVN",
-                "icon": {
-                    "light": "icons/light/open-file.svg",
-                    "dark": "icons/dark/open-file.svg"
-                }
+                "icon": "$(go-to-file)"
             },
             {
                 "command": "svn.openHEADFile",
@@ -312,28 +291,19 @@
                 "command": "svn.pickCommitMessage",
                 "title": "Pick a previous commit message",
                 "category": "SVN",
-                "icon": {
-                    "light": "icons/light/icon-history.svg",
-                    "dark": "icons/dark/icon-history.svg"
-                }
+                "icon": "$(history)"
             },
             {
                 "command": "svn.refresh",
                 "title": "Refresh",
                 "category": "SVN",
-                "icon": {
-                    "light": "icons/light/refresh.svg",
-                    "dark": "icons/dark/refresh.svg"
-                }
+                "icon": "$(refresh)"
             },
             {
                 "command": "svn.refreshRemoteChanges",
                 "title": "Refresh Remote Changes",
                 "category": "SVN",
-                "icon": {
-                    "light": "icons/light/refresh.svg",
-                    "dark": "icons/dark/refresh.svg"
-                }
+                "icon": "$(refresh)"
             },
             {
                 "command": "svn.remove",
@@ -354,10 +324,7 @@
                 "command": "svn.repolog.addrepolike",
                 "category": "SVN",
                 "title": "Add repo-like path",
-                "icon": {
-                    "dark": "icons/dark/add.svg",
-                    "light": "icons/light/add.svg"
-                }
+                "icon": "$(add)"
             },
             {
                 "command": "svn.repolog.copymsg",
@@ -388,10 +355,7 @@
                 "command": "svn.repolog.refresh",
                 "category": "SVN",
                 "title": "Refresh log",
-                "icon": {
-                    "dark": "icons/dark/refresh.svg",
-                    "light": "icons/light/refresh.svg"
-                }
+                "icon": "$(refresh)"
             },
             {
                 "command": "svn.repolog.remove",
@@ -402,10 +366,7 @@
                 "command": "svn.resolve",
                 "title": "Resolve conflicts for selected",
                 "category": "SVN",
-                "icon": {
-                    "light": "icons/light/check.svg",
-                    "dark": "icons/dark/check.svg"
-                }
+                "icon": "$(check)"
             },
             {
                 "command": "svn.resolveAll",
@@ -416,37 +377,25 @@
                 "command": "svn.revert",
                 "title": "Revert Selected File",
                 "category": "SVN",
-                "icon": {
-                    "light": "icons/light/clean.svg",
-                    "dark": "icons/dark/clean.svg"
-                }
+                "icon": "$(discard)"
             },
             {
                 "command": "svn.revertAll",
                 "title": "Revert All Changes",
                 "category": "SVN",
-                "icon": {
-                    "light": "icons/light/clean.svg",
-                    "dark": "icons/dark/clean.svg"
-                }
+                "icon": "$(discard)"
             },
             {
                 "command": "svn.revertChange",
                 "title": "Revert Change",
                 "category": "SVN",
-                "icon": {
-                    "light": "icons/light/clean.svg",
-                    "dark": "icons/dark/clean.svg"
-                }
+                "icon": "$(discard)"
             },
             {
                 "command": "svn.revertExplorer",
                 "title": "Revert with SVN",
                 "category": "SVN",
-                "icon": {
-                    "light": "icons/light/clean.svg",
-                    "dark": "icons/dark/clean.svg"
-                }
+                "icon": "$(discard)"
             },
             {
                 "command": "svn.searchLogByRevision",
@@ -467,28 +416,19 @@
                 "command": "svn.treeview.pullIncomingChange",
                 "title": "Update selected",
                 "category": "SVN",
-                "icon": {
-                    "light": "icons/light/download.svg",
-                    "dark": "icons/dark/download.svg"
-                }
+                "icon": "$(cloud-download)"
             },
             {
                 "command": "svn.treeview.refreshProvider",
                 "title": "Refresh",
                 "category": "SVN",
-                "icon": {
-                    "light": "icons/light/refresh.svg",
-                    "dark": "icons/dark/refresh.svg"
-                }
+                "icon": "$(refresh)"
             },
             {
                 "command": "svn.update",
                 "title": "Update",
                 "category": "SVN",
-                "icon": {
-                    "light": "icons/light/download.svg",
-                    "dark": "icons/dark/download.svg"
-                }
+                "icon": "$(cloud-download)"
             }
         ],
         "menus": {

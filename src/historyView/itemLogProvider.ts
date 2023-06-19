@@ -5,6 +5,7 @@ import {
   Event,
   EventEmitter,
   TextEditor,
+  ThemeIcon,
   TreeDataProvider,
   TreeItem,
   TreeItemCollapsibleState,
@@ -20,7 +21,6 @@ import {
   getCommitIcon,
   getCommitLabel,
   getCommitToolTip,
-  getIconObject,
   getLimit,
   ICachedLog,
   ILogTreeItem,
@@ -178,7 +178,7 @@ export class ItemLogProvider
       const ti = new TreeItem(fname, TreeItemCollapsibleState.Expanded);
       ti.tooltip = path.dirname(this.currentItem.svnTarget.fsPath);
       ti.description = path.dirname(this.currentItem.svnTarget.fsPath);
-      ti.iconPath = getIconObject("icon-history");
+      ti.iconPath = new ThemeIcon("history");
       const item = {
         kind: LogTreeItemKind.TItem,
         data: ti
@@ -203,7 +203,7 @@ export class ItemLogProvider
           arguments: [element, undefined, true],
           title: "refresh element"
         };
-        ti.iconPath = getIconObject("icon-unfold");
+        ti.iconPath = new ThemeIcon("unfold");
         result.push(ltItem);
       }
       return result;
