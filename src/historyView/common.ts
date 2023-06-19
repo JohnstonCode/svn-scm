@@ -6,6 +6,7 @@ import {
   commands,
   env,
   TextDocumentShowOptions,
+  ThemeIcon,
   TreeItem,
   Uri,
   window
@@ -202,12 +203,12 @@ function md5(s: string): string {
 export function getCommitIcon(
   author: string,
   size: number = 16
-): Uri | { light: Uri; dark: Uri } {
+): Uri | { light: Uri; dark: Uri } | ThemeIcon {
   if (
     (!configuration.get("gravatars.enabled", true) as boolean) ||
     author === undefined
   ) {
-    return getIconObject("icon-commit");
+    return new ThemeIcon("git-commit");
   }
 
   let gravatar = gravatarCache.get(author);
