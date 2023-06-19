@@ -1,3 +1,10 @@
+# [2.16.0](https://github.com/JohnstonCode/svn-scm/compare/v2.15.7...v2.16.0) (2023-06-19)
+
+
+### Features
+
+* switch to codicons ([#1553](https://github.com/JohnstonCode/svn-scm/issues/1553)) ([4106832](https://github.com/JohnstonCode/svn-scm/commit/4106832510caab108c28022e4c7773d89cb7a4b4))
+
 ## [2.15.7](https://github.com/JohnstonCode/svn-scm/compare/v2.15.6...v2.15.7) (2022-12-23)
 
 
