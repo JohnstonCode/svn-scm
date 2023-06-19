@@ -196,6 +196,7 @@ export class Repository {
     let args = [
       "log",
       "-r1:HEAD",
+      "--limit=1",
       "--stop-on-copy",
       "--xml",
       "--with-all-revprops",

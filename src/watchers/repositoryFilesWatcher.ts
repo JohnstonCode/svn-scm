@@ -50,7 +50,10 @@ export class RepositoryFilesWatcher implements IDisposable {
       !workspace.workspaceFolders.filter(w => isDescendant(w.uri.fsPath, root))
         .length
     ) {
-      const repoWatcher = watch(join(root, getSvnDir()), this.repoWatch);
+      const repoWatcher = watch(
+        join(root, getSvnDir()),
+        this.repoWatch.bind(this)
+      );
 
       repoWatcher.on("error", error => {
         throw error;

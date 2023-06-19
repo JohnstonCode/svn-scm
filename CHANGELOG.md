@@ -1,3 +1,38 @@
+## [2.15.7](https://github.com/JohnstonCode/svn-scm/compare/v2.15.6...v2.15.7) (2022-12-23)
+
+
+### Bug Fixes
+
+* remove unsupported badges ([#1592](https://github.com/JohnstonCode/svn-scm/issues/1592)) ([c9e74ad](https://github.com/JohnstonCode/svn-scm/commit/c9e74ad4c5c059bccbfb3d60fabcb8311211d75c))
+
+## [2.15.6](https://github.com/JohnstonCode/svn-scm/compare/v2.15.5...v2.15.6) (2022-12-21)
+
+
+### Bug Fixes
+
+* bind repoWatch to RepositoryFilesWatcher object ([#1591](https://github.com/JohnstonCode/svn-scm/issues/1591)) ([32be3f9](https://github.com/JohnstonCode/svn-scm/commit/32be3f9aa6a3b87687e85b2226dc078226b1eb38))
+
+## [2.15.5](https://github.com/JohnstonCode/svn-scm/compare/v2.15.4...v2.15.5) (2022-04-20)
+
+
+### Bug Fixes
+
+* force deployment ([#1572](https://github.com/JohnstonCode/svn-scm/issues/1572)) ([84db286](https://github.com/JohnstonCode/svn-scm/commit/84db2860962ce6439f1272d6f9abf3825034142f))
+
+## [2.15.4](https://github.com/JohnstonCode/svn-scm/compare/v2.15.3...v2.15.4) (2022-04-19)
+
+
+### Bug Fixes
+
+* Add --limit=1 when determining branch copy source ([#1571](https://github.com/JohnstonCode/svn-scm/issues/1571)) ([593dfe5](https://github.com/JohnstonCode/svn-scm/commit/593dfe5cb61a4a1ad4c30eda1c212fbf9e7256eb))
+
+## [2.15.3](https://github.com/JohnstonCode/svn-scm/compare/v2.15.2...v2.15.3) (2022-02-04)
+
+
+### Bug Fixes
+
+* Missing dependency: iconv-lite ([#1558](https://github.com/JohnstonCode/svn-scm/issues/1558)) ([d614c2a](https://github.com/JohnstonCode/svn-scm/commit/d614c2a03cdd65d740a81d1b8a22c4955268e83a))
+
 ## [2.15.2](https://github.com/JohnstonCode/svn-scm/compare/v2.15.1...v2.15.2) (2021-12-09)
 
 

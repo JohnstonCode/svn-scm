@@ -2,7 +2,7 @@
     "name": "svn-scm",
     "displayName": "SVN",
     "description": "Integrated Subversion source control",
-    "version": "2.15.2",
+    "version": "2.15.7",
     "publisher": "johnstoncode",
     "engines": {
         "vscode": "^1.44.0"
@@ -50,6 +50,7 @@
         "watch:css": "yarn run build:css -w"
     },
     "dependencies": {
+        "iconv-lite-umd": "^0.6.10",
         "jschardet": "^3.0.0"
     },
     "devDependencies": {
@@ -71,7 +72,6 @@
         "eslint-config-prettier": "^7.2.0",
         "eslint-plugin-prettier": "^3.4.0",
         "glob": "^7.1.7",
-        "iconv-lite-umd": "0.6.8",
         "milligram": "^1.4.1",
         "minimatch": "^3.0.4",
         "mocha": "^9.0.3",
