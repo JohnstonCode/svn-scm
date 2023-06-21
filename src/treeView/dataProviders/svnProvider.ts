@@ -31,7 +31,7 @@ export default class SvnProvider
   }
 
   public refresh(): void {
-    this._onDidChangeTreeData.fire();
+    this._onDidChangeTreeData.fire(undefined);
   }
 
   public getTreeItem(element: RepositoryNode): TreeItem {
