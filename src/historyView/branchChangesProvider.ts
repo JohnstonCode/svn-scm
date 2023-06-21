@@ -30,7 +30,9 @@ export class BranchChangesProvider
         () => this._onDidChangeTreeData.fire(undefined),
         this
       ),
-      this.model.onDidChangeRepository(() => this._onDidChangeTreeData.fire(undefined))
+      this.model.onDidChangeRepository(() => 
+        this._onDidChangeTreeData.fire(undefined)
+      )
     );
   }
 
