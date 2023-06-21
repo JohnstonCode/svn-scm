@@ -27,7 +27,7 @@ import { tempSvnFs } from "./temp_svn_fs";
 import { SvnFileSystemProvider } from "./svnFileSystemProvider";
 
 async function init(
-  _context: ExtensionContext,
+  extensionContext: ExtensionContext,
   outputChannel: OutputChannel,
   disposables: Disposable[]
 ) {
@@ -38,7 +38,8 @@ async function init(
   const svn = new Svn({ svnPath: info.path, version: info.version });
   const sourceControlManager = await new SourceControlManager(
     svn,
-    ConstructorPolicy.Async
+    ConstructorPolicy.Async,
+    extensionContext
   );
 
   registerCommands(sourceControlManager, disposables);

@@ -5,6 +5,7 @@ import {
   Disposable,
   Event,
   EventEmitter,
+  ExtensionContext,
   Uri,
   window,
   workspace,
@@ -94,7 +95,7 @@ export class SourceControlManager implements IDisposable {
     return this._svn;
   }
 
-  constructor(private _svn: Svn, policy: ConstructorPolicy) {
+  constructor(private _svn: Svn, policy: ConstructorPolicy, private extensionContact: ExtensionContext) {
     if (policy !== ConstructorPolicy.Async) {
       throw new Error("Unsopported policy");
     }
@@ -288,7 +289,8 @@ export class SourceControlManager implements IDisposable {
         const repositoryRoot = await this.svn.getRepositoryRoot(path);
 
         const repository = new Repository(
-          await this.svn.open(repositoryRoot, path)
+          await this.svn.open(repositoryRoot, path),
+          this.extensionContact
         );
 
         this.open(repository);

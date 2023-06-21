@@ -7,6 +7,7 @@ import {
   EventEmitter,
   ProgressLocation,
   scm,
+  SecretStorage,
   SourceControl,
   SourceControlInputBox,
   TextDocument,
@@ -53,7 +54,6 @@ import {
 } from "./util";
 import { match, matchAll } from "./util/globMatch";
 import { RepositoryFilesWatcher } from "./watchers/repositoryFilesWatcher";
-import { keytar } from "./vscodeModules";
 
 function shouldShowProgress(operation: Operation): boolean {
   switch (operation) {
@@ -184,7 +184,7 @@ export class Repository implements IRemoteRepository {
     this.repository.password = password;
   }
 
-  constructor(public repository: BaseRepository) {
+  constructor(public repository: BaseRepository, private secrets: SecretStorage) {
     this._fsWatcher = new RepositoryFilesWatcher(repository.root);
     this.disposables.push(this._fsWatcher);
 
@@ -1007,24 +1007,33 @@ export class Repository implements IRemoteRepository {
       await this.lastPromptAuth;
     }
 
-    try {
-      return keytar.findCredentials(this.getCredentialServiceName());
-    } catch (error) {
+    const secret = await this.secrets.get(this.getCredentialServiceName());
+
+    if (typeof secret === "undefined") {
       return [];
     }
+
+    const credentials = JSON.parse(secret) as Array<IStoredAuth>;
+
+    return credentials;
   }
 
   public async saveAuth(): Promise<void> {
     if (this.canSaveAuth && this.username && this.password) {
-      try {
-        await keytar.setPassword(
-          this.getCredentialServiceName(),
-          this.username,
-          this.password
-        );
-      } catch (error) {
-        console.log(error);
+      const secret = await this.secrets.get(this.getCredentialServiceName());
+      let credentials: Array<IStoredAuth> = [];
+
+      if (typeof secret === "string") {
+        credentials = JSON.parse(secret) as Array<IStoredAuth>;
       }
+
+      credentials.push({
+        account: this.username,
+        password: this.password
+      });
+
+      await this.secrets.store(this.getCredentialServiceName(), JSON.stringify(credentials));
+
       this.canSaveAuth = false;
     }
   }
