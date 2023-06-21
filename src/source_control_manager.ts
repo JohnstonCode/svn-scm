@@ -95,7 +95,11 @@ export class SourceControlManager implements IDisposable {
     return this._svn;
   }
 
-  constructor(private _svn: Svn, policy: ConstructorPolicy, private extensionContact: ExtensionContext) {
+  constructor(
+    private _svn: Svn,
+    policy: ConstructorPolicy,
+    private extensionContact: ExtensionContext
+  ) {
     if (policy !== ConstructorPolicy.Async) {
       throw new Error("Unsopported policy");
     }
@@ -290,7 +294,7 @@ export class SourceControlManager implements IDisposable {
 
         const repository = new Repository(
           await this.svn.open(repositoryRoot, path),
-          this.extensionContact
+          this.extensionContact.secrets
         );
 
         this.open(repository);

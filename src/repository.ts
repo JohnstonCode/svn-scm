@@ -184,7 +184,10 @@ export class Repository implements IRemoteRepository {
     this.repository.password = password;
   }
 
-  constructor(public repository: BaseRepository, private secrets: SecretStorage) {
+  constructor(
+    public repository: BaseRepository,
+    private secrets: SecretStorage
+  ) {
     this._fsWatcher = new RepositoryFilesWatcher(repository.root);
     this.disposables.push(this._fsWatcher);
 
@@ -1032,7 +1035,10 @@ export class Repository implements IRemoteRepository {
         password: this.password
       });
 
-      await this.secrets.store(this.getCredentialServiceName(), JSON.stringify(credentials));
+      await this.secrets.store(
+        this.getCredentialServiceName(),
+        JSON.stringify(credentials)
+      );
 
       this.canSaveAuth = false;
     }
