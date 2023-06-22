@@ -33,8 +33,6 @@ function getNodeModule<T>(moduleName: string, showError = true): T | undefined {
   return undefined;
 }
 
-export const keytar = getNodeModule("keytar", false) as typeof import("keytar");
-
 let iconv_lite = getNodeModule(
   "iconv-lite-umd",
   false

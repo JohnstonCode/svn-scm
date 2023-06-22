@@ -27,10 +27,12 @@ export class BranchChangesProvider
       ),
       commands.registerCommand(
         "svn.branchchanges.refresh",
-        () => this._onDidChangeTreeData.fire(),
+        () => this._onDidChangeTreeData.fire(undefined),
         this
       ),
-      this.model.onDidChangeRepository(() => this._onDidChangeTreeData.fire())
+      this.model.onDidChangeRepository(() =>
+        this._onDidChangeTreeData.fire(undefined)
+      )
     );
   }
 

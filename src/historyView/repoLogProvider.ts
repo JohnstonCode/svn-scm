@@ -196,7 +196,7 @@ export class RepoLogProvider
       return;
     }
     this.logCache.set(repoName, item);
-    this._onDidChangeTreeData.fire();
+    this._onDidChangeTreeData.fire(undefined);
   }
 
   public addRepolikeGui() {
