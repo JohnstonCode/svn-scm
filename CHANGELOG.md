@@ -1,3 +1,10 @@
+# [2.17.0](https://github.com/JohnstonCode/svn-scm/compare/v2.16.1...v2.17.0) (2023-06-22)
+
+
+### Features
+
+* replace keyar with vscode SecretStorage ([#1600](https://github.com/JohnstonCode/svn-scm/issues/1600)) ([715171d](https://github.com/JohnstonCode/svn-scm/commit/715171d995ff891e4f7f049687e2b73884e336ea))
+
 ## [2.16.1](https://github.com/JohnstonCode/svn-scm/compare/v2.16.0...v2.16.1) (2023-06-19)
 
 
