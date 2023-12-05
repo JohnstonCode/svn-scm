@@ -31,7 +31,7 @@ export class PathNormalizer {
   private getFullRepoPathFromUrl(fpath: string): string {
     if (fpath.startsWith("/")) {
       return fpath.substr(1);
-    } else if (fpath.startsWith("svn://") || fpath.startsWith("file://")) {
+    } else if (fpath.startsWith("svn://") || fpath.startsWith("file://") || fpath.startsWith("http://") || fpath.startsWith("https://")) {
       const target = Uri.parse(fpath).path;
       return path.relative(pathOrRoot(this.repoRoot), target);
     } else {
