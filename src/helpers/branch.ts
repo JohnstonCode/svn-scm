@@ -93,7 +93,7 @@ export async function selectBranch(
     }
 
     const name = result.replace(
-      /^\.|\/\.|\.\.|~|\^|:|\/$|\.lock$|\.lock\/|\\|\*|\s|^\s*$|\.$/g,
+      /^\.|\/\.|\.\.|~|\^|:|\/$|\.lock$|\.lock\/|\\|\*|^\s*$|\.$/g,
       "-"
     );
 
