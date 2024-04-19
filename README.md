@@ -104,10 +104,10 @@ Here are all of the extension settings with their default values. To change any 
   // Priority of encoding
   "svn.experimental.encoding_priority": [],
 
-  // Url for the gravitar icon using the <AUTHOR>, <AUTHOR_MD5> and <SIZE> placeholders
+  // Url for the gravatar icon using the <AUTHOR>, <AUTHOR_MD5> and <SIZE> placeholders
   "svn.gravatar.icon_url": "https://www.gravatar.com/avatar/<AUTHOR_MD5>.jpg?s=<SIZE>&d=robohash",
 
-  // Use garavatar icons in log viewers
+  // Use gravatar icons in log viewers
   "svn.gravatars.enabled": true,
 
   // Ignores the warning when SVN is missing

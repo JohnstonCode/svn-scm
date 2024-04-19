@@ -1073,7 +1073,7 @@
                 },
                 "svn.gravatar.icon_url": {
                     "type": "string",
-                    "description": "Url for the gravitar icon using the <AUTHOR>, <AUTHOR_MD5> and <SIZE> placeholders",
+                    "description": "Url for the gravatar icon using the <AUTHOR>, <AUTHOR_MD5> and <SIZE> placeholders",
                     "examples": [
                         "https://www.gravatar.com/avatar/<AUTHOR_MD5>.jpg?s=<SIZE>&d=https%3A%2F%2Fui-avatars.com%2Fapi%2F/<AUTHOR>/128"
                     ],
@@ -1081,7 +1081,7 @@
                 },
                 "svn.gravatars.enabled": {
                     "type": "boolean",
-                    "description": "Use garavatar icons in log viewers",
+                    "description": "Use gravatar icons in log viewers",
                     "default": true
                 },
                 "svn.ignoreMissingSvnWarning": {
