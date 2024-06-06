@@ -96,6 +96,14 @@ export class Resource implements SourceControlResourceState {
       "open diff"
     );
 
+    if (!this.remote && this.type == Status.CONFLICTED) {
+      return {
+        command: "svn.openConflict",
+        title: "Open Conflict Merge Resolution",
+        arguments: [this]
+      };
+    }
+
     if (!this.remote && changesLeftClick === "open") {
       return {
         command: "svn.openFile",

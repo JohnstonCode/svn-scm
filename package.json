@@ -34,7 +34,7 @@
     "main": "./out/extension",
     "scripts": {
         "build": "yarn run build:ts && yarn run build:css",
-        "build:css": "yarn node-sass scss/ -o css/ --output-style compressed",
+        "build:css": "yarn sass scss/:css/ -s compressed",
         "build:ts": "webpack --mode production",
         "compile": "webpack --mode development --watch",
         "lint": "eslint \"src/**/*.ts\"",
@@ -65,6 +65,7 @@
         "@types/xml2js": "^0.4.9",
         "@typescript-eslint/eslint-plugin": "^4.29.0",
         "@typescript-eslint/parser": "^4.29.0",
+        "@vscode/test-electron": "^2.4.0",
         "chardet": "^1.3.0",
         "dayjs": "^1.10.6",
         "decache": "^4.6.0",
@@ -75,18 +76,17 @@
         "milligram": "^1.4.1",
         "minimatch": "^3.0.4",
         "mocha": "^9.0.3",
-        "node-sass": "^6.0.1",
         "original-fs": "^1.0.0",
         "ovsx": "0.2.0",
         "prettier": "^2.2.1",
         "prettylint": "^1.0.0",
+        "sass": "^1.77.4",
         "semantic-release": "^17.4.4",
         "semantic-release-vsce": "^4.0.1",
         "semver": "^7.3.5",
         "tmp": "0.2.1",
         "ts-loader": "^9.2.4",
         "typescript": "^4.3.5",
-        "vscode-test": "^1.6.1",
         "webpack": "^5.48.0",
         "webpack-cli": "^4.7.2",
         "xml2js": "^0.4.19"
@@ -270,6 +270,11 @@
             {
                 "command": "svn.openHEADFile",
                 "title": "Open File (HEAD)",
+                "category": "SVN"
+            },
+            {
+                "command": "svn.openConflict",
+                "title": "Open Conflict Merge Resolution",
                 "category": "SVN"
             },
             {
@@ -866,6 +871,11 @@
                 {
                     "command": "svn.openChangeHead",
                     "when": "config.svn.enabled && scmProvider == svn && scmResourceGroup != unversioned && scmResourceGroup != external",
+                    "group": "navigation"
+                },
+                {
+                    "command": "svn.openConflict",
+                    "when": "config.svn.enabled && scmProvider == svn && scmResourceGroup == conflicts && scmResourceGroup != external",
                     "group": "navigation"
                 },
                 {

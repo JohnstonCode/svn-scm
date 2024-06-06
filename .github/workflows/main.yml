@@ -21,13 +21,29 @@ jobs:
         version: ['stable', 'insiders']
 
     steps:
+      - name: Install SVN
+        if: startswith(matrix.os, 'ubuntu')
+        run: |
+          sudo apt-get update
+          sudo apt-get install subversion
+
+      - name: Install SVN
+        if: startswith(matrix.os, 'macOS')
+        run: |
+          brew update
+          brew install subversion
+
+      - name: Install SVN
+        if: startswith(matrix.os, 'windows')
+        run: choco install tortoisesvn
+
       - name: Clone repository
         uses: actions/checkout@v1
 
       - name: Setup Node
         uses: actions/setup-node@v1
         with:
-          node-version: '12.17'
+          node-version: '~16.20.1'
 
       - name: Install Dependencies
         run: 'yarn install --frozen-lockfile || yarn install --frozen-lockfile'
@@ -47,7 +63,7 @@ jobs:
             vscode-${{ runner.os }}-
       
       - name: Run tests
-        uses: GabrielBB/xvfb-action@v1.0
+        uses: coactions/setup-xvfb@v1
         with:
           run: yarn test
         env:
@@ -79,7 +95,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v1
         with:
-          node-version: '12.17'
+          node-version: '~16.20.1'
 
       - name: Install Dependencies
         run: 'yarn install --frozen-lockfile || yarn install --frozen-lockfile'
@@ -99,7 +115,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v1
         with:
-          node-version: '12.17'
+          node-version: '~16.20.1'
 
       - name: Install Dependencies
         run: 'yarn install --frozen-lockfile || yarn install --frozen-lockfile'
