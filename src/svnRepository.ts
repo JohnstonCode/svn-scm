@@ -472,7 +472,7 @@ export class Repository {
 
       const filesMessage = `${sendedFiles} ${
         sendedFiles === 1 ? "file" : "files"
-      } commited`;
+      } committed`;
 
       return `${filesMessage}: revision ${matches[1]}.`;
     }
