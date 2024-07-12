@@ -203,6 +203,11 @@
                 "title": "Copy message"
             },
             {
+                "command": "svn.itemlog.copymsgmore",
+                "category": "SVN",
+                "title": "Copy message more"
+            },
+            {
                 "command": "svn.itemlog.copyrevision",
                 "category": "SVN",
                 "title": "Copy revision number"
@@ -330,6 +335,11 @@
                 "command": "svn.repolog.copymsg",
                 "category": "SVN",
                 "title": "Copy message"
+            },
+            {
+                "command": "svn.repolog.copymsgmore",
+                "category": "SVN",
+                "title": "Copy message more"
             },
             {
                 "command": "svn.repolog.copyrevision",
@@ -486,6 +496,10 @@
                     "when": "false"
                 },
                 {
+                    "command": "svn.itemlog.copymsgmore",
+                    "when": "false"
+                },
+                {
                     "command": "svn.itemlog.copyrevision",
                     "when": "false"
                 },
@@ -575,6 +589,10 @@
                 },
                 {
                     "command": "svn.repolog.copymsg",
+                    "when": "false"
+                },
+                {
+                    "command": "svn.repolog.copymsgmore",
                     "when": "false"
                 },
                 {
@@ -717,6 +735,10 @@
                     "when": "view == itemlog && viewItem == diffable"
                 },
                 {
+                    "command": "svn.itemlog.copymsgmore",
+                    "when": "view == itemlog && viewItem == diffable"
+                },
+                {
                     "command": "svn.itemlog.copyrevision",
                     "when": "view == itemlog && viewItem == diffable"
                 },
@@ -738,6 +760,10 @@
                 },
                 {
                     "command": "svn.repolog.copymsg",
+                    "when": "view == repolog && viewItem == commit"
+                },
+                {
+                    "command": "svn.repolog.copymsgmore",
                     "when": "view == repolog && viewItem == commit"
                 },
                 {

@@ -52,6 +52,10 @@ export class ItemLogProvider
         async (item: ILogTreeItem) => copyCommitToClipboard("msg", item)
       ),
       commands.registerCommand(
+        "svn.itemlog.copymsgmore",
+        async (item: ILogTreeItem) => copyCommitToClipboard("msg_more", item)
+      ),
+      commands.registerCommand(
         "svn.itemlog.copyrevision",
         async (item: ILogTreeItem) => copyCommitToClipboard("revision", item)
       ),

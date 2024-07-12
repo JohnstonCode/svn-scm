@@ -17,6 +17,7 @@ import { configuration } from "../helpers/configuration";
 import { IRemoteRepository } from "../remoteRepository";
 import { SvnRI } from "../svnRI";
 import { tempSvnFs } from "../temp_svn_fs";
+import { format } from "util";
 
 dayjs.extend(relativeTime);
 
@@ -91,6 +92,23 @@ export async function copyCommitToClipboard(what: string, item: ILogTreeItem) {
       case "msg":
       case "revision":
         await clipboard.writeText(commit[what]);
+        break;
+      case "msg_more":
+        let msg_template = `\nRevision: %s\nAuthor: %s\nDate: %s\nMessage:\n%s\n%s`;
+        let paths = "";
+        commit.paths.forEach(element => {
+          paths = paths + format("%s: %s\n", element.action, element._);
+        });
+        // 输出 format
+        let s = format(
+          msg_template,
+          commit.revision,
+          commit.author,
+          dayjs(commit.date).format("YYYY年MM月DD日 HH:mm:ss"),
+          commit.msg,
+          paths
+        );
+        await clipboard.writeText(s);
     }
   }
 }
