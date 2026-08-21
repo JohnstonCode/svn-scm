@@ -109,6 +109,7 @@ export enum Operation {
   CurrentBranch = "CurrentBranch",
   Info = "Info",
   Ignore = "Ignore",
+  Lock = "Lock",
   Log = "Log",
   Merge = "Merge",
   NewBranch = "NewBranch",

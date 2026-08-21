@@ -1,7 +1,7 @@
 import { createHash } from "crypto";
 import * as path from "path";
-import * as dayjs from "dayjs";
-import * as relativeTime from "dayjs/plugin/relativeTime";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
 import {
   commands,
   env,

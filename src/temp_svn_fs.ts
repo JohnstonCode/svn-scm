@@ -57,7 +57,7 @@ export type Entry = File | Directory;
 class TempSvnFs implements FileSystemProvider, Disposable {
   private _emitter = new EventEmitter<FileChangeEvent[]>();
   private _bufferedEvents: FileChangeEvent[] = [];
-  private _fireSoonHandler?: NodeJS.Timer;
+  private _fireSoonHandler?: NodeJS.Timeout;
   private _root = new Directory("");
   private _disposables: Disposable[] = [];
 
@@ -77,7 +77,6 @@ class TempSvnFs implements FileSystemProvider, Disposable {
   }
 
   watch(_resource: Uri): Disposable {
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
     return new Disposable(() => {});
   }
 

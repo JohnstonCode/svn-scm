@@ -83,7 +83,8 @@ async function _activate(context: ExtensionContext, disposables: Disposable[]) {
     try {
       await init(context, outputChannel, disposables);
     } catch (err) {
-      if (!/Svn installation not found/.test(err.message || "")) {
+      const error = err as Error;
+      if (!/Svn installation not found/.test(error.message || "")) {
         throw err;
       }
 
@@ -94,8 +95,8 @@ async function _activate(context: ExtensionContext, disposables: Disposable[]) {
         return;
       }
 
-      console.warn(err.message);
-      outputChannel.appendLine(err.message);
+      console.warn(error.message);
+      outputChannel.appendLine(error.message);
       outputChannel.show();
 
       const findSvnExecutable = "Find SVN executable";
@@ -159,6 +160,6 @@ export async function activate(context: ExtensionContext) {
 }
 
 // this method is called when your extension is deactivated
-// eslint-disable-next-line @typescript-eslint/no-empty-function
+
 function deactivate() {}
 exports.deactivate = deactivate;

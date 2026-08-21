@@ -1,22 +1,23 @@
 {
-    "name": "svn-scm",
-    "displayName": "SVN",
-    "description": "Integrated Subversion source control",
-    "version": "2.17.0",
-    "publisher": "johnstoncode",
+    "name": "svn-scm-community",
+    "displayName": "SVN (Community Edition)",
+    "description": "Integrated Subversion source control - Community maintained fork",
+    "version": "3.1.0",
+    "publisher": "svn-community",
     "engines": {
-        "vscode": "^1.53.0"
+        "node": ">=22.18.0",
+        "vscode": "^1.85.0"
     },
     "private": true,
     "enableProposedApi": false,
     "icon": "images/subversion.png",
-    "homepage": "https://github.com/JohnstonCode/svn-scm/blob/master/README.md",
+    "homepage": "https://github.com/hatrd/svn-scm/blob/master/README.md",
     "repository": {
         "type": "git",
-        "url": "https://github.com/JohnstonCode/svn-scm.git"
+        "url": "https://github.com/hatrd/svn-scm.git"
     },
     "bugs": {
-        "url": "https://github.com/JohnstonCode/svn-scm/issues"
+        "url": "https://github.com/hatrd/svn-scm/issues"
     },
     "categories": [
         "Other",
@@ -33,63 +34,62 @@
     ],
     "main": "./out/extension",
     "scripts": {
-        "build": "yarn run build:ts && yarn run build:css",
-        "build:css": "yarn node-sass scss/ -o css/ --output-style compressed",
+        "build": "npm run build:ts && npm run build:css",
+        "build:css": "sass scss/:css/ --style=compressed --no-source-map",
         "build:ts": "webpack --mode production",
         "compile": "webpack --mode development --watch",
         "lint": "eslint \"src/**/*.ts\"",
-        "lint:fix": "yarn run lint --fix",
+        "lint:fix": "npm run lint -- --fix",
         "organize": "node ./out/tools/organize.js",
-        "semantic-release": "semantic-release --yarn",
-        "style-check": "yarn prettylint 'src/**/*.ts'",
-        "style-fix": "yarn prettier --write \"src/**/*.ts\"",
+        "semantic-release": "semantic-release",
+        "style-check": "prettier --check \"src/**/*.ts\"",
+        "style-fix": "prettier --write \"src/**/*.ts\"",
         "test": "node ./out/test/runTest.js",
         "test-compile": "tsc -p ./",
         "tools:genReadme": "node ./out/tools/generateConfigSectionForReadme.js",
-        "vscode:prepublish": "yarn run lint && yarn run build",
-        "watch:css": "yarn run build:css -w"
+        "vscode:prepublish": "npm run lint && npm run build",
+        "watch:css": "sass scss/:css/ --style=compressed --no-source-map --watch"
     },
     "dependencies": {
-        "iconv-lite-umd": "^0.6.10",
+        "@vscode/iconv-lite-umd": "^0.7.0",
         "jschardet": "^3.0.0"
     },
     "devDependencies": {
-        "@semantic-release/changelog": "^5.0.1",
-        "@semantic-release/git": "^9.0.0",
-        "@types/glob": "^7.1.4",
-        "@types/mocha": "^9.0.0",
-        "@types/node": "^12.11.7",
+        "@semantic-release/changelog": "^6.0.0",
+        "@semantic-release/git": "^10.0.0",
+        "@types/glob": "^8.0.0",
+        "@types/mocha": "^10.0.0",
+        "@types/node": "^22.18.0",
         "@types/semver": "^7.3.8",
         "@types/tmp": "0.2.1",
-        "@types/vscode": "1.53.0",
+        "@types/vscode": "^1.85.0",
         "@types/xml2js": "^0.4.9",
-        "@typescript-eslint/eslint-plugin": "^4.29.0",
-        "@typescript-eslint/parser": "^4.29.0",
+        "@typescript-eslint/eslint-plugin": "^8.0.0",
+        "@typescript-eslint/parser": "^8.0.0",
+        "@vscode/test-electron": "^2.4.0",
+        "@vscode/vsce": "^3.0.0",
         "chardet": "^1.3.0",
         "dayjs": "^1.10.6",
         "decache": "^4.6.0",
-        "eslint": "^7.32.0",
-        "eslint-config-prettier": "^7.2.0",
-        "eslint-plugin-prettier": "^3.4.0",
-        "glob": "^7.1.7",
+        "eslint": "^9.0.0",
+        "eslint-config-prettier": "^9.0.0",
+        "eslint-plugin-prettier": "^5.0.0",
+        "glob": "^10.0.0",
         "milligram": "^1.4.1",
-        "minimatch": "^3.0.4",
-        "mocha": "^9.0.3",
-        "node-sass": "^6.0.1",
-        "original-fs": "^1.0.0",
-        "ovsx": "0.2.0",
-        "prettier": "^2.2.1",
-        "prettylint": "^1.0.0",
-        "semantic-release": "^17.4.4",
-        "semantic-release-vsce": "^4.0.1",
+        "mocha": "^10.0.0",
+        "ovsx": "^0.9.0",
+        "prettier": "^3.0.0",
+        "rimraf": "^6.0.0",
+        "sass": "^1.80.0",
+        "semantic-release": "^23.0.0",
+        "semantic-release-vsce": "^5.0.0",
         "semver": "^7.3.5",
         "tmp": "0.2.1",
-        "ts-loader": "^9.2.4",
-        "typescript": "^4.3.5",
-        "vscode-test": "^1.6.1",
-        "webpack": "^5.48.0",
-        "webpack-cli": "^4.7.2",
-        "xml2js": "^0.4.19"
+        "ts-loader": "^9.5.1",
+        "typescript": "^5.6.0",
+        "webpack": "^5.95.0",
+        "webpack-cli": "^5.1.4",
+        "xml2js": "^0.6.2"
     },
     "config": {
         "commitizen": {
@@ -193,6 +193,11 @@
                 "icon": "$(check)"
             },
             {
+                "command": "svn.copyPermalink",
+                "title": "Copy URL at Current Revision",
+                "category": "SVN"
+            },
+            {
                 "command": "svn.deleteUnversioned",
                 "title": "Delete selected files",
                 "category": "SVN"
@@ -231,6 +236,11 @@
             {
                 "command": "svn.log",
                 "title": "Show commit messages",
+                "category": "SVN"
+            },
+            {
+                "command": "svn.lock",
+                "title": "Get lock for current file",
                 "category": "SVN"
             },
             {
@@ -335,6 +345,18 @@
                 "command": "svn.repolog.copyrevision",
                 "category": "SVN",
                 "title": "Copy revision number"
+            },
+            {
+                "command": "svn.repolog.filterAuthor",
+                "category": "SVN",
+                "title": "Set filter by author",
+                "icon": "$(account)"
+            },
+            {
+                "command": "svn.repolog.filterMsg",
+                "category": "SVN",
+                "title": "Set filter by message",
+                "icon": "$(filter)"
             },
             {
                 "command": "svn.repolog.openDiff",
@@ -478,6 +500,10 @@
                     "when": "false"
                 },
                 {
+                    "command": "svn.copyPermalink",
+                    "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
+                },
+                {
                     "command": "svn.deleteUnversioned",
                     "when": "false"
                 },
@@ -507,6 +533,10 @@
                 },
                 {
                     "command": "svn.log",
+                    "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
+                },
+                {
+                    "command": "svn.lock",
                     "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
                 },
                 {
@@ -579,6 +609,14 @@
                 },
                 {
                     "command": "svn.repolog.copyrevision",
+                    "when": "false"
+                },
+                {
+                    "command": "svn.repolog.filterAuthor",
+                    "when": "false"
+                },
+                {
+                    "command": "svn.repolog.filterMsg",
                     "when": "false"
                 },
                 {
@@ -658,6 +696,16 @@
                 },
                 {
                     "command": "svn.repolog.refresh",
+                    "when": "view == repolog",
+                    "group": "navigation"
+                },
+                {
+                    "command": "svn.repolog.filterAuthor",
+                    "when": "view == repolog",
+                    "group": "navigation"
+                },
+                {
+                    "command": "svn.repolog.filterMsg",
                     "when": "view == repolog",
                     "group": "navigation"
                 },

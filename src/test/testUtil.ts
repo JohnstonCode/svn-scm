@@ -155,8 +155,13 @@ export async function destroyPath(fullPath: string) {
       fs.rmdirSync(fullPath);
       break;
     } catch (error) {
-      await timeout(3000);
-      console.error(error);
+      // On Linux/macOS this should rarely be needed
+      if (i < 2) {
+        await timeout(100);
+      }
+      if (i === 2) {
+        console.error(error);
+      }
     }
   }
   return true;
@@ -178,7 +183,7 @@ export function destroyAllTempPaths() {
 
 export function activeExtension() {
   return new Promise<void>((resolve, reject) => {
-    const extension = extensions.getExtension("johnstoncode.svn-scm");
+    const extension = extensions.getExtension("svn-community.svn-scm-community");
     if (!extension) {
       reject();
       return;
@@ -222,12 +227,12 @@ export function overrideNextShowQuickPick(value: any) {
 const originalShowQuickPick = window.showQuickPick;
 
 window.showQuickPick = (
-  items: any[] | Thenable<any[]>,
+  items: readonly string[] | Thenable<readonly string[]>,
   ...args: any[]
 ): Thenable<any | undefined> => {
   let next = overridesShowQuickPick.shift();
   if (typeof next === "undefined") {
-    return originalShowQuickPick.call(null, [items, ...args]);
+    return originalShowQuickPick.call(null, [items as any, ...args]);
   }
 
   if (typeof next === "number" && Array.isArray(items)) {

@@ -3,7 +3,10 @@ import { QuickPickItem, Uri, window } from "vscode";
 import { Repository } from "./repository";
 
 export class IgnoreSingleItem implements QuickPickItem {
-  constructor(public expression: string, public recursive: boolean = false) {}
+  constructor(
+    public expression: string,
+    public recursive: boolean = false
+  ) {}
 
   get label(): string {
     const text = this.recursive ? " (Recursive)" : "";

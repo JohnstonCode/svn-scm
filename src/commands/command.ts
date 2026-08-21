@@ -5,6 +5,10 @@ import {
   Position,
   Range,
   SourceControlResourceState,
+  TabInputCustom,
+  TabInputNotebook,
+  TabInputText,
+  TabInputTextDiff,
   TextDocumentShowOptions,
   TextEditor,
   Uri,
@@ -55,6 +59,42 @@ export abstract class Command implements Disposable {
 
   public dispose() {
     this._disposable && this._disposable.dispose(); // tslint:disable-line
+  }
+
+  protected getUriFromActiveTab(): Uri | undefined {
+    const activeTab = window.tabGroups.activeTabGroup?.activeTab;
+    const input = activeTab?.input;
+
+    if (!input) {
+      return;
+    }
+
+    if (input instanceof TabInputText) {
+      return input.uri;
+    }
+
+    if (input instanceof TabInputCustom) {
+      return input.uri;
+    }
+
+    if (input instanceof TabInputNotebook) {
+      return input.uri;
+    }
+
+    if (input instanceof TabInputTextDiff) {
+      if (input.modified.scheme === "file") {
+        return input.modified;
+      }
+
+      if (input.original.scheme === "file") {
+        return input.original;
+      }
+
+      return;
+    }
+
+    const inputWithUri = input as { uri?: Uri };
+    return inputWithUri.uri;
   }
 
   private createRepositoryCommand(
@@ -409,7 +449,7 @@ export abstract class Command implements Disposable {
       if (await exists(tempFile)) {
         try {
           await unlink(tempFile);
-        } catch (err) {
+        } catch {
           // TODO(cjohnston)//log error
         }
       }

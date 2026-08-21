@@ -5,7 +5,10 @@ import { memoize } from "../decorators";
 import { getBranchName } from "../helpers/branch";
 
 export default class FolderItem implements QuickPickItem {
-  constructor(protected dir: ISvnListItem, protected parent?: string) {}
+  constructor(
+    protected dir: ISvnListItem,
+    protected parent?: string
+  ) {}
 
   get label(): string {
     if (this.branch) {

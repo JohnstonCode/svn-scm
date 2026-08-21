@@ -52,6 +52,7 @@ export class RepositoryFilesWatcher implements IDisposable {
     ) {
       const repoWatcher = watch(
         join(root, getSvnDir()),
+        {},
         this.repoWatch.bind(this)
       );
 
@@ -115,7 +116,8 @@ export class RepositoryFilesWatcher implements IDisposable {
   }
 
   @debounce(1000)
-  private repoWatch(event: string, filename: string): void {
+  private repoWatch(event: string, filename: string | null): void {
+    if (!filename) return;
     if (event === "change") {
       this._onRepoChange.fire(Uri.parse(filename));
     } else if (event === "rename") {

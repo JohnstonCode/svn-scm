@@ -40,20 +40,20 @@ type State = "uninitialized" | "initialized";
 
 export class SourceControlManager implements IDisposable {
   private _onDidOpenRepository = new EventEmitter<Repository>();
-  public readonly onDidOpenRepository: Event<Repository> = this
-    ._onDidOpenRepository.event;
+  public readonly onDidOpenRepository: Event<Repository> =
+    this._onDidOpenRepository.event;
 
   private _onDidCloseRepository = new EventEmitter<Repository>();
-  public readonly onDidCloseRepository: Event<Repository> = this
-    ._onDidCloseRepository.event;
+  public readonly onDidCloseRepository: Event<Repository> =
+    this._onDidCloseRepository.event;
 
   private _onDidChangeRepository = new EventEmitter<RepositoryChangeEvent>();
-  public readonly onDidChangeRepository: Event<RepositoryChangeEvent> = this
-    ._onDidChangeRepository.event;
+  public readonly onDidChangeRepository: Event<RepositoryChangeEvent> =
+    this._onDidChangeRepository.event;
 
   private _onDidChangeStatusRepository = new EventEmitter<Repository>();
-  public readonly onDidChangeStatusRepository: Event<Repository> = this
-    ._onDidChangeStatusRepository.event;
+  public readonly onDidChangeStatusRepository: Event<Repository> =
+    this._onDidChangeStatusRepository.event;
 
   public openRepositories: IOpenRepository[] = [];
   private disposables: Disposable[] = [];
@@ -110,12 +110,12 @@ export class SourceControlManager implements IDisposable {
       this
     );
 
-    return ((async (): Promise<SourceControlManager> => {
+    return (async (): Promise<SourceControlManager> => {
       if (this.enabled) {
         await this.enable();
       }
       return this;
-    })() as unknown) as SourceControlManager;
+    })() as unknown as SourceControlManager;
   }
 
   public openRepositoriesSorted(): IOpenRepository[] {
@@ -316,7 +316,7 @@ export class SourceControlManager implements IDisposable {
 
       try {
         files = await readdir(path);
-      } catch (error) {
+      } catch {
         return;
       }
 
@@ -326,7 +326,7 @@ export class SourceControlManager implements IDisposable {
 
         try {
           stats = await stat(dir);
-        } catch (error) {
+        } catch {
           continue;
         }
 
@@ -433,7 +433,7 @@ export class SourceControlManager implements IDisposable {
         await repository.info(path);
 
         return repository;
-      } catch (error) {
+      } catch {
         // Ignore
       }
     }
@@ -446,7 +446,7 @@ export class SourceControlManager implements IDisposable {
       repository.onDidChangeState,
       state => state === RepositoryState.Disposed
     );
-    // eslint-disable-next-line @typescript-eslint/no-use-before-define
+
     const disappearListener = onDidDisappearRepository(() => dispose());
 
     const changeListener = repository.onDidChangeRepository(uri =>
@@ -472,7 +472,6 @@ export class SourceControlManager implements IDisposable {
       repository.dispose();
 
       this.openRepositories = this.openRepositories.filter(
-        // eslint-disable-next-line @typescript-eslint/no-use-before-define
         e => e !== openRepository
       );
       this._onDidCloseRepository.fire(repository);

@@ -1,4 +1,4 @@
-import { access as fsAccess } from "original-fs";
+import { access as fsAccess } from "fs";
 
 export function access(
   path: string,

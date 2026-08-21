@@ -1,3 +1,11 @@
+## [3.0.4](https://github.com/hatrd/svn-scm/compare/v3.0.3...v3.0.4) (2025-09-09)
+
+
+### Bug Fixes
+
+* ci ([1babaed](https://github.com/hatrd/svn-scm/commit/1babaed9da171414db59ff3eb36d21584bd3aef1))
+* release token ([6505712](https://github.com/hatrd/svn-scm/commit/6505712c2b36fd2dc0d8ded448fb923a36cb10ac))
+
 # [2.17.0](https://github.com/JohnstonCode/svn-scm/compare/v2.16.1...v2.17.0) (2023-06-22)
 
 

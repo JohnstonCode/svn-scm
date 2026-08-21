@@ -66,4 +66,28 @@ suite("Svn Repository Tests", () => {
 
     await repository.rename("test.php", "tester.php");
   });
+
+  test("Test lock with default message", async () => {
+    svn = new Svn(options);
+    const repository = await new Repository(
+      svn,
+      "/tmp",
+      "/tmp",
+      ConstructorPolicy.LateInit
+    );
+    repository.exec = async (args: string[], _options?: ICpOptions) => {
+      assert.equal(args[0], "lock");
+      assert.equal(args[1], "-m");
+      assert.equal(args[2], "Locking for changes");
+      assert.equal(args[3].includes("test.php"), true);
+
+      return {
+        exitCode: 0,
+        stderr: "",
+        stdout: "'test.php' locked by user 'testuser'."
+      };
+    };
+
+    await repository.lock(["test.php"]);
+  });
 });

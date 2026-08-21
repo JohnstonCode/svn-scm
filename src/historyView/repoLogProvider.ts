@@ -65,14 +65,16 @@ function getActionIcon(action: string) {
 }
 
 export class RepoLogProvider
-  implements TreeDataProvider<ILogTreeItem>, Disposable {
-  private _onDidChangeTreeData: EventEmitter<
-    ILogTreeItem | undefined
-  > = new EventEmitter<ILogTreeItem | undefined>();
-  public readonly onDidChangeTreeData: Event<ILogTreeItem | undefined> = this
-    ._onDidChangeTreeData.event;
+  implements TreeDataProvider<ILogTreeItem>, Disposable
+{
+  private _onDidChangeTreeData: EventEmitter<ILogTreeItem | undefined> =
+    new EventEmitter<ILogTreeItem | undefined>();
+  public readonly onDidChangeTreeData: Event<ILogTreeItem | undefined> =
+    this._onDidChangeTreeData.event;
   // TODO on-disk cache?
   private readonly logCache: Map<string, ICachedLog> = new Map();
+  private filterAuthor: string = "";
+  private filterMsg: string = "";
   private _dispose: Disposable[] = [];
 
   private getCached(maybeItem?: ILogTreeItem): ICachedLog {
@@ -118,12 +120,42 @@ export class RepoLogProvider
           return this.refresh();
           // TODO refresh only required repo, need to pass element === getChildren()
         }
-      )
+      ),
+      commands.registerCommand(
+        "svn.repolog.filterAuthor",
+        this.filterAuthorGui,
+        this
+      ),
+      commands.registerCommand("svn.repolog.filterMsg", this.filterMsgGui, this)
     );
   }
 
   public dispose() {
     dispose(this._dispose);
+  }
+
+  public filterAuthorGui() {
+    const box = window.createInputBox();
+    box.prompt = "Set filter for commit authors, empty to reset";
+    box.value = this.filterAuthor;
+    box.onDidAccept(async () => {
+      this.filterAuthor = box.value;
+      box.dispose();
+      this._onDidChangeTreeData.fire(undefined);
+    });
+    box.show();
+  }
+
+  public filterMsgGui() {
+    const box = window.createInputBox();
+    box.prompt = "Set filter for commit message, empty to reset";
+    box.value = this.filterMsg;
+    box.onDidAccept(async () => {
+      this.filterMsg = box.value;
+      box.dispose();
+      this._onDidChangeTreeData.fire(undefined);
+    });
+    box.show();
   }
 
   public removeRepo(element: ILogTreeItem) {
@@ -167,9 +199,8 @@ export class RepoLogProvider
         if (rev !== "HEAD" && isNaN(parseInt(rev, 10))) {
           throw new Error("erroneous revision");
         }
-        const remRepo = await this.sourceControlManager.getRemoteRepository(
-          uri
-        );
+        const remRepo =
+          await this.sourceControlManager.getRemoteRepository(uri);
         item.repo = remRepo;
         item.svnTarget = uri;
       } catch (e) {
@@ -184,7 +215,7 @@ export class RepoLogProvider
         item.repo = repo;
         item.svnTarget = Uri.parse(svninfo.url);
         item.persisted.baseRevision = parseInt(svninfo.revision, 10);
-      } catch (e) {
+      } catch {
         window.showErrorMessage("Failed to resolve svn path");
         return;
       }
@@ -256,8 +287,9 @@ export class RepoLogProvider
     const commit = element.data as ISvnLogEntryPath;
     const item = this.getCached(element);
     const parent = (element.parent as ILogTreeItem).data as ISvnLogEntry;
-    const remotePath = item.repo.getPathNormalizer().parse(commit._)
-      .remoteFullPath;
+    const remotePath = item.repo
+      .getPathNormalizer()
+      .parse(commit._).remoteFullPath;
     let prevRev: ISvnLogEntry;
 
     const revs = await item.repo.log(parent.revision, "1", 2, remotePath);
@@ -391,7 +423,17 @@ export class RepoLogProvider
       if (logentries.length === 0) {
         await fetchMore(cached);
       }
-      const result = transform(logentries, LogTreeItemKind.Commit, element);
+      // filter
+      const logFiltered = logentries.filter(
+        ({ author, msg }) =>
+          (this.filterAuthor === "" || author.includes(this.filterAuthor)) &&
+          (this.filterMsg === "" || msg.includes(this.filterMsg))
+      );
+
+      window.showInformationMessage(
+        `Filtered ${logFiltered.length} of ${logentries.length} entries`
+      );
+      const result = transform(logFiltered, LogTreeItemKind.Commit, element);
       insertBaseMarker(cached, logentries, result);
       if (!cached.isComplete) {
         const ti = new TreeItem(`Load another ${limit} revisions`);

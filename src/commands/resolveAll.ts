@@ -32,7 +32,8 @@ export class ResolveAll extends Command {
         );
         window.showInformationMessage(response);
       } catch (error) {
-        window.showErrorMessage(error.stderr);
+        const err = error as any;
+        window.showErrorMessage(err.stderr);
       }
     }
   }

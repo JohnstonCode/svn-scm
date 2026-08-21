@@ -82,8 +82,8 @@ async function showCommitInput(message?: string, filePaths?: string[]) {
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${
     panel.webview.cspSource
   } https:; script-src ${panel.webview.cspSource} 'unsafe-inline'; style-src ${
-      panel.webview.cspSource
-    };">
+    panel.webview.cspSource
+  };">
 
   <title>Commit Message</title>
   <link rel="stylesheet" href="${styleUri}">

@@ -81,7 +81,7 @@ export class Repository implements IRemoteRepository {
   public remoteChangedFiles: number = 0;
   public isIncomplete: boolean = false;
   public needCleanUp: boolean = false;
-  private remoteChangedUpdateInterval?: NodeJS.Timer;
+  private remoteChangedUpdateInterval?: NodeJS.Timeout;
   private deletedUris: Uri[] = [];
   private canSaveAuth: boolean = false;
 
@@ -93,27 +93,27 @@ export class Repository implements IRemoteRepository {
   }
 
   private _onDidChangeRepository = new EventEmitter<Uri>();
-  public readonly onDidChangeRepository: Event<Uri> = this
-    ._onDidChangeRepository.event;
+  public readonly onDidChangeRepository: Event<Uri> =
+    this._onDidChangeRepository.event;
 
   private _onDidChangeState = new EventEmitter<RepositoryState>();
-  public readonly onDidChangeState: Event<RepositoryState> = this
-    ._onDidChangeState.event;
+  public readonly onDidChangeState: Event<RepositoryState> =
+    this._onDidChangeState.event;
 
   private _onDidChangeStatus = new EventEmitter<void>();
-  public readonly onDidChangeStatus: Event<void> = this._onDidChangeStatus
-    .event;
+  public readonly onDidChangeStatus: Event<void> =
+    this._onDidChangeStatus.event;
 
   private _onDidChangeRemoteChangedFiles = new EventEmitter<void>();
-  public readonly onDidChangeRemoteChangedFile: Event<void> = this
-    ._onDidChangeRemoteChangedFiles.event;
+  public readonly onDidChangeRemoteChangedFile: Event<void> =
+    this._onDidChangeRemoteChangedFiles.event;
 
   private _onRunOperation = new EventEmitter<Operation>();
   public readonly onRunOperation: Event<Operation> = this._onRunOperation.event;
 
   private _onDidRunOperation = new EventEmitter<Operation>();
-  public readonly onDidRunOperation: Event<Operation> = this._onDidRunOperation
-    .event;
+  public readonly onDidRunOperation: Event<Operation> =
+    this._onDidRunOperation.event;
 
   @memoize
   get onDidChangeOperations(): Event<void> {
@@ -753,7 +753,7 @@ export class Repository implements IRemoteRepository {
   public async getBranches() {
     try {
       return await this.repository.getBranches();
-    } catch (error) {
+    } catch {
       return [];
     }
   }
@@ -783,6 +783,10 @@ export class Repository implements IRemoteRepository {
 
   public async addFiles(files: string[]) {
     return this.run(Operation.Add, () => this.repository.addFiles(files));
+  }
+
+  public async lock(files: string[], message?: string) {
+    return this.run(Operation.Lock, () => this.repository.lock(files, message));
   }
 
   public async addChangelist(files: string[], changelist: string) {
@@ -1103,7 +1107,8 @@ export class Repository implements IRemoteRepository {
 
         return result;
       } catch (err) {
-        if (err.svnErrorCode === svnErrorCodes.NotASvnRepository) {
+        const error = err as any;
+        if (error.svnErrorCode === svnErrorCodes.NotASvnRepository) {
           this.state = RepositoryState.Disposed;
         }
 
@@ -1137,14 +1142,15 @@ export class Repository implements IRemoteRepository {
         this.saveAuth();
         return result;
       } catch (err) {
+        const error = err as any;
         if (
-          err.svnErrorCode === svnErrorCodes.RepositoryIsLocked &&
+          error.svnErrorCode === svnErrorCodes.RepositoryIsLocked &&
           attempt <= 10
         ) {
           // quatratic backoff
           await timeout(Math.pow(attempt, 2) * 50);
         } else if (
-          err.svnErrorCode === svnErrorCodes.AuthorizationFailed &&
+          error.svnErrorCode === svnErrorCodes.AuthorizationFailed &&
           attempt <= 1 + accounts.length
         ) {
           // First attempt load all stored auths
@@ -1159,15 +1165,15 @@ export class Repository implements IRemoteRepository {
             this.password = accounts[index].password;
           }
         } else if (
-          err.svnErrorCode === svnErrorCodes.AuthorizationFailed &&
+          error.svnErrorCode === svnErrorCodes.AuthorizationFailed &&
           attempt <= 3 + accounts.length
         ) {
           const result = await this.promptAuth();
           if (!result) {
-            throw err;
+            throw error;
           }
         } else {
-          throw err;
+          throw error;
         }
       }
     }

@@ -35,9 +35,8 @@ export class Upgrade extends Command {
     )) as SourceControlManager;
 
     if (choice === yes) {
-      const upgraded = await sourceControlManager.upgradeWorkingCopy(
-        folderPath
-      );
+      const upgraded =
+        await sourceControlManager.upgradeWorkingCopy(folderPath);
 
       if (upgraded) {
         window.showInformationMessage(`Working copy "${folderPath}" upgraded`);

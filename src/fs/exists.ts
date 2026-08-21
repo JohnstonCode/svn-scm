@@ -1,4 +1,4 @@
-import { access } from "original-fs";
+import { access } from "fs";
 
 export function exists(path: string): Promise<boolean> {
   return new Promise((resolve, _reject) => {

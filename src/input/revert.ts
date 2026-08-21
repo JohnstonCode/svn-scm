@@ -51,7 +51,7 @@ export async function checkAndPromptDepth(
         hasDirectory = true;
         break;
       }
-    } catch (error) {
+    } catch {
       // ignore
     }
   }

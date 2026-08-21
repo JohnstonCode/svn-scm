@@ -1,4 +1,4 @@
-import { readFile as fsReadFile } from "original-fs";
+import { readFile as fsReadFile } from "fs";
 import { promisify } from "util";
 
 export const readFile = promisify(fsReadFile);

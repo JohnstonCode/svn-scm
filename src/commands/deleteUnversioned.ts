@@ -36,7 +36,7 @@ export class DeleteUnversioned extends Command {
           } else {
             await unlink(fsPath);
           }
-        } catch (err) {
+        } catch {
           // TODO(cjohnston) Show meaningful error to user
         }
       }

@@ -50,14 +50,14 @@ export class Repository {
     policy: ConstructorPolicy
   ) {
     if (policy === ConstructorPolicy.LateInit) {
-      return ((async (): Promise<Repository> => {
+      return (async (): Promise<Repository> => {
         return this;
-      })() as unknown) as Repository;
+      })() as unknown as Repository;
     }
-    return ((async (): Promise<Repository> => {
+    return (async (): Promise<Repository> => {
       await this.updateInfo();
       return this;
-    })() as unknown) as Repository;
+    })() as unknown as Repository;
   }
 
   public async updateInfo() {
@@ -184,9 +184,12 @@ export class Repository {
     this._infoCache[file] = await parseInfoXml(result.stdout);
 
     // Cache for 2 minutes
-    setTimeout(() => {
-      this.resetInfoCache(file);
-    }, 2 * 60 * 1000);
+    setTimeout(
+      () => {
+        this.resetInfoCache(file);
+      },
+      2 * 60 * 1000
+    );
 
     return this._infoCache[file];
   }
@@ -256,7 +259,7 @@ export class Repository {
     let paths: ISvnPath[];
     try {
       paths = await parseDiffXml(result.stdout);
-    } catch (err) {
+    } catch {
       return [];
     }
 
@@ -356,9 +359,8 @@ export class Repository {
         }
       }
     } else {
-      const svnEncoding: string | undefined = configuration.get<string>(
-        "default.encoding"
-      );
+      const svnEncoding: string | undefined =
+        configuration.get<string>("default.encoding");
       if (svnEncoding) {
         encoding = svnEncoding;
       }
@@ -446,7 +448,7 @@ export class Repository {
         prefix: "svn-commit-message-"
       });
 
-      await writeFile(tmpFile.name, message, "UTF-8");
+      await writeFile(tmpFile.name, message, { encoding: "utf8" });
 
       args.push("-F", tmpFile.name);
       args.push("--encoding", "UTF-8");
@@ -499,7 +501,7 @@ export class Repository {
               return [];
             })
           )
-        ).reduce((acc, cur) => acc.concat(cur), [file]);
+        ).reduce<string[]>((acc, cur) => acc.concat(cur), [file]);
       }
       return [file];
     };
@@ -587,7 +589,7 @@ export class Repository {
             ]);
 
             resolve([trunkLayout]);
-          } catch (error) {
+          } catch {
             resolve([]);
           }
         })
@@ -620,7 +622,7 @@ export class Repository {
               .map((i: string) => tree + "/" + i);
 
             resolve(list);
-          } catch (error) {
+          } catch {
             resolve([]);
           }
         })
@@ -965,5 +967,11 @@ export class Repository {
     const result = await this.exec(args);
 
     return result.stdout;
+  }
+
+  public async lock(files: string[], message: string = "Locking for changes") {
+    files = files.map(file => this.removeAbsolutePath(file));
+    const args = ["lock", "-m", message, ...files];
+    return this.exec(args);
   }
 }

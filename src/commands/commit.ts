@@ -69,8 +69,9 @@ export class Commit extends Command {
         window.showInformationMessage(result);
         repository.inputBox.value = "";
       } catch (error) {
+        const err = error as any;
         console.error(error);
-        window.showErrorMessage(error.stderrFormated);
+        window.showErrorMessage(err.stderrFormated);
       }
     });
   }

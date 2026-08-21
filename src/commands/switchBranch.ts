@@ -32,10 +32,12 @@ export class SwitchBranch extends Command {
         try {
           await repository.switchBranch(branch.path);
         } catch (error) {
+          const err = error as any;
           if (
             typeof error === "object" &&
+            error !== null &&
             error.hasOwnProperty("stderrFormated") &&
-            error.stderrFormated.includes("ignore-ancestry")
+            err.stderrFormated.includes("ignore-ancestry")
           ) {
             const answer = await window.showErrorMessage(
               "Seems like these branches don't have a common ancestor. " +

@@ -9,6 +9,5 @@ export class IsSvn19orGreater implements Disposable {
     setVscodeContext("isSvn19orGreater", is19orGreater);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
   dispose() {}
 }

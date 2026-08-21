@@ -8,10 +8,12 @@ import { Cleanup } from "./commands/cleanup";
 import { Close } from "./commands/close";
 import { Commit } from "./commands/commit";
 import { CommitWithMessage } from "./commands/commitWithMessage";
+import { CopyPermalink } from "./commands/copyPermalink";
 import { DeleteUnversioned } from "./commands/deleteUnversioned";
 import { FileOpen } from "./commands/fileOpen";
 import { FinishCheckout } from "./commands/finishCheckout";
 import { GetSourceControlManager } from "./commands/get_source_control_manager";
+import { Lock } from "./commands/lock";
 import { Log } from "./commands/log";
 import { OpenChangeBase } from "./commands/openChangeBase";
 import { OpenChangeHead } from "./commands/openChangeHead";
@@ -60,6 +62,7 @@ export function registerCommands(
   disposables.push(new ChangeList());
   disposables.push(new Refresh());
   disposables.push(new Commit());
+  disposables.push(new CopyPermalink());
   disposables.push(new OpenResourceBase());
   disposables.push(new OpenResourceHead());
   disposables.push(new OpenChangeBase());
@@ -75,6 +78,7 @@ export function registerCommands(
   disposables.push(new ResolveAll());
   disposables.push(new Resolve());
   disposables.push(new Resolved());
+  disposables.push(new Lock());
   disposables.push(new Log());
   disposables.push(new RevertChange());
   disposables.push(new Close());

@@ -33,12 +33,12 @@ import {
 } from "./common";
 
 export class ItemLogProvider
-  implements TreeDataProvider<ILogTreeItem>, Disposable {
-  private _onDidChangeTreeData: EventEmitter<
-    ILogTreeItem | undefined
-  > = new EventEmitter<ILogTreeItem | undefined>();
-  public readonly onDidChangeTreeData: Event<ILogTreeItem | undefined> = this
-    ._onDidChangeTreeData.event;
+  implements TreeDataProvider<ILogTreeItem>, Disposable
+{
+  private _onDidChangeTreeData: EventEmitter<ILogTreeItem | undefined> =
+    new EventEmitter<ILogTreeItem | undefined>();
+  public readonly onDidChangeTreeData: Event<ILogTreeItem | undefined> =
+    this._onDidChangeTreeData.event;
 
   private currentItem?: ICachedLog;
   private _dispose: Disposable[] = [];
@@ -136,7 +136,7 @@ export class ItemLogProvider
               },
               order: 0
             };
-          } catch (e) {
+          } catch {
             // doesn't belong to this repo
           }
         }
